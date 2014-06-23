@@ -1,0 +1,16 @@
+<Context>
+
+    <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
+              username="postgres"
+              password=""
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/emmimanager"
+              maxActive="20"
+              maxIdle="10"
+              validationQuery="select 1" />
+
+    <Environment name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect" type="java.lang.String"/>
+    <Environment name="hibernate.show_sql" value="true" type="java.lang.String"/>
+
+
+</Context>

@@ -6,9 +6,10 @@
         version="2.0">
 
     <entity class="com.emmisolutions.emmimanager.model.User">
+        <table name="app_user"/>
         <attributes>
             <id name="id">
-                <generated-value/>
+                <generated-value strategy="IDENTITY"/>
             </id>
             <version name="version"/>
         </attributes>

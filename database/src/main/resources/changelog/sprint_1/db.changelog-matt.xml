@@ -5,9 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet author="matt" id="1403224288631-1">
-        <createTable tableName="User">
+        <createTable tableName="app_user">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="UserPK"/>
+                <constraints primaryKey="true" primaryKeyName="app_user_pk"/>
             </column>
             <column name="version" type="INT"/>
         </createTable>

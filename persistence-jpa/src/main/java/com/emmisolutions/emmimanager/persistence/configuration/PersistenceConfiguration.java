@@ -17,7 +17,6 @@ import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -28,7 +27,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-import static org.hibernate.cfg.Environment.DIALECT;
+import static org.hibernate.cfg.AvailableSettings.DIALECT;
 import static org.hibernate.cfg.Environment.SHOW_SQL;
 
 
@@ -53,12 +52,10 @@ public class PersistenceConfiguration {
     @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect dialect) {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
-        hibernateJpaVendorAdapter.setDatabase(Database.H2);
-        hibernateJpaVendorAdapter.setShowSql(true);
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
         em.setJpaVendorAdapter(hibernateJpaVendorAdapter);
-        em.setJpaDialect(dialect);
+        em.setJpaDialect(getJpaDialect());
         em.setJpaProperties(additionalProperties());
         return em;
     }
@@ -67,12 +64,12 @@ public class PersistenceConfiguration {
     String dialect;
 
     @Value("${hibernate.show_sql}")
-    String showSql;
+    Boolean showSql;
 
     Properties additionalProperties() {
         Properties properties = new Properties();
         properties.setProperty(DIALECT, dialect);
-        properties.setProperty(SHOW_SQL, showSql);
+        properties.setProperty(SHOW_SQL, showSql.toString());
         return properties;
     }
 
