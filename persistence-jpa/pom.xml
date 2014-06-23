@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>EmmiManager</artifactId>
+        <groupId>com.emmisolutions.emmimanager</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>persistence-jpa</artifactId>
+    <packaging>jar</packaging>
+
+    <name>persistence-jpa</name>
+    <description>This is the JPA implementation of the persistence-api</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.version}</version>
+                <configuration>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                    <referenceUrl>hibernate:ejb3:EmmiManagerPersistenceUnit</referenceUrl>
+                    <contexts>development</contexts>
+                    <changeLogFile>must be here but isn't used</changeLogFile>
+                    <diffChangeLogFile>target/full_db.xml</diffChangeLogFile>
+                    <driver>org.h2.Driver</driver>
+                    <url>jdbc:h2:mem:EmmiManager</url>
+                    <username>sa</username>
+                    <password/>
+                    <verbose>true</verbose>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.liquibase.ext</groupId>
+                        <artifactId>liquibase-hibernate4</artifactId>
+                        <version>${liquibase.hibernate.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.liquibase</groupId>
+                                <artifactId>liquibase-core</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>${h2.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.emmisolutions.emmimanager</groupId>
+                        <artifactId>database</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.emmisolutions.emmimanager</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.emmisolutions.emmimanager</groupId>
+            <artifactId>database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
