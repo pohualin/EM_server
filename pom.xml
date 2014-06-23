@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.emmisolutions.emmimanager</groupId>
-    <artifactId>EmmiManager</artifactId>
+    <artifactId>emmimanager</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>database</module>
@@ -18,7 +18,7 @@
     </modules>
     <packaging>pom</packaging>
 
-    <name>EmmiManager</name>
+    <name>emmimanager</name>
     <url>http://maven.apache.org</url>
 
     <properties>
