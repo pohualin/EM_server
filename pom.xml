@@ -32,7 +32,8 @@
         <spring.security.version>3.2.4.RELEASE</spring.security.version>
         <liquibase.version>3.2.1-SNAPSHOT</liquibase.version>
         <liquibase.hibernate.version>3.4</liquibase.hibernate.version>
-        <postgresql.version>9.3-1101-jdbc41</postgresql.version>
+        <aspectj.version>1.8.0</aspectj.version>
+        <javax.inject.version>1</javax.inject.version>
     </properties>
 
     <build>
@@ -89,6 +90,37 @@
                 <artifactId>spring-orm</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -181,6 +213,10 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
         </dependency>
     </dependencies>
 

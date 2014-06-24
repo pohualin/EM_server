@@ -1,10 +1,8 @@
-package com.emmisolutions.emmimanager.rest.endpoint;
+package com.emmisolutions.emmimanager.web.rest.endpoint;
 
 import com.emmisolutions.emmimanager.api.UserCrud;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +20,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Scope("prototype")
 public class UserEndpoint implements UserCrud {
 
-    final static Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
 
     @Resource
     UserService userService;
@@ -30,27 +27,23 @@ public class UserEndpoint implements UserCrud {
     @GET
     @Produces(APPLICATION_JSON)
     public User getUser() {
-        logger.debug("creating user");
-        User ret = userService.save(new User());
-        logger.debug("created: {}", ret);
-        return ret;
+        return userService.save(new User());
     }
 
     @POST
     @Consumes(APPLICATION_JSON)
     public void updateUser(User user) {
-        logger.debug("updating user: {}", user);
+        // no-op
     }
 
     @PUT
     @Produces(APPLICATION_JSON)
     public User save(User user) {
-        logger.debug("saving user: {}", user);
         return user;
     }
 
     @DELETE
     public void delete(User user) {
-        logger.debug("deleting user");
+        // no-op
     }
 }

@@ -6,7 +6,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"com.emmisolutions.emmimanager.service.spring",
+@ComponentScan(basePackages = {
+        "com.emmisolutions.emmimanager.service.spring",
+        "com.emmisolutions.emmimanager.service.logging",
         "com.emmisolutions.emmimanager.persistence.configuration"})
 public class ServiceConfiguration {
+
 }

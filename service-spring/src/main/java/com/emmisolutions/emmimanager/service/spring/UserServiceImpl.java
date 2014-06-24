@@ -3,8 +3,6 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,17 +16,12 @@ import javax.annotation.Resource;
 @Service
 public class UserServiceImpl implements UserService {
 
-    final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
     @Resource
     UserPersistence userPersistence;
 
     @Override
     @Transactional
     public User save(User user) {
-        logger.debug("About to save/update: {}", user);
-        User ret = userPersistence.saveOrUpdate(user);
-        logger.debug("Saved: {}", ret);
-        return ret;
+        return userPersistence.saveOrUpdate(user);
     }
 }

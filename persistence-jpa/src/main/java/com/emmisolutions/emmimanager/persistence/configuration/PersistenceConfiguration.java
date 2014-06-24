@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
 import liquibase.integration.spring.SpringLiquibase;
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,9 +34,17 @@ import static org.hibernate.cfg.Environment.SHOW_SQL;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = "com.emmisolutions.emmimanager.persistence.impl")
+@ComponentScan(basePackages = {
+        "com.emmisolutions.emmimanager.persistence.impl",
+        "com.emmisolutions.emmimanager.persistence.logging"
+})
 @EnableJpaRepositories(basePackages = "com.emmisolutions.emmimanager.persistence.repo")
 public class PersistenceConfiguration {
+
+    @Bean
+    public AnnotationAwareAspectJAutoProxyCreator getAnnotationAwareAspectJAutoProxyCreator() {
+        return new AnnotationAwareAspectJAutoProxyCreator();
+    }
 
     @Bean(name = "transactionManager")
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
