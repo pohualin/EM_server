@@ -19,7 +19,7 @@
     <packaging>pom</packaging>
 
     <name>emmimanager</name>
-    <url>http://maven.apache.org</url>
+    <description>This is the root project for the Emmi Manager application.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -121,7 +121,6 @@
                 <version>${javax.inject.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
@@ -219,5 +218,63 @@
             <artifactId>javax.inject</artifactId>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>emmi-snapshots</id>
+            <url>https://build1.emmisolutions.com/nexus/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>interval:120</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>emmi-releases</id>
+            <url>https://build1.emmisolutions.com/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>emmi-public</id>
+            <url>https://build1.emmisolutions.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>emmi-public</id>
+            <url>https://build1.emmisolutions.com/nexus/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>emmi-releases</id>
+            <name>Emmi Solutions Release Repository</name>
+            <uniqueVersion>false</uniqueVersion>
+            <url>https://build1.emmisolutions.com/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>emmi-snapshots</id>
+            <name>Emmi Solutions Snapshot Repository</name>
+            <uniqueVersion>false</uniqueVersion>
+            <url>https://build1.emmisolutions.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
