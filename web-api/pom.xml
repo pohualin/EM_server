@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.emmisolutions.emmimanager</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>domain</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
