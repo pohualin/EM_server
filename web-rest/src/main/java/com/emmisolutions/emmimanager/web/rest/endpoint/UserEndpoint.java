@@ -20,7 +20,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Scope("prototype")
 public class UserEndpoint implements UserCrud {
 
-
     @Resource
     UserService userService;
 
