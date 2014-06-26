@@ -4,6 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
     <changeSet author="matt" id="1403224288631-1">
         <createTable tableName="app_user">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -11,6 +14,19 @@
             </column>
             <column name="version" type="INT"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="add_audit_columns" author="matt">
+        <addColumn tableName="app_user">
+            <column name="created_by" type="varchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog> 

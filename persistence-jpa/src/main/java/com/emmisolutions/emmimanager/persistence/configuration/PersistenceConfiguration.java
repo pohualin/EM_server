@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
 import liquibase.integration.spring.SpringLiquibase;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.jadira.usertype.spi.jta.HibernateEntityManagerFactoryBean;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +21,6 @@ import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -59,14 +60,19 @@ public class PersistenceConfiguration {
     }
 
     @Bean(name = "entityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect dialect) {
-        HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
-        em.setJpaVendorAdapter(hibernateJpaVendorAdapter);
-        em.setJpaDialect(getJpaDialect());
-        em.setJpaProperties(additionalProperties());
-        return em;
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect jpaDialect) {
+        HibernateEntityManagerFactoryBean entityManagerFactoryBean = new HibernateEntityManagerFactoryBean();
+        entityManagerFactoryBean.setDataSource(dataSource);
+        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+        entityManagerFactoryBean.setJpaDialect(jpaDialect);
+        Properties properties = new Properties();
+        properties.setProperty(DIALECT, dialect);
+        properties.setProperty(SHOW_SQL, showSql.toString());
+        properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
+        properties.setProperty("jadira.usertype.javaZone", "UTC");
+        properties.setProperty("jadira.usertype.databaseZone", "UTC");
+        entityManagerFactoryBean.setJpaProperties(properties);
+        return entityManagerFactoryBean;
     }
 
     @Value("${hibernate.dialect}")
@@ -74,13 +80,6 @@ public class PersistenceConfiguration {
 
     @Value("${hibernate.show_sql}")
     Boolean showSql;
-
-    Properties additionalProperties() {
-        Properties properties = new Properties();
-        properties.setProperty(DIALECT, dialect);
-        properties.setProperty(SHOW_SQL, showSql.toString());
-        return properties;
-    }
 
     @Bean
     public JpaDialect getJpaDialect() {

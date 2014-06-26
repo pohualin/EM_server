@@ -21,6 +21,10 @@ public class UserPersistenceImpl implements UserPersistence {
 
     @Override
     public User saveOrUpdate(User user) {
+        if (user.getId() == null) {
+            user.setCreatedBy("system");
+            user.setLastModifiedBy("system");
+        }
         // delegate to spring-data repo for simple kinds of things
         return userRepository.save(user);
     }

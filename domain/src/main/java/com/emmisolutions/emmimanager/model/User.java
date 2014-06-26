@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User extends AbstractAuditingEntity implements Serializable {
 
     private Long id;
 
