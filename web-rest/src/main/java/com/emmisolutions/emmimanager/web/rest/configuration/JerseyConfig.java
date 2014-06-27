@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.configuration;
 
 import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.linking.DeclarativeLinkingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringComponentProvider;
@@ -20,5 +21,7 @@ public class JerseyConfig extends ResourceConfig {
         LoggingFilter loggingFilter = new LoggingFilter(logger, true);
         register(SpringComponentProvider.class);
         register(loggingFilter);
+        register(JacksonObjectMapper.class);
+        register(JacksonFeature.class);
     }
 }
