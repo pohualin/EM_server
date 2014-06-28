@@ -5,5 +5,11 @@
     <persistence-unit name="EmmiManagerPersistenceUnit" transaction-type="RESOURCE_LOCAL">
         <mapping-file>META-INF/orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
+            <property name="org.hibernate.envers.audit_table_suffix" value="_aud"/>
+            <property name="org.hibernate.envers.revision_field_name" value="rev"/>
+            <property name="org.hibernate.envers.revision_type_field_name" value="revtype"/>
+        </properties>
     </persistence-unit>
 </persistence>

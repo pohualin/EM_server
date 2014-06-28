@@ -10,16 +10,14 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
 
 /**
- * Aspect for logging execution of service and repository Spring components.
+ * Aspect for logging execution of jpa and spring-data repository calls.
  */
 @Aspect
-@Component("PersistenceLoggingAspect")
 public class LoggingAspect {
 
     @Resource

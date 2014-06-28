@@ -1,18 +1,16 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
+import com.emmisolutions.emmimanager.persistence.logging.LoggingAspect;
 import liquibase.integration.spring.SpringLiquibase;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.jadira.usertype.spi.jta.HibernateEntityManagerFactoryBean;
-import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jndi.JndiPropertySource;
@@ -22,30 +20,25 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+import static com.emmisolutions.emmimanager.config.Constants.*;
 import static org.hibernate.cfg.AvailableSettings.DIALECT;
 import static org.hibernate.cfg.Environment.SHOW_SQL;
 
 
 @Configuration
-@EnableTransactionManagement
+@EnableJpaAuditing
+@EnableAspectJAutoProxy
 @ComponentScan(basePackages = {
-        "com.emmisolutions.emmimanager.persistence.impl",
-        "com.emmisolutions.emmimanager.persistence.logging"
+        "com.emmisolutions.emmimanager.persistence.impl"
 })
 @EnableJpaRepositories(basePackages = "com.emmisolutions.emmimanager.persistence.repo")
 public class PersistenceConfiguration {
-
-    @Bean
-    public AnnotationAwareAspectJAutoProxyCreator getAnnotationAwareAspectJAutoProxyCreator() {
-        return new AnnotationAwareAspectJAutoProxyCreator();
-    }
 
     @Bean(name = "transactionManager")
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
@@ -95,7 +88,7 @@ public class PersistenceConfiguration {
     }
 
     @Bean
-    @Profile("jndi")
+    @Profile({SPRING_PROFILE_JNDI_PERSISTENCE, SPRING_PROFILE_PRODUCTION})
     public DataSource getDataSource() throws NamingException {
         JndiTemplate jndi = new JndiTemplate();
         return jndi.lookup("java:comp/env/jdbc/EmmiManagerDS", DataSource.class);
@@ -106,11 +99,14 @@ public class PersistenceConfiguration {
         // allow for JNDI properties to be resolved
         JndiPropertySource jndiPropertySource = new JndiPropertySource("jndiProperties");
         environment.getPropertySources().addLast(jndiPropertySource);
-        if (environment.acceptsProfiles("test")) {
+        if (environment.acceptsProfiles(SPRING_PROFILE_TEST, SPRING_PROFILE_DEVELOPMENT)) {
             // wire up the test profile properties for the H2 DB
             Properties properties = new Properties();
             properties.setProperty(DIALECT, "org.hibernate.dialect.H2Dialect");
             properties.setProperty(SHOW_SQL, "true");
+            properties.setProperty("org.hibernate.envers.audit_table_suffix", "_aud");
+            properties.setProperty("org.hibernate.envers.revision_field_name", "rev");
+            properties.setProperty("org.hibernate.envers.revision_type_field_name", "revtype");
             PropertiesPropertySource pps = new PropertiesPropertySource("testing", properties);
             environment.getPropertySources().addLast(pps);
         }
@@ -120,7 +116,7 @@ public class PersistenceConfiguration {
     }
 
     @Bean
-    @Profile("test")
+    @Profile({SPRING_PROFILE_TEST, SPRING_PROFILE_DEVELOPMENT})
     public DataSource getTestingDataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("org.h2.Driver");
@@ -129,5 +125,12 @@ public class PersistenceConfiguration {
         ds.setPassword("");
         return ds;
     }
+
+    @Bean(name = "PersistenceLayerAutoLogger")
+    @Profile({SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST})
+    public LoggingAspect getPersistenceLayerAutoLogger() {
+        return new LoggingAspect();
+    }
+
 
 }

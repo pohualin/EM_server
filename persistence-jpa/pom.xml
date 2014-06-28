@@ -13,51 +13,6 @@
     <name>persistence-jpa</name>
     <description>This is the JPA implementation of the persistence-api</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>3.2.1</version>
-                <configuration>
-                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-                    <referenceUrl>hibernate:ejb3:EmmiManagerPersistenceUnit</referenceUrl>
-                    <contexts>development</contexts>
-                    <changeLogFile>must be here but isn't used</changeLogFile>
-                    <diffChangeLogFile>target/full_db.xml</diffChangeLogFile>
-                    <driver>org.h2.Driver</driver>
-                    <url>jdbc:h2:mem:EmmiManager</url>
-                    <username>sa</username>
-                    <password/>
-                    <verbose>true</verbose>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.liquibase.ext</groupId>
-                        <artifactId>liquibase-hibernate4</artifactId>
-                        <version>${liquibase.hibernate.version}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.liquibase</groupId>
-                                <artifactId>liquibase-core</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.h2database</groupId>
-                        <artifactId>h2</artifactId>
-                        <version>${h2.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.emmisolutions.emmimanager</groupId>
-                        <artifactId>database</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -66,10 +21,6 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -82,10 +33,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -102,16 +49,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jadira.usertype</groupId>

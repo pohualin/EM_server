@@ -1,27 +1,36 @@
 package com.emmisolutions.emmimanager.web.rest.configuration;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This class is necessary to write Joda dates and times properly to JSON. It
- * uses Spring's Jackson2ObjectMapperFactoryBean as the creator of the ObjectMapper
- *
- * @see org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean
+ * This class is where we configure all of the Jackson JSON features.
  */
 @Provider
 public class JacksonObjectMapper implements ContextResolver<ObjectMapper> {
 
+    private ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public ObjectMapper getContext(Class<?> type) {
-        // use Spring's Wrapper class to create the mapper factory
-        Jackson2ObjectMapperFactoryBean bean = new Jackson2ObjectMapperFactoryBean();
-        bean.setIndentOutput(true);
-        bean.setSimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        bean.afterPropertiesSet();
-        return bean.getObject();
+
+        // set Jackson features
+        mapper.enable(SerializationFeature.INDENT_OUTPUT); // make it pretty
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); // allow random properties to come in
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO8601 Formatted Dates
+
+        // extend support to other types
+        mapper.registerModule(new JodaModule()); // Joda Dates, only support ISO8601
+        mapper.registerModule(new JaxbAnnotationModule()); // JAXB as well as Jackson Annotations
+        mapper.registerModule(new Hibernate4Module()); // Hibernate (lazy loaded entities ==> null)
+
+        return mapper;
     }
 }

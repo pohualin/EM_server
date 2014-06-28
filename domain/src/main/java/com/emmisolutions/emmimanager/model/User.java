@@ -1,7 +1,10 @@
 package com.emmisolutions.emmimanager.model;
 
+import org.hibernate.envers.Audited;
+
 import java.io.Serializable;
 
+@Audited
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private Long id;
