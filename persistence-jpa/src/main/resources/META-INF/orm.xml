@@ -38,7 +38,24 @@
             <id name="id">
                 <generated-value strategy="IDENTITY"/>
             </id>
+            <basic name="login">
+                <column name="login" length="50"/>
+            </basic>
             <version name="version"/>
+        </attributes>
+    </entity>
+
+    <entity class="com.emmisolutions.emmimanager.model.audit.UsernameRevisionEntity">
+        <table name="revision_info"/>
+        <attributes>
+            <id name="id">
+                <column name="revision"/>
+                <generated-value strategy="IDENTITY"/>
+            </id>
+            <basic name="timestamp"/>
+            <basic name="username">
+                <column name="username" length="50"/>
+            </basic>
         </attributes>
     </entity>
 

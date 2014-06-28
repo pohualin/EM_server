@@ -2,12 +2,18 @@ package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Audited
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private Long id;
+
+    @Size(min = 0, max = 50)
+    private String login;
+
+    private Integer version;
 
     public Long getId() {
         return id;
@@ -16,8 +22,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
-    private Integer version;
 
     public Integer getVersion() {
         return version;
@@ -42,10 +46,19 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return result;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", login='" + login + '\'' +
                 ", version=" + version +
                 '}';
     }

@@ -6,10 +6,10 @@
         <mapping-file>META-INF/orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
-            <property name="org.hibernate.envers.audit_table_suffix" value="_aud"/>
-            <property name="org.hibernate.envers.revision_field_name" value="rev"/>
-            <property name="org.hibernate.envers.revision_type_field_name" value="revtype"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="org.hibernate.envers.audit_table_suffix" value="_audit"/>
+            <property name="org.hibernate.envers.revision_field_name" value="revision"/>
+            <property name="org.hibernate.envers.revision_type_field_name" value="revision_type"/>
         </properties>
     </persistence-unit>
 </persistence>
