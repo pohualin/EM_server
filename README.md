@@ -1,4 +1,4 @@
-EmmiManager
+Emmi Manager Server
 =================================
 
 This is a multi-module project maven project that uses:
