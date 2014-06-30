@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.emmisolutions.emmimanager</groupId>
-    <artifactId>emmimanager</artifactId>
+    <artifactId>server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>database</module>
@@ -18,7 +18,7 @@
     </modules>
     <packaging>pom</packaging>
 
-    <name>emmimanager</name>
+    <name>server</name>
     <description>This is the root project for the Emmi Manager application.</description>
 
     <properties>
