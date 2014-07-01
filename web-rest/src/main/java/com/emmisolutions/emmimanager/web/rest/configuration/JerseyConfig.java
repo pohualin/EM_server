@@ -6,6 +6,7 @@ import org.glassfish.jersey.linking.DeclarativeLinkingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
+import org.springframework.context.ApplicationContext;
 
 import java.util.logging.Logger;
 
@@ -14,7 +15,7 @@ public class JerseyConfig extends ResourceConfig {
 
     Logger logger = Logger.getLogger("com.emmisolutions.emmimanager.web.rest.endpoint");
 
-    public JerseyConfig() {
+    public JerseyConfig(ApplicationContext applicationContext) {
         register(RequestContextFilter.class);
         packages("com.emmisolutions.emmimanager.web.rest.endpoint");
         register(DeclarativeLinkingFeature.class);
@@ -23,5 +24,6 @@ public class JerseyConfig extends ResourceConfig {
         register(loggingFilter);
         register(JacksonObjectMapper.class);
         register(JacksonFeature.class);
+
     }
 }
