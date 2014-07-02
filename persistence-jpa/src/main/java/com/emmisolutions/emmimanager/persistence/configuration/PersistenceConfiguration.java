@@ -3,12 +3,10 @@ package com.emmisolutions.emmimanager.persistence.configuration;
 import com.emmisolutions.emmimanager.persistence.logging.LoggingAspect;
 import liquibase.integration.spring.SpringLiquibase;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.jadira.usertype.spi.jta.HibernateEntityManagerFactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -37,7 +35,9 @@ import static org.hibernate.cfg.Environment.SHOW_SQL;
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.persistence.impl"
 })
-@EnableJpaRepositories(basePackages = "com.emmisolutions.emmimanager.persistence.repo")
+@EnableJpaRepositories(basePackages = {
+        "com.emmisolutions.emmimanager.persistence.repo"
+})
 public class PersistenceConfiguration {
 
     @Bean(name = "transactionManager")
@@ -54,10 +54,17 @@ public class PersistenceConfiguration {
 
     @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect jpaDialect) {
-        HibernateEntityManagerFactoryBean entityManagerFactoryBean = new HibernateEntityManagerFactoryBean();
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+        entityManagerFactoryBean.setPackagesToScan("com.emmisolutions.emmimanager.model");
+        entityManagerFactoryBean.setPersistenceUnitName("EmmiManagerPersistenceUnit");
         entityManagerFactoryBean.setJpaDialect(jpaDialect);
+        entityManagerFactoryBean.setJpaProperties(getCommonJpaProperties());
+        return entityManagerFactoryBean;
+    }
+
+    private Properties getCommonJpaProperties() {
         Properties properties = new Properties();
         properties.setProperty(DIALECT, dialect);
         properties.setProperty(SHOW_SQL, showSql.toString());
@@ -67,14 +74,13 @@ public class PersistenceConfiguration {
         properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
         properties.setProperty("org.hibernate.envers.revision_field_name", "revision");
         properties.setProperty("org.hibernate.envers.revision_type_field_name", "revision_type");
-        entityManagerFactoryBean.setJpaProperties(properties);
-        return entityManagerFactoryBean;
+        return properties;
     }
 
-    @Value("${hibernate.dialect}")
+    @Value("${hibernate.dialect:org.hibernate.dialect.H2Dialect}")
     String dialect;
 
-    @Value("${hibernate.show_sql}")
+    @Value("${hibernate.show_sql:true}")
     Boolean showSql;
 
     @Bean
@@ -97,25 +103,17 @@ public class PersistenceConfiguration {
         return jndi.lookup("java:comp/env/jdbc/EmmiManagerDS", DataSource.class);
     }
 
+    /**
+     * Add JNDI resolver for all properties.
+     *
+     * @param environment to add the source to
+     * @return the scanner
+     */
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyResolver(ConfigurableEnvironment environment) {
         // allow for JNDI properties to be resolved
         JndiPropertySource jndiPropertySource = new JndiPropertySource("jndiProperties");
         environment.getPropertySources().addLast(jndiPropertySource);
-        if (environment.acceptsProfiles(SPRING_PROFILE_TEST, SPRING_PROFILE_H2)) {
-            // wire up the properties for the H2 DB
-            Properties properties = new Properties();
-            properties.setProperty(DIALECT, "org.hibernate.dialect.H2Dialect");
-            properties.setProperty(SHOW_SQL, "true");
-            properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
-            properties.setProperty("jadira.usertype.javaZone", "UTC");
-            properties.setProperty("jadira.usertype.databaseZone", "UTC");
-            properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
-            properties.setProperty("org.hibernate.envers.revision_field_name", "revision");
-            properties.setProperty("org.hibernate.envers.revision_type_field_name", "revision_type");
-            PropertiesPropertySource pps = new PropertiesPropertySource("testing", properties);
-            environment.getPropertySources().addLast(pps);
-        }
         PropertySourcesPlaceholderConfigurer ret = new PropertySourcesPlaceholderConfigurer();
         ret.setPropertySources(environment.getPropertySources());
         return ret;

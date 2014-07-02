@@ -2,17 +2,23 @@ package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
 
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Audited
+@Entity
+@Table(name = "app_user")
 public class User extends AbstractAuditingEntity implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Size(min = 0, max = 50)
     private String login;
 
+    @Version
     private Integer version;
 
     public Long getId() {

@@ -4,26 +4,29 @@ import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.text.DateFormat;
 import java.util.Date;
 
 /**
  * Store the username/login who made each revision
  */
+@Entity
+@Table(name = "revision_info")
 @RevisionEntity(UsernameRevisionListener.class)
 public class UsernameRevisionEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @RevisionNumber
+    @Column(name = "revision")
     private long id;
 
     @RevisionTimestamp
     private long timestamp;
 
+    @Size(min = 0, max = 50)
     private String username;
 
     public String getUsername() {

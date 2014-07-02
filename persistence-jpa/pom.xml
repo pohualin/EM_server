@@ -102,12 +102,12 @@
                                     <classpath>
                                         <path location="${project.build.directory}/classes"/>
                                     </classpath>
-                                    <jpaconfiguration persistenceunit="EmmiManagerPersistenceUnit"/>
+                                    <annotationconfiguration configurationfile="src/test/resources/generate.ddl.xml"/>
                                     <hbm2ddl
                                             export="false"
                                             drop="false"
                                             create="true"
-                                            outputfilename="emmi_manager_full.ddl"
+                                            outputfilename="emmi_manager_db.ddl"
                                             format="true"/>
                                 </hibernatetool>
                             </target>
@@ -145,7 +145,7 @@
         								</goals>
         							</pluginExecutionFilter>
         							<action>
-        								<ignore></ignore>
+        								<ignore/>
         							</action>
         						</pluginExecution>
         					</pluginExecutions>

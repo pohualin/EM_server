@@ -13,7 +13,7 @@ import javax.persistence.PersistenceContext;
 @Repository
 public class UserPersistenceImpl implements UserPersistence {
 
-    @PersistenceContext(unitName = "EmmiManagerPersistenceUnit")
+    @PersistenceContext
     protected EntityManager entityManager;
 
     @Resource

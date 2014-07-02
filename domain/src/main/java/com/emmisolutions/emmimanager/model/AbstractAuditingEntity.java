@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
@@ -23,21 +24,25 @@ public abstract class AbstractAuditingEntity {
     @NotNull
     @CreatedBy
     @JsonIgnore
+    @Column(name = "created_by")
     private String createdBy;
 
     @NotNull
     @JsonIgnore
     @CreatedDate
+    @Column(name = "created_date")
     private DateTime createdDate = DateTime.now();
 
     @NotNull
     @JsonIgnore
     @LastModifiedBy
+    @Column(name = "last_modified_by")
     private String lastModifiedBy;
 
     @NotNull
     @JsonIgnore
     @LastModifiedDate
+    @Column(name = "last_modified_date")
     private DateTime lastModifiedDate = DateTime.now();
 
     public String getCreatedBy() {
