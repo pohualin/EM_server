@@ -58,6 +58,44 @@ public class ClientEndpoint {
                 "                { \"name\": \"Team 1\" }," +
                 "                { \"name\": \"Team 2\" }" +
                 "            ]" +
+                "        }," +
+                "        {" +
+                "            \"id\": 3," +
+                "            \"active\": 1," +
+                "            \"name\": \"Demo hospital client 3\"," +
+                "            \"type\": \"Hospital\"," +
+                "            \"region\": \"Midwest\"," +
+                "            \"tier\": \"Level 1\"," +
+                "            \"owner\": \"Evan\"," +
+                "            \"start\": \"2014-5-16\"," +
+                "            \"end\": \"2015-5-16\"," +
+                "            \"salesforce\": {" +
+                "                \"id\": 10," +
+                "                \"name\": \"Salesforce Account name\"" +
+                "            }," +
+                "            \"teams\": [" +
+                "                { \"name\": \"Team 1\" }," +
+                "                { \"name\": \"Team 2\" }" +
+                "            ]" +
+                "        }," +
+                "        {" +
+                "            \"id\": 4," +
+                "            \"active\": 1," +
+                "            \"name\": \"Demo provider client 4\"," +
+                "            \"type\": \"Provider\"," +
+                "            \"region\": \"Midwest\"," +
+                "            \"tier\": \"Level 2\"," +
+                "            \"owner\": \"Kevin\"," +
+                "            \"start\": \"2014-4-26\"," +
+                "            \"end\": \"2015-4-26\"," +
+                "            \"salesforce\": {" +
+                "                \"id\": 8," +
+                "                \"name\": \"Another Salesforce Account name\"" +
+                "            }," +
+                "            \"teams\": [" +
+                "                { \"name\": \"Team 1\" }," +
+                "                { \"name\": \"Team 2\" }" +
+                "            ]" +
                 "        }" +
                 "    ]";
     }

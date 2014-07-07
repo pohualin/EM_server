@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.configuration;
 
+import com.emmisolutions.emmimanager.web.rest.configuration.gzip.GZipServletFilter;
 import com.thetransactioncompany.cors.CORSFilter;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.core.Ordered;
@@ -14,6 +15,8 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_DEVELOPMENT;
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_H2;
@@ -36,6 +39,8 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         servletContext.addListener(new ContextLoaderListener(rootContext));
         servletContext.addListener(new RequestContextListener());
 
+        EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
+
         // setup CORS, the defaults are good in the filter
         FilterRegistration.Dynamic corsFilter =
                 servletContext.addFilter("crossOriginResourceSharingFilter", CORSFilter.class);
@@ -48,7 +53,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         corsFilter.setInitParameter("cors.supportsCredentials", "true");
         corsFilter.setInitParameter("cors.maxAge", "-1");
         corsFilter.setInitParameter("cors.tagRequests", "false");
-        corsFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), false, "/*");
+        corsFilter.addMappingForUrlPatterns(disps, false, "/*");
 
         /*
             make sure Jersey/ Spring doesn't try to load the spring container
@@ -56,10 +61,27 @@ public class ApplicationInitializer implements WebApplicationInitializer {
          */
         servletContext.setInitParameter("contextConfigLocation", "JERSEY_SPRING_IGNORE_DEFAULTS");
         ServletRegistration.Dynamic dispatcher =
-                servletContext.addServlet("webapi", new ServletContainer(new JerseyConfig(rootContext)));
+                servletContext.addServlet("webapi", new ServletContainer(new JerseyConfig()));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/webapi/*");
 
+        initGzipFilter(servletContext, disps);
+
+    }
+
+    private void initGzipFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
+
+        FilterRegistration.Dynamic compressingFilter = servletContext.addFilter("gzipFilter", new GZipServletFilter());
+        Map<String, String> parameters = new HashMap<>();
+        compressingFilter.setInitParameters(parameters);
+        compressingFilter.addMappingForUrlPatterns(disps, true, "*.css");
+        compressingFilter.addMappingForUrlPatterns(disps, true, "*.json");
+        compressingFilter.addMappingForUrlPatterns(disps, true, "*.html");
+        compressingFilter.addMappingForUrlPatterns(disps, true, "*.js");
+        compressingFilter.addMappingForUrlPatterns(disps, true, "/webapi/*");
+        compressingFilter.addMappingForUrlPatterns(disps, true, "/metrics/*");
+
+        compressingFilter.setAsyncSupported(true);
     }
 
 }
