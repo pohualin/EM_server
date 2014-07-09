@@ -10,33 +10,37 @@ import javax.annotation.Resource;
 import javax.ws.rs.*;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 /**
  * Sample JAX-RS endpoint. @Scope should work as expected across all scopes.. make sure to use @Component to
  * hook up spring resources as well as @Path to expose the REST endpoints
  */
-@Path("/user")
+@Path("/users")
 @Component
+@Produces({
+        APPLICATION_JSON,
+        APPLICATION_XML})
+@Consumes({
+        APPLICATION_JSON,
+        APPLICATION_XML})
 @Scope("prototype")
-public class UserEndpoint implements UserCrud {
+public class UsersEndpoint implements UserCrud {
 
     @Resource
     UserService userService;
 
     @GET
-    @Produces(APPLICATION_JSON)
     public User getUser() {
         return userService.save(new User());
     }
 
     @POST
-    @Consumes(APPLICATION_JSON)
     public void updateUser(User user) {
         // no-op
     }
 
     @PUT
-    @Produces(APPLICATION_JSON)
     public User save(User user) {
         return user;
     }

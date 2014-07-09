@@ -38,6 +38,7 @@
         <joda-time.version>2.3</joda-time.version>
         <jadira.version>3.2.0.GA</jadira.version>
         <cors.filter.version>2.1</cors.filter.version>
+        <commons.lang.version>3.3.2</commons.lang.version>
     </properties>
 
     <build>
@@ -214,6 +215,11 @@
                 <groupId>com.thetransactioncompany</groupId>
                 <artifactId>cors-filter</artifactId>
                 <version>${cors.filter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
