@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.impl;
 
-import com.emmisolutions.emmimanager.api.ClientApi;
+import com.emmisolutions.emmimanager.api.ClientApi1;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.service.ClientService;
 import org.springframework.data.domain.Page;
@@ -13,7 +13,7 @@ import javax.annotation.Resource;
  * Implementation of ClientApi
  */
 @Component
-public class ClientApiImpl implements ClientApi {
+public class ClientApiImpl implements ClientApi1 {
 
     @Resource
     ClientService clientService;

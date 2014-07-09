@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.jax_rs;
 
-import com.emmisolutions.emmimanager.api.ClientApi;
+import com.emmisolutions.emmimanager.api.ClientApi1;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.web.rest.jax_rs.util.EndpointHelper;
 import com.emmisolutions.emmimanager.web.rest.model.ClientResource;
@@ -33,7 +33,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 public class ClientsEndpoint {
 
     @Resource
-    ClientApi clientApi;
+    ClientApi1 clientApi;
 
     @Resource
     EndpointHelper endpointHelper;
