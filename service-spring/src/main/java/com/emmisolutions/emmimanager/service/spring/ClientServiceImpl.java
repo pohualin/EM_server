@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.SalesForceAccount;
+import com.emmisolutions.emmimanager.model.Salesforce;
 import com.emmisolutions.emmimanager.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,7 +28,7 @@ public class ClientServiceImpl implements ClientService {
             client.setType("Hospital " + i);
             client.setRegion("Region " + i);
             client.setOwner("Owner " + i);
-            SalesForceAccount salesForceAccount = new SalesForceAccount();
+            Salesforce salesForceAccount = new Salesforce();
             salesForceAccount.setId((long) i);
             salesForceAccount.setName("SalesForce account " + i);
             client.setSalesForceAccount(salesForceAccount);

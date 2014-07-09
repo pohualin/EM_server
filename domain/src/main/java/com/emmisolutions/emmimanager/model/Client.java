@@ -21,7 +21,7 @@ public class Client {
     private String type;
     private String region;
     private String owner;
-    private SalesForceAccount salesForceAccount;
+    private Salesforce salesForceAccount;
 
     @XmlTransient
     private Set<Team> teams = new HashSet<>();
@@ -74,11 +74,11 @@ public class Client {
         this.region = region;
     }
 
-    public SalesForceAccount getSalesForceAccount() {
+    public Salesforce getSalesForceAccount() {
         return salesForceAccount;
     }
 
-    public void setSalesForceAccount(SalesForceAccount salesForceAccount) {
+    public void setSalesForceAccount(Salesforce salesForceAccount) {
         this.salesForceAccount = salesForceAccount;
     }
 
