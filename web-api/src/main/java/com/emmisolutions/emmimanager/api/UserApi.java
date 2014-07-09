@@ -3,16 +3,18 @@ package com.emmisolutions.emmimanager.api;
 import com.emmisolutions.emmimanager.model.User;
 
 /**
- * The user CRUD interface
+ * User API accessible from the web.
  */
-public interface UserCrud {
+public interface UserApi {
 
-    User getUser();
+    User getUser(User user);
 
-    void updateUser(User user);
+    User create(User user);
 
     User save(User user);
 
     void delete(User user);
+
+    User loggedIn();
 
 }

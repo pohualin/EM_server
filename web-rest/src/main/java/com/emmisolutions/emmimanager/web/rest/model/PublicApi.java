@@ -1,9 +1,11 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.ApiEndpoint;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.UsersEndpoint;
+
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,8 +18,29 @@ public class PublicApi {
     @XmlElement(name = "link")
     private List<Link> links;
 
-    public PublicApi() {
+    @XmlTransient
+    private String basePath;
 
+    public PublicApi() {
+    }
+
+    public PublicApi(String basePath) {
+        this.basePath = basePath;
+        links = new ArrayList<>();
+        links.add(selfLink());
+        links.add(getUserLink());
+    }
+
+    private Link selfLink() {
+        UriBuilder uriBuilder = UriBuilder.fromPath(basePath)
+                .path(ApiEndpoint.class, "get");
+        return new Link(javax.ws.rs.core.Link.fromUriBuilder(uriBuilder).rel("self").build());
+    }
+
+    private Link getUserLink() {
+        UriBuilder uriBuilder = UriBuilder.fromPath(basePath)
+                .path(UsersEndpoint.class, "authenticated");
+        return new Link(javax.ws.rs.core.Link.fromUriBuilder(uriBuilder).rel("authenticated").build());
     }
 
 }

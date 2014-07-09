@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.endpoint.util;
+package com.emmisolutions.emmimanager.web.rest.jax_rs.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;

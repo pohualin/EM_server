@@ -15,5 +15,11 @@ public interface UserService {
      */
     User save(User user);
 
+    /**
+     * Fetch the currently logged in user.
+     *
+     * @return the User
+     */
+    User loggedIn();
 
 }

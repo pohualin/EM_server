@@ -24,4 +24,12 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         return userPersistence.saveOrUpdate(user);
     }
+
+    @Override
+    public User loggedIn() {
+        User user = new User();
+        user.setId(-1L);
+        user.setLogin("fake_logged_in_guy");
+        return user;
+    }
 }

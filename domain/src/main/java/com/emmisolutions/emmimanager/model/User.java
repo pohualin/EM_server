@@ -4,11 +4,13 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 @Audited
 @Entity
 @Table(name = "app_user")
+@XmlRootElement(name = "user")
 public class User extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -67,5 +69,17 @@ public class User extends AbstractAuditingEntity implements Serializable {
                 ", login='" + login + '\'' +
                 ", version=" + version +
                 '}';
+    }
+
+    /**
+     * Used by JAX-RS to bind a client to a string value
+     *
+     * @param value
+     * @return
+     */
+    public static User valueOf(String value) {
+        User user = new User();
+        user.setId(Long.valueOf(value));
+        return user;
     }
 }

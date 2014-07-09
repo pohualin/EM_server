@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.web.rest.endpoint.ClientsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.ClientsEndpoint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

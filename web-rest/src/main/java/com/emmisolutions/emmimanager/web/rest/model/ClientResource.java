@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.web.rest.endpoint.ClientsEndpoint;
-import com.emmisolutions.emmimanager.web.rest.endpoint.TeamsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.ClientsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.TeamsEndpoint;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.*;
@@ -23,10 +23,6 @@ public class ClientResource {
 
     @XmlTransient
     private String basePath;
-
-    public Long getId() {
-        return 0l;
-    }
 
     // Required for serialization outbound
     public ClientResource() {

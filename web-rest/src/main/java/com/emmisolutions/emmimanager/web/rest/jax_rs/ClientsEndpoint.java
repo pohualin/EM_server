@@ -1,8 +1,8 @@
-package com.emmisolutions.emmimanager.web.rest.endpoint;
+package com.emmisolutions.emmimanager.web.rest.jax_rs;
 
+import com.emmisolutions.emmimanager.api.ClientApi;
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.web.rest.endpoint.util.EndpointHelper;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.util.EndpointHelper;
 import com.emmisolutions.emmimanager.web.rest.model.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.model.ClientsResource;
 import org.springframework.context.annotation.Scope;
@@ -33,7 +33,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 public class ClientsEndpoint {
 
     @Resource
-    ClientService clientService;
+    ClientApi clientApi;
 
     @Resource
     EndpointHelper endpointHelper;
@@ -43,7 +43,7 @@ public class ClientsEndpoint {
     @GET
     @Path("clients/{id}")
     public Response get(@PathParam("id") Client client) {
-        client = clientService.reload(client);
+        client = clientApi.get(client);
         if (client == null) {
             return Response.noContent().build();
         } else {
@@ -60,7 +60,10 @@ public class ClientsEndpoint {
                          @QueryParam("sort") @DefaultValue("id:asc;") String sort,
                          @QueryParam("name") @DefaultValue("") String nameFilter,
                          @QueryParam("status") @DefaultValue("") String statusFilter) {
-        Page<Client> clients = clientService.list(endpointHelper.createPageable(page, max, sort));
+        Page<Client> clients = clientApi.list(
+                endpointHelper.createPageable(page, max, sort),
+                nameFilter,
+                statusFilter);
         if (clients.hasContent()) {
             ClientsResource cr = new ClientsResource(clients, basePath);
             return Response.ok(cr).build();

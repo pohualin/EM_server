@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.service.configuration",
-        "com.emmisolutions.emmimanager.web.rest.endpoint"
+        "com.emmisolutions.emmimanager.web.rest.impl",
+        "com.emmisolutions.emmimanager.web.rest.jax_rs"
 })
 public class RestConfiguration {
 }

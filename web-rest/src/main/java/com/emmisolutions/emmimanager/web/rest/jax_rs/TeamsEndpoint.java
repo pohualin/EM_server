@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.endpoint;
+package com.emmisolutions.emmimanager.web.rest.jax_rs;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;

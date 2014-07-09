@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,6 +11,9 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Base abstract class for entities which will hold definitions for id, version, created, last modified by and created,
@@ -19,28 +21,29 @@ import javax.validation.constraints.NotNull;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractAuditingEntity {
 
     @NotNull
     @CreatedBy
-    @JsonIgnore
+    @XmlTransient
     @Column(name = "created_by")
     private String createdBy;
 
     @NotNull
-    @JsonIgnore
+    @XmlTransient
     @CreatedDate
     @Column(name = "created_date")
     private DateTime createdDate = DateTime.now();
 
     @NotNull
-    @JsonIgnore
+    @XmlTransient
     @LastModifiedBy
     @Column(name = "last_modified_by")
     private String lastModifiedBy;
 
     @NotNull
-    @JsonIgnore
+    @XmlTransient
     @LastModifiedDate
     @Column(name = "last_modified_date")
     private DateTime lastModifiedDate = DateTime.now();

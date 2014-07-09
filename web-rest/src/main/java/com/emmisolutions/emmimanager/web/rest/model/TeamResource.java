@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
 import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.web.rest.endpoint.ClientsEndpoint;
-import com.emmisolutions.emmimanager.web.rest.endpoint.TeamsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.ClientsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.jax_rs.TeamsEndpoint;
 
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
