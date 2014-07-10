@@ -27,11 +27,15 @@ public class UserResource {
     public UserResource() {
     }
 
+    // TODO: Probably want to wrap a UserDetails for the authenticated call instead of User
     public UserResource(User user, String basePath) {
         this.entity = user;
         this.basePath = basePath;
         this.links = new ArrayList<>();
         this.links.add(linkToSelf());
+
+        // TODO: deal with permissions here maybe
+        this.links.add(ClientsResource.searchLink(basePath));
     }
 
     private Link linkToSelf() {

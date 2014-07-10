@@ -69,8 +69,12 @@ public class ClientsResource {
         links.addAll(allPages(clientPage));
 
         // self link has RFC6570 search/filter replacements
-        links.add(new Link("self", UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "list"), "{?name,status}"));
+        links.add(searchLink(basePath));
 
+    }
+
+    public static Link searchLink(String basePath) {
+        return new Link("self", UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "list"), "{?name,status}");
     }
 
     private List<Link> allPages(Page<Client> page) {
