@@ -29,6 +29,8 @@ public class Link {
     private String rel;
     @XmlAttribute(name = "templated")
     private Boolean templated;
+    @XmlAttribute(name = "order")
+    private Integer order;
 
     public Link() {
     }
@@ -42,8 +44,9 @@ public class Link {
      * @param uriBuilder   from which to construct the base of the link
      * @param rfc6570Parts the stuff which is appended to the link as is
      */
-    public Link(String rel, UriBuilder uriBuilder, String... rfc6570Parts) {
+    public Link(String rel, UriBuilder uriBuilder, Integer order, String... rfc6570Parts) {
         this.rel = rel;
+        this.order = order;
         StringBuilder sb = new StringBuilder(uriBuilder.toTemplate());
         for (String s : rfc6570Parts) {
             if (StringUtils.isNotBlank(s)) {
@@ -55,7 +58,11 @@ public class Link {
     }
 
     public Link(javax.ws.rs.core.Link link) {
-        this(link.getRel(), link.getUriBuilder(), "");
+        this(link, null);
+    }
+
+    public Link(javax.ws.rs.core.Link link, Integer order) {
+        this(link.getRel(), link.getUriBuilder(), order, "");
     }
 
 }

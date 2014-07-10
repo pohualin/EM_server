@@ -20,22 +20,35 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Page<Client> list(Pageable pageable) {
         List<Client> clients = new ArrayList<>();
-        for (int i = pageable.getOffset(); i < (pageable.getOffset() + pageable.getPageSize()); i++) {
-            Client client = new Client();
-            client.setId((long) i);
-            client.setActive(true);
-            client.setName("Demo hospital client " + i);
-            client.setType("Hospital " + i);
-            client.setRegion("Region " + i);
-            client.setOwner("Owner " + i);
-            Salesforce salesForceAccount = new Salesforce();
-            salesForceAccount.setId((long) i);
-            salesForceAccount.setName("SalesForce account " + i);
-            client.setSalesForceAccount(salesForceAccount);
-            client.setVersion(i);
-            clients.add(client);
+        int hardCeiling = 202;
+        int max = (pageable.getOffset() + pageable.getPageSize());
+        if (max > hardCeiling) {
+            max = hardCeiling;
         }
-        return new PageImpl<>(clients, pageable, 200);
+        for (int i = pageable.getOffset(); i < max; i++) {
+            clients.add(makeClient(i + 1));
+        }
+        if (pageable.getOffset() >= max) {
+            clients.add(makeClient(max));
+        }
+        return new PageImpl<>(clients, pageable, hardCeiling);
+    }
+
+    private Client makeClient(int i) {
+        Client client = new Client();
+        client.setId((long) i);
+        client.setActive(true);
+        client.setName("Demo hospital client " + i);
+        client.setType("Hospital " + i);
+        client.setRegion("Region " + i);
+        client.setOwner("Owner " + i);
+        Salesforce salesForceAccount = new Salesforce();
+        salesForceAccount.setId((long) i);
+        salesForceAccount.setName("SalesForce account " + i);
+        client.setSalesForceAccount(salesForceAccount);
+        client.setVersion(i);
+
+        return client;
     }
 
     @Override
