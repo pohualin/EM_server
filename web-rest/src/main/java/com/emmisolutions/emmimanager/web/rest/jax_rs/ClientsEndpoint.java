@@ -72,6 +72,20 @@ public class ClientsEndpoint {
         }
     }
 
+    @POST
+    @Path("clients")
+    public Response create(Client client){
+        client = clientApi.create(client);
+        if (client == null) {
+            return Response.noContent().build();
+        } else {
+            return Response
+                    .status(Response.Status.CREATED)
+                    .entity(new ClientResource(client, basePath))
+                    .build();
+        }
+    }
+
     @Context
     public void setUriInfo(UriInfo uriInfo) {
         basePath = uriInfo.getBaseUri().getPath();

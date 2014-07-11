@@ -36,6 +36,8 @@ public class UserResource {
 
         // TODO: deal with permissions here maybe
         this.links.add(ClientsResource.searchLink(basePath));
+
+        this.links.add(ClientsResource.createLink(basePath));
     }
 
     private Link linkToSelf() {
