@@ -12,4 +12,6 @@ public interface ClientApi {
     Page<Client> list(Pageable pageable, String nameFilter, String statusFilter);
 
     Client get(Client client);
+
+    Client create(Client client);
 }
