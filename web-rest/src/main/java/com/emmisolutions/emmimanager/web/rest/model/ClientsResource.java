@@ -32,6 +32,9 @@ public class ClientsResource {
     @XmlElement(name = "load-link")
     private Link loadLink;
 
+    @XmlElement(name = "create-link")
+    private Link newLink;
+
     private long totalNumber;
 
     private int currentPage;
@@ -86,10 +89,17 @@ public class ClientsResource {
         this.loadLink = searchLink(basePath);
 
         this.selfLink = linkToList("self", clientPage.getNumber(), clientPage.getSize(), clientPage.getSort(), null);
+
+        this.newLink = createLink(basePath);
+    }
+
+    public static Link createLink(String basePath) {
+        return new Link(javax.ws.rs.core.Link.fromUriBuilder(UriBuilder.fromPath(basePath)
+                .path(ClientsEndpoint.class, "create")).rel("createClient").build());
     }
 
     public static Link searchLink(String basePath) {
-        return new Link("clients", UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "list"), null, "{?name,status,max,sort}");
+        return new Link("listClients", UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "list"), null, "{?name,status,max,sort}");
     }
 
     private List<Link> allPages(Page<Client> page) {

@@ -27,4 +27,11 @@ public class ClientApiImpl implements ClientApi {
     public Client get(Client client) {
         return clientService.reload(client);
     }
+
+    @Override
+    public Client create(Client client) {
+        client.setId(System.currentTimeMillis());
+        client.setVersion(1);
+        return client;
+    }
 }
