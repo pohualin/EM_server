@@ -89,7 +89,7 @@ public class ClientsResource {
     }
 
     public static Link searchLink(String basePath) {
-        return new Link("load", UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "list"), null, "{?name,status,max,sort}");
+        return new Link("clients", UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "list"), null, "{?name,status,max,sort}");
     }
 
     private List<Link> allPages(Page<Client> page) {

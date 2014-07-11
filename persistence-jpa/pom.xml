@@ -15,7 +15,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>com.emmisolutions.emmimanager</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.emmisolutions.emmimanager</groupId>
+            <artifactId>database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+        <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
         </dependency>
         <dependency>
@@ -37,16 +47,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.emmisolutions.emmimanager</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.emmisolutions.emmimanager</groupId>
-            <artifactId>database</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -102,7 +102,7 @@
                                     <classpath>
                                         <path location="${project.build.directory}/classes"/>
                                     </classpath>
-                                    <annotationconfiguration configurationfile="src/test/resources/generate.ddl.xml"/>
+                                    <jpaconfiguration persistenceunit="EmmiManagerPersistenceUnit"/>
                                     <hbm2ddl
                                             export="false"
                                             drop="false"

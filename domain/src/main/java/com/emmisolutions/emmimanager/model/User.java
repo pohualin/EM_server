@@ -1,10 +1,12 @@
 package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 @Audited
@@ -18,10 +20,28 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Long id;
 
     @Size(min = 0, max = 50)
+    @Column(length = 50)
     private String login;
 
     @Version
     private Integer version;
+
+    @Transient
+    @XmlTransient
+    private String password;
+
+    @Size(min = 0, max = 50)
+    @Column(name = "first_name", length = 50)
+    private String firstName;
+
+    @Size(min = 0, max = 50)
+    @Column(name = "last_name", length = 50)
+    private String lastName;
+
+    @Email
+    @Size(min = 0, max = 100)
+    @Column(length = 100)
+    private String email;
 
     public Long getId() {
         return id;
@@ -39,21 +59,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.version = version;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return !(id != null ? !id.equals(user.id) : user.id != null) && !(version != null ? !version.equals(user.version) : user.version != null);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (version != null ? version.hashCode() : 0);
-        return result;
-    }
-
     public String getLogin() {
         return login;
     }
@@ -61,6 +66,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     public void setLogin(String login) {
         this.login = login;
     }
+
 
     @Override
     public String toString() {
@@ -71,15 +77,60 @@ public class User extends AbstractAuditingEntity implements Serializable {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return !(id != null ? !id.equals(user.id) : user.id != null);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
     /**
      * Used by JAX-RS to bind a client to a string value
      *
-     * @param value
-     * @return
+     * @param value the id of the user
+     * @return the user shell
      */
     public static User valueOf(String value) {
         User user = new User();
         user.setId(Long.valueOf(value));
         return user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -61,4 +61,18 @@
 
     </changeSet>
 
+    <changeSet id="new_user_attributes" author="Matt">
+        <addColumn tableName="app_user_audit">
+            <column name="email" type="VARCHAR(100)"/>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+        </addColumn>
+
+        <addColumn tableName="app_user">
+            <column name="email" type="VARCHAR(100)"/>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog> 

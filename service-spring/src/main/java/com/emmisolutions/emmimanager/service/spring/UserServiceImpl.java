@@ -28,8 +28,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User loggedIn() {
         User user = new User();
-        user.setId(-1L);
+        user.setId(System.currentTimeMillis());
         user.setLogin("fake_logged_in_guy");
+        user.setEmail("fake@fakiefake.com");
+        user.setFirstName("Firstname");
+        user.setLastName("Lastname");
+        user.setVersion(1);
         return user;
     }
 }

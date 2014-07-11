@@ -45,9 +45,13 @@ public class Link {
      * @param rfc6570Parts the stuff which is appended to the link as is
      */
     public Link(String rel, UriBuilder uriBuilder, Integer order, String... rfc6570Parts) {
+        this(rel, order, uriBuilder.toTemplate(), rfc6570Parts);
+    }
+
+    public Link(String rel, Integer order, String link, String... rfc6570Parts) {
         this.rel = rel;
         this.order = order;
-        StringBuilder sb = new StringBuilder(uriBuilder.toTemplate());
+        StringBuilder sb = new StringBuilder(link);
         for (String s : rfc6570Parts) {
             if (StringUtils.isNotBlank(s)) {
                 templated = true;
