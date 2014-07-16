@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.web.rest.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -35,19 +34,6 @@ public class Link {
     public Link() {
     }
 
-    /**
-     * Build an RFC6570 style of link.
-     * <p/>
-     * e.g. /whatever/me{/id*}{?name,value}
-     *
-     * @param rel          the name of the link attribute, e.g. self
-     * @param uriBuilder   from which to construct the base of the link
-     * @param rfc6570Parts the stuff which is appended to the link as is
-     */
-    public Link(String rel, UriBuilder uriBuilder, Integer order, String... rfc6570Parts) {
-        this(rel, order, uriBuilder.toTemplate(), rfc6570Parts);
-    }
-
     public Link(String rel, Integer order, String link, String... rfc6570Parts) {
         this.rel = rel;
         this.order = order;
@@ -61,12 +47,12 @@ public class Link {
         this.href = sb.toString();
     }
 
-    public Link(javax.ws.rs.core.Link link) {
+    public Link(org.springframework.hateoas.Link link) {
         this(link, null);
     }
 
-    public Link(javax.ws.rs.core.Link link, Integer order) {
-        this(link.getRel(), link.getUriBuilder(), order, "");
+    public Link(org.springframework.hateoas.Link link, Integer order) {
+        this(link.getRel(), order, link.getHref(), "");
     }
 
 }

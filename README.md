@@ -7,7 +7,7 @@ This is a multi-module project maven project that uses:
 * Spring - as the IOC container
 * Spring Data - for easy data repository persistence
 * JPA - for standard java object persistence
-* Jersey - for the REST server
+* Spring Web - for the REST server
 
 JavaVM
 =================================

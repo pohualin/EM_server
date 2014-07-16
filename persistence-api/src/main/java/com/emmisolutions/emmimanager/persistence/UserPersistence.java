@@ -15,4 +15,8 @@ public interface UserPersistence {
      */
     User saveOrUpdate(User user);
 
+    User reload(String login);
+
+    User fetchUserWillFullPermissions(String login);
+
 }

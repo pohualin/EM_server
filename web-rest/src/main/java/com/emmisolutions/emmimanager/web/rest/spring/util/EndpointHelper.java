@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.jax_rs.util;
+package com.emmisolutions.emmimanager.web.rest.spring.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
@@ -18,28 +18,12 @@ public class EndpointHelper {
     /**
      * Creates a Pageable.
      *
-     * @param pageString     the page number requested
-     * @param pageSizeString the number of elements on the page
+     * @param page     the page number requested
+     * @param pageSize the number of elements on the page
      * @param sortString     a string in the form of xxx:dir;yyy:dir; where xxx and yyy are property names and dir is one of asc or desc
      * @return a Pageable
      */
-    public Pageable createPageable(String pageString, String pageSizeString, String sortString) {
-        pageString = StringUtils.stripToNull(pageString);
-        pageSizeString = StringUtils.stripToNull(pageSizeString);
-        sortString = StringUtils.stripToNull(sortString);
-        int page;
-        int pageSize;
-        try {
-            page = Integer.parseInt(pageString);
-        } catch (NumberFormatException nfe) {
-            page = 0;
-        }
-        try {
-            pageSize = Integer.parseInt(pageSizeString);
-        } catch (NumberFormatException nfe) {
-            pageSize = 25;
-        }
-
+    public Pageable createPageable(Integer page, Integer pageSize, String sortString) {
         return new PageRequest(page, pageSize, getSort(sortString));
     }
 

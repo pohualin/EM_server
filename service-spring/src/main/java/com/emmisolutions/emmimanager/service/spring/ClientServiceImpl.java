@@ -62,4 +62,11 @@ public class ClientServiceImpl implements ClientService {
         ret.setOwner("Owner");
         return ret;
     }
+
+    @Override
+    public Client create(Client client) {
+        client.setId(System.currentTimeMillis());
+        client.setVersion(1);
+        return reload(client);
+    }
 }

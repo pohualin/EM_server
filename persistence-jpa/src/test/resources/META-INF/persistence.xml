@@ -8,6 +8,8 @@
 
         <class>com.emmisolutions.emmimanager.model.audit.UsernameRevisionEntity</class>
         <class>com.emmisolutions.emmimanager.model.User</class>
+        <class>com.emmisolutions.emmimanager.model.Permission</class>
+        <class>com.emmisolutions.emmimanager.model.Role</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>

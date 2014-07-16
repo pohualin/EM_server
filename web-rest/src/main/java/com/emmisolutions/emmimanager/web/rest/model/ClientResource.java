@@ -1,13 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.web.rest.jax_rs.ClientsEndpoint;
-import com.emmisolutions.emmimanager.web.rest.jax_rs.TeamsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.spring.ClientsResource;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * HATEOAS Client wrapper.
@@ -19,33 +20,26 @@ public class ClientResource {
     private Client entity;
 
     @XmlElement(name = "link")
+    @XmlElementWrapper(name = "links")
     private List<Link> links;
-
-    @XmlTransient
-    private String basePath;
 
     // Required for serialization outbound
     public ClientResource() {
     }
 
-    public ClientResource(Client client, String basePath) {
+    public ClientResource(Client client) {
         this.entity = client;
-        this.basePath = basePath;
         this.links = new ArrayList<>();
         this.links.add(linkToSelf());
-        this.links.add(linkToTeams());
+//        this.links.add(linkToTeams());
     }
 
     private Link linkToSelf() {
-        return new Link(javax.ws.rs.core.Link.fromUriBuilder(UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "get"))
-                .rel("self")
-                .build(entity.getId()));
+        return new Link(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
     }
 
-    private Link linkToTeams() {
-        return new Link(javax.ws.rs.core.Link.fromUriBuilder(UriBuilder.fromPath(basePath).path(TeamsEndpoint.class, "listByClient"))
-                .rel("teams")
-                .build(entity.getId()));
-    }
+//    private Link linkToTeams() {
+//        return new Link(linkTo(methodOn(TeamsResource.class).listByClient(entity.getId(), null, null)).withRel("teams"));
+//    }
 
 }

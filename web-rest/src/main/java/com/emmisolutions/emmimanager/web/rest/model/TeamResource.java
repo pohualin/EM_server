@@ -1,15 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
 import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.web.rest.jax_rs.ClientsEndpoint;
-import com.emmisolutions.emmimanager.web.rest.jax_rs.TeamsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.spring.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.spring.TeamsResource;
 
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * HATEOAS Team Wrapper.
@@ -22,7 +22,6 @@ public class TeamResource {
 
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
-    @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
     private List<Link> links;
 
     @XmlTransient
@@ -31,24 +30,19 @@ public class TeamResource {
     public TeamResource() {
     }
 
-    public TeamResource(Team team, String basePath) {
+    public TeamResource(Team team) {
         this.entity = team;
-        this.basePath = basePath;
         this.links = new ArrayList<>();
         this.links.add(linkToSelf());
         this.links.add(linkToClient());
     }
 
     private Link linkToSelf() {
-        return Link.fromUriBuilder(UriBuilder.fromPath(basePath).path(TeamsEndpoint.class, "get"))
-                .rel("self")
-                .build(entity.getId());
+        return new Link(linkTo(methodOn(TeamsResource.class).get(entity.getId())).withSelfRel());
     }
 
     private Link linkToClient() {
-        return Link.fromUriBuilder(UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "get"))
-                .rel("client")
-                .build(entity.getClient().getId());
+        return new Link(linkTo(methodOn(ClientsResource.class).get(entity.getClient().getId())).withRel("client"));
     }
 
 }

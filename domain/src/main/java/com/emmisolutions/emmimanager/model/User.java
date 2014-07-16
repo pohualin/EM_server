@@ -4,29 +4,51 @@ import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.Set;
 
 @Audited
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_user",
+        uniqueConstraints =
+        @UniqueConstraint(columnNames = {"login"}))
 @XmlRootElement(name = "user")
 public class User extends AbstractAuditingEntity implements Serializable {
+
+    public User(){
+
+    }
+
+    public User(String login, String password){
+        this.login = login;
+        this.password = password;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @Size(min = 0, max = 50)
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String login;
+
+    @ManyToMany
+    @JoinTable(
+            name = "app_user_role",
+            joinColumns = {@JoinColumn(name = "app_user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "roles_id", referencedColumnName = "id")})
+    private Set<Role> roles;
 
     @Version
     private Integer version;
 
-    @Transient
+    @Column(length = 100)
+    @Size(min = 0, max = 100)
     @XmlTransient
     private String password;
 
@@ -66,7 +88,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     public void setLogin(String login) {
         this.login = login;
     }
-
 
     @Override
     public String toString() {
@@ -132,5 +153,13 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

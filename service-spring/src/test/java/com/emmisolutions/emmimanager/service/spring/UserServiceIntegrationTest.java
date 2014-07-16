@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.service.UserService;
 import org.junit.Test;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -19,9 +20,13 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserService userService;
 
-    @Test
-    public void testUserService() {
-        User user = new User();
+    @Test(expected = ConstraintViolationException.class)
+    public void testUserCreateWithoutLogin() {
+        userService.save(new User());
+    }
+
+    public void testUserCreate() {
+        User user = new User("login", "pw");
         user = userService.save(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));

@@ -1,22 +1,24 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.web.rest.jax_rs.ClientsEndpoint;
+import com.emmisolutions.emmimanager.web.rest.spring.ClientsResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * HATEOAS wrapper for paginated Client list.
  */
 @XmlRootElement(name = "pages")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientsResource {
+public class ClientPageResource {
 
     @XmlElement(name = "client")
     @XmlElementWrapper(name = "page")
@@ -43,16 +45,11 @@ public class ClientsResource {
 
     private int pageSize;
 
-    @XmlTransient
-    private String basePath;
-
     // Required for serialization outbound
-    public ClientsResource() {
+    public ClientPageResource() {
     }
 
-    public ClientsResource(Page<Client> clientPage,
-                           String basePath) {
-        this.basePath = basePath;
+    public ClientPageResource(Page<Client> clientPage) {
         this.totalNumber = clientPage.getTotalElements();
         this.currentPage = clientPage.getNumber();
         this.totalPages = clientPage.getTotalPages();
@@ -65,7 +62,7 @@ public class ClientsResource {
         this.content = new ArrayList<>();
         if (entities != null) {
             for (Client entity : entities) {
-                content.add(new ClientResource(entity, basePath));
+                content.add(new ClientResource(entity));
             }
         }
     }
@@ -86,20 +83,19 @@ public class ClientsResource {
         }
 
         // load link has RFC6570 search/filter replacements
-        this.loadLink = searchLink(basePath);
+        this.loadLink = searchLink();
 
         this.selfLink = linkToList("self", clientPage.getNumber(), clientPage.getSize(), clientPage.getSort(), null);
 
-        this.newLink = createLink(basePath);
+        this.newLink = createLink();
     }
 
-    public static Link createLink(String basePath) {
-        return new Link(javax.ws.rs.core.Link.fromUriBuilder(UriBuilder.fromPath(basePath)
-                .path(ClientsEndpoint.class, "create")).rel("createClient").build());
+    public static Link createLink() {
+        return new Link(linkTo(methodOn(ClientsResource.class).create(new Client())).withRel("createClient"));
     }
 
-    public static Link searchLink(String basePath) {
-        return new Link("listClients", UriBuilder.fromPath(basePath).path(ClientsEndpoint.class, "list"), null, "{?name,status,max,sort}");
+    public static Link searchLink() {
+        return new Link("listClients", null, linkTo(methodOn(ClientsResource.class).list(null, null, null, null, null)).withRel("list").getHref(), "{?name,status,max,sort}");
     }
 
     private List<Link> allPages(Page<Client> page) {
@@ -123,21 +119,16 @@ public class ClientsResource {
     }
 
     private Link linkToList(String rel, Integer page, Integer max, Sort sort, Integer linkOrder) {
-        UriBuilder uriBuilder = UriBuilder.fromPath(basePath)
-                .path(ClientsEndpoint.class, "list")
-                .queryParam("page", page)
-                .queryParam("max", max);
+        StringBuilder sb = new StringBuilder();
         if (sort != null) {
-            StringBuilder sb = new StringBuilder();
             for (Sort.Order sortOrder : sort) {
                 sb.append(sortOrder.getProperty())
                         .append(":")
                         .append(sortOrder.getDirection().toString().toLowerCase())
                         .append(";");
             }
-            uriBuilder = uriBuilder.queryParam("sort", sb.toString());
         }
-        return new Link(javax.ws.rs.core.Link.fromUriBuilder(uriBuilder).rel(rel).build(), linkOrder);
+        return new Link(linkTo(methodOn(ClientsResource.class).list(page, max, sb.toString(), null, null)).withRel(rel), linkOrder);
     }
 
 }

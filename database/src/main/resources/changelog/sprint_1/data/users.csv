@@ -1,0 +1,3 @@
+login;password;first_name;last_name;email;created_by;version
+system;NONE;NULL;System;NULL;system;0
+super_admin;$2a$08$DnPYfk.kLylnfQLlHWALMOs.VpUJjPpWp5dsNEyyPI8wBW2eHM5HO;NULL;Administrator;NULL;system;0

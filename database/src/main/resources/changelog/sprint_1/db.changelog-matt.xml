@@ -12,7 +12,9 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="app_user_pk"/>
             </column>
-            <column name="login" type="varchar(50)"/>
+            <column name="login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="version" type="INT"/>
             <column name="created_by" type="varchar(50)" defaultValue="system">
                 <constraints nullable="false"/>
@@ -23,6 +25,7 @@
             <column name="last_modified_by" type="varchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
         </createTable>
+        <addUniqueConstraint tableName="app_user" columnNames="login"/>
     </changeSet>
 
     <changeSet id="add_revinfo" author="matt">
@@ -41,7 +44,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision" type="BIGINT">
-            <constraints nullable="false"/>
+                <constraints nullable="false"/>
             </column>
             <column name="login" type="varchar(50)"/>
             <column name="revision_type" type="TINYINT"/>
@@ -73,6 +76,158 @@
             <column name="first_name" type="VARCHAR(50)"/>
             <column name="last_name" type="VARCHAR(50)"/>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="login_password_additions" author="Matt">
+        <addColumn tableName="app_user_audit">
+            <column name="password" type="VARCHAR(100)"/>
+        </addColumn>
+
+        <addColumn tableName="app_user">
+            <column name="password" type="VARCHAR(100)"/>
+        </addColumn>
+        <addUniqueConstraint tableName="app_user" columnNames="login"/>
+    </changeSet>
+
+    <changeSet id="add_roles_and_permissions" author="Matt">
+        <createTable tableName="app_user_role">
+            <column name="app_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="app_user_role" columnNames="app_user_id, roles_id"/>
+
+        <createTable tableName="app_user_role_audit">
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="app_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+        </createTable>
+        <addPrimaryKey tableName="app_user_role_audit" columnNames="revision, app_user_id, roles_id"/>
+
+        <createTable tableName="permission">
+            <column name="name" type="VARCHAR(255)">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="role">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_role_id"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="system_role" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT"/>
+        </createTable>
+
+        <createTable tableName="role_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="name" type="varchar(50)"/>
+            <column name="system_role" type="BOOLEAN"/>
+        </createTable>
+        <addPrimaryKey tableName="role_audit" columnNames="id, revision"/>
+
+        <createTable tableName="role_permission">
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permissions_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="role_permission" columnNames="role_id, permissions_name"/>
+
+        <createTable tableName="role_permission_audit">
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permissions_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+
+        </createTable>
+        <addPrimaryKey tableName="role_permission_audit" columnNames="revision, role_id, permissions_name"/>
+
+        <addUniqueConstraint tableName="role" columnNames="name"/>
+        <addUniqueConstraint tableName="role_permission" columnNames="permissions_name"/>
+        <addForeignKeyConstraint baseTableName="app_user_role"
+                                 baseColumnNames="roles_id"
+                                 constraintName="fk_app_user_role_role_id"
+                                 referencedTableName="role"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="app_user_role"
+                                 baseColumnNames="app_user_id"
+                                 constraintName="fk_app_user_role_user_id"
+                                 referencedTableName="app_user"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="app_user_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_app_user_role_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_role_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="role_permission"
+                                 baseColumnNames="permissions_name"
+                                 constraintName="fk_role_permission_permission_name"
+                                 referencedTableName="permission"
+                                 referencedColumnNames="name"/>
+        <addForeignKeyConstraint baseTableName="role_permission_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_role_permission_audit_permission_name"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+
+    </changeSet>
+
+    <changeSet id="popuplate_default_users_and_roles" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_1/data/users.csv"
+                  separator=";"
+                  tableName="app_user"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_1/data/roles.csv"
+                  separator=";"
+                  tableName="role"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_1/data/permissions.csv"
+                  separator=";"
+                  tableName="permission"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_1/data/role_permissions.csv"
+                  separator=";"
+                  tableName="role_permission"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_1/data/user_role.csv"
+                  separator=";"
+                  tableName="app_user_role"/>
     </changeSet>
 
 </databaseChangeLog> 

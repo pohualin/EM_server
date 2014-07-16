@@ -25,4 +25,6 @@ public interface ClientService {
      * @return the reloaded client
      */
     Client reload(Client client);
+
+    Client create(Client client);
 }

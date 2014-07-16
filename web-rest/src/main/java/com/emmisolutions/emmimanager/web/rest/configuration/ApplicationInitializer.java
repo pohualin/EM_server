@@ -1,14 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.configuration;
 
 import com.emmisolutions.emmimanager.web.rest.configuration.gzip.GZipServletFilter;
-import com.thetransactioncompany.cors.CORSFilter;
-import org.glassfish.jersey.servlet.ServletContainer;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -24,53 +22,41 @@ import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_H2;
 /**
  * Servlet 3.0 configuration.
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ApplicationInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext servletContext) {
 
+        // spring application context
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.getEnvironment().setDefaultProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_H2);
         rootContext.setServletContext(servletContext);
-        rootContext.register(RestConfiguration.class);
+        rootContext.register(RestConfiguration.class, SecurityConfiguration.class);
 
         // Manage the lifecycle of the root application context
         servletContext.addListener(new ContextLoaderListener(rootContext));
         servletContext.addListener(new RequestContextListener());
 
+        // servlets and filters
         EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
-
-        // setup CORS, the defaults are good in the filter
-        FilterRegistration.Dynamic corsFilter =
-                servletContext.addFilter("crossOriginResourceSharingFilter", CORSFilter.class);
-        corsFilter.setInitParameter("cors.allowGenericHttpRequests", "true");
-        corsFilter.setInitParameter("cors.allowOrigin", "*");
-        corsFilter.setInitParameter("cors.allowSubdomains", "true");
-        corsFilter.setInitParameter("cors.supportedMethods", "GET, POST, HEAD, OPTIONS, PUT, DELETE");
-        corsFilter.setInitParameter("cors.supportedHeaders", "*");
-        corsFilter.setInitParameter("cors.exposedHeaders", "");
-        corsFilter.setInitParameter("cors.supportsCredentials", "true");
-        corsFilter.setInitParameter("cors.maxAge", "-1");
-        corsFilter.setInitParameter("cors.tagRequests", "false");
-        corsFilter.addMappingForUrlPatterns(disps, false, "/*");
-
-        /*
-            make sure Jersey/ Spring doesn't try to load the spring container
-            @see org.glassfish.jersey.server.spring.SpringWebApplicationInitializer.onStartup
-         */
-        servletContext.setInitParameter("contextConfigLocation", "JERSEY_SPRING_IGNORE_DEFAULTS");
-        ServletRegistration.Dynamic dispatcher =
-                servletContext.addServlet("webapi", new ServletContainer(new JerseyConfig()));
-        dispatcher.setLoadOnStartup(1);
-        dispatcher.addMapping("/webapi/*");
-
         initGzipFilter(servletContext, disps);
+        initSecurity(servletContext, disps);
+        initSpring(servletContext, disps, rootContext);
 
     }
 
-    private void initGzipFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
+    private void initSpring(ServletContext servletContext, EnumSet<DispatcherType> disps, AnnotationConfigWebApplicationContext rootContext) {
+        ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(rootContext));
+        dispatcher.setLoadOnStartup(1);
+        dispatcher.addMapping("/");
+    }
 
+    private void initSecurity(ServletContext servletContext, EnumSet<DispatcherType> disps){
+        FilterRegistration.Dynamic security = servletContext.addFilter("springSecurityFilterChain", new DelegatingFilterProxy("springSecurityFilterChain"));
+        security.addMappingForUrlPatterns(disps, true, "/*");
+    }
+
+    private void initGzipFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
         FilterRegistration.Dynamic compressingFilter = servletContext.addFilter("gzipFilter", new GZipServletFilter());
         Map<String, String> parameters = new HashMap<>();
         compressingFilter.setInitParameters(parameters);
@@ -80,7 +66,6 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         compressingFilter.addMappingForUrlPatterns(disps, true, "*.js");
         compressingFilter.addMappingForUrlPatterns(disps, true, "/webapi/*");
         compressingFilter.addMappingForUrlPatterns(disps, true, "/metrics/*");
-
         compressingFilter.setAsyncSupported(true);
     }
 

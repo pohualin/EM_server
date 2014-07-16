@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.spring.security.SecurityUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,9 @@ import javax.annotation.Resource;
 public class UserServiceImpl implements UserService {
 
     @Resource
+    PasswordEncoder passwordEncoder;
+
+    @Resource
     UserPersistence userPersistence;
 
     @Override
@@ -26,14 +31,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User loggedIn() {
-        User user = new User();
-        user.setId(System.currentTimeMillis());
-        user.setLogin("fake_logged_in_guy");
-        user.setEmail("fake@fakiefake.com");
-        user.setFirstName("Firstname");
-        user.setLastName("Lastname");
-        user.setVersion(1);
-        return user;
+        return userPersistence.fetchUserWillFullPermissions(SecurityUtils.getCurrentLogin());
     }
 }

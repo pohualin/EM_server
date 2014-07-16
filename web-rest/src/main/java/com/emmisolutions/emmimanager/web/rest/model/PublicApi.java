@@ -1,10 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
-import com.emmisolutions.emmimanager.web.rest.jax_rs.ApiEndpoint;
-import com.emmisolutions.emmimanager.web.rest.jax_rs.UsersEndpoint;
+import com.emmisolutions.emmimanager.web.rest.spring.ApiResource;
+import com.emmisolutions.emmimanager.web.rest.spring.UsersResource;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * The public API for this server
@@ -25,14 +30,8 @@ public class PublicApi {
     @XmlElement(name = "logout-link")
     private Link logout;
 
-    @XmlTransient
-    private String basePath;
 
-    public PublicApi() {
-    }
-
-    public PublicApi(String basePath) {
-        this.basePath = basePath;
+    public PublicApi (){
         self = self();
         authenticated = user();
         authenticate = authenticate();
@@ -40,23 +39,19 @@ public class PublicApi {
     }
 
     private Link self() {
-        UriBuilder uriBuilder = UriBuilder.fromPath(basePath)
-                .path(ApiEndpoint.class, "get");
-        return new Link(javax.ws.rs.core.Link.fromUriBuilder(uriBuilder).rel("self").build());
+        return new Link(linkTo(ApiResource.class).withSelfRel());
     }
 
     private Link user() {
-        UriBuilder uriBuilder = UriBuilder.fromPath(basePath)
-                .path(UsersEndpoint.class, "authenticated");
-        return new Link(javax.ws.rs.core.Link.fromUriBuilder(uriBuilder).rel("authenticated").build());
+        return new Link(linkTo(methodOn(UsersResource.class).authenticated()).withRel("authenticated"));
     }
 
     private Link authenticate() {
-        return new Link("authenticate", null, basePath + "authenticate", "");
+        return new Link("authenticate", null, "webapi/authenticate", "");
     }
 
     private Link logout() {
-        return new Link("logout", null, basePath + "logout", "");
+        return new Link("logout", null, "webapi/logout", "");
     }
 
 }
