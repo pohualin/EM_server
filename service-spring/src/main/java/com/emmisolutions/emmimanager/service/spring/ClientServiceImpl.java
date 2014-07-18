@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientService;
+import org.joda.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -37,13 +37,20 @@ public class ClientServiceImpl implements ClientService {
     private Client makeClient(long i) {
         Client client = new Client();
         client.setId(i);
-        client.setActive(true);
+        client.setActive(i % 2 == 0);
         client.setName("Demo hospital client " + i);
-        client.setType("Hospital " + i);
-        client.setRegion("Region " + i);
-        client.setOwner("Owner " + i);
+        client.setType(ClientType.PROVIDER);
+        client.setRegion(ClientRegion.NORTHEAST);
+        client.setTier(ClientTier.THREE);
+        User user = new User();
+        user.setFirstName("contract owner");
+        user.setLastName("" + i);
+        client.setContractOwner(user);
+        client.setContractStart(LocalDate.now());
+        client.setContractEnd(LocalDate.now().plusYears(2));
         SalesForce salesForceAccount = new SalesForce();
-        salesForceAccount.setId( i);
+        salesForceAccount.setId(i);
+        salesForceAccount.setAccountNumber("" + System.currentTimeMillis());
         salesForceAccount.setName("SalesForce account " + i);
         client.setSalesForceAccount(salesForceAccount);
         client.setVersion((int)i);

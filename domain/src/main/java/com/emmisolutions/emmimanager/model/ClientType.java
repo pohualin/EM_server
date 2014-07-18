@@ -3,9 +3,9 @@ package com.emmisolutions.emmimanager.model;
 import javax.xml.bind.annotation.XmlEnum;
 
 /**
- * All permissions for the application
+ * Created by matt on 7/18/14.
  */
 @XmlEnum(String.class)
-public enum PermissionEnum {
-    PERM_GOD, PERM_USER
+public enum ClientType {
+    PROVIDER, PHYSICIAN_PRACTICE, PAYER, PHARMA, OTHER
 }

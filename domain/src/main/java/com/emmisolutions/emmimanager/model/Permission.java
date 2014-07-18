@@ -20,13 +20,13 @@ public class Permission {
     @NotNull
     @Size(min = 0, max = 100)
     @Enumerated(EnumType.STRING)
-    private PermissionEnum name;
+    private PermissionName name;
 
-    public PermissionEnum getName() {
+    public PermissionName getName() {
         return name;
     }
 
-    public void setName(PermissionEnum name) {
+    public void setName(PermissionName name) {
         this.name = name;
     }
 

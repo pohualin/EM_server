@@ -35,6 +35,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @Size(min = 0, max = 50)
     @Column(length = 50, nullable = false)
+    @XmlTransient
     private String login;
 
     @ManyToMany
@@ -42,9 +43,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
             name = "app_user_role",
             joinColumns = {@JoinColumn(name = "app_user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "roles_id", referencedColumnName = "id")})
+    @XmlTransient
     private Set<Role> roles;
 
     @Version
+    @XmlTransient
     private Integer version;
 
     @Column(length = 100)

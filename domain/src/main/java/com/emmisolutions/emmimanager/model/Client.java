@@ -1,30 +1,97 @@
 package com.emmisolutions.emmimanager.model;
 
+import org.hibernate.envers.Audited;
+import org.joda.time.LocalDate;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
 
 /**
  * A client.
  */
+@Audited
+@Entity
+@Table(name = "client")
 @XmlRootElement(name = "client")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Client {
+public class Client extends AbstractAuditingEntity implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Version
     private Integer version;
-    private Boolean active;
+
+    private boolean active;
+
+    @NotNull
+    @Size(max = 255)
+    @Column(length = 255, nullable = false)
     private String name;
-    private String type;
-    private String region;
-    private String owner;
+
+    @NotNull
+    @Size(max = 50)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50, nullable = false)
+    private ClientType type;
+
+    @Size(min = 0, max = 50)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50)
+    private ClientRegion region;
+
+    @Size(min = 0, max = 10)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private ClientTier tier;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "contract_owner_id")
+    private User contractOwner;
+
+    @NotNull
+    @Column(name = "contract_start", nullable = false)
+    private LocalDate contractStart;
+
+    @NotNull
+    @Column(name = "contract_end", nullable = false)
+    private LocalDate contractEnd;
+
+    @OneToOne(mappedBy = "client")
+    @JoinColumn(name = "salesforce_account_id")
     private SalesForce salesForceAccount;
 
-    @XmlTransient
-    private Set<Team> teams = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return !(getId() != null ? !getId().equals(client.getId()) : client.getId() != null) && !(getVersion() != null ? !getVersion().equals(client.getVersion()) : client.getVersion() != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getVersion() != null ? getVersion().hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + getId() +
+                ", version=" + getVersion() +
+                ", name='" + getName() + '\'' +
+                '}';
+    }
 
     public Long getId() {
         return id;
@@ -42,11 +109,11 @@ public class Client {
         this.version = version;
     }
 
-    public Boolean getActive() {
+    public boolean isActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 
@@ -58,20 +125,52 @@ public class Client {
         this.name = name;
     }
 
-    public String getType() {
+    public ClientType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ClientType type) {
         this.type = type;
     }
 
-    public String getRegion() {
+    public ClientRegion getRegion() {
         return region;
     }
 
-    public void setRegion(String region) {
+    public void setRegion(ClientRegion region) {
         this.region = region;
+    }
+
+    public ClientTier getTier() {
+        return tier;
+    }
+
+    public void setTier(ClientTier tier) {
+        this.tier = tier;
+    }
+
+    public User getContractOwner() {
+        return contractOwner;
+    }
+
+    public void setContractOwner(User contractOwner) {
+        this.contractOwner = contractOwner;
+    }
+
+    public LocalDate getContractStart() {
+        return contractStart;
+    }
+
+    public void setContractStart(LocalDate contractStart) {
+        this.contractStart = contractStart;
+    }
+
+    public LocalDate getContractEnd() {
+        return contractEnd;
+    }
+
+    public void setContractEnd(LocalDate contractEnd) {
+        this.contractEnd = contractEnd;
     }
 
     public SalesForce getSalesForceAccount() {
@@ -80,58 +179,6 @@ public class Client {
 
     public void setSalesForceAccount(SalesForce salesForceAccount) {
         this.salesForceAccount = salesForceAccount;
-    }
-
-    public Set<Team> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(Set<Team> teams) {
-        this.teams = teams;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Client client = (Client) o;
-        return !(id != null ? !id.equals(client.id) : client.id != null) && !(version != null ? !version.equals(client.version) : client.version != null);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (version != null ? version.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Client{" +
-                "id=" + id +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
-    /**
-     * Used by JAX-RS to bind a client to a string value
-     *
-     * @param value
-     * @return
-     */
-    public static Client valueOf(String value) {
-        Client client = new Client();
-        client.setId(Long.valueOf(value));
-        return client;
     }
 
 }

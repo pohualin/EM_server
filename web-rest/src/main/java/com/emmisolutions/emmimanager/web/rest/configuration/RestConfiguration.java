@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.configuration;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -38,6 +39,7 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
                 mapper.enable(SerializationFeature.INDENT_OUTPUT); // make it pretty
                 mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); // allow random properties to come in
                 mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO8601 Formatted Dates
+                mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // only include non-empty values
 
                 // extend support to other types
                 mapper.registerModule(new JodaModule()); // Joda Dates, only support ISO8601

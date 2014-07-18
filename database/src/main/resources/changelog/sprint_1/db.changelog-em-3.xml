@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create_client" author="Matt">
+        <createTable tableName="client">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="client_pk"/>
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contract_end" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contract_start" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region" type="varchar(50)"/>
+            <column name="tier" type="varchar(10)"/>
+            <column name="type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contract_owner_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT"/>
+            <column name="created_by" type="varchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_client_audit" author="Matt">
+        <createTable tableName="client_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="active" type="boolean"/>
+            <column name="contract_end" type="date"/>
+            <column name="contract_start" type="date"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="region" type="varchar(50)"/>
+            <column name="tier" type="varchar(10)"/>
+            <column name="type" type="varchar(50)"/>
+            <column name="contract_owner_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="client_audit" columnNames="id, revision"/>
+    </changeSet>
+
+    <changeSet id="create_salesforce_client" author="Matt">
+        <createTable tableName="salesforce_client">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="salesforce_client_pk"/>
+            </column>
+            <column name="account_number" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="varchar(255)"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="phone_number" type="varchar(255)"/>
+            <column name="postal_code" type="varchar(255)"/>
+            <column name="state" type="varchar(255)"/>
+            <column name="street" type="varchar(255)"/>
+            <column name="client_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT"/>
+            <column name="created_by" type="varchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_salesforce_client_audit" author="Matt">
+        <createTable tableName="salesforce_client_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="account_number" type="varchar(255)"/>
+            <column name="country" type="varchar(255)"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="phone_number" type="varchar(255)"/>
+            <column name="postal_code" type="varchar(255)"/>
+            <column name="state" type="varchar(255)"/>
+            <column name="street" type="varchar(255)"/>
+            <column name="client_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="salesforce_client_audit" columnNames="id, revision"/>
+    </changeSet>
+
+    <changeSet id="add_keys_and_indexes" author="Matt">
+        <addUniqueConstraint tableName="salesforce_client" columnNames="client_id"/>
+        <addUniqueConstraint tableName="salesforce_client" columnNames="account_number"/>
+        <addForeignKeyConstraint baseTableName="client"
+                                 baseColumnNames="contract_owner_id"
+                                 constraintName="fk_client_user_id"
+                                 referencedTableName="app_user"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="salesforce_client"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_salesforce_client_client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

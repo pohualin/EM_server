@@ -10,6 +10,8 @@
         <class>com.emmisolutions.emmimanager.model.User</class>
         <class>com.emmisolutions.emmimanager.model.Permission</class>
         <class>com.emmisolutions.emmimanager.model.Role</class>
+        <class>com.emmisolutions.emmimanager.model.Client</class>
+        <class>com.emmisolutions.emmimanager.model.SalesForce</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>

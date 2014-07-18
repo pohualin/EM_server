@@ -207,7 +207,7 @@
 
     </changeSet>
 
-    <changeSet id="popuplate_default_users_and_roles" author="Matt">
+    <changeSet id="populate_default_users_and_roles" author="Matt">
         <loadData encoding="UTF-8"
                   file="changelog/sprint_1/data/users.csv"
                   separator=";"
@@ -228,6 +228,19 @@
                   file="changelog/sprint_1/data/user_role.csv"
                   separator=";"
                   tableName="app_user_role"/>
+    </changeSet>
+
+    <changeSet id="add_audit_to_role" author="Matt">
+        <addColumn tableName="role">
+            <column name="created_by" type="varchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog> 

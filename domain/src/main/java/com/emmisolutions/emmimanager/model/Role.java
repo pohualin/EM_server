@@ -8,18 +8,19 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Set;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
-@Audited(targetAuditMode = NOT_AUDITED)
+@Audited
 @Table(name = "role",
         uniqueConstraints =
         @UniqueConstraint(columnNames = {"name"}))
 @XmlRootElement(name = "role")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Role {
+public class Role extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +35,13 @@ public class Role {
     @Column(name = "system_role", updatable = false, insertable = false)
     private boolean systemRole;
 
-    @OneToMany
+
+    @ManyToMany
+    @JoinTable(
+            name = "role_permission",
+            joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "permissions_name", referencedColumnName = "name")})
+    @Audited(targetAuditMode = NOT_AUDITED)
     private Set<Permission> permissions;
 
     @Version
