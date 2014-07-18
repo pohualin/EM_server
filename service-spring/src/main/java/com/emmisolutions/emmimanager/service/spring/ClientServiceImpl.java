@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Salesforce;
+import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -34,33 +34,25 @@ public class ClientServiceImpl implements ClientService {
         return new PageImpl<>(clients, pageable, hardCeiling);
     }
 
-    private Client makeClient(int i) {
+    private Client makeClient(long i) {
         Client client = new Client();
-        client.setId((long) i);
+        client.setId(i);
         client.setActive(true);
         client.setName("Demo hospital client " + i);
         client.setType("Hospital " + i);
         client.setRegion("Region " + i);
         client.setOwner("Owner " + i);
-        Salesforce salesForceAccount = new Salesforce();
-        salesForceAccount.setId((long) i);
+        SalesForce salesForceAccount = new SalesForce();
+        salesForceAccount.setId( i);
         salesForceAccount.setName("SalesForce account " + i);
         client.setSalesForceAccount(salesForceAccount);
-        client.setVersion(i);
-
+        client.setVersion((int)i);
         return client;
     }
 
     @Override
     public Client reload(Client client) {
-        Client ret = new Client();
-        ret.setId(client.getId());
-        ret.setActive(true);
-        ret.setName("Demo hospital client");
-        ret.setType("Hospital");
-        ret.setRegion("Region");
-        ret.setOwner("Owner");
-        return ret;
+        return makeClient(client.getId());
     }
 
     @Override

@@ -1,9 +1,19 @@
 package com.emmisolutions.emmimanager.model;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A SalesForce account.
  */
-public class Salesforce {
+@XmlRootElement(name = "salesforce")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class SalesForce {
 
     private Long id;
     private String accountNumber;
@@ -13,6 +23,12 @@ public class Salesforce {
     private String postalCode;
     private String country;
     private String phoneNumber;
+
+    private LocalDateTime localDateTime = LocalDateTime.now();
+
+    private LocalDate anotherLocalDate = LocalDate.now();
+
+    private DateTime dateTimeWithTimezone = DateTime.now();
 
     public Long getId() {
         return id;

@@ -3,12 +3,17 @@ package com.emmisolutions.emmimanager.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This is an application permission.
  */
 @Entity
 @Table(name = "permission")
+@XmlRootElement(name = "permission")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Permission {
 
     @Id
