@@ -27,11 +27,6 @@
     <dependencies>
         <dependency>
             <groupId>com.emmisolutions.emmimanager</groupId>
-            <artifactId>web-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.emmisolutions.emmimanager</groupId>
             <artifactId>service-api</artifactId>
             <version>${project.version}</version>
         </dependency>
