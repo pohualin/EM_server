@@ -1,4 +1,4 @@
-<Context docBase="" path="/" reloadable="true">
+<Context>
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
