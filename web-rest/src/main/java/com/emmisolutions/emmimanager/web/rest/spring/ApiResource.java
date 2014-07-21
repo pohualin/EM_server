@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.security.PermitAll;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -12,6 +14,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 @RequestMapping(value = "/webapi",
         produces = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
 )
+@PermitAll
 public class ApiResource {
 
     @RequestMapping(method = RequestMethod.GET)

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -24,6 +25,7 @@ public class UsersResource {
     UserService userService;
 
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_USER"})
     public ResponseEntity<UserDetailsResource> authenticated() {
         return new ResponseEntity<>(new UserDetailsResource(userService.loggedIn()), HttpStatus.OK);
     }

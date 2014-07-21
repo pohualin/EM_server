@@ -36,17 +36,14 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     private String name;
 
     @NotNull
-    @Size(max = 50)
     @Enumerated(EnumType.STRING)
     @Column(length = 50, nullable = false)
     private ClientType type;
 
-    @Size(min = 0, max = 50)
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private ClientRegion region;
 
-    @Size(min = 0, max = 10)
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private ClientTier tier;
@@ -67,7 +64,6 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @OneToOne(mappedBy = "client")
     @JoinColumn(name = "salesforce_account_id")
     private SalesForce salesForceAccount;
-
 
     @Override
     public boolean equals(Object o) {

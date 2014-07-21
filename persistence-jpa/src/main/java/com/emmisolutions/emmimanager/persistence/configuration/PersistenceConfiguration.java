@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
+import com.emmisolutions.emmimanager.config.Constants;
 import com.emmisolutions.emmimanager.persistence.logging.LoggingAspect;
 import liquibase.integration.spring.SpringLiquibase;
 import org.hibernate.jpa.HibernatePersistenceProvider;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -17,6 +19,10 @@ import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.naming.NamingException;
@@ -30,7 +36,6 @@ import static org.hibernate.cfg.Environment.SHOW_SQL;
 
 
 @Configuration
-@EnableJpaAuditing
 @EnableAspectJAutoProxy
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.persistence.impl"
@@ -38,6 +43,7 @@ import static org.hibernate.cfg.Environment.SHOW_SQL;
 @EnableJpaRepositories(basePackages = {
         "com.emmisolutions.emmimanager.persistence.repo"
 })
+@EnableJpaAuditing(auditorAwareRef = "springDataAuditor")
 public class PersistenceConfiguration {
 
     @Bean(name = "transactionManager")
@@ -89,12 +95,33 @@ public class PersistenceConfiguration {
         return new HibernateJpaDialect();
     }
 
+    @Bean(name = "springDataAuditor")
+    public AuditorAware<String> getAuditorAware(){
+       return new AuditorAware<String>() {
+           @Override
+           public String getCurrentAuditor() {
+               SecurityContext securityContext = SecurityContextHolder.getContext();
+               Authentication authentication = securityContext.getAuthentication();
+               String userName = null;
+               if (authentication != null) {
+                   if (authentication.getPrincipal() instanceof UserDetails) {
+                       UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
+                       userName = springSecurityUser.getUsername();
+                   } else if (authentication.getPrincipal() instanceof String) {
+                       userName = (String) authentication.getPrincipal();
+                   }
+               }
+               return (userName != null ? userName : Constants.SYSTEM_ACCOUNT);
+           }
+       };
+    }
+
     @Bean
-    public SpringLiquibase getSpringLiquibase(DataSource dataSource) {
-        SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setDataSource(dataSource);
-        liquibase.setChangeLog("classpath:db.changelog-master.xml");
-        return liquibase;
+    public SpringLiquibase getDbUpdater(DataSource dataSource) {
+        SpringLiquibase springLiquibase = new SpringLiquibase();
+        springLiquibase.setDataSource(dataSource);
+        springLiquibase.setChangeLog("classpath:db.changelog-master.xml");
+        return springLiquibase;
     }
 
     @Bean

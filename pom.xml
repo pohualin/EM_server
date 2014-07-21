@@ -27,7 +27,7 @@
         <spring.version>4.0.5.RELEASE</spring.version>
         <logback.version>1.0.13</logback.version>
         <h2.version>1.4.178</h2.version>
-        <hibernate.version>4.3.5.Final</hibernate.version>
+        <hibernate.version>4.3.6.Final</hibernate.version>
         <hibernate.validator.version>5.1.1.Final</hibernate.validator.version>
         <spring.data.version>1.6.0.RELEASE</spring.data.version>
         <spring.security.version>3.2.4.RELEASE</spring.security.version>
@@ -41,6 +41,8 @@
         <commons.lang.version>3.3.2</commons.lang.version>
         <jackson.version>2.4.1</jackson.version>
         <spring.hateoas>0.15.0.RELEASE</spring.hateoas>
+        <javax.annotation.version>1.2</javax.annotation.version>
+        <querydsl.version>3.4.1</querydsl.version>
     </properties>
 
     <build>
@@ -189,6 +191,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-jpamodelgen</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-jpa</artifactId>
                 <version>${spring.data.version}</version>
@@ -292,6 +300,25 @@
                 <scope>test</scope>
             </dependency>
 
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mysema.querydsl</groupId>
+                <artifactId>querydsl-apt</artifactId>
+                <version>${querydsl.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mysema.querydsl</groupId>
+                <artifactId>querydsl-jpa</artifactId>
+                <version>${querydsl.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -315,6 +342,11 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

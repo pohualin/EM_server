@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import java.util.HashSet;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -31,6 +33,7 @@ public class ClientsResource {
     EndpointHelper endpointHelper;
 
     @RequestMapping(value = "/clients/{id}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_VIEW"})
     public ResponseEntity<ClientResource> get(@PathVariable("id") Long id) {
         Client toFind = new Client();
         toFind.setId(id);
@@ -44,6 +47,7 @@ public class ClientsResource {
     }
 
     @RequestMapping(value = "/clients", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LIST"})
     public ResponseEntity<ClientPageResource> list(
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "max", required = false, defaultValue = "10") Integer max,
@@ -51,7 +55,7 @@ public class ClientsResource {
             @RequestParam(value = "name", required = false, defaultValue = "") String nameFilter,
             @RequestParam(value = "status", required = false, defaultValue = "") String statusFilter) {
         Page<Client> clients = clientService.list(
-                endpointHelper.createPageable(page, max, sort));
+                endpointHelper.createPageable(page, max, sort), new HashSet<String>(), statusFilter);
         if (clients.hasContent()) {
             return new ResponseEntity<>(new ClientPageResource(clients), HttpStatus.OK);
         } else {
@@ -63,12 +67,27 @@ public class ClientsResource {
             method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE"})
     public ResponseEntity<ClientResource> create(Client client) {
         client = clientService.create(client);
         if (client == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             return new ResponseEntity<>(new ClientResource(client), HttpStatus.CREATED);
+        }
+    }
+
+    @RequestMapping(value = "/clients",
+            method = RequestMethod.PUT,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_EDIT"})
+    public ResponseEntity<ClientResource> update(Client client) {
+        client = clientService.update(client);
+        if (client == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(new ClientResource(client), HttpStatus.OK);
         }
     }
 }
