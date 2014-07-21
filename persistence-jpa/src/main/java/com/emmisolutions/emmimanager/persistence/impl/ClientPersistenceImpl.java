@@ -7,13 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.Set;
 
+import static com.emmisolutions.emmimanager.persistence.impl.ClientSpecifications.hasNames;
+import static com.emmisolutions.emmimanager.persistence.impl.ClientSpecifications.isInStatus;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
@@ -27,21 +27,11 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Override
     public Page<Client> list(Pageable page, Set<String> clientNameFilter, StatusFilter status) {
-        Specification<Client> hasNames = ClientSpecifications.hasNames(clientNameFilter);
-        Specification<Client> isInStatus = ClientSpecifications.isInStatus(status);
-        Specifications<Client> fullSpec = null;
-
-        if (hasNames != null && isInStatus != null) {
-            fullSpec = where(hasNames).and(isInStatus);
-        } else if (hasNames != null) {
-            fullSpec = where(hasNames);
-        } else if (isInStatus != null) {
-            fullSpec = where(isInStatus);
-        }
         if (page == null){
+            // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return clientRepository.findAll(fullSpec, page);
+        return clientRepository.findAll(where(hasNames(clientNameFilter)).and(isInStatus(status)), page);
     }
 
     @Override

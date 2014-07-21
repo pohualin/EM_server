@@ -4,6 +4,16 @@ JPA Persistence
 The server uses JPA Persistence (implemented by Hibernate) to read/write entities
 to the database.
 
+Features
+=======================
+
+- implementation of database persistence via [JPA] (http://docs.oracle.com/javaee/7/tutorial/doc/partpersist.htm) annotations.
+- automatic debug logging of all method entry/exit for public methods when in development mode (SPRING_PROFILE_DEVELOPMENT)
+- [Spring Data] (http://docs.spring.io/spring-data/jpa/docs/1.6.1.RELEASE/reference/html/) integration which provides:
+    - automatic audit logging (e.g. updatedBy, createdBy, updatedDate, createdDate) for all entities (extending AbstractAuditingEntity)
+    - easy CRUD features for entities (via JpaRepository)
+    - easy search features for entities (via JpaSpecificationExecutor repositories)
+
 Database Maintenance
 -----------------------
 
@@ -20,4 +30,6 @@ via the JPA implementation (Hibernate). This module does create DDL during durin
 The way this works is that a plugin (`<hbm2ddl/>`) defined in `pom.xml` reads a configuration file
 `src/test/resources/generate.ddl.xml`. The configuration file lists the classes that are going to be used for the
 database. The DDL will be written out to the console as well as writing it to a file 
-`target/generated-ddl/emmi_manager_db.ddl`
+`target/generated-ddl/emmi_manager_db.ddl`.
+
+To kick this off run `mvn test` and the DDL will be output to the console.
