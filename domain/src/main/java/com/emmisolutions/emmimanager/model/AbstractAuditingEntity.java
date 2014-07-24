@@ -24,17 +24,15 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractAuditingEntity {
 
-    @NotNull
     @CreatedBy
     @XmlTransient
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private String createdBy;
 
-    @NotNull
     @XmlTransient
     @CreatedDate
-    @Column(name = "created_date")
-    private DateTime createdDate = DateTime.now();
+    @Column(name = "created_date", updatable = false)
+    private DateTime createdDate;
 
     @NotNull
     @XmlTransient
@@ -46,7 +44,7 @@ public abstract class AbstractAuditingEntity {
     @XmlTransient
     @LastModifiedDate
     @Column(name = "last_modified_date")
-    private DateTime lastModifiedDate = DateTime.now();
+    private DateTime lastModifiedDate;
 
     public String getCreatedBy() {
         return createdBy;
