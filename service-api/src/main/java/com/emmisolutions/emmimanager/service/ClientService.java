@@ -2,8 +2,11 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * Client Service API.
@@ -40,4 +43,7 @@ public interface ClientService {
      * @return the updated client
      */
     Client update(Client client);
+
+    List<User> findContractOwners();
+
 }

@@ -33,6 +33,7 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.permissions = roles;
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
+        ret.add(ClientPage.createReferenceDataLink());
         return ret;
     }
 

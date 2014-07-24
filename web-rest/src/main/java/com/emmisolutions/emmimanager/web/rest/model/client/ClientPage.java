@@ -62,6 +62,10 @@ public class ClientPage {
         return new Link(uriTemplate, link.getRel());
     }
 
+    public static Link createReferenceDataLink(){
+        return linkTo(methodOn(ClientsResource.class).getReferenceData()).withRel("clientsReferenceData");
+    }
+
     private void addFilterToLinks(List<Link> links, ClientSearchFilter filter) {
         if (CollectionUtils.isEmpty(links)) {
             return;

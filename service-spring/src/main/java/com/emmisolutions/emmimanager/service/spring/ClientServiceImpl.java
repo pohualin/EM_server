@@ -2,7 +2,9 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Implementation of the ClientService
@@ -19,6 +22,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Resource
     ClientPersistence clientPersistence;
+
+    @Resource
+    UserPersistence userPersistence;
 
     @Override
     @Transactional(readOnly = true)
@@ -47,5 +53,12 @@ public class ClientServiceImpl implements ClientService {
             throw new IllegalArgumentException("Client Id and Version cannot be null.");
         }
         return clientPersistence.save(client);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> findContractOwners() {
+        return userPersistence.findAllContractOwners();
+
     }
 }

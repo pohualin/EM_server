@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Repository
 public class UserPersistenceImpl implements UserPersistence {
@@ -28,5 +29,10 @@ public class UserPersistenceImpl implements UserPersistence {
     @Override
     public User fetchUserWillFullPermissions(String login) {
         return userRepository.fetchWithFullPermissions(login);
+    }
+
+    @Override
+    public List<User> findAllContractOwners() {
+        return userRepository.findAll();
     }
 }

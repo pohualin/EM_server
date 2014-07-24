@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -82,10 +84,11 @@ public class ClientsResource {
         }
     }
 
-    @RequestMapping(value = "/clients", method = RequestMethod.OPTIONS)
+    @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
-        return new ReferenceData();
+        List<User> contractOwners = clientService.findContractOwners();
+        return new ReferenceData(contractOwners);
     }
 
     @RequestMapping(value = "/clients",
@@ -93,7 +96,7 @@ public class ClientsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE"})
-    public ResponseEntity<ClientResource> create(Client client) {
+    public ResponseEntity<ClientResource> create(@RequestBody Client client) {
         client = clientService.create(client);
         if (client == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -107,7 +110,7 @@ public class ClientsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_EDIT"})
-    public ResponseEntity<ClientResource> update(Client client) {
+    public ResponseEntity<ClientResource> update(@RequestBody Client client) {
         client = clientService.update(client);
         if (client == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
