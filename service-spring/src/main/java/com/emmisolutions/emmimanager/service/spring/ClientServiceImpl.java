@@ -1,14 +1,17 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
-import org.joda.time.LocalDate;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -17,55 +20,45 @@ import java.util.List;
 @Service
 public class ClientServiceImpl implements ClientService {
 
-    @Override
-    public Page<Client> list(Pageable pageable) {
-        List<Client> clients = new ArrayList<>();
-        int hardCeiling = 202;
-        int max = (pageable.getOffset() + pageable.getPageSize());
-        if (max > hardCeiling) {
-            max = hardCeiling;
-        }
-        for (int i = pageable.getOffset(); i < max; i++) {
-            clients.add(makeClient(i + 1));
-        }
-        if (pageable.getOffset() >= max) {
-            clients.add(makeClient(max));
-        }
-        return new PageImpl<>(clients, pageable, hardCeiling);
-    }
+    @Resource
+    ClientPersistence clientPersistence;
 
-    private Client makeClient(long i) {
-        Client client = new Client();
-        client.setId(i);
-        client.setActive(i % 2 == 0);
-        client.setName("Demo hospital client " + i);
-        client.setType(ClientType.PROVIDER);
-        client.setRegion(ClientRegion.NORTHEAST);
-        client.setTier(ClientTier.THREE);
-        User user = new User();
-        user.setFirstName("contract owner");
-        user.setLastName("" + i);
-        client.setContractOwner(user);
-        client.setContractStart(LocalDate.now());
-        client.setContractEnd(LocalDate.now().plusYears(2));
-        SalesForce salesForceAccount = new SalesForce();
-        salesForceAccount.setId(i);
-        salesForceAccount.setAccountNumber("" + System.currentTimeMillis());
-        salesForceAccount.setName("SalesForce account " + i);
-        client.setSalesForceAccount(salesForceAccount);
-        client.setVersion((int)i);
-        return client;
+    @Resource
+    UserPersistence userPersistence;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Client> list(Pageable pageable, ClientSearchFilter searchFilter) {
+        return clientPersistence.list(pageable, searchFilter);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Client reload(Client client) {
-        return makeClient(client.getId());
+        return clientPersistence.reload(client);
     }
 
     @Override
+    @Transactional
     public Client create(Client client) {
-        client.setId(System.currentTimeMillis());
-        client.setVersion(1);
-        return reload(client);
+        client.setId(null);
+        client.setVersion(null);
+        return clientPersistence.save(client);
+    }
+
+    @Override
+    @Transactional
+    public Client update(Client client) {
+        if (client == null || client.getId() == null || client.getVersion() == null){
+            throw new IllegalArgumentException("Client Id and Version cannot be null.");
+        }
+        return clientPersistence.save(client);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> findContractOwners() {
+        return userPersistence.findAllContractOwners();
+
     }
 }

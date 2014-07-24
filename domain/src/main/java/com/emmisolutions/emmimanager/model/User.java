@@ -47,7 +47,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Set<Role> roles;
 
     @Version
-    @XmlTransient
     private Integer version;
 
     @Column(length = 100)

@@ -1,0 +1,55 @@
+package com.emmisolutions.emmimanager.persistence.impl;
+
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.Client_;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * This is the specification class that allows for filtering of Client objects.
+ */
+public class ClientSpecifications {
+
+    /**
+     * Case insensitive name anywhere match
+     *
+     * @param names to be found
+     * @return the filter predicate
+     */
+    public static Specification<Client> hasNames(final ClientSearchFilter searchFilter) {
+        return new Specification<Client>() {
+            @Override
+            public Predicate toPredicate(Root<Client> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> predicates = new ArrayList<>();
+                if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.getNames())) {
+                    for (String name : searchFilter.getNames()) {
+                        predicates.add(cb.like(cb.lower(root.get(Client_.name)), "%" + name.toLowerCase() + "%"));
+                    }
+                    return cb.or(predicates.toArray(new Predicate[predicates.size()]));
+                }
+                return null;
+            }
+        };
+    }
+
+    public static Specification<Client> isInStatus(final ClientSearchFilter searchFilter) {
+        return new Specification<Client>() {
+            @Override
+            public Predicate toPredicate(Root<Client> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (searchFilter != null && ClientSearchFilter.StatusFilter.ALL != searchFilter.getStatus()) {
+                    return cb.equal(root.get(Client_.active), searchFilter.getStatus().equals(ClientSearchFilter.StatusFilter.ACTIVE_ONLY));
+                }
+                return null;
+            }
+        };
+    }
+
+}

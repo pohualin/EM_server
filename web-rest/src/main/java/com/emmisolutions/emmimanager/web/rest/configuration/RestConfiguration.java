@@ -9,10 +9,10 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.data.geo.GeoModule;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import java.util.List;
 
@@ -22,11 +22,10 @@ import java.util.List;
 @Configuration
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.service.configuration",
-        "com.emmisolutions.emmimanager.web.rest.spring",
-        "com.emmisolutions.emmimanager.web.rest.impl"
+        "com.emmisolutions.emmimanager.web.rest.resource",
+        "com.emmisolutions.emmimanager.web.rest.model"
 })
-@EnableSpringDataWebSupport
-public class RestConfiguration extends WebMvcConfigurationSupport {
+public class RestConfiguration extends DelegatingWebMvcConfiguration {
 
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -39,13 +38,13 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
                 mapper.enable(SerializationFeature.INDENT_OUTPUT); // make it pretty
                 mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); // allow random properties to come in
                 mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO8601 Formatted Dates
-                mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // only include non-empty values
+                mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // don't write null values in JSON
 
                 // extend support to other types
                 mapper.registerModule(new JodaModule()); // Joda Dates, only support ISO8601
                 mapper.registerModule(new JaxbAnnotationModule()); // JAXB as well as Jackson Annotations
                 mapper.registerModule(new Hibernate4Module()); // Hibernate (lazy loaded entities ==> null)
-
+                mapper.registerModule(new GeoModule()); // spatial mappings via spring-data
             }
         }
     }
