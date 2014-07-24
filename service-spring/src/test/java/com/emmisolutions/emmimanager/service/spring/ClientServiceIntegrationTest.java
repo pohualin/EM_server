@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
@@ -42,16 +43,16 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     public void update() {
         final String clientName = "forUpdating";
         clientService.create(makeClient(clientName, "update_user"));
-        Page<Client> page = clientService.list(null, new HashSet<String>() {{
+        Page<Client> page = clientService.list(null, new ClientSearchFilter(new HashSet<String>() {{
             add(clientName);
-        }}, "INACTIVE_ONLY");
+        }}, "INACTIVE_ONLY"));
         Client toUpdate = page.getContent().iterator().next();
         Integer version = toUpdate.getVersion();
         toUpdate.setName("mateo wuz here");
         toUpdate = clientService.update(toUpdate);
-        page = clientService.list(null, new HashSet<String>() {{
+        page = clientService.list(null, new ClientSearchFilter(new HashSet<String>() {{
             add(clientName);
-        }}, "INACTIVE_ONLY");
+        }}, "INACTIVE_ONLY"));
         assertThat("shouldn't find it anymore", page.getTotalElements(), is(0l));
         assertThat("version should have incremented on update", version ,is(toUpdate.getVersion() - 1));
     }

@@ -60,7 +60,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
             clientRepository.save(makeClient(i)) ;
         }
 
-        Page<Client> clientPage = clientPersistence.list(null, null, null);
+        Page<Client> clientPage = clientPersistence.list(null, null);
         assertThat("found all of the clients", clientPage.getTotalElements(), is(200l));
         assertThat("there were 4 pages", clientPage.getTotalPages(), is(4));
         assertThat("there are 50 items in the page", clientPage.getSize(), is(50));
@@ -69,14 +69,14 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         // test list with filters
         Set<String> nameFilters = new HashSet<>();
         nameFilters.add("HoSpItAl");
-        clientPage = clientPersistence.list(new PageRequest(2, 10), nameFilters, null);
+        clientPage = clientPersistence.list(new PageRequest(2, 10), new ClientSearchFilter(nameFilters, null));
         assertThat("found all of the clients", clientPage.getTotalElements(), is(200l));
         assertThat("there were 20 pages", clientPage.getTotalPages(), is(20));
         assertThat("there are 10 items in the page", clientPage.getSize(), is(10));
         assertThat("we are on page 2", clientPage.getNumber(), is(2));
 
         // search for inactive only, page size 20
-        clientPage = clientPersistence.list(new PageRequest(3, 20), nameFilters, ClientPersistence.StatusFilter.INACTIVE_ONLY);
+        clientPage = clientPersistence.list(new PageRequest(3, 20), new ClientSearchFilter(nameFilters, "INACTIVE_ONLY"));
         assertThat("found half of the clients", clientPage.getTotalElements(), is(100l));
         assertThat("there were 5 pages", clientPage.getTotalPages(), is(5));
         assertThat("there are 20 items in the page", clientPage.getSize(), is(20));
@@ -86,7 +86,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         nameFilters = new HashSet<>();
         nameFilters.add("client 5");
         nameFilters.add("client 9");
-        clientPage = clientPersistence.list(new PageRequest(0, 100), nameFilters, ClientPersistence.StatusFilter.ACTIVE_ONLY);
+        clientPage = clientPersistence.list(new PageRequest(0, 100), new ClientSearchFilter(nameFilters, "ACTIVE_ONLY"));
         assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(10l));
         assertThat("there is 1 page", clientPage.getTotalPages(), is(1));
         assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(10));
@@ -94,7 +94,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("we are on page 0", clientPage.getNumber(), is(0));
 
         // request a page out of bounds
-        clientPage = clientPersistence.list(new PageRequest(10, 100), nameFilters, ClientPersistence.StatusFilter.ACTIVE_ONLY);
+        clientPage = clientPersistence.list(new PageRequest(10, 100), new ClientSearchFilter(nameFilters, "ACTIVE_ONLY"));
         assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(10l));
         assertThat("there is 1 page", clientPage.getTotalPages(), is(1));
         assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(0));

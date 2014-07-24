@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import org.springframework.data.domain.Page;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Set;
 
 /**
  * Implementation of the ClientService
@@ -22,10 +22,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Client> list(Pageable pageable, Set<String> clientNameFilter, String statusString) {
-        return clientPersistence.list(pageable,
-                clientNameFilter,
-                ClientPersistence.StatusFilter.fromStringOrAll(statusString));
+    public Page<Client> list(Pageable pageable, ClientSearchFilter searchFilter) {
+        return clientPersistence.list(pageable, searchFilter);
     }
 
     @Override

@@ -1,6 +1,6 @@
-package com.emmisolutions.emmimanager.web.rest.spring;
+package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.web.rest.model.PublicApi;
+import com.emmisolutions.emmimanager.web.rest.model.api.PublicApi;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,10 +1,9 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.Set;
 
 /**
  * Client Service API.
@@ -17,7 +16,7 @@ public interface ClientService {
      * @param page which page to retrieve
      * @return list of clients
      */
-    Page<Client> list(Pageable page, Set<String> clientNameFilter, String status);
+    Page<Client> list(Pageable page, ClientSearchFilter searchFilter);
 
 
     /**

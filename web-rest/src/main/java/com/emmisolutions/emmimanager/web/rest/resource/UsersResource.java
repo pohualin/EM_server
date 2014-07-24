@@ -1,7 +1,8 @@
-package com.emmisolutions.emmimanager.web.rest.spring;
+package com.emmisolutions.emmimanager.web.rest.resource;
 
 import com.emmisolutions.emmimanager.service.UserService;
-import com.emmisolutions.emmimanager.web.rest.model.UserDetailsResource;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserResource;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +25,13 @@ public class UsersResource {
     @Resource
     UserService userService;
 
+    @Resource
+    UserResourceAssembler userResourceAssembler;
+
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_USER"})
-    public ResponseEntity<UserDetailsResource> authenticated() {
-        return new ResponseEntity<>(new UserDetailsResource(userService.loggedIn()), HttpStatus.OK);
+    public ResponseEntity<UserResource> authenticated() {
+        return new ResponseEntity<>(userResourceAssembler.toResource(userService.loggedIn()), HttpStatus.OK);
     }
 
 }
