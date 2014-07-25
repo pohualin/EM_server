@@ -8,5 +8,11 @@ import javax.xml.bind.annotation.XmlEnum;
  */
 @XmlEnum(String.class)
 public enum PermissionName {
-    PERM_GOD, PERM_USER, PERM_CLIENT_LIST, PERM_CLIENT_VIEW, PERM_CLIENT_EDIT, PERM_CLIENT_CREATE
+    PERM_GOD,
+    PERM_USER,
+    PERM_CLIENT_LIST,
+    PERM_CLIENT_VIEW,
+    PERM_CLIENT_EDIT,
+    PERM_CLIENT_CREATE,
+    PERM_CONTRACT_OWNER;
 }

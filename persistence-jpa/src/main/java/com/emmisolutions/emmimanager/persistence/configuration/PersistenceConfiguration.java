@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -117,10 +118,13 @@ public class PersistenceConfiguration {
     }
 
     @Bean
-    public SpringLiquibase getDbUpdater(DataSource dataSource) {
+    public SpringLiquibase getDbUpdater(DataSource dataSource, Environment env) {
         SpringLiquibase springLiquibase = new SpringLiquibase();
         springLiquibase.setDataSource(dataSource);
         springLiquibase.setChangeLog("classpath:db.changelog-master.xml");
+        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST)) {
+            springLiquibase.setContexts("dev");
+        }
         return springLiquibase;
     }
 

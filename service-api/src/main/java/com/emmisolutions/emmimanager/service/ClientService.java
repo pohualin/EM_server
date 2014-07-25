@@ -6,8 +6,6 @@ import com.emmisolutions.emmimanager.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 /**
  * Client Service API.
  */
@@ -44,6 +42,11 @@ public interface ClientService {
      */
     Client update(Client client);
 
-    List<User> findContractOwners();
+    /**
+     * Finds a page of Users that are eligible to be contract owners
+     * @param pageable the specification to fetch
+     * @return a page of User objects
+     */
+    Page<User> listPotentialContractOwners(Pageable pageable);
 
 }

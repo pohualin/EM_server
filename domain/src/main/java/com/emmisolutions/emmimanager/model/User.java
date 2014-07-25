@@ -113,18 +113,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return id != null ? id.hashCode() : 0;
     }
 
-    /**
-     * Used by JAX-RS to bind a client to a string value
-     *
-     * @param value the id of the user
-     * @return the user shell
-     */
-    public static User valueOf(String value) {
-        User user = new User();
-        user.setId(Long.valueOf(value));
-        return user;
-    }
-
     public String getPassword() {
         return password;
     }

@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
+import com.emmisolutions.emmimanager.model.PermissionName;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -13,6 +14,10 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserResource extends ResourceSupport {
 
+    public Long id;
+
+    public Integer version;
+
     public String login;
 
     public String firstName;
@@ -23,7 +28,7 @@ public class UserResource extends ResourceSupport {
 
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
-    public List<String> permissions;
+    public List<PermissionName> permissions;
 
     @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
     @XmlElementWrapper(name = "links")

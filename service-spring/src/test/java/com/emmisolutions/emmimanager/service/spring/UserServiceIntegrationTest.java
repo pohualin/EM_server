@@ -25,10 +25,12 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         userService.save(new User());
     }
 
+    @Test
     public void testUserCreate() {
         User user = new User("login", "pw");
         user = userService.save(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
     }
+
 }

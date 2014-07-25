@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 
-import static com.emmisolutions.emmimanager.persistence.impl.ClientSpecifications.hasNames;
-import static com.emmisolutions.emmimanager.persistence.impl.ClientSpecifications.isInStatus;
+import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.hasNames;
+import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.isInStatus;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**

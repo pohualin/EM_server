@@ -134,4 +134,66 @@
                                  referencedTableName="client"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet id="add_client_permissions" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_1/data/client_edit_permissions.csv"
+                  separator=";"
+                  tableName="permission"/>
+    </changeSet>
+
+    <changeSet id="create_sample_contract_owner" author="Matt" context="dev">
+        <insert tableName="app_user">
+            <column name="login">contract_owner</column>
+            <column name="password">$2a$08$f3nFK97VWMIIeRpXocjdU.3CFS2t4Y1tJNKDjiVjZhyqjBMqFKC4W</column>
+            <column name="first_name">Contract</column>
+            <column name="last_name">Owner</column>
+            <column name="email">contract_owner@emmisolutions.com</column>
+            <column name="created_by">system</column>
+            <column name="version">0</column>
+        </insert>
+
+        <insert tableName="role">
+            <column name="name">Contract Owner</column>
+            <column name="system_role">false</column>
+            <column name="created_by">system</column>
+            <column name="version">0</column>
+        </insert>
+
+        <!-- Give this role current set of permissions -->
+        <sql><![CDATA[
+            INSERT INTO role_permission (role_id, permissions_name)
+            SELECT
+              (SELECT
+                 id
+               FROM role
+               WHERE name = 'Contract Owner'),
+              p.name
+            FROM
+              (SELECT
+                 name
+               FROM permission
+               WHERE NAME IN ('PERM_USER',
+                              'PERM_CONTRACT_OWNER',
+                              'PERM_CLIENT_LIST',
+                              'PERM_CLIENT_VIEW',
+                              'PERM_CLIENT_EDIT',
+                              'PERM_CLIENT_CREATE',
+                              'PERM_CONTRACT_OWNER')) AS p
+        ]]></sql>
+        <sql><![CDATA[
+            INSERT INTO app_user_role (app_user_id, roles_id)
+              SELECT
+                r.id,
+                (SELECT
+                id AS role_id
+                 FROM role
+                 WHERE name = 'Contract Owner') AS role_id
+              FROM (SELECT
+                      id
+                    FROM app_user
+                    WHERE login = 'contract_owner') AS r
+        ]]></sql>
+
+    </changeSet>
 </databaseChangeLog>

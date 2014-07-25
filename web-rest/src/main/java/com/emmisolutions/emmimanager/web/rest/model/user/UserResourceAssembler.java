@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
 import com.emmisolutions.emmimanager.model.Permission;
+import com.emmisolutions.emmimanager.model.PermissionName;
 import com.emmisolutions.emmimanager.model.Role;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
@@ -20,12 +21,14 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
     @Override
     public UserResource toResource(User user) {
         UserResource ret = new UserResource();
-        List<String> roles = new ArrayList<>();
+        List<PermissionName> roles = new ArrayList<>();
         for (Role role : user.getRoles()) {
             for (Permission permission : role.getPermissions()) {
-                roles.add(permission.getName().toString());
+                roles.add(permission.getName());
             }
         }
+        ret.id = user.getId();
+        ret.version = user.getVersion();
         ret.login = user.getLogin();
         ret.firstName = user.getFirstName();
         ret.lastName = user.getLastName();

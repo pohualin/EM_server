@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.persistence.impl;
+package com.emmisolutions.emmimanager.persistence.impl.specification;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
@@ -22,7 +22,7 @@ public class ClientSpecifications {
      * Case insensitive name anywhere match
      *
      * @param names to be found
-     * @return the filter predicate
+     * @return the specification as a filter predicate
      */
     public static Specification<Client> hasNames(final ClientSearchFilter searchFilter) {
         return new Specification<Client>() {
@@ -40,6 +40,12 @@ public class ClientSpecifications {
         };
     }
 
+    /**
+     * Ensures that the Client is in a particular status
+     *
+     * @param searchFilter used to find the status
+     * @return the specification as a filter predicate
+     */
     public static Specification<Client> isInStatus(final ClientSearchFilter searchFilter) {
         return new Specification<Client>() {
             @Override

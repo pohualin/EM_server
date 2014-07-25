@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
@@ -66,6 +67,14 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         Permission godPermission = new Permission();
         godPermission.setName(PermissionName.PERM_GOD);
         assertThat("Role has the god permission", role.getPermissions(), hasItem(godPermission));
+    }
+
+    @Test
+    public void listPotentialContractOwners(){
+        User contractOwner = userPersistence.reload("contract_owner");
+        Page<User> ret = userPersistence.listPotentialContractOwners(null);
+        assertThat("Users should be returned", ret.hasContent(), is(true));
+        assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }
 
 }

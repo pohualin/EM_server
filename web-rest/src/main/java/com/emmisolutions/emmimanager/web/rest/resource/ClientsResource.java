@@ -8,6 +8,8 @@ import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.client.ReferenceData;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceForAssociationsAssembler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
-import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -42,6 +43,9 @@ public class ClientsResource {
 
     @Resource
     ClientResourceAssembler clientResourceAssembler;
+
+    @Resource(name = "userResourceForAssociationsAssembler")
+    UserResourceForAssociationsAssembler userResourceAssembler;
 
     @RequestMapping(value = "/clients/{id}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_VIEW"})
@@ -87,9 +91,24 @@ public class ClientsResource {
     @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
-        List<User> contractOwners = clientService.findContractOwners();
-        return new ReferenceData(contractOwners);
+        return new ReferenceData();
     }
+
+    @RequestMapping(value = "/clients/ref/potentialOwners", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
+    public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 50) Pageable pageable,
+                                                           @SortDefault(sort = "id") Sort sort,
+                                                           PagedResourcesAssembler<User> assembler) {
+        Page<User> userPage = clientService.listPotentialContractOwners(pageable);
+        if (userPage.hasContent()) {
+            return new ResponseEntity<>(
+                    new UserPage(assembler.toResource(userPage, userResourceAssembler)),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
 
     @RequestMapping(value = "/clients",
             method = RequestMethod.POST,
