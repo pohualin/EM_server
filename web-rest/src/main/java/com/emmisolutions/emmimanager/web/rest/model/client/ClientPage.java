@@ -2,55 +2,41 @@ package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.web.rest.model.AbstractPage;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * This class encapsulates a 'page' of clients. We need the class due to the way JAXB works.
- * The @XmlSeeAlso is where we help JAXB 'see' the class types in the output.
+ * A HATEOAS wrapper for a page of ClientResource objects.
  */
-@XmlSeeAlso({Resource.class, Client.class, ClientResource.class})
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "client-search-result")
-@XmlType(propOrder = {"filter", "metadata", "links", "content"})
-public class ClientPage {
+@XmlSeeAlso({Client.class, ClientResource.class})
+@XmlRootElement(name = "client-page")
+public class ClientPage extends AbstractPage<ClientResource> {
+
+    @XmlElement(name = "filter")
+    private ClientSearchFilter searchFilter;
 
     public ClientPage() {
     }
 
-    @XmlElement(name = "page")
-    private PagedResources.PageMetadata metadata;
-
-    @XmlElement(name = "filter")
-    private ClientSearchFilter filter;
-
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
-    @XmlElementWrapper(name = "links")
-    private List<Link> links;
-
-    @XmlElement(name = "content")
-    @XmlElementWrapper(name = "contents")
-    private Collection<ClientResource> content;
-
-    public ClientPage(PagedResources<ClientResource> clientResourceSupports, Page<Client> clientPage,  ClientSearchFilter filter) {
-        this.content = clientResourceSupports.getContent();
-        this.metadata = clientResourceSupports.getMetadata();
-        this.filter = filter;
-        addFilterToLinks(clientResourceSupports.getLinks(), filter);
+    public ClientPage(PagedResources<ClientResource> clientResourceSupports, Page<Client> clientPage, ClientSearchFilter filter) {
+        pageDefaults(clientResourceSupports, clientPage);
+        addFilterToLinks(filter);
     }
 
-    public static Link createFullSearchLink(){
+    public static Link createFullSearchLink() {
         Link link = linkTo(methodOn(ClientsResource.class).list(null, null, null, null, null)).withRel("clients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
@@ -62,16 +48,19 @@ public class ClientPage {
         return new Link(uriTemplate, link.getRel());
     }
 
-    public static Link createReferenceDataLink(){
+    public static Link createReferenceDataLink() {
         return linkTo(methodOn(ClientsResource.class).getReferenceData()).withRel("clientsReferenceData");
     }
 
-    private void addFilterToLinks(List<Link> links, ClientSearchFilter filter) {
+    private void addFilterToLinks(ClientSearchFilter filter) {
+        this.searchFilter = filter;
         if (CollectionUtils.isEmpty(links)) {
             return;
         }
+        // re-write the links to include the filters
+        List<Link> existingLinks = links;
         this.links = new ArrayList<>();
-        for (Link link : links) {
+        for (Link link : existingLinks) {
             String rel = link.getRel();
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(link.getHref());
             if (link.isTemplated()) {

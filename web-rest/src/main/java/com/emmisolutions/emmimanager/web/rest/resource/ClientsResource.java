@@ -102,7 +102,7 @@ public class ClientsResource {
         Page<User> userPage = clientService.listPotentialContractOwners(pageable);
         if (userPage.hasContent()) {
             return new ResponseEntity<>(
-                    new UserPage(assembler.toResource(userPage, userResourceAssembler)),
+                    new UserPage(assembler.toResource(userPage, userResourceAssembler), userPage),
                     HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
