@@ -2,7 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.web.rest.model.AbstractPage;
+import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
@@ -23,7 +23,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  */
 @XmlSeeAlso({Client.class, ClientResource.class})
 @XmlRootElement(name = "client-page")
-public class ClientPage extends AbstractPage<ClientResource> {
+public class ClientPage extends PagedResource<ClientResource> {
 
     @XmlElement(name = "filter")
     private ClientSearchFilter searchFilter;

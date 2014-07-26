@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
 import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.web.rest.model.AbstractPage;
+import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
@@ -17,7 +17,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  */
 @XmlSeeAlso({User.class, UserResource.class})
 @XmlRootElement(name = "user-page")
-public class UserPage extends AbstractPage<UserResource> {
+public class UserPage extends PagedResource<UserResource> {
 
     public UserPage(){
     }

@@ -21,7 +21,7 @@ import java.util.List;
  */
 @XmlSeeAlso(Resource.class)
 @XmlType(propOrder = {"sortOrder", "metadata", "links", "content"})
-public abstract class AbstractPage<T> {
+public abstract class PagedResource<T> {
 
     @XmlElement(name = "page")
     protected PagedResources.PageMetadata metadata;
