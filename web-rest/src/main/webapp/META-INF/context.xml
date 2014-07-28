@@ -12,5 +12,10 @@
     <Environment name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect" type="java.lang.String"/>
     <Environment name="hibernate.show_sql" value="true" type="java.lang.String"/>
 
+    <!-- For application logging but data source definition using the above resource/environment variables -->
+    <!--Environment name="spring.profiles.active" value="dev,jndi" type="java.lang.String"/-->
+
+    <!-- For production, uncomment this one (no logging except errors) -->
+    <!--Environment name="spring.profiles.active" value="prod" type="java.lang.String"/-->
 
 </Context>
