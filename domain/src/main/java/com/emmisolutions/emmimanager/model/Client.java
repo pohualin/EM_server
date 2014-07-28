@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * A client.
@@ -43,6 +44,13 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private ClientRegion region;
+
+    @ManyToMany
+    @JoinTable(
+            name = "client_location",
+            joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")})
+    private Set<Location> locations;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
@@ -177,4 +185,11 @@ public class Client extends AbstractAuditingEntity implements Serializable {
         this.salesForceAccount = salesForceAccount;
     }
 
+    public Set<Location> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(Set<Location> locations) {
+        this.locations = locations;
+    }
 }

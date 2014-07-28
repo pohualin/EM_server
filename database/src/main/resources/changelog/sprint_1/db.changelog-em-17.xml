@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create_client_location_tables" author="Matt">
+        <createTable tableName="client_location">
+            <column name="location_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="client_id" type="bigint"><constraints nullable="false"/></column>
+        </createTable>
+        <addPrimaryKey tableName="client_location" columnNames="location_id, client_id"/>
+
+        <createTable tableName="client_location_audit">
+            <column name="revision" type="bigint"><constraints nullable="false"/></column>
+            <column name="location_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="client_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+        </createTable>
+        <addPrimaryKey tableName="client_location_revision" columnNames="revision, location_id, client_id"/>
+
+        <createTable tableName="location">
+            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="version" type="INT"/>
+            <column name="created_by" type="varchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="city" type="varchar(255)"><constraints nullable="false"/></column>
+            <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+            <column name="phone" type="varchar(20)"><constraints nullable="false"/></column>
+            <column name="state" type="varchar(2)"><constraints nullable="false"/></column>
+            <column name="client_id" type="bigint"><constraints nullable="false"/></column>
+        </createTable>
+
+        <createTable tableName="location_audit">
+            <column name="id" type="bigint"><constraints nullable="false"/></column>
+            <column name="revision" type="bigint"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="city" type="varchar(255)"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="phone" type="varchar(20)"/>
+            <column name="state" type="varchar(2)"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="location_audit" columnNames="id, revision"/>
+
+        <addForeignKeyConstraint baseTableName="client_location"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_client_location_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_location"
+                                 baseColumnNames="location_id"
+                                 constraintName="fk_client_location_location"
+                                 referencedTableName="location"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_location_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_location_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="location"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_location_belongs_to_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="location_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_location_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+</databaseChangeLog>
