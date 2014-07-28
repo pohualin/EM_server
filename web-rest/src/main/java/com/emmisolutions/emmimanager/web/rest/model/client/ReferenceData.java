@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
@@ -28,6 +29,10 @@ public class ReferenceData extends ResourceSupport{
     @XmlElement(name = "clientTier")
     @XmlElementWrapper(name = "clientTiers")
     private ClientTier[] clientTiers = ClientTier.values();
+
+    @XmlElement(name = "statusFilter")
+    @XmlElementWrapper(name = "statusFilters")
+    private ClientSearchFilter.StatusFilter[] statusFilters = ClientSearchFilter.StatusFilter.values();
 
     public ReferenceData(){
         add(UserPage.createPotentialOwnersFullSearchLink());
