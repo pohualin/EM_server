@@ -7,16 +7,14 @@ import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
  * Reference data for client editing
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class ReferenceData extends ResourceSupport{
 
     @XmlElement(name = "clientType")
