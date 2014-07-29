@@ -20,7 +20,7 @@
             <column name="client_id" type="bigint"><constraints nullable="false"/></column>
             <column name="revision_type" type="TINYINT"/>
         </createTable>
-        <addPrimaryKey tableName="client_location_revision" columnNames="revision, location_id, client_id"/>
+        <addPrimaryKey tableName="client_location_audit" columnNames="revision, location_id, client_id"/>
 
         <createTable tableName="location">
             <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
@@ -37,7 +37,7 @@
             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
             <column name="phone" type="varchar(20)"><constraints nullable="false"/></column>
             <column name="state" type="varchar(2)"><constraints nullable="false"/></column>
-            <column name="client_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="client_id" type="bigint"/>
         </createTable>
 
         <createTable tableName="location_audit">

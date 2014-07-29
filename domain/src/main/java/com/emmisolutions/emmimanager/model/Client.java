@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -45,12 +46,12 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @Column(length = 50)
     private ClientRegion region;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "client_location",
             joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")})
-    private Set<Location> locations;
+    private Set<Location> locations = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10)

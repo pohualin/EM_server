@@ -31,11 +31,7 @@ public class Location extends AbstractAuditingEntity {
     @JoinColumn(name = "client_id")
     private Client belongsTo;
 
-    @ManyToMany
-    @JoinTable(
-            name = "client_location",
-            joinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")})
+    @ManyToMany(mappedBy = "locations")
     private Set<Client> usingThisLocation;
 
     @NotNull
@@ -119,5 +115,27 @@ public class Location extends AbstractAuditingEntity {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return !(id != null ? !id.equals(location.id) : location.id != null);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + id +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

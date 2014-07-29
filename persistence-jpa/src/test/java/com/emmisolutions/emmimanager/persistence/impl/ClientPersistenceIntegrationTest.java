@@ -33,7 +33,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     private User superAdmin;
 
     @Before
-    public void init(){
+    public void init() {
         superAdmin = userPersistence.reload("super_admin");
     }
 
@@ -54,10 +54,10 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void list(){
+    public void list() {
         // push a bunch of clients to the db
         for (int i = 0; i < 200; i++) {
-            clientRepository.save(makeClient(i)) ;
+            clientRepository.save(makeClient(i));
         }
 
         Page<Client> clientPage = clientPersistence.list(null, null);
@@ -113,5 +113,24 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
         return client;
+    }
+
+    @Test
+    public void addLocation() {
+        Client client = clientPersistence.save(makeClient(201));
+        Location location = new Location();
+        location.setName("Valid Name");
+        location.setCity("Valid City");
+        location.setPhone("phone number");
+        location.setState(State.IL);
+        client.getLocations().add(location);
+        clientPersistence.save(client);
+
+
+        Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter(new HashSet<String>() {{
+            add("Demo hospital client 201");
+        }}, null));
+        assertThat(clientPage.getNumberOfElements(), is(1));
+        assertThat(clientPage.getContent().get(0).getLocations().iterator().next().getName(), is("Valid Name"));
     }
 }
