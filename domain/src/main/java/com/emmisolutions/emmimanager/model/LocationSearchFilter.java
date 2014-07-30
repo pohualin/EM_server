@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,34 +16,35 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class LocationSearchFilter {
     @XmlElement(name = "name")
-    @XmlElementWrapper(name= "names")
-    private Set<String> names = new HashSet<>();
+    @XmlElementWrapper(name = "names")
+    private Set<String> names;
 
     private StatusFilter status;
 
-    public LocationSearchFilter(){
-
+    public LocationSearchFilter() {
+        status = StatusFilter.ALL;
     }
 
-    public LocationSearchFilter(Set<String> names, String status){
-        this.names = names;
-        this.status = StatusFilter.fromStringOrAll(status);
+    public LocationSearchFilter(String... names) {
+        this(StatusFilter.ALL, names);
+    }
+
+    public LocationSearchFilter(StatusFilter status, String... names) {
+        if (names != null) {
+            this.names = new HashSet<>();
+            Collections.addAll(this.names, names);
+        }
+        if (status != null) {
+            this.status = status;
+        }
     }
 
     public Set<String> getNames() {
         return names;
     }
 
-    public void setNames(Set<String> names) {
-        this.names = names;
-    }
-
     public StatusFilter getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = StatusFilter.fromStringOrAll(status);
     }
 
     public enum StatusFilter {

@@ -16,9 +16,6 @@ import javax.validation.ConstraintViolationException;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by matt on 7/28/14.
- */
 public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
@@ -80,7 +77,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location = locationPersistence.reload(location);
         assertThat("Client is the same", client, is(location.getBelongsTo()));
 
-        Page<Location> locationPage = locationPersistence.list(null, null);
+        Page<Location> locationPage = locationPersistence.list(null, new LocationSearchFilter("Valid Name A-Za-z-'=_;"));
         assertThat("location is in the page", locationPage.getContent(), hasItem(location));
 
         assertThat("location has client", locationPage.getContent().iterator().next().getBelongsTo(), is(client));

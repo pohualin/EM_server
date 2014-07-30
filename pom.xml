@@ -43,6 +43,7 @@
         <spring.hateoas>0.15.0.RELEASE</spring.hateoas>
         <javax.annotation.version>1.2</javax.annotation.version>
         <querydsl.version>3.4.1</querydsl.version>
+        <woodstox.version>4.4.0</woodstox.version>
     </properties>
 
     <build>
@@ -190,6 +191,18 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>woodstox-core-asl</artifactId>
+                <version>${woodstox.version}</version>
             </dependency>
 
             <dependency>

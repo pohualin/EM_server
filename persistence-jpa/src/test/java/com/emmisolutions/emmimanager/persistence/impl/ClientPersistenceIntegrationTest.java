@@ -12,11 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
-import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
@@ -67,26 +66,22 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("we are on page 0", clientPage.getNumber(), is(0));
 
         // test list with filters
-        Set<String> nameFilters = new HashSet<>();
-        nameFilters.add("HoSpItAl");
-        clientPage = clientPersistence.list(new PageRequest(2, 10), new ClientSearchFilter(nameFilters, null));
+        String[] nameFilters = new String[]{"HoSpItAl"};
+        clientPage = clientPersistence.list(new PageRequest(2, 10), new ClientSearchFilter(nameFilters));
         assertThat("found all of the clients", clientPage.getTotalElements(), is(200l));
         assertThat("there were 20 pages", clientPage.getTotalPages(), is(20));
         assertThat("there are 10 items in the page", clientPage.getSize(), is(10));
         assertThat("we are on page 2", clientPage.getNumber(), is(2));
 
         // search for inactive only, page size 20
-        clientPage = clientPersistence.list(new PageRequest(3, 20), new ClientSearchFilter(nameFilters, "INACTIVE_ONLY"));
+        clientPage = clientPersistence.list(new PageRequest(3, 20), new ClientSearchFilter(INACTIVE_ONLY, nameFilters));
         assertThat("found half of the clients", clientPage.getTotalElements(), is(100l));
         assertThat("there were 5 pages", clientPage.getTotalPages(), is(5));
         assertThat("there are 20 items in the page", clientPage.getSize(), is(20));
         assertThat("we are on page 3", clientPage.getNumber(), is(3));
 
         // search for active, page size 100, multiple names
-        nameFilters = new HashSet<>();
-        nameFilters.add("client 5");
-        nameFilters.add("client 9");
-        clientPage = clientPersistence.list(new PageRequest(0, 100), new ClientSearchFilter(nameFilters, "ACTIVE_ONLY"));
+        clientPage = clientPersistence.list(new PageRequest(0, 100), new ClientSearchFilter(ACTIVE_ONLY, "client 5", "client 9"));
         assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(10l));
         assertThat("there is 1 page", clientPage.getTotalPages(), is(1));
         assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(10));
@@ -94,7 +89,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("we are on page 0", clientPage.getNumber(), is(0));
 
         // request a page out of bounds
-        clientPage = clientPersistence.list(new PageRequest(10, 100), new ClientSearchFilter(nameFilters, "ACTIVE_ONLY"));
+        clientPage = clientPersistence.list(new PageRequest(10, 100), new ClientSearchFilter(ACTIVE_ONLY, "client 5", "client 9"));
         assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(10l));
         assertThat("there is 1 page", clientPage.getTotalPages(), is(1));
         assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(0));
@@ -124,13 +119,12 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setPhone("phone number");
         location.setState(State.IL);
         client.getLocations().add(location);
-        clientPersistence.save(client);
+        client = clientPersistence.save(client);
 
 
-        Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter(new HashSet<String>() {{
-            add("Demo hospital client 201");
-        }}, null));
-        assertThat(clientPage.getNumberOfElements(), is(1));
-        assertThat(clientPage.getContent().get(0).getLocations().iterator().next().getName(), is("Valid Name"));
+        Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter("Demo hospital client 201"));
+        assertThat("Client should be found", clientPage.getContent(), hasItem(client));
+        assertThat("Location should be attached to the client",
+                clientPage.getContent().get(0).getLocations().iterator().next().getName(), is("Valid Name"));
     }
 }

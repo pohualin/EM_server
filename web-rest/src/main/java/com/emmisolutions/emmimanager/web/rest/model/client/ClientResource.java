@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -25,8 +26,9 @@ public class ClientResource extends ResourceSupport {
         this.entity = entity;
     }
 
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
+    @JsonProperty("link")
     public List<Link> getLinks(){
         return super.getLinks();
     }

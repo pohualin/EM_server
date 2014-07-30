@@ -27,6 +27,8 @@ public class Location extends AbstractAuditingEntity {
     @Version
     private Integer version;
 
+    private boolean active;
+
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client belongsTo;
@@ -137,5 +139,13 @@ public class Location extends AbstractAuditingEntity {
                 ", version=" + version +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

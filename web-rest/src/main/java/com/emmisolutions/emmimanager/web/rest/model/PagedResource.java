@@ -5,11 +5,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.jaxb.OrderAdapter;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ import java.util.List;
 /**
  * This is a base class which defines a response page serialization specification.
  */
-@XmlSeeAlso(Resource.class)
 @XmlType(propOrder = {"sortOrder", "metadata", "links", "content"})
 public abstract class PagedResource<T> {
 
@@ -31,7 +28,7 @@ public abstract class PagedResource<T> {
     @XmlJavaTypeAdapter(value = OrderAdapter.class, type = Sort.Order.class)
     protected List<Sort.Order> sortOrder;
 
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     protected List<Link> links;
 

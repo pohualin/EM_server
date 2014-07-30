@@ -12,6 +12,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 
+import static com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications.hasNames;
+import static com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications.isInStatus;
+import static org.springframework.data.jpa.domain.Specifications.where;
+
 /**
  * Location Persistence API implementation
  */
@@ -27,7 +31,7 @@ public class LocationPersistenceImpl implements LocationPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return locationRepository.findAll(page);
+        return locationRepository.findAll(where(hasNames(filter)).and(isInStatus(filter)), page);
     }
 
     @Override

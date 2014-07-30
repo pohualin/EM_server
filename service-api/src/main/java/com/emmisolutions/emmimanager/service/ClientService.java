@@ -15,10 +15,16 @@ public interface ClientService {
      * Fetch a page of clients
      *
      * @param page which page to retrieve
-     * @return list of clients
+     * @return a page of clients
      */
     Page<Client> list(Pageable page, ClientSearchFilter searchFilter);
 
+    /**
+     * Fetch first page of clients (default page size)
+     * @param searchFilter filtered by
+     * @return a page of clients
+     */
+    Page<Client> list(ClientSearchFilter searchFilter);
 
     /**
      * Reloads a client from persistent storage

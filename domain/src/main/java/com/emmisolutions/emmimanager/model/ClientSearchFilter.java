@@ -2,45 +2,45 @@ package com.emmisolutions.emmimanager.model;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "filter")
 public class ClientSearchFilter {
 
     @XmlElement(name = "name")
     @XmlElementWrapper(name= "names")
-    private Set<String> names = new HashSet<>();
+    private Set<String> names;
 
     private StatusFilter status;
 
     public ClientSearchFilter(){
-
+          this.status = StatusFilter.ALL;
     }
 
-    public ClientSearchFilter(Set<String> names, String status){
-        this.names = names;
-        this.status = StatusFilter.fromStringOrAll(status);
+    public ClientSearchFilter(String... names){
+        this(StatusFilter.ALL, names);
+    }
+
+    public ClientSearchFilter(StatusFilter status, String... names){
+        if (names != null) {
+            this.names = new HashSet<>();
+            Collections.addAll(this.getNames(), names);
+        }
+        if ( status != null) {
+            this.status = status;
+        }
     }
 
     public Set<String> getNames() {
         return names;
     }
 
-    public void setNames(Set<String> names) {
-        this.names = names;
-    }
-
     public StatusFilter getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = StatusFilter.fromStringOrAll(status);
     }
 
     public enum StatusFilter {

@@ -33,6 +33,7 @@
             </column>
             <column name="last_modified_by" type="varchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
+            <column name="active" type="boolean"><constraints nullable="false"/> </column>
             <column name="city" type="varchar(255)"><constraints nullable="false"/></column>
             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
             <column name="phone" type="varchar(20)"><constraints nullable="false"/></column>
@@ -44,6 +45,7 @@
             <column name="id" type="bigint"><constraints nullable="false"/></column>
             <column name="revision" type="bigint"><constraints nullable="false"/></column>
             <column name="revision_type" type="TINYINT"/>
+            <column name="active" type="boolean"/>
             <column name="city" type="varchar(255)"/>
             <column name="name" type="varchar(255)"/>
             <column name="phone" type="varchar(20)"/>
