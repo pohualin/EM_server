@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -15,7 +14,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * A HATEOAS wrapper for a page of UserResource objects.
  */
-@XmlSeeAlso({User.class, UserResource.class})
 @XmlRootElement(name = "user-page")
 public class UserPage extends PagedResource<UserResource> {
 

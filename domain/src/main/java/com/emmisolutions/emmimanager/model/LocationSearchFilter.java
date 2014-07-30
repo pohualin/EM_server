@@ -2,35 +2,39 @@ package com.emmisolutions.emmimanager.model;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Filter for Location search.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "filter")
-public class ClientSearchFilter {
-
+public class LocationSearchFilter {
     @XmlElement(name = "name")
-    @XmlElementWrapper(name= "names")
+    @XmlElementWrapper(name = "names")
     private Set<String> names;
 
     private StatusFilter status;
 
-    public ClientSearchFilter(){
-          this.status = StatusFilter.ALL;
+    public LocationSearchFilter() {
+        status = StatusFilter.ALL;
     }
 
-    public ClientSearchFilter(String... names){
+    public LocationSearchFilter(String... names) {
         this(StatusFilter.ALL, names);
     }
 
-    public ClientSearchFilter(StatusFilter status, String... names){
+    public LocationSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
             this.names = new HashSet<>();
-            Collections.addAll(this.getNames(), names);
+            Collections.addAll(this.names, names);
         }
-        if ( status != null) {
+        if (status != null) {
             this.status = status;
         }
     }

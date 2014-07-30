@@ -11,7 +11,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * A HATEOAS wrapper for a page of ClientResource objects.
  */
-@XmlSeeAlso({Client.class, ClientResource.class})
 @XmlRootElement(name = "client-page")
 public class ClientPage extends PagedResource<ClientResource> {
 
@@ -37,7 +35,7 @@ public class ClientPage extends PagedResource<ClientResource> {
     }
 
     public static Link createFullSearchLink() {
-        Link link = linkTo(methodOn(ClientsResource.class).list(null, null, null, null, null)).withRel("clients");
+        Link link = linkTo(methodOn(ClientsResource.class).list(null, null, null, null, (String[]) null)).withRel("clients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

@@ -5,17 +5,19 @@ import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * Reference data for client editing
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
+@XmlRootElement(name = "reference-data")
 public class ReferenceData extends ResourceSupport{
 
     @XmlElement(name = "clientType")
@@ -38,8 +40,9 @@ public class ReferenceData extends ResourceSupport{
         add(UserPage.createPotentialOwnersFullSearchLink());
     }
 
-    @XmlElement(name = "link", namespace = Link.ATOM_NAMESPACE)
+    @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
+    @JsonProperty("link")
     public List<Link> getLinks(){
         return super.getLinks();
     }

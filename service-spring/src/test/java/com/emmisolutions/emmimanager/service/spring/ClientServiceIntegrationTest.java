@@ -14,8 +14,8 @@ import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
-import java.util.HashSet;
 
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -46,16 +46,12 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     public void update() {
         final String clientName = "forUpdating";
         clientService.create(makeClient(clientName, "update_user"));
-        Page<Client> page = clientService.list(null, new ClientSearchFilter(new HashSet<String>() {{
-            add(clientName);
-        }}, "INACTIVE_ONLY"));
+        Page<Client> page = clientService.list(new ClientSearchFilter(INACTIVE_ONLY, clientName));
         Client toUpdate = page.getContent().iterator().next();
         Integer version = toUpdate.getVersion();
         toUpdate.setName("mateo wuz here");
         toUpdate = clientService.update(toUpdate);
-        page = clientService.list(null, new ClientSearchFilter(new HashSet<String>() {{
-            add(clientName);
-        }}, "INACTIVE_ONLY"));
+        page = clientService.list(new ClientSearchFilter(INACTIVE_ONLY, clientName));
         assertThat("shouldn't find it anymore", page.getTotalElements(), is(0l));
         assertThat("version should have incremented on update", version ,is(toUpdate.getVersion() - 1));
     }

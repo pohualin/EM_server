@@ -22,12 +22,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
-import java.util.Set;
 
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.fromStringOrAll;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-;
 
 /**
  * Clients
@@ -67,12 +65,12 @@ public class ClientsResource {
     public ResponseEntity<ClientPage> list(
             @PageableDefault(size = 50) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
-            @RequestParam(value = "name", required = false) Set<String> names,
             @RequestParam(value = "status", required = false) String status,
-            PagedResourcesAssembler<Client> assembler) {
+            PagedResourcesAssembler<Client> assembler,
+            @RequestParam(value = "name", required = false) String... names) {
 
         // create the search filter
-        ClientSearchFilter clientSearchFilter = new ClientSearchFilter(names, status);
+        ClientSearchFilter clientSearchFilter = new ClientSearchFilter(fromStringOrAll(status), names);
 
         // find the page of clients
         Page<Client> clientPage = clientService.list(pageable, clientSearchFilter);

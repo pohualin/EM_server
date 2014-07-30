@@ -32,6 +32,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public Page<Client> list(ClientSearchFilter searchFilter) {
+        return clientPersistence.list(null, searchFilter);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Client reload(Client client) {
         return clientPersistence.reload(client);
