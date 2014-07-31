@@ -1,7 +1,23 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import com.emmisolutions.emmimanager.model.SalesForce;
+
 /**
- * Created by matt on 7/31/14.
+ * SalesForce persistence
  */
-public class SalesForcePersistence {
+public interface SalesForcePersistence {
+
+    /**
+     * Save or update the object
+     * @param salesForce to be save/updated
+     * @return the save/updated object
+     */
+    SalesForce save(SalesForce salesForce);
+
+    /**
+     * Fetches from db
+     * @param id to be fetched (by id)
+     * @return SalesForce or null
+     */
+    SalesForce reload(Long id);
 }

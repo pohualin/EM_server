@@ -18,7 +18,7 @@ import java.util.Set;
  */
 @Audited
 @Entity
-@Table(name = "client")
+@Table(name = "client", uniqueConstraints = @UniqueConstraint(name = "uk_salesforce_account_id", columnNames = "salesforce_account_id"))
 @XmlRootElement(name = "client")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Client extends AbstractAuditingEntity implements Serializable {
@@ -71,7 +71,7 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     private LocalDate contractEnd;
 
     @NotNull
-    @OneToOne(mappedBy = "client", optional = false)
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "salesforce_account_id")
     private SalesForce salesForceAccount;
 

@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -70,8 +67,8 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        User newGuy = new User(username, "pw");
-        client.setContractOwner(userService.save(newGuy));
+        client.setContractOwner(userService.save(new User(username, "pw")));
+        client.setSalesForceAccount(new SalesForce(clientName + System.currentTimeMillis()));
         return client;
     }
 

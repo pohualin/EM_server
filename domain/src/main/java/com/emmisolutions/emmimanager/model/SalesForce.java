@@ -16,9 +16,7 @@ import java.io.Serializable;
 @Audited
 @Entity
 @Table(name = "salesforce_client",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_client_id", columnNames = "client_id"),
-                @UniqueConstraint(name = "uk_account_number", columnNames = "account_number")})
+        uniqueConstraints = @UniqueConstraint(name = "uk_account_number", columnNames = "account_number"))
 @XmlRootElement(name = "salesforce")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SalesForce extends AbstractAuditingEntity implements Serializable {
@@ -34,7 +32,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
-    @OneToOne
+    @OneToOne(mappedBy = "salesForceAccount")
     @XmlTransient
     private Client client;
 
