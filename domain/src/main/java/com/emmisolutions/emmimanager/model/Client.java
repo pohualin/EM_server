@@ -70,7 +70,8 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @Column(name = "contract_end", nullable = false)
     private LocalDate contractEnd;
 
-    @OneToOne(mappedBy = "client")
+    @NotNull
+    @OneToOne(mappedBy = "client", optional = false)
     @JoinColumn(name = "salesforce_account_id")
     private SalesForce salesForceAccount;
 

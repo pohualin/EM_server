@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -37,7 +34,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
-    @OneToOne(optional = false)
+    @OneToOne
     @XmlTransient
     private Client client;
 
@@ -50,14 +47,11 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Transient
-    private LocalDateTime localDateTime = LocalDateTime.now();
+    public SalesForce(){}
 
-    @Transient
-    private LocalDate anotherLocalDate = LocalDate.now();
-
-    @Transient
-    private DateTime dateTimeWithTimezone = DateTime.now();
+    public SalesForce(String accountNumber){
+        this.accountNumber = accountNumber;
+    }
 
     public String getAccountNumber() {
         return accountNumber;

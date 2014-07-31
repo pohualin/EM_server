@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="remove_client_not_null_constraint" author="Matt">
+        <dropNotNullConstraint tableName="salesforce_client" columnName="client_id" columnDataType="bigint"/>
+    </changeSet>
+
+</databaseChangeLog>
