@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Set;
 
+/**
+ * A user represents a person who logs in to the system and uses it.
+ */
 @Audited
 @Entity
 @Table(name = "app_user",
@@ -18,15 +21,6 @@ import java.util.Set;
         @UniqueConstraint(columnNames = {"login"}))
 @XmlRootElement(name = "user")
 public class User extends AbstractAuditingEntity implements Serializable {
-
-    public User(){
-
-    }
-
-    public User(String login, String password){
-        this.login = login;
-        this.password = password;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,6 +60,15 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Size(min = 0, max = 100)
     @Column(length = 100)
     private String email;
+
+    public User(){
+
+    }
+
+    public User(String login, String password){
+        this.login = login;
+        this.password = password;
+    }
 
     public Long getId() {
         return id;

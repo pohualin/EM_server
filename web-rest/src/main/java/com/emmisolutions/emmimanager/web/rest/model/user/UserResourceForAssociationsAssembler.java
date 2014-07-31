@@ -13,14 +13,14 @@ public class UserResourceForAssociationsAssembler implements ResourceAssembler<U
 
     @Override
     public UserResource toResource(User user) {
-        UserResource ret = new UserResource();
-        ret.id = user.getId();
-        ret.version = user.getVersion();
-        ret.login = user.getLogin();
-        ret.firstName = user.getFirstName();
-        ret.lastName = user.getLastName();
-        ret.removeLinks();
-        return ret;
+        return new UserResource(
+                user.getId(),
+                user.getVersion(),
+                user.getLogin(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                null);
     }
 
 }

@@ -36,6 +36,13 @@ public abstract class PagedResource<T> {
     @XmlElementWrapper(name = "contents")
     protected Collection<T> content;
 
+    /**
+     * Populates instance variables (e.g. content, metadata, links, etc) from the
+     * passed arguments
+     *
+     * @param pagedResources is where we get the content, metadata and links
+     * @param page           is where we get the sort and sort order
+     */
     public void pageDefaults(PagedResources<T> pagedResources, Page<?> page) {
         if (pagedResources != null) {
             this.content = pagedResources.getContent();

@@ -34,6 +34,12 @@ public class ClientPage extends PagedResource<ClientResource> {
         addFilterToLinks(filter);
     }
 
+    /**
+     * Create the search link
+     *
+     * @return Link for client searches
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
+     */
     public static Link createFullSearchLink() {
         Link link = linkTo(methodOn(ClientsResource.class).list(null, null, null, null, (String[]) null)).withRel("clients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
@@ -46,6 +52,12 @@ public class ClientPage extends PagedResource<ClientResource> {
         return new Link(uriTemplate, link.getRel());
     }
 
+    /**
+     * Create a reference data link
+     *
+     * @return
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientsResource#getReferenceData()
+     */
     public static Link createReferenceDataLink() {
         return linkTo(methodOn(ClientsResource.class).getReferenceData()).withRel("clientsReferenceData");
     }

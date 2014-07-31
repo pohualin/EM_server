@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Filter for Location search.
+ * Filter used for Location searching.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class LocationSearchFilter {
@@ -47,9 +47,18 @@ public class LocationSearchFilter {
         return status;
     }
 
+    /**
+     * Location Statuses
+     */
     public enum StatusFilter {
         ALL, ACTIVE_ONLY, INACTIVE_ONLY;
 
+        /**
+         * Create a StatusFilter from a string
+         *
+         * @param status if the string matches or ALL
+         * @return StatusFilter
+         */
         public static StatusFilter fromStringOrAll(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {

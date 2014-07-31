@@ -15,25 +15,28 @@ import java.util.List;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+/**
+ * Creates a UserResource from a User
+ */
 @Component
 public class UserResourceAssembler implements ResourceAssembler<User, UserResource> {
 
     @Override
     public UserResource toResource(User user) {
-        UserResource ret = new UserResource();
         List<PermissionName> roles = new ArrayList<>();
         for (Role role : user.getRoles()) {
             for (Permission permission : role.getPermissions()) {
                 roles.add(permission.getName());
             }
         }
-        ret.id = user.getId();
-        ret.version = user.getVersion();
-        ret.login = user.getLogin();
-        ret.firstName = user.getFirstName();
-        ret.lastName = user.getLastName();
-        ret.email = user.getEmail();
-        ret.permissions = roles;
+        UserResource ret = new UserResource(
+                user.getId(),
+                user.getVersion(),
+                user.getLogin(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                roles);
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
         ret.add(ClientPage.createReferenceDataLink());

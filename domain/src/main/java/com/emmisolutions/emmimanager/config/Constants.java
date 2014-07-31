@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.config;
 
+/**
+ * Constants for the application
+ */
 public interface Constants {
 
     public static final String SPRING_PROFILE_DEVELOPMENT = "dev";

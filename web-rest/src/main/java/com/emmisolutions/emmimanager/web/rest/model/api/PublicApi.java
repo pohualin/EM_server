@@ -20,19 +20,19 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @XmlRootElement(name = "public")
 public class PublicApi extends ResourceSupport {
 
-    @XmlElement(name = "link")
-    @XmlElementWrapper(name = "links")
-    @JsonProperty("link")
-    public List<Link> getLinks(){
-        return super.getLinks();
-    }
-
     public PublicApi() {
         Link self = linkTo(ApiResource.class).withSelfRel();
         add(self);
         add(linkTo(methodOn(UsersResource.class).authenticated()).withRel("authenticated"));
         add(new Link(self.getHref() + "/authenticate", "authenticate"));
         add(new Link(self.getHref() + "/logout", "logout"));
+    }
+
+    @XmlElement(name = "link")
+    @XmlElementWrapper(name = "links")
+    @JsonProperty("link")
+    public List<Link> getLinks(){
+        return super.getLinks();
     }
 
 }

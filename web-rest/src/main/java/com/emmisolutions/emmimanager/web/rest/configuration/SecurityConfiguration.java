@@ -18,6 +18,9 @@ import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
+/**
+ * Spring Security Setup
+ */
 @Configuration
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.web.rest.security"

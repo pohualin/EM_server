@@ -13,6 +13,9 @@ import java.util.Set;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
+/**
+ * A Role is an aggregation of Permission objects.
+ */
 @Entity
 @Audited
 @Table(name = "role",

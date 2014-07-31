@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
- * Clients
+ * Clients REST API.
  */
 @RestController
 @RequestMapping(value = "/webapi",
@@ -45,6 +45,12 @@ public class ClientsResource {
     @Resource(name = "userResourceForAssociationsAssembler")
     UserResourceForAssociationsAssembler userResourceAssembler;
 
+    /**
+     * GET a single client
+     *
+     * @param id to load
+     * @return ClientResource or NO_CONTENT
+     */
     @RequestMapping(value = "/clients/{id}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_VIEW"})
     public ResponseEntity<ClientResource> get(@PathVariable("id") Long id) {
@@ -59,6 +65,16 @@ public class ClientsResource {
 
     }
 
+    /**
+     * GET to search for clients
+     *
+     * @param pageable  paged request
+     * @param sort      sorting request
+     * @param status    to filter by
+     * @param assembler used to create the PagedResources
+     * @param names     to filter by
+     * @return ClientPage or NO_CONTENT
+     */
     @RequestMapping(value = "/clients",
             method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LIST"})
@@ -86,12 +102,25 @@ public class ClientsResource {
         }
     }
 
+    /**
+     * GET to Retrieve reference data about clients.
+     *
+     * @return ReferenceData
+     */
     @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
         return new ReferenceData();
     }
 
+    /**
+     * GET to retrieve Potential Owner reference data. This data is paginated
+     *
+     * @param pageable  paged request
+     * @param sort      sorting request
+     * @param assembler used to create PagedResources
+     * @return UserPage matching the search request
+     */
     @RequestMapping(value = "/clients/ref/potentialOwners", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 50) Pageable pageable,
@@ -107,7 +136,12 @@ public class ClientsResource {
         }
     }
 
-
+    /**
+     * POST to create new client
+     *
+     * @param client to create
+     * @return ClientResource or INTERNAL_SERVER_ERROR if it could not be created
+     */
     @RequestMapping(value = "/clients",
             method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
@@ -122,6 +156,12 @@ public class ClientsResource {
         }
     }
 
+    /**
+     * PUT to update the client
+     *
+     * @param client to update
+     * @return ClientResource or INTERNAL_SERVER_ERROR if update were unsuccessful
+     */
     @RequestMapping(value = "/clients",
             method = RequestMethod.PUT,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}

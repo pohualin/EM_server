@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.model;
 import javax.xml.bind.annotation.XmlEnum;
 
 /**
- * Created by matt on 7/18/14.
+ * The Client Types
  */
 @XmlEnum(String.class)
 public enum ClientType {

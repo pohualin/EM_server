@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The search filter for Client entities
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "filter")
 public class ClientSearchFilter {

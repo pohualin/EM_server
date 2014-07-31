@@ -16,6 +16,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 
+/**
+ * User REST API
+ */
 @RestController
 @RequestMapping(value = "/webapi",
         produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
@@ -28,6 +31,11 @@ public class UsersResource {
     @Resource
     UserResourceAssembler userResourceAssembler;
 
+    /**
+     * GET to retrieve authenticated user
+     *
+     * @return UserResource or 401 if the user is not logged in (via the PERM_USER annotation)
+     */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_USER"})
     public ResponseEntity<UserResource> authenticated() {
