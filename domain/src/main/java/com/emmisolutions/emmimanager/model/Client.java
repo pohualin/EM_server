@@ -73,7 +73,14 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @OneToOne(mappedBy = "client")
     @JoinColumn(name = "salesforce_account_id")
     private SalesForce salesForceAccount;
-
+    
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "client_tag_group",
+            joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")})
+    private Set<Group> groups = new HashSet<>();
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -193,4 +200,12 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     public void setLocations(Set<Location> locations) {
         this.locations = locations;
     }
+
+	public Set<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Set<Group> groups) {
+		this.groups = groups;
+	}
 }
