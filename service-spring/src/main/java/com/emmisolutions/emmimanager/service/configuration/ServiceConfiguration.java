@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAspectJAutoProxy
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.service",
+        "com.emmisolutions.emmimanager.salesforce.configuration",
         "com.emmisolutions.emmimanager.persistence.configuration"})
 public class ServiceConfiguration {
 
