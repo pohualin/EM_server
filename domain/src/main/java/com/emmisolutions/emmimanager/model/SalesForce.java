@@ -5,6 +5,7 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
@@ -162,6 +163,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
         this.city = city;
     }
 
+    @XmlElement
     public String getClientName() {
         return (client != null) ? client.getName() : null;
     }

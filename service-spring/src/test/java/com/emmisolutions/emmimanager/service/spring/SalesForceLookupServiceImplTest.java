@@ -29,7 +29,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
 
         // search salesforce to make sure this account exists
         SalesForceSearchResponse salesForceSearchResponse = salesForceService.find(accountNumber);
-        assertThat("response has a result", salesForceSearchResponse.getTotal(), is(1));
+        assertThat("response has a result", salesForceSearchResponse.getAccounts().size(), is(1));
         assertThat("response does not have an id", salesForceSearchResponse.getAccounts().get(0).getId(), is(nullValue()));
 
         // create a client with this sf account number

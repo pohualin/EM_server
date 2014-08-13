@@ -14,15 +14,12 @@ public class SalesForceSearchResponse {
 
     private boolean complete;
 
-    private int total;
-
     @XmlElement(name = "account")
     @XmlElementWrapper(name="accounts")
     private List<SalesForce> accounts;
 
     public SalesForceSearchResponse(boolean complete, int total, List<SalesForce> accounts) {
         this.complete = complete;
-        this.total = total;
         this.accounts = accounts;
     }
 
@@ -30,11 +27,15 @@ public class SalesForceSearchResponse {
         return complete;
     }
 
-    public int getTotal() {
-        return total;
-    }
-
     public List<SalesForce> getAccounts() {
         return accounts;
+    }
+
+    @Override
+    public String toString() {
+        return "SalesForceSearchResponse{" +
+                "complete=" + complete +
+                ", accounts=" + accounts +
+                '}';
     }
 }

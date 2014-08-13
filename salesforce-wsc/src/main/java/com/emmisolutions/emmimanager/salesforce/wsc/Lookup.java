@@ -28,7 +28,7 @@ public class Lookup implements SalesForceLookup {
     private static final int DEFAULT_PAGE_SIZE = 50;
     private static final String ID_QUERY = "SELECT Account.Id, Account.Name, Account.EMMI_Account_ID__c, Account.Type, Account.RecordTypeId, Account.RecordType.Name, Account.Account_Status__c, Account.BillingCity, Account.BillingState, Account.BillingPostalCode, Account.BillingStreet, Account.BillingCountry, Account.Owner.Id, Account.Owner.Alias, Account.Phone, Account.Fax FROM Account WHERE Id = '%s'";
     private static final Pattern ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{18}");
-    private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name)";
+    private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
 
     private EnterpriseConnection connection;
 
@@ -72,7 +72,7 @@ public class Lookup implements SalesForceLookup {
         int totalNumber;
         try {
             // search the account
-            SearchResult searchResult = connection.search(String.format(FIND_QUERY, searchString));
+            SearchResult searchResult = connection.search(String.format(FIND_QUERY, escape(searchString), (pageSize + 1)));
             totalNumber = searchResult.getSearchRecords().length;
             if (totalNumber > 0) {
                 // found a match
@@ -98,13 +98,28 @@ public class Lookup implements SalesForceLookup {
         }
         return new SalesForceSearchResponse(isComplete, totalNumber, accounts);
     }
-    
+
+    private String escape(String searchQuery) {
+        StringBuilder ret = new StringBuilder();
+        for (Character character : searchQuery.toCharArray()) {
+            if (ESCAPE_CHARS.contains(character.toString())) {
+                ret.append('\\').append(character);
+            } else {
+                ret.append(character);
+            }
+        }
+        return ret.toString();
+    }
+
+    private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
+
     private SalesForce convert(Account account) {
         SalesForce sf = new SalesForce();
         sf.setAccountNumber(account.getId());
         sf.setName(account.getName());
         sf.setStreet(account.getBillingStreet());
         sf.setState(account.getBillingState());
+        sf.setCity(account.getBillingCity());
         sf.setCountry(account.getBillingCountry());
         sf.setPostalCode(account.getBillingPostalCode());
         sf.setPhoneNumber(account.getPhone());

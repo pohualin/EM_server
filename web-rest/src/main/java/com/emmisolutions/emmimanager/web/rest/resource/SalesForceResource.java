@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.service.SalesForceService;
 import com.emmisolutions.emmimanager.web.rest.model.salesforce.SalesForceSearchResponseResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +33,7 @@ public class SalesForceResource {
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ResponseEntity<SalesForceSearchResponseResource> find(@RequestParam(value = "q", required = false) String searchString) {
         SalesForceSearchResponse searchResponse = salesForceService.find(searchString);
-        if (searchResponse != null && searchResponse.getTotal() > 0) {
+        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getAccounts())) {
             return new ResponseEntity<>(new SalesForceSearchResponseResource(searchResponse, searchString), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
