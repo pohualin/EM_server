@@ -9,5 +9,5 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = SalesForceConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("test")
-public class BaseIntegrationTest {
+public abstract class BaseIntegrationTest {
 }

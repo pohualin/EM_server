@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 
 /**
  * SalesForce service
@@ -8,25 +8,12 @@ import com.emmisolutions.emmimanager.model.SalesForce;
 public interface SalesForceService {
 
     /**
-     * Creates a new SalesForce object
+     * Searches SalesForce for accounts containing the search string. This
+     * method will set the id and version for all accounts which are already
+     * bound to a client.
      *
-     * @param salesForce to be created
-     * @return the saved object
+     * @param searchString to find
+     * @return a SalesForceSearchResponse
      */
-    SalesForce create(SalesForce salesForce);
-
-    /**
-     * Update the SalesForce object
-     *
-     * @param salesForce to be updated
-     * @return the updated object
-     */
-    SalesForce update(SalesForce salesForce);
-
-    /**
-     * Fetches a SalesForce from persistent storage
-     * @param salesForce to be fetched
-     * @return the object or null
-     */
-    SalesForce reload(SalesForce salesForce);
+    SalesForceSearchResponse find(String searchString);
 }

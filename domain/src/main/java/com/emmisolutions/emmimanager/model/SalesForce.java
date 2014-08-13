@@ -4,8 +4,6 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
@@ -18,7 +16,6 @@ import java.io.Serializable;
 @Table(name = "salesforce_client",
         uniqueConstraints = @UniqueConstraint(name = "uk_account_number", columnNames = "account_number"))
 @XmlRootElement(name = "salesforce")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class SalesForce extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -32,12 +29,14 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
+    @NotNull
     @OneToOne(mappedBy = "salesForceAccount")
     @XmlTransient
     private Client client;
 
     private String name;
     private String street;
+    private String city;
     private String state;
     @Column(name = "postal_code")
     private String postalCode;
@@ -45,10 +44,12 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    public SalesForce(){}
+    public SalesForce(){
+    }
 
-    public SalesForce(String accountNumber){
+    public SalesForce(String accountNumber, Client client){
         this.accountNumber = accountNumber;
+        this.client = client;
     }
 
     public String getAccountNumber() {
@@ -142,5 +143,31 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "SalesForce{" +
+                "accountNumber='" + accountNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", id=" + id +
+                '}';
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getClientName() {
+//        return "matt";
+        return (client != null)? client.getName() : null;
+    }
+
+    public void setClientName(String clientName) {
+        // no -op
     }
 }

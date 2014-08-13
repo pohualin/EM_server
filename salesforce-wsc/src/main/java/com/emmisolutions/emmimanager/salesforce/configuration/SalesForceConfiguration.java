@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.jndi.JndiPropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -31,7 +30,7 @@ public class SalesForceConfiguration {
 
         // for development/test use the embedded properties file
         if (environment.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST)) {
-            ResourcePropertySource resourcePropertySource = new ResourcePropertySource(new ClassPathResource("salesforce.properties"));
+            ResourcePropertySource resourcePropertySource = new ResourcePropertySource("sf", "classpath:salesforce.properties");
             environment.getPropertySources().addLast(resourcePropertySource);
         }
 

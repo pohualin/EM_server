@@ -2,22 +2,18 @@ package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.SalesForce;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * SalesForce persistence
  */
 public interface SalesForcePersistence {
 
     /**
-     * Save or update the object
-     * @param salesForce to be save/updated
-     * @return the save/updated object
+     * Find persistent SalesForce accounts by account number
+     * @param accountNumbersToMatch set of numbers to match
+     * @return SalesForce objects
      */
-    SalesForce save(SalesForce salesForce);
-
-    /**
-     * Fetches from db
-     * @param id to be fetched (by id)
-     * @return SalesForce or null
-     */
-    SalesForce reload(Long id);
+    List<SalesForce> findByAccountNumbers(Set<String> accountNumbersToMatch);
 }

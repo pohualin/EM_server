@@ -28,5 +28,13 @@
                                  referencedColumnNames="id"/>
     </changeSet>
     
+    <changeSet id="add_city_to_sf" author="Matt">
+        <addColumn tableName="salesforce_client">
+            <column name="city" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="salesforce_client_audit">
+            <column name="city" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

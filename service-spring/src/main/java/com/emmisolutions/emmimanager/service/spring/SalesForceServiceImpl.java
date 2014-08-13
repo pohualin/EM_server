@@ -1,12 +1,17 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.persistence.SalesForcePersistence;
+import com.emmisolutions.emmimanager.salesforce.service.SalesForceLookup;
 import com.emmisolutions.emmimanager.service.SalesForceService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * SalesForce Service Implementation
@@ -17,29 +22,30 @@ public class SalesForceServiceImpl implements SalesForceService {
     @Resource
     SalesForcePersistence salesForcePersistence;
 
-    @Override
-    @Transactional
-    public SalesForce create(SalesForce salesForce) {
-        salesForce.setId(null);
-        salesForce.setVersion(null);
-        return salesForcePersistence.save(salesForce);
-    }
-
-    @Override
-    @Transactional
-    public SalesForce update(SalesForce salesForce) {
-        if (salesForce == null || salesForce.getId() == null || salesForce.getVersion() == null){
-            throw new IllegalArgumentException("SalesForce Id and Version cannot be null.");
-        }
-        return salesForcePersistence.save(salesForce);
-    }
+    @Resource
+    SalesForceLookup salesForceLookup;
 
     @Override
     @Transactional(readOnly = true)
-    public SalesForce reload(SalesForce salesForce) {
-        if (salesForce == null || salesForce.getId() == null) {
-            return null;
+    public SalesForceSearchResponse find(String searchString) {
+        SalesForceSearchResponse salesForceSearchResponse = salesForceLookup.findAccountsByNameOrId(searchString, 20);
+        Set<String> accountNumbersToMatch = new HashSet<>();
+        for (SalesForce salesForce : salesForceSearchResponse.getAccounts()) {
+            accountNumbersToMatch.add(salesForce.getAccountNumber());
         }
-        return salesForcePersistence.reload(salesForce.getId());
+        List<SalesForce> persistentAccounts = salesForcePersistence.findByAccountNumbers(accountNumbersToMatch);
+        // update the id, version and client on accounts found within the search response
+        for (SalesForce persistentAccount : persistentAccounts) {
+            for (SalesForce salesForce : salesForceSearchResponse.getAccounts()) {
+                if (persistentAccount.getAccountNumber().equals(salesForce.getAccountNumber())) {
+                    salesForce.setId(persistentAccount.getId());
+                    salesForce.setVersion(persistentAccount.getVersion());
+                    salesForce.setClient(persistentAccount.getClient());
+                }
+            }
+        }
+        return salesForceSearchResponse;
     }
+
+
 }
