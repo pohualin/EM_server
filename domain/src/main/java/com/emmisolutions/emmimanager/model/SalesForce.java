@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -7,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 /**
@@ -33,7 +33,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     private String accountNumber;
 
     @OneToOne(mappedBy = "salesForceAccount")
-    @XmlTransient
+    @JsonBackReference
     private Client client;
 
     private String name;

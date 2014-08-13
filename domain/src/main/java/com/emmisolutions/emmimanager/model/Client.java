@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -73,6 +74,7 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "salesforce_account_id")
+    @JsonManagedReference
     private SalesForce salesForceAccount;
 
     @Override
@@ -185,9 +187,6 @@ public class Client extends AbstractAuditingEntity implements Serializable {
 
     public void setSalesForceAccount(SalesForce salesForceAccount) {
         this.salesForceAccount = salesForceAccount;
-        if ( salesForceAccount != null && salesForceAccount.getClient() == null){
-            salesForceAccount.setClient(this);
-        }
     }
 
     public Set<Location> getLocations() {
