@@ -63,6 +63,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(ClientType.PROVIDER);
         client.setActive(true);
         client.setContractOwner(superAdmin);
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         client = clientPersistence.save(client);
 
         Location location = new Location();

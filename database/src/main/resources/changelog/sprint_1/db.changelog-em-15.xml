@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="reverse_dependency_for_client" author="Matt">
+        
+        <dropColumn tableName="salesforce_client" columnName="client_id"/>
+        <dropColumn tableName="salesforce_client_audit" columnName="client_id"/>
+        <!-- kill all saved clients as they are invalid due to no SF account -->
+        <delete tableName="client"/>
+        <delete tableName="client_audit"/>
+
+        <addColumn tableName="client">
+            <column name="salesforce_account_id" type="bigint"><constraints nullable="false"/> </column>
+        </addColumn>
+        <addColumn tableName="client_audit">
+            <column name="salesforce_account_id" type="bigint"><constraints nullable="false"/> </column>
+        </addColumn>
+
+        <addUniqueConstraint tableName="client" columnNames="salesforce_account_id" constraintName="uk_salesforce_account_id"/>
+
+        <addForeignKeyConstraint baseTableName="client"
+                                 baseColumnNames="salesforce_account_id"
+                                 constraintName="fk_salesforce_account_id"
+                                 referencedTableName="salesforce_client"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+    
+    <changeSet id="add_city_to_sf" author="Matt">
+        <addColumn tableName="salesforce_client">
+            <column name="city" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="salesforce_client_audit">
+            <column name="city" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

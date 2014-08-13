@@ -12,6 +12,12 @@
     <Environment name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect" type="java.lang.String"/>
     <Environment name="hibernate.show_sql" value="true" type="java.lang.String"/>
 
+    <!-- salesforce settings -->
+    <Environment name="salesforce.username" value="sfdcapi@emmisolutions.com.test" type="java.lang.String"/>
+    <Environment name="salesforce.password" value="emmiapi12GG4e8wkXEik4FWXgNUkRLEVLV" type="java.lang.String"/>
+    <Environment name="salesforce.url" value="https://cs13.salesforce.com/services/Soap/c/31.0" type="java.lang.String"/>
+
+
     <!-- For application logging but data source definition using the above resource/environment variables -->
     <!--Environment name="spring.profiles.active" value="dev,jndi" type="java.lang.String"/-->
 
