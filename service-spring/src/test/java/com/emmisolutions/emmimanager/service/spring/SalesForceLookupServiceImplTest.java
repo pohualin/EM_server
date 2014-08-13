@@ -10,8 +10,7 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
 
@@ -25,19 +24,34 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
     UserService userService;
 
     @Test
-    public void find(){
+    public void lifecycle(){
         String accountNumber = "0013000000CqY7OAAV";
 
+        // search salesforce to make sure this account exists
         SalesForceSearchResponse salesForceSearchResponse = salesForceService.find(accountNumber);
         assertThat("response has a result", salesForceSearchResponse.getTotal(), is(1));
         assertThat("response does not have an id", salesForceSearchResponse.getAccounts().get(0).getId(), is(nullValue()));
 
+        // create a client with this sf account number
+        Client client = clientService.create(makeClient("clientName", "sfUser", accountNumber));
 
-        SalesForce sf = clientService.create(makeClient("clientName", "sfUser", accountNumber)).getSalesForceAccount();
+        // ensure that the find returns the client name
+        SalesForce sf = client.getSalesForceAccount();
         salesForceSearchResponse = salesForceService.find(accountNumber);
         assertThat("response has same id as persisted account", salesForceSearchResponse.getAccounts().get(0).getId(), is(sf.getId()));
         assertThat("response has same version as persisted account", salesForceSearchResponse.getAccounts().get(0).getVersion(), is(sf.getVersion()));
-        assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClient().getName(), is("clientName"));
+        assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClientName(), is("clientName"));
+
+        // now mod the sf account on the client by creating a new one
+        client.setSalesForceAccount(new SalesForce("NEWSALESFORCEACCNT"));
+        client = clientService.update(client);
+        assertThat("new sf account was persisted", client.getSalesForceAccount().getId(), is(notNullValue()));
+
+        //ensure that the deletion of the first SalesForce object has happened
+        salesForceSearchResponse = salesForceService.find(accountNumber);
+        assertThat("response has same id as persisted account", salesForceSearchResponse.getAccounts().get(0).getId(), is(nullValue()));
+        assertThat("response has same version as persisted account", salesForceSearchResponse.getAccounts().get(0).getVersion(), is(nullValue()));
+        assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClientName(), is(nullValue()));
     }
 
     private Client makeClient(String clientName, String username, String accountNumber){
@@ -47,7 +61,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
         client.setContractOwner(userService.save(new User(username, "pw")));
-        client.setSalesForceAccount(new SalesForce(accountNumber, client));
+        client.setSalesForceAccount(new SalesForce(accountNumber));
         return client;
     }
 }

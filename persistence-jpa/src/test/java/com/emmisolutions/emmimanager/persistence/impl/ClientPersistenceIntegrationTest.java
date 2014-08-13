@@ -47,7 +47,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(ClientType.PROVIDER);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis(), client));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         client = clientPersistence.save(client);
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
         assertThat("system is the created by", client.getCreatedBy(), is("system"));
@@ -109,7 +109,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
         System.out.println(System.currentTimeMillis());
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis(), client));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
     }
 

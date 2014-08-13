@@ -71,7 +71,7 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     private LocalDate contractEnd;
 
     @NotNull
-    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "salesforce_account_id")
     private SalesForce salesForceAccount;
 
@@ -185,6 +185,9 @@ public class Client extends AbstractAuditingEntity implements Serializable {
 
     public void setSalesForceAccount(SalesForce salesForceAccount) {
         this.salesForceAccount = salesForceAccount;
+        if ( salesForceAccount != null && salesForceAccount.getClient() == null){
+            salesForceAccount.setClient(this);
+        }
     }
 
     public Set<Location> getLocations() {

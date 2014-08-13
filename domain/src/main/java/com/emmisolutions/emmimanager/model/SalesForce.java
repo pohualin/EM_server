@@ -31,7 +31,6 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
-    @NotNull
     @OneToOne(mappedBy = "salesForceAccount")
     @XmlTransient
     private Client client;
@@ -46,12 +45,11 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    public SalesForce(){
+    public SalesForce() {
     }
 
-    public SalesForce(String accountNumber, Client client){
+    public SalesForce(String accountNumber) {
         this.accountNumber = accountNumber;
-        this.client = client;
     }
 
     public String getAccountNumber() {
@@ -165,8 +163,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     }
 
     public String getClientName() {
-//        return "matt";
-        return (client != null)? client.getName() : null;
+        return (client != null) ? client.getName() : null;
     }
 
     public void setClientName(String clientName) {
