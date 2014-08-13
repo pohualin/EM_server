@@ -1,16 +1,13 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.envers.Audited;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.validation.constraints.Pattern;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 /**
@@ -19,11 +16,8 @@ import java.io.Serializable;
 @Audited
 @Entity
 @Table(name = "salesforce_client",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_client_id", columnNames = "client_id"),
-                @UniqueConstraint(name = "uk_account_number", columnNames = "account_number")})
+        uniqueConstraints = @UniqueConstraint(name = "uk_account_number", columnNames = "account_number"))
 @XmlRootElement(name = "salesforce")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class SalesForce extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -34,15 +28,17 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     private Integer version;
 
     @NotNull
+    @Pattern(regexp = "[a-zA-Z0-9]{18}")
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
-    @OneToOne(optional = false)
-    @XmlTransient
+    @OneToOne(mappedBy = "salesForceAccount")
+    @JsonBackReference
     private Client client;
 
     private String name;
     private String street;
+    private String city;
     private String state;
     @Column(name = "postal_code")
     private String postalCode;
@@ -50,14 +46,12 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Transient
-    private LocalDateTime localDateTime = LocalDateTime.now();
+    public SalesForce() {
+    }
 
-    @Transient
-    private LocalDate anotherLocalDate = LocalDate.now();
-
-    @Transient
-    private DateTime dateTimeWithTimezone = DateTime.now();
+    public SalesForce(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 
     public String getAccountNumber() {
         return accountNumber;
@@ -150,5 +144,31 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "SalesForce{" +
+                "accountNumber='" + accountNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", id=" + id +
+                '}';
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    @XmlElement
+    public String getClientName() {
+        return (client != null) ? client.getName() : null;
+    }
+
+    public void setClientName(String clientName) {
+        // no -op
     }
 }

@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.web.rest.model.salesforce.SalesForceSearchResponseResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
@@ -38,6 +39,7 @@ public class ReferenceData extends ResourceSupport{
 
     public ReferenceData(){
         add(UserPage.createPotentialOwnersFullSearchLink());
+        add(SalesForceSearchResponseResource.createFindLink());
     }
 
     @XmlElement(name = "link")

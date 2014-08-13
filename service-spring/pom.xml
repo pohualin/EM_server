@@ -21,6 +21,22 @@
         </dependency>
         <dependency>
             <groupId>com.emmisolutions.emmimanager</groupId>
+            <artifactId>salesforce-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.emmisolutions.emmimanager</groupId>
+            <artifactId>salesforce-wsc</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.force.api</groupId>
+            <artifactId>force-wsc</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.emmisolutions.emmimanager</groupId>
             <artifactId>persistence-jpa</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

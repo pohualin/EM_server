@@ -10,10 +10,29 @@ import org.springframework.data.domain.Pageable;
  */
 public interface ClientPersistence {
 
+    /**
+     * Fetches a page of Client objects
+     *
+     * @param page         defines which page or null for the first page
+     * @param searchFilter to filter the client list
+     * @return a page of client objects
+     */
     Page<Client> list(Pageable page, ClientSearchFilter searchFilter);
 
+    /**
+     * Saves a client
+     *
+     * @param client to be saved
+     * @return the saved client
+     */
     Client save(Client client);
 
-    Client reload(Client client);
+    /**
+     * Loads a client based upon an id
+     *
+     * @param id to load
+     * @return the client or null
+     */
+    Client reload(Long id);
 
 }
