@@ -57,7 +57,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName("whatever");
         client.setContractOwner(userService.save(new User("username", "pw")));
-        client.setSalesForceAccount(new SalesForce("account num", client));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis(), client));
         client.getLocations().add(makeLocation(0));
 
         // this should transitively persist the location

@@ -4,6 +4,7 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
@@ -26,6 +27,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     private Integer version;
 
     @NotNull
+    @Pattern(regexp = "[a-zA-Z0-9]{18}")
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 

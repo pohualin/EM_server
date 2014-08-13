@@ -68,7 +68,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
         client.setContractOwner(userService.save(new User(username, "pw")));
-        client.setSalesForceAccount(new SalesForce(clientName + System.currentTimeMillis(), client));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis(), client));
         return client;
     }
 
