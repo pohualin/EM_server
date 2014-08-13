@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 @Repository
 public class Lookup implements SalesForceLookup {
 
-    private static final int DEFAULT_PAGE_SIZE = 50;
+    private static final int DEFAULT_PAGE_SIZE = 20;
     private static final String ID_QUERY = "SELECT Account.Id, Account.Name, Account.EMMI_Account_ID__c, Account.Type, Account.RecordTypeId, Account.RecordType.Name, Account.Account_Status__c, Account.BillingCity, Account.BillingState, Account.BillingPostalCode, Account.BillingStreet, Account.BillingCountry, Account.Owner.Id, Account.Owner.Alias, Account.Phone, Account.Fax FROM Account WHERE Id = '%s'";
     private static final Pattern ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{18}");
     private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
