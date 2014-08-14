@@ -20,14 +20,26 @@ public class ClientSearchFilter {
 
     private StatusFilter status;
 
+    /**
+     * constructor
+     */
     public ClientSearchFilter(){
           this.status = StatusFilter.ALL;
     }
 
+    /**
+     * all status plus passed names
+     * @param names filter
+     */
     public ClientSearchFilter(String... names){
         this(StatusFilter.ALL, names);
     }
 
+    /**
+     * constructor
+     * @param status to filter
+     * @param names to filter
+     */
     public ClientSearchFilter(StatusFilter status, String... names){
         if (names != null) {
             this.names = new HashSet<>();
@@ -46,9 +58,17 @@ public class ClientSearchFilter {
         return status;
     }
 
+    /**
+     * Status allowed
+     */
     public enum StatusFilter {
         ALL, ACTIVE_ONLY, INACTIVE_ONLY;
 
+        /**
+         * from string or all
+         * @param status the status string
+         * @return never null, the status or ALL
+         */
         public static StatusFilter fromStringOrAll(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {

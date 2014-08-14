@@ -16,6 +16,9 @@ import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilte
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Client service integration
+ */
 public class ClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
@@ -27,18 +30,27 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
+    /**
+     * Not all required fields
+     */
     @Test(expected = ConstraintViolationException.class)
     public void createNotAllRequired() {
         Client client = new Client();
         clientService.create(client);
     }
 
+    /**
+     * Create successfully
+     */
     @Test
     public void create() {
         Client client = clientService.create(makeClient("toCreate", "me"));
         assertThat("client was created successfully", client.getId(), is(notNullValue()));
     }
 
+    /**
+     * update successfully
+     */
     @Test
     public void update() {
         final String clientName = "forUpdating";
@@ -53,6 +65,9 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("version should have incremented on update", version ,is(toUpdate.getVersion() - 1));
     }
 
+    /**
+     * Fetch contract owners
+     */
     @Test
     public void contractUserFetch(){
         User contractOwner = userPersistence.reload("contract_owner");
