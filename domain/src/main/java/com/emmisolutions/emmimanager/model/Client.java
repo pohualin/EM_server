@@ -3,12 +3,14 @@ package com.emmisolutions.emmimanager.model;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +22,6 @@ import java.util.Set;
 @Entity
 @Table(name = "client")
 @XmlRootElement(name = "client")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Client extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -74,11 +75,8 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "salesforce_account_id")
     private SalesForce salesForceAccount;
     
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "client_tag_group",
-            joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")})
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
+    @JsonManagedReference
     private Set<Group> groups = new HashSet<>();
     
     @Override
@@ -199,13 +197,19 @@ public class Client extends AbstractAuditingEntity implements Serializable {
 
     public void setLocations(Set<Location> locations) {
         this.locations = locations;
-    }
-
+    }    
+    
 	public Set<Group> getGroups() {
 		return groups;
 	}
 
 	public void setGroups(Set<Group> groups) {
-		this.groups = groups;
+		this.groups = groups;	
 	}
+
+	public void addGroup(Group group){
+		group.setClient(this);
+		this.getGroups().add(group);		
+	}
+
 }

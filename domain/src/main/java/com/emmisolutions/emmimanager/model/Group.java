@@ -18,17 +18,19 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 /**
  * A Group and its containing tags
  */
 @Audited
 @Entity
-@Table(name = "tag_group")
-@XmlRootElement(name = "tag_group")
-@XmlAccessorType(XmlAccessType.FIELD)
+@Table(name = "client_group")
+@XmlRootElement(name = "client_group")
 public class Group  extends AbstractAuditingEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,18 +48,22 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
     
     @ManyToOne
     @JoinColumn(name = "client_id")
-    private Client belongsTo;
-
-    @ManyToMany(mappedBy = "groups")
-    private Set<Client> usingThisGroup;
-
+    @JsonBackReference
+    private Client client;
+    
+    public Group(){}
+    
+    public Group(String name, boolean active){
+    	this.name = name;
+    	this.active = active;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Client client = (Client) o;
-        return !(getId() != null ? !getId().equals(client.getId()) : client.getId() != null) && !(getVersion() != null ? !getVersion().equals(client.getVersion()) : client.getVersion() != null);
+        Group group = (Group) o;
+        return !(getId() != null ? !getId().equals(group.getId()) : group.getId() != null) && !(getVersion() != null ? !getVersion().equals(group.getVersion()) : group.getVersion() != null);
     }
 
     @Override
@@ -108,19 +114,11 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
 		this.name = name;
 	}
 
-	public Client getBelongsTo() {
-		return belongsTo;
+	public Client getClient() {
+		return client;
 	}
 
-	public void setBelongsTo(Client belongsTo) {
-		this.belongsTo = belongsTo;
-	}
-
-	public Set<Client> getUsingThisGroup() {
-		return usingThisGroup;
-	}
-
-	public void setUsingThisGroup(Set<Client> usingThisGroup) {
-		this.usingThisGroup = usingThisGroup;
-	}
+	public void setClient(Client client) {
+		this.client = client;
+	}	
 }

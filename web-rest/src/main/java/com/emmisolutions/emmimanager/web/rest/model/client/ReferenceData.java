@@ -4,21 +4,27 @@ import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
+import javax.annotation.Resource;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.List;
+import java.util.Collection;
 
 /**
  * Reference data for client editing
  */
 @XmlRootElement(name = "reference-data")
-public class ReferenceData extends ResourceSupport{
+public class ReferenceData extends ResourceSupport{	
 
     @XmlElement(name = "clientType")
     @XmlElementWrapper(name = "clientTypes")
@@ -35,9 +41,14 @@ public class ReferenceData extends ResourceSupport{
     @XmlElement(name = "statusFilter")
     @XmlElementWrapper(name = "statusFilters")
     private ClientSearchFilter.StatusFilter[] statusFilters = ClientSearchFilter.StatusFilter.values();
+    
+    @XmlElement(name = "clientGroup")
+    @XmlElementWrapper(name = "clientGroups")
+    private Collection<Group> clientGroups; 
+
 
     public ReferenceData(){
-        add(UserPage.createPotentialOwnersFullSearchLink());
+        add(UserPage.createPotentialOwnersFullSearchLink());     
     }
 
     @XmlElement(name = "link")
@@ -47,4 +58,11 @@ public class ReferenceData extends ResourceSupport{
         return super.getLinks();
     }
 
+	public void setClientGroups(Collection<Group> clientGroups) {
+		this.clientGroups = clientGroups;
+	}
+
+	public Collection<Group> getClientGroups() {
+		return clientGroups;
+	}	
 }

@@ -8,7 +8,29 @@
     <property name="now" value="GETDATE()" dbms="mssql"/>
 
     <changeSet id="client_group_tables" author="Vinay">
-        <createTable tableName="tag_group">
+        <createTable tableName="reference_group">
+            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+		</createTable>
+		
+		<createTable tableName="reference_tag">
+            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="group_id" type="bigint"><constraints nullable="false"/></column>
+		</createTable>
+        <addForeignKeyConstraint baseTableName="reference_tag"
+                                 baseColumnNames="group_id"
+                                 constraintName="fk_reference_tag_group_id"
+                                 referencedTableName="reference_group"
+                                 referencedColumnNames="id"/>
+		
+        <createTable tableName="client_group">
             <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
             <column name="active" type="boolean">
                 <constraints nullable="false"/>
@@ -23,31 +45,18 @@
             <column name="last_modified_by" type="varchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>            
             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
-            <column name="client_id" type="bigint"/>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>    
         </createTable>
-        
-        <createTable tableName="client_tag_group">            
-            <column name="client_id" type="bigint"><constraints nullable="false"/></column>
-            <column name="group_id" type="bigint"><constraints nullable="false"/></column>
-        </createTable>
-        <addPrimaryKey tableName="client_tag_group" columnNames="client_id,group_id"/>
-        <addForeignKeyConstraint baseTableName="client_tag_group"
+        <addUniqueConstraint tableName="client_group" columnNames="client_id,name,active"/>        
+		<addForeignKeyConstraint baseTableName="client_group"
                                  baseColumnNames="client_id"
-                                 constraintName="fk_client_tag_group_client_id"
-                                 referencedTableName="client"
-                                 referencedColumnNames="id"/>
-		<addForeignKeyConstraint baseTableName="client_tag_group"
-                                 baseColumnNames="group_id"
-                                 constraintName="fk_client_tag_group_group_id"
-                                 referencedTableName="tag_group"
-                                 referencedColumnNames="id"/>
-		<addForeignKeyConstraint baseTableName="tag_group"
-                                 baseColumnNames="client_id"
-                                 constraintName="fk_tag_group_client_id"
+                                 constraintName="fk_client_group_client_id"
                                  referencedTableName="client"
                                  referencedColumnNames="id"/>     
                                        
-        <createTable tableName="tag_group_audit">
+        <createTable tableName="client_group_audit">
             <column name="id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
@@ -59,16 +68,18 @@
             <column name="name" type="varchar(255)"/>
             <column name="client_id" type="bigint"/>
         </createTable>
-        <addPrimaryKey tableName="tag_group_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="client_group_audit" columnNames="id, revision"/>
         
-        <createTable tableName="client_tag_group_audit">            
-            <column name="revision" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>            
-            <column name="client_id" type="bigint"><constraints nullable="false"/></column>
-            <column name="group_id" type="bigint"><constraints nullable="false"/></column>
-            <column name="revision_type" type="TINYINT"/>
-        </createTable>
-        <addPrimaryKey tableName="client_tag_group_audit" columnNames="revision,client_id,group_id"/>
-    </changeSet>                                                   
+    </changeSet>
+    
+    <changeSet id="create_reference_group" author="Vinay" context="dev">
+        <insert tableName="reference_group">
+            <column name="active">true</column>
+            <column name="name">Region</column>
+        </insert>
+        <insert tableName="reference_group">
+            <column name="active">true</column>
+            <column name="name">Service Group</column>
+        </insert>
+    </changeSet>                                                       
 </databaseChangeLog>

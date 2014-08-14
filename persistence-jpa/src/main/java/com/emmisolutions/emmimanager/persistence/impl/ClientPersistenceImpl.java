@@ -1,10 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import java.util.HashSet;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
@@ -43,12 +40,7 @@ public class ClientPersistenceImpl implements ClientPersistence {
     }
 
     @Override
-    public Client save(Client client) {
-        Group g = new Group();
-        g.setName("Test Group");
-        HashSet s = new HashSet();
-        s.add(g);
-        client.setGroups(s);
+    public Client save(Client client) {      
     	return clientRepository.save(client);
     }
 

@@ -2,14 +2,17 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.client.ReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceForAssociationsAssembler;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,6 +47,9 @@ public class ClientsResource {
 
     @Resource(name = "userResourceForAssociationsAssembler")
     UserResourceForAssociationsAssembler userResourceAssembler;
+    
+    @Resource
+    GroupService groupService;
 
     /**
      * GET a single client
@@ -110,7 +116,9 @@ public class ClientsResource {
     @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
-        return new ReferenceData();
+    	ReferenceData r = new ReferenceData();
+    	r.setClientGroups(groupService.fetchReferenceGroups());
+    	return r;
     }
 
     /**
