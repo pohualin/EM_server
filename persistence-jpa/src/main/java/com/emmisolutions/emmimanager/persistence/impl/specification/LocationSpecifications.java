@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class LocationSpecifications {
 
+    private LocationSpecifications(){}
+
     /**
      * Case insensitive name anywhere match
      *

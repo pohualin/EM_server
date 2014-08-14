@@ -49,6 +49,10 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     public SalesForce() {
     }
 
+    /**
+     * Constructor
+     * @param accountNumber required field
+     */
     public SalesForce(String accountNumber) {
         this.accountNumber = accountNumber;
     }
@@ -163,12 +167,13 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
         this.city = city;
     }
 
+    /**
+     * Helper for serialization
+     * @return the client name if a client exists
+     */
     @XmlElement
     public String getClientName() {
         return (client != null) ? client.getName() : null;
     }
 
-    public void setClientName(String clientName) {
-        // no -op
-    }
 }

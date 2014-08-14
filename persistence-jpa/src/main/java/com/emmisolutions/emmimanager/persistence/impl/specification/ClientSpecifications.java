@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class ClientSpecifications {
 
+    private ClientSpecifications(){}
+
     /**
      * Case insensitive name anywhere match
      *

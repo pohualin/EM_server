@@ -31,27 +31,43 @@ import java.util.List;
 })
 public class RestConfiguration extends DelegatingWebMvcConfiguration {
 
+    /**
+     * Override the defaults because they aren't what we need. Only enable JSON and XML
+     *
+     * @param converters to add to
+     */
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-//        addDefaultHttpMessageConverters(converters);
         converters.add(new JsonJacksonConverter());
         converters.add(new XmlJacksonConverter());
     }
 
-    private void enableJacksonFeatures(ObjectMapper mapper){
-        mapper.enable(SerializationFeature.INDENT_OUTPUT); // make it pretty
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); // allow random properties to come in
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO8601 Formatted Dates
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // don't write null values in JSON
-        mapper.registerModule(new JodaModule()); // Joda Dates, only support ISO8601
-        mapper.registerModule(new JaxbAnnotationModule()); // JAXB as well as Jackson Annotations
-        mapper.registerModule(new Hibernate4Module()); // Hibernate (lazy loaded entities ==> null)
+    private void enableJacksonFeatures(ObjectMapper mapper) {
+        // make it pretty
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        // allow random properties to come in
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        // ISO8601 Formatted Dates
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        // don't write null values in JSON
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        // Joda Dates, only support ISO8601
+        mapper.registerModule(new JodaModule());
+        // JAXB as well as Jackson Annotations
+        mapper.registerModule(new JaxbAnnotationModule());
+        // Hibernate (lazy loaded entities ==> null)
+        mapper.registerModule(new Hibernate4Module());
+        // serialize as XML as well as JSON
         mapper.registerModule(new JacksonXmlModule());
-        mapper.registerModule(new GeoModule()); // spatial mappings via spring-data
+        // spatial mappings via spring-data
+        mapper.registerModule(new GeoModule());
     }
 
-    private class XmlJacksonConverter extends MappingJackson2HttpMessageConverter{
-        public XmlJacksonConverter(){
+    private class XmlJacksonConverter extends MappingJackson2HttpMessageConverter {
+        /**
+         * Constructor to add XML mapper
+         */
+        public XmlJacksonConverter() {
             List<MediaType> supportedTypes = new ArrayList<>();
             supportedTypes.add(MediaType.APPLICATION_XML);
             supportedTypes.add(MediaType.TEXT_XML);
@@ -63,8 +79,11 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         }
     }
 
-    private class JsonJacksonConverter extends MappingJackson2HttpMessageConverter{
-        public JsonJacksonConverter(){
+    private class JsonJacksonConverter extends MappingJackson2HttpMessageConverter {
+        /**
+         * Add JSON converter
+         */
+        public JsonJacksonConverter() {
             enableJacksonFeatures(getObjectMapper());
         }
     }
