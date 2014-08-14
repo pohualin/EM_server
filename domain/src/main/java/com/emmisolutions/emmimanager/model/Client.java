@@ -4,12 +4,14 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -77,6 +79,9 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
     @JsonManagedReference
+    @XmlElement(name = "group")
+    @XmlElementWrapper(name = "groups")
+    @JsonProperty("group")
     private Set<Group> groups = new HashSet<>();
     
     @Override
