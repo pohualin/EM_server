@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 
 /**
- * Aspect for logging execution of service and repository Spring components.
+ * Aspect for logging execution of service Spring components.
  */
 @Aspect
 @Component("ServiceLayerAutoLogger")
@@ -27,10 +27,19 @@ public class LoggingAspect {
     @Resource
     private Environment env;
 
+    /**
+     * Get all public methods in the service package
+     */
     @Pointcut("execution(public * com.emmisolutions.emmimanager.service..*.*(..)))")
     public void loggingPointcut() {
     }
 
+    /**
+     * Log exceptions
+     *
+     * @param joinPoint the join point
+     * @param e         to log
+     */
     @AfterThrowing(pointcut = "loggingPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         Logger log = getLogger(joinPoint);
@@ -41,6 +50,13 @@ public class LoggingAspect {
         }
     }
 
+    /**
+     * Logging method
+     *
+     * @param joinPoint to log around
+     * @return the original method result
+     * @throws Throwable if there is an exception
+     */
     @Around("loggingPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Logger log = getLogger(joinPoint);
