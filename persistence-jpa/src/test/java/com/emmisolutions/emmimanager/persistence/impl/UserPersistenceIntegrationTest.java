@@ -17,7 +17,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * Integration test sample.
+ * Integration test for user persistence.
  */
 public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
 
@@ -27,12 +27,18 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserRepository userRepository;
 
+    /**
+     * Invalid user no login
+     */
     @Test(expected = ConstraintViolationException.class)
     public void testConstraints() {
         // user is invalid without a login
         userPersistence.saveOrUpdate(new User());
     }
 
+    /**
+     * valid create
+     */
     @Test
     public void testCreate() {
         User user = new User("login", "pw");
@@ -44,21 +50,27 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
     }
 
+    /**
+     * save then reload
+     */
     @Test
-    public void testLoad(){
+    public void testLoad() {
         String login = "aLogin";
         User user = new User(login, "pw");
         user = userPersistence.saveOrUpdate(user);
         assertThat("the user should get an id after persistence", user.getId(), is(notNullValue()));
-        assertThat("the user should get a version after persistence",user.getVersion(), is(notNullValue()));
+        assertThat("the user should get a version after persistence", user.getVersion(), is(notNullValue()));
 
         user = userPersistence.reload(login);
         assertThat("user is found", user, is(notNullValue()));
         assertThat("username should be lowercase only", user.getLogin(), is(login.toLowerCase()));
     }
 
+    /**
+     * make sure super_admin has PERM_GOD
+     */
     @Test
-    public void proveExistenceOfGod(){
+    public void proveExistenceOfGod() {
         User god = userPersistence.fetchUserWillFullPermissions("super_admin");
         assertThat("Should have one role ", god.getRoles().size(), is(1));
         Role role = god.getRoles().iterator().next();
@@ -69,8 +81,11 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("Role has the god permission", role.getPermissions(), hasItem(godPermission));
     }
 
+    /**
+     * list contract owner data
+     */
     @Test
-    public void listPotentialContractOwners(){
+    public void listPotentialContractOwners() {
         User contractOwner = userPersistence.reload("contract_owner");
         Page<User> ret = userPersistence.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
