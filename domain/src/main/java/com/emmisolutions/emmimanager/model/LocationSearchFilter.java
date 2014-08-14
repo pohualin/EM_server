@@ -82,4 +82,12 @@ public class LocationSearchFilter {
             return ALL;
         }
     }
+
+    @Override
+    public String toString() {
+        return "LocationSearchFilter{" +
+                "names=" + names +
+                ", status=" + status +
+                '}';
+    }
 }

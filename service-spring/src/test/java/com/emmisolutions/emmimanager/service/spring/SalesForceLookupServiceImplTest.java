@@ -12,6 +12,10 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+
+/**
+ * Tests sales force lookup service
+ */
 public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
 
     @Resource
@@ -23,6 +27,11 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
     @Resource
     UserService userService;
 
+    /**
+     * This is a full stack kind of test: find a real sf account, make a client using
+     * that sf account, associate a new sf account to the client, then make sure
+     * the first sf account was removed.
+     */
     @Test
     public void lifecycle(){
         String accountNumber = "0013000000CqY7OAAV";

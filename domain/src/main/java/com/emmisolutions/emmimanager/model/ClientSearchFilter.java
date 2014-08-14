@@ -80,4 +80,12 @@ public class ClientSearchFilter {
             return ALL;
         }
     }
+
+    @Override
+    public String toString() {
+        return "ClientSearchFilter{" +
+                "names=" + names +
+                ", status=" + status +
+                '}';
+    }
 }

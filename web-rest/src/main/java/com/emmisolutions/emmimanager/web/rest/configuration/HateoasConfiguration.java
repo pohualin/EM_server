@@ -11,6 +11,11 @@ import org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguratio
 @Configuration
 public class HateoasConfiguration extends HateoasAwareSpringDataWebConfiguration {
 
+    /**
+     * Create our version of the paged resources assembler
+     *
+     * @return PagedResourcesAssemblerArgumentResolver
+     */
     @Bean
     public PagedResourcesAssemblerArgumentResolver pagedResourcesAssemblerArgumentResolver() {
         return new PagedResourcesAssemblerArgumentResolver(pageableResolver(), null);

@@ -15,6 +15,9 @@ import javax.annotation.Resource;
 import static com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications.isContractOwner;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
+/**
+ * Repo to deal with user persistence.
+ */
 @Repository
 public class UserPersistenceImpl implements UserPersistence {
 

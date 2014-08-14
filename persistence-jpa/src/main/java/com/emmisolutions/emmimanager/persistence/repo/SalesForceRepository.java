@@ -12,6 +12,11 @@ import java.util.Set;
  */
 public interface SalesForceRepository extends JpaRepository<SalesForce, Long>, JpaSpecificationExecutor<SalesForce> {
 
-
+    /**
+     * Find SalesForce by a set of account numbers
+     *
+     * @param accountNumbers to use to find
+     * @return a list
+     */
     List<SalesForce> findByAccountNumberIn(Set<String> accountNumbers);
 }

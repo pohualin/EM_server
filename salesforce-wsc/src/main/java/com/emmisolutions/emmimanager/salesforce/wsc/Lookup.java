@@ -29,6 +29,7 @@ public class Lookup implements SalesForceLookup {
     private static final String ID_QUERY = "SELECT Account.Id, Account.Name, Account.EMMI_Account_ID__c, Account.Type, Account.RecordTypeId, Account.RecordType.Name, Account.Account_Status__c, Account.BillingCity, Account.BillingState, Account.BillingPostalCode, Account.BillingStreet, Account.BillingCountry, Account.Owner.Id, Account.Owner.Alias, Account.Phone, Account.Fax FROM Account WHERE Id = '%s'";
     private static final Pattern ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{18}");
     private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
+    private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
 
     private EnterpriseConnection connection;
 
@@ -55,11 +56,11 @@ public class Lookup implements SalesForceLookup {
     }
 
     public SalesForceSearchResponse findAccountsByNameOrId(String searchString, int pageSize) {
-        searchString = StringUtils.stripToNull(searchString);
+        String strippedSearchString = StringUtils.stripToNull(searchString);
 
         // make sure a filter is there
-        if (StringUtils.length(searchString) < 5) {
-            return new SalesForceSearchResponse(true, 0, new ArrayList<SalesForce>());
+        if (StringUtils.length(strippedSearchString) < 5) {
+            return new SalesForceSearchResponse(true, new ArrayList<SalesForce>());
         }
 
         // set the default page size if one is not provided
@@ -72,7 +73,7 @@ public class Lookup implements SalesForceLookup {
         int totalNumber;
         try {
             // search the account
-            SearchResult searchResult = connection.search(String.format(FIND_QUERY, escape(searchString), (pageSize + 1)));
+            SearchResult searchResult = connection.search(String.format(FIND_QUERY, escape(strippedSearchString), pageSize + 1));
             totalNumber = searchResult.getSearchRecords().length;
             if (totalNumber > 0) {
                 // found a match
@@ -84,9 +85,9 @@ public class Lookup implements SalesForceLookup {
                         break;
                     }
                 }
-            } else if (ID_PATTERN.matcher(searchString).matches()) {
+            } else if (ID_PATTERN.matcher(strippedSearchString).matches()) {
                 // no search match, try to query by Id (when search string is a valid id)
-                QueryResult queryResult = connection.query(String.format(ID_QUERY, searchString));
+                QueryResult queryResult = connection.query(String.format(ID_QUERY, strippedSearchString));
                 if (queryResult.getSize() > 0) {
                     accounts.add(convert((Account) queryResult.getRecords()[0]));
                     totalNumber = 1;
@@ -96,7 +97,7 @@ public class Lookup implements SalesForceLookup {
         } catch (ConnectionException e) {
             throw new RuntimeException(e);
         }
-        return new SalesForceSearchResponse(isComplete, totalNumber, accounts);
+        return new SalesForceSearchResponse(isComplete, accounts);
     }
 
     private String escape(String searchQuery) {
@@ -110,8 +111,6 @@ public class Lookup implements SalesForceLookup {
         }
         return ret.toString();
     }
-
-    private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
 
     private SalesForce convert(Account account) {
         SalesForce sf = new SalesForce();

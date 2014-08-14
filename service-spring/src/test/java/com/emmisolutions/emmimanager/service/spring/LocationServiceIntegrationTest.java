@@ -20,6 +20,9 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Location service persistence test
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LocationServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -35,6 +38,9 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserService userService;
 
+    /**
+     * List locations
+     */
     @Test
     public void aList() {
         for (int i = 0; i < 200; i++) {
@@ -48,6 +54,9 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("there are 100 items", locationPage.getTotalElements(), is(100l));
     }
 
+    /**
+     * Create a location transitively through client
+     */
     @Test
     public void createLocationViaClient() {
         // create a client with a location
