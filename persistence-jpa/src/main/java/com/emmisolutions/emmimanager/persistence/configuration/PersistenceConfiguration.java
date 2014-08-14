@@ -36,6 +36,9 @@ import static org.hibernate.cfg.AvailableSettings.DIALECT;
 import static org.hibernate.cfg.Environment.SHOW_SQL;
 
 
+/**
+ * Configures spring beans necessary for persistence
+ */
 @Configuration
 @EnableAspectJAutoProxy
 @ComponentScan(basePackages = {
@@ -47,6 +50,18 @@ import static org.hibernate.cfg.Environment.SHOW_SQL;
 @EnableJpaAuditing(auditorAwareRef = "springDataAuditor")
 public class PersistenceConfiguration {
 
+    @Value("${hibernate.dialect:org.hibernate.dialect.H2Dialect}")
+    private String dialect;
+
+    @Value("${hibernate.show_sql:true}")
+    private Boolean showSql;
+
+    /**
+     * Transaction manager
+     *
+     * @param emf the factory
+     * @return the transaction manager
+     */
     @Bean(name = "transactionManager")
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -54,11 +69,23 @@ public class PersistenceConfiguration {
         return transactionManager;
     }
 
+    /**
+     * Translate exceptions into spring exceptions
+     *
+     * @return the bean
+     */
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
+    /**
+     * The factory
+     *
+     * @param dataSource used by the factory
+     * @param jpaDialect the dialect
+     * @return the factory
+     */
     @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect jpaDialect) {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
@@ -71,52 +98,49 @@ public class PersistenceConfiguration {
         return entityManagerFactoryBean;
     }
 
-    private Properties getCommonJpaProperties() {
-        Properties properties = new Properties();
-        properties.setProperty(DIALECT, dialect);
-        properties.setProperty(SHOW_SQL, showSql.toString());
-        properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
-        properties.setProperty("jadira.usertype.javaZone", "UTC");
-        properties.setProperty("jadira.usertype.databaseZone", "UTC");
-        properties.setProperty("javax.persistence.validation.mode", "ddl, callback");
-        properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
-        properties.setProperty("org.hibernate.envers.revision_field_name", "revision");
-        properties.setProperty("org.hibernate.envers.revision_type_field_name", "revision_type");
-        return properties;
-    }
-
-    @Value("${hibernate.dialect:org.hibernate.dialect.H2Dialect}")
-    String dialect;
-
-    @Value("${hibernate.show_sql:true}")
-    Boolean showSql;
-
+    /**
+     * The dialect
+     *
+     * @return jpa dialect
+     */
     @Bean
     public JpaDialect getJpaDialect() {
         return new HibernateJpaDialect();
     }
 
+    /**
+     * the data auditor
+     *
+     * @return the auditor
+     */
     @Bean(name = "springDataAuditor")
-    public AuditorAware<String> getAuditorAware(){
-       return new AuditorAware<String>() {
-           @Override
-           public String getCurrentAuditor() {
-               SecurityContext securityContext = SecurityContextHolder.getContext();
-               Authentication authentication = securityContext.getAuthentication();
-               String userName = null;
-               if (authentication != null) {
-                   if (authentication.getPrincipal() instanceof UserDetails) {
-                       UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
-                       userName = springSecurityUser.getUsername();
-                   } else if (authentication.getPrincipal() instanceof String) {
-                       userName = (String) authentication.getPrincipal();
-                   }
-               }
-               return (userName != null ? userName : Constants.SYSTEM_ACCOUNT);
-           }
-       };
+    public AuditorAware<String> getAuditorAware() {
+        return new AuditorAware<String>() {
+            @Override
+            public String getCurrentAuditor() {
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                Authentication authentication = securityContext.getAuthentication();
+                String userName = null;
+                if (authentication != null) {
+                    if (authentication.getPrincipal() instanceof UserDetails) {
+                        UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
+                        userName = springSecurityUser.getUsername();
+                    } else if (authentication.getPrincipal() instanceof String) {
+                        userName = (String) authentication.getPrincipal();
+                    }
+                }
+                return (userName != null ? userName : Constants.SYSTEM_ACCOUNT);
+            }
+        };
     }
 
+    /**
+     * Liquibase hook
+     *
+     * @param dataSource to use
+     * @param env        in which we are in
+     * @return the liquibase bean
+     */
     @Bean
     public SpringLiquibase getDbUpdater(DataSource dataSource, Environment env) {
         SpringLiquibase springLiquibase = new SpringLiquibase();
@@ -128,6 +152,12 @@ public class PersistenceConfiguration {
         return springLiquibase;
     }
 
+    /**
+     * The data source
+     *
+     * @return the datasource
+     * @throws NamingException if there isn't a jndi bean
+     */
     @Bean
     @Profile({SPRING_PROFILE_JNDI_PERSISTENCE, SPRING_PROFILE_PRODUCTION})
     public DataSource getDataSource() throws NamingException {
@@ -151,6 +181,10 @@ public class PersistenceConfiguration {
         return ret;
     }
 
+    /**
+     * Datasource for testing
+     * @return data source
+     */
     @Bean
     @Profile({SPRING_PROFILE_TEST, SPRING_PROFILE_H2})
     public DataSource getTestingDataSource() {
@@ -162,10 +196,29 @@ public class PersistenceConfiguration {
         return ds;
     }
 
+    /**
+     * auto logging bean
+     * @return the aspect
+     */
     @Bean(name = "PersistenceLayerAutoLogger")
     @Profile({SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST})
     public LoggingAspect getPersistenceLayerAutoLogger() {
         return new LoggingAspect();
+    }
+
+
+    private Properties getCommonJpaProperties() {
+        Properties properties = new Properties();
+        properties.setProperty(DIALECT, dialect);
+        properties.setProperty(SHOW_SQL, showSql.toString());
+        properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
+        properties.setProperty("jadira.usertype.javaZone", "UTC");
+        properties.setProperty("jadira.usertype.databaseZone", "UTC");
+        properties.setProperty("javax.persistence.validation.mode", "ddl, callback");
+        properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
+        properties.setProperty("org.hibernate.envers.revision_field_name", "revision");
+        properties.setProperty("org.hibernate.envers.revision_type_field_name", "revision_type");
+        return properties;
     }
 
 
