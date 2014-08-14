@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Permission;
-import com.emmisolutions.emmimanager.model.Role;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
