@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.persistence.logging;
+package com.emmisolutions.emmimanager.salesforce.logging;
 
 import com.emmisolutions.emmimanager.config.Constants;
 import org.aspectj.lang.JoinPoint;
@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 
 /**
- * Aspect for logging execution of jpa and spring-data repository calls.
+ * Aspect for logging execution of salesforce calls.
  */
 @Aspect
 public class LoggingAspect {
@@ -24,9 +24,9 @@ public class LoggingAspect {
     private Environment env;
 
     /**
-     * Get all public methods in the persistence package
+     * Get all public methods in the salesforce package
      */
-    @Pointcut("execution(public * com.emmisolutions.emmimanager.persistence..*.*(..)) )")
+    @Pointcut("execution(public * com.emmisolutions.emmimanager.salesforce.wsc..*.*(..)) )")
     public void loggingPointcut() {
     }
 

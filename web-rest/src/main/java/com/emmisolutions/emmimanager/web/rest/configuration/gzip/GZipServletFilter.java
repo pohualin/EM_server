@@ -10,9 +10,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * Compress the output
+ */
 public class GZipServletFilter implements Filter {
 
-    private Logger log = LoggerFactory.getLogger(GZipServletFilter.class);
+    private Logger LOGGER = LoggerFactory.getLogger(GZipServletFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -32,8 +35,8 @@ public class GZipServletFilter implements Filter {
 
         if (!isIncluded(httpRequest) && acceptsGZipEncoding(httpRequest) && !response.isCommitted()) {
             // Client accepts zipped content
-            if (log.isTraceEnabled()) {
-                log.trace("{} Written with gzip compression", httpRequest.getRequestURL());
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("{} Written with gzip compression", httpRequest.getRequestURL());
             }
 
             // Create a gzip stream
@@ -83,8 +86,8 @@ public class GZipServletFilter implements Filter {
 
         } else {
             // Client does not accept zipped content - don't bother zipping
-            if (log.isTraceEnabled()) {
-                log.trace("{} Written without gzip compression because the request does not accept gzip", httpRequest.getRequestURL());
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("{} Written without gzip compression because the request does not accept gzip", httpRequest.getRequestURL());
             }
             chain.doFilter(request, response);
         }
@@ -97,8 +100,8 @@ public class GZipServletFilter implements Filter {
         final String uri = (String) request.getAttribute("javax.servlet.include.request_uri");
         final boolean includeRequest = !(uri == null);
 
-        if (includeRequest && log.isDebugEnabled()) {
-            log.debug("{} resulted in an include request. This is unusable, because"
+        if (includeRequest && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("{} resulted in an include request. This is unusable, because"
                             + "the response will be assembled into the overrall response. Not gzipping.",
                     request.getRequestURL());
         }
