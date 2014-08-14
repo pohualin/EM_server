@@ -51,10 +51,23 @@ public class Lookup implements SalesForceLookup {
         connection = new EnterpriseConnection(config);
     }
 
+    /**
+     * Queries SalesForce for accounts using a default page size and a filter
+     *
+     * @param searchString the filter
+     * @return a search response
+     */
     public SalesForceSearchResponse findAccounts(String searchString) {
         return findAccounts(searchString, DEFAULT_PAGE_SIZE);
     }
 
+    /**
+     * Queries SalesForce for accounts
+     *
+     * @param searchString the filter
+     * @param pageSize    the number of objects to request from salesforce
+     * @return a search response
+     */
     public SalesForceSearchResponse findAccounts(String searchString, int pageSizeRequested) {
         String strippedSearchString = StringUtils.stripToNull(searchString);
 
