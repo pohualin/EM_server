@@ -5,7 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet id="reverse_dependency_for_client" author="Matt">
-        
+
+        <dropUniqueConstraint tableName="salesforce_client" constraintName="uk_salesforce_client_client_id"/>
+        <dropForeignKeyConstraint baseTableName="salesforce_client" constraintName="fk_salesforce_client_client_id"/>
         <dropColumn tableName="salesforce_client" columnName="client_id"/>
         <dropColumn tableName="salesforce_client_audit" columnName="client_id"/>
         <!-- kill all saved clients as they are invalid due to no SF account -->
