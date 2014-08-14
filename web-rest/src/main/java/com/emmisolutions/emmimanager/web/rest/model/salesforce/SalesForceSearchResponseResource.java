@@ -25,12 +25,22 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
     public SalesForceSearchResponseResource() {
     }
 
+    /**
+     * Construct response from entity and query
+     *
+     * @param entity the wrapped entity
+     * @param query  the query that caused the response
+     */
     public SalesForceSearchResponseResource(SalesForceSearchResponse entity, String query) {
         this.query = query;
         this.entity = entity;
         add(linkTo(methodOn(SalesForceResource.class).find(query)).withSelfRel());
     }
 
+    /**
+     * The link to find all sf accounts
+     * @return the link
+     */
     public static Link createFindLink() {
         Link link = linkTo(methodOn(SalesForceResource.class).find(null)).withRel("findSalesForceAccount");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
@@ -39,6 +49,11 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
         return new Link(uriTemplate, link.getRel());
     }
 
+    /**
+     * Override to change the link property name for serialization
+     *
+     * @return links
+     */
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")

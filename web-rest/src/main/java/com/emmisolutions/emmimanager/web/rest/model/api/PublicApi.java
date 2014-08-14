@@ -20,6 +20,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @XmlRootElement(name = "public")
 public class PublicApi extends ResourceSupport {
 
+    /**
+     * create all the common links to the app
+     */
     public PublicApi() {
         Link self = linkTo(ApiResource.class).withSelfRel();
         add(self);
@@ -28,6 +31,11 @@ public class PublicApi extends ResourceSupport {
         add(new Link(self.getHref() + "/logout", "logout"));
     }
 
+    /**
+     * Override to change the link property name for serialization
+     *
+     * @return links
+     */
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")

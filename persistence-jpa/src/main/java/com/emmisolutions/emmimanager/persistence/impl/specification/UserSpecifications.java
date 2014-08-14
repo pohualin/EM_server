@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Permission;
+import com.emmisolutions.emmimanager.model.Role;
+import com.emmisolutions.emmimanager.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
@@ -11,6 +13,8 @@ import static com.emmisolutions.emmimanager.model.PermissionName.PERM_CONTRACT_O
  * Specifications for a User.
  */
 public class UserSpecifications {
+
+    private UserSpecifications(){}
 
     /**
      * Filter to ensure User is a contract owner

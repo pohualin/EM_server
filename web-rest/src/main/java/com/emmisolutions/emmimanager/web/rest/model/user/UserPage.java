@@ -20,6 +20,12 @@ public class UserPage extends PagedResource<UserResource> {
     public UserPage() {
     }
 
+    /**
+     * Wrapped constructor
+     *
+     * @param userResources to be wrapped
+     * @param userPage      the raw response
+     */
     public UserPage(PagedResources<UserResource> userResources, Page<User> userPage) {
         pageDefaults(userResources, userPage);
     }
@@ -27,8 +33,8 @@ public class UserPage extends PagedResource<UserResource> {
     /**
      * Creates link used to find to potential owners.
      *
-     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientsResource#getOwnersReferenceData(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler)
      * @return a <link rel="potentialOwners" href="http://thelink"/>
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientsResource#getOwnersReferenceData(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler)
      */
     public static Link createPotentialOwnersFullSearchLink() {
         Link link = linkTo(methodOn(ClientsResource.class).getOwnersReferenceData(null, null, null)).withRel("potentialOwners");
