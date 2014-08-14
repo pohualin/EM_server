@@ -15,10 +15,16 @@ public class SalesForceSearchResponse {
     private boolean complete;
 
     @XmlElement(name = "account")
-    @XmlElementWrapper(name="accounts")
+    @XmlElementWrapper(name = "accounts")
     private List<SalesForce> accounts;
 
-    public SalesForceSearchResponse(boolean complete, int total, List<SalesForce> accounts) {
+    /**
+     * Constructor
+     *
+     * @param complete is the response finished or are there more, true is finished
+     * @param accounts in the current response
+     */
+    public SalesForceSearchResponse(boolean complete, List<SalesForce> accounts) {
         this.complete = complete;
         this.accounts = accounts;
     }
