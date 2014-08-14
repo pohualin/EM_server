@@ -15,6 +15,10 @@ import static org.junit.Assert.assertThat;
  */
 public class LookupIntegrationTest extends BaseIntegrationTest {
 
+    private static final String SEARCH_RESPONSE_NOT_NULL = "search response is not null";
+    private static final String SHOULD_HAVE_MORE_RESULTS = "should be more results";
+    private static final String SHOULD_HAVE_NO_MORE_RESULTS = "should be more results";
+
     @Resource
     SalesForceLookup salesForceLookup;
 
@@ -22,19 +26,19 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
      * Find
      */
     @Test
-    public void find(){
-        SalesForceSearchResponse searchResponse = salesForceLookup.findAccountsByNameOrId("magee hospital upmc");
-        assertThat("search response is not null", searchResponse, is(notNullValue()));
+    public void find() {
+        SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("magee hospital upmc");
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
     }
 
     /**
      * Find paged
      */
     @Test
-    public void findPaged(){
-        SalesForceSearchResponse searchResponse = salesForceLookup.findAccountsByNameOrId("magee hospital", 10);
-        assertThat("search response is not null", searchResponse, is(notNullValue()));
-        assertThat("should be more results", searchResponse.isComplete(), is(false));
+    public void findPaged() {
+        SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("magee hospital", 10);
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
+        assertThat(SHOULD_HAVE_MORE_RESULTS, searchResponse.isComplete(), is(false));
         assertThat("total should be 10", searchResponse.getAccounts().size(), is(10));
     }
 
@@ -42,10 +46,10 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
      * find by id
      */
     @Test
-    public void findById(){
-        SalesForceSearchResponse searchResponse = salesForceLookup.findAccountsByNameOrId("0013000000CqY7OAAV");
-        assertThat("search response is not null", searchResponse, is(notNullValue()));
-        assertThat("should be no more results", searchResponse.isComplete(), is(true));
+    public void findById() {
+        SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("0013000000CqY7OAAV");
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
+        assertThat(SHOULD_HAVE_NO_MORE_RESULTS, searchResponse.isComplete(), is(true));
         assertThat("total should be 1", searchResponse.getAccounts().size(), is(1));
     }
 
@@ -53,10 +57,10 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
      * bad id
      */
     @Test
-    public void badId(){
-        SalesForceSearchResponse searchResponse = salesForceLookup.findAccountsByNameOrId("013000000CqY7OAAV");
-        assertThat("search response is not null", searchResponse, is(notNullValue()));
-        assertThat("should be no more results", searchResponse.isComplete(), is(true));
+    public void badId() {
+        SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("013000000CqY7OAAV");
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
+        assertThat(SHOULD_HAVE_NO_MORE_RESULTS, searchResponse.isComplete(), is(true));
         assertThat("total should be 0", searchResponse.getAccounts().size(), is(0));
     }
 
@@ -64,10 +68,10 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
      * find with complexish query
      */
     @Test
-    public void findByComplexQuery(){
-        SalesForceSearchResponse searchResponse = salesForceLookup.findAccountsByNameOrId("\"Minimally Invasive Bariatric\" AND Pittsburgh");
-        assertThat("search response is not null", searchResponse, is(notNullValue()));
-        assertThat("should be more results", searchResponse.isComplete(), is(true));
-        assertThat("total should be 1", searchResponse.getAccounts().size(), is(1));
+    public void findByComplexQuery() {
+        SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("\"Minimally Invasive Bariatric\" AND Pittsburgh");
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
+        assertThat(SHOULD_HAVE_MORE_RESULTS, searchResponse.isComplete(), is(true));
+        assertThat("total should be one", searchResponse.getAccounts().size(), is(1));
     }
 }
