@@ -51,11 +51,11 @@ public class Lookup implements SalesForceLookup {
         connection = new EnterpriseConnection(config);
     }
 
-    public SalesForceSearchResponse findAccountsByNameOrId(String searchString) {
-        return findAccountsByNameOrId(searchString, DEFAULT_PAGE_SIZE);
+    public SalesForceSearchResponse findAccounts(String searchString) {
+        return findAccounts(searchString, DEFAULT_PAGE_SIZE);
     }
 
-    public SalesForceSearchResponse findAccountsByNameOrId(String searchString, int pageSize) {
+    public SalesForceSearchResponse findAccounts(String searchString, int pageSizeRequested) {
         String strippedSearchString = StringUtils.stripToNull(searchString);
 
         // make sure a filter is there
@@ -64,8 +64,11 @@ public class Lookup implements SalesForceLookup {
         }
 
         // set the default page size if one is not provided
-        if (pageSize <= 0) {
+        int pageSize;
+        if (pageSizeRequested <= 0) {
             pageSize = DEFAULT_PAGE_SIZE;
+        } else {
+            pageSize = pageSizeRequested;
         }
 
         List<SalesForce> accounts = new ArrayList<>();

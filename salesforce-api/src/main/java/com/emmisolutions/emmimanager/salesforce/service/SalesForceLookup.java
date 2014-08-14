@@ -13,7 +13,7 @@ public interface SalesForceLookup {
      * @param searchString the filter
      * @return a search response
      */
-    SalesForceSearchResponse findAccountsByNameOrId(String searchString);
+    SalesForceSearchResponse findAccounts(String searchString);
 
     /**
      * Queries SalesForce for accounts
@@ -22,5 +22,5 @@ public interface SalesForceLookup {
      * @param pageSize    the number of objects to request from salesforce
      * @return a search response
      */
-    SalesForceSearchResponse findAccountsByNameOrId(String searchString, int pageSize);
+    SalesForceSearchResponse findAccounts(String searchString, int pageSize);
 }

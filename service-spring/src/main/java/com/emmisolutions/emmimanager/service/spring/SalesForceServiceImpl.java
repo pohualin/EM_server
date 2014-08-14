@@ -28,7 +28,7 @@ public class SalesForceServiceImpl implements SalesForceService {
     @Override
     @Transactional(readOnly = true)
     public SalesForceSearchResponse find(String searchString) {
-        SalesForceSearchResponse salesForceSearchResponse = salesForceLookup.findAccountsByNameOrId(searchString, 20);
+        SalesForceSearchResponse salesForceSearchResponse = salesForceLookup.findAccounts(searchString, 20);
         Set<String> accountNumbersToMatch = new HashSet<>();
         for (SalesForce salesForce : salesForceSearchResponse.getAccounts()) {
             accountNumbersToMatch.add(salesForce.getAccountNumber());

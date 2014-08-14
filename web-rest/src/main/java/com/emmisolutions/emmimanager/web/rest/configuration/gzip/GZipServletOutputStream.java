@@ -10,6 +10,12 @@ import java.io.OutputStream;
 class GZipServletOutputStream extends ServletOutputStream {
     private OutputStream stream;
 
+    /**
+     * Constructor which wraps a stream
+     *
+     * @param output a strem to wrap
+     * @throws IOException if there's an issue
+     */
     public GZipServletOutputStream(OutputStream output)
             throws IOException {
         super();
