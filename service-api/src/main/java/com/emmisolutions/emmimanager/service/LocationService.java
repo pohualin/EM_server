@@ -24,4 +24,12 @@ public interface LocationService {
      * @return a page of location objects
      */
     Page<Location> list(Pageable page, LocationSearchFilter locationSearchFilter);
+
+    /**
+     * Reloads a location from persistent storage
+     *
+     * @param location to reload
+     * @return the reloaded location
+     */
+    Location reload(Location toFind);
 }

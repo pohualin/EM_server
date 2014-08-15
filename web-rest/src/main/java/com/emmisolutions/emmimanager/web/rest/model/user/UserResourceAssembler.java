@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.PermissionName;
 import com.emmisolutions.emmimanager.model.Role;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,8 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
         ret.add(ClientPage.createReferenceDataLink());
+        ret.add(LocationPage.createFullSearchLink());
+        ret.add(LocationPage.createReferenceDataLink());
         return ret;
     }
 

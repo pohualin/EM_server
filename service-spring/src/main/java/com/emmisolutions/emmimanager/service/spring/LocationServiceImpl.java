@@ -31,4 +31,9 @@ public class LocationServiceImpl implements LocationService {
     public Page<Location> list(Pageable page, LocationSearchFilter locationSearchFilter) {
         return locationPersistence.list(page, locationSearchFilter);
     }
+
+    @Override
+    public Location reload(Location toFind) {
+        return locationPersistence.reload(toFind);
+    }
 }
