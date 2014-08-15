@@ -1,8 +1,12 @@
 package com.emmisolutions.emmimanager.service;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.User;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -54,5 +58,7 @@ public interface ClientService {
      * @return a page of User objects
      */
     Page<User> listPotentialContractOwners(Pageable pageable);
+
+	Client createWithGroups(Client client, List<Group> groups);
 
 }

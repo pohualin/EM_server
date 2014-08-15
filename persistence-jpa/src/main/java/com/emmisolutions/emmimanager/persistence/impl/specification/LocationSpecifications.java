@@ -1,17 +1,19 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.model.Location_;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.CollectionUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
+
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.model.Location_;
 
 /**
  * This is the specification class that allows for filtering of Location objects.

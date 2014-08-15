@@ -5,8 +5,10 @@ import java.util.Collection;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.service.GroupService;
 
@@ -22,7 +24,13 @@ public class GroupServiceImpl implements GroupService {
     GroupPersistence groupPersistence;
 
 	@Override
-	public Collection<Group> fetchReferenceGroups() {
+	public Collection<ReferenceGroup> fetchReferenceGroups() {
 		return groupPersistence.fetchReferenceGroups();
 	}
+
+    @Override
+    @Transactional
+    public Group save(Group group) {
+    	return groupPersistence.save(group);
+    }
 }

@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Group;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Group;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement(name = "client")
@@ -19,7 +21,13 @@ public class ClientSaveRequest {
 	@XmlElementWrapper(name = "groups")
 	@JsonProperty("group")
 	private List<Group> groups;	
+
 	
+	public ClientSaveRequest(Client client, List<Group> groups){
+		this.client = client;
+		this.groups = groups;
+	}
+
 	public Client getClient() {
 		return client;
 	}
@@ -34,5 +42,5 @@ public class ClientSaveRequest {
 
 	public void setGroups(List<Group> groups) {
 		this.groups = groups;
-	}	
+	}
 }

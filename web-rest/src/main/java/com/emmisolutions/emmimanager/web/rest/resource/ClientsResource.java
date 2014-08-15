@@ -1,17 +1,11 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.GroupService;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.client.ReferenceData;
-import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
-import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceForAssociationsAssembler;
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.fromStringOrAll;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,14 +15,24 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
-import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.fromStringOrAll;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
+import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
+import com.emmisolutions.emmimanager.web.rest.model.client.ClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.client.ClientSaveRequest;
+import com.emmisolutions.emmimanager.web.rest.model.client.ReferenceData;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceForAssociationsAssembler;
 
 /**
  * Clients REST API.
@@ -47,9 +51,6 @@ public class ClientsResource {
 
     @Resource(name = "userResourceForAssociationsAssembler")
     UserResourceForAssociationsAssembler userResourceAssembler;
-    
-    @Resource
-    GroupService groupService;
 
     /**
      * GET a single client
@@ -116,9 +117,7 @@ public class ClientsResource {
     @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
-    	ReferenceData r = new ReferenceData();
-    	r.setClientGroups(groupService.fetchReferenceGroups());
-    	return r;
+        return new ReferenceData();
     }
 
     /**
@@ -183,4 +182,25 @@ public class ClientsResource {
             return new ResponseEntity<>(clientResourceAssembler.toResource(client), HttpStatus.OK);
         }
     }
+    
+    
+	@RequestMapping(value = "/clientSaveWithGroups", method = RequestMethod.POST, consumes = {
+			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_CREATE" })
+	public ResponseEntity<ClientResource> create(
+			@RequestBody ClientSaveRequest clientSaveRequest) {
+
+		Client client = clientService.createWithGroups(clientSaveRequest.getClient(),
+				clientSaveRequest.getGroups());
+
+		if (client == null) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(
+					clientResourceAssembler.toResource(client),
+					HttpStatus.CREATED);
+		}
+	}
+    
+    
 }

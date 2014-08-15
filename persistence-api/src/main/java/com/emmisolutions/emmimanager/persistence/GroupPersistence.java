@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence;
 import java.util.Collection;
 
 import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
 
 public interface GroupPersistence {
 	
@@ -10,6 +11,7 @@ public interface GroupPersistence {
      * Retrieves all reference groups
      *
      */
-    Collection<Group> fetchReferenceGroups();
+    Collection<ReferenceGroup> fetchReferenceGroups();
 
+    Group save(Group group);
 }
