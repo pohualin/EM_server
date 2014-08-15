@@ -9,29 +9,36 @@
 
     <changeSet id="client_group_tables" author="Vinay">
         <createTable tableName="reference_group">
-            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="id" type="bigint" autoIncrement="true"></column>
             <column name="active" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="varchar(255)"/>
 		</createTable>
-		
+		<addPrimaryKey tableName="reference_group"
+                       columnNames="id"
+                       constraintName="pk_reference_group"/>
+                                 
 		<createTable tableName="reference_tag">
-            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="id" type="bigint" autoIncrement="true"></column>
             <column name="active" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="varchar(255)"/>
             <column name="group_id" type="bigint"><constraints nullable="false"/></column>
 		</createTable>
+		<addPrimaryKey tableName="reference_tag"
+                       columnNames="id"
+                       constraintName="pk_reference_tag"/>
+		
         <addForeignKeyConstraint baseTableName="reference_tag"
                                  baseColumnNames="group_id"
-                                 constraintName="fk_reference_tag_group_id"
+                                 constraintName="fk_reference_tag_reference_group_group_id"
                                  referencedTableName="reference_group"
                                  referencedColumnNames="id"/>
 		
         <createTable tableName="client_group">
-            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="id" type="bigint" autoIncrement="true"></column>
             <column name="active" type="boolean">
                 <constraints nullable="false"/>
             </column>
@@ -49,10 +56,14 @@
                 <constraints nullable="false"/>
             </column>    
         </createTable>
-        <addUniqueConstraint tableName="client_group" columnNames="client_id,name,active"/>        
+		<addPrimaryKey tableName="client_group"
+                       columnNames="id"
+                       constraintName="pk_client_group"/>
+        
+        <addUniqueConstraint tableName="client_group" columnNames="client_id,name,active" constraintName="uk_client_group_id_active_name"/>        
 		<addForeignKeyConstraint baseTableName="client_group"
                                  baseColumnNames="client_id"
-                                 constraintName="fk_client_group_client_id"
+                                 constraintName="fk_client_group_client_client_id"
                                  referencedTableName="client"
                                  referencedColumnNames="id"/>     
                                        
@@ -68,8 +79,9 @@
             <column name="name" type="varchar(255)"/>
             <column name="client_id" type="bigint"/>
         </createTable>
-        <addPrimaryKey tableName="client_group_audit" columnNames="id, revision"/>
-        
+        <addPrimaryKey tableName="client_group_audit" 
+                       columnNames="id, revision"
+                       constraintName="pk_client_group_audit"/>        
     </changeSet>
     
     <changeSet id="create_reference_group" author="Vinay" context="dev">
