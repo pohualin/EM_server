@@ -20,6 +20,8 @@ import com.emmisolutions.emmimanager.model.Location_;
  */
 public class LocationSpecifications {
 
+    private LocationSpecifications(){}
+
     /**
      * Case insensitive name anywhere match
      *

@@ -23,10 +23,19 @@ public class LoggingAspect {
     @Resource
     private Environment env;
 
+    /**
+     * Get all public methods in the persistence package
+     */
     @Pointcut("execution(public * com.emmisolutions.emmimanager.persistence..*.*(..)) )")
     public void loggingPointcut() {
     }
 
+    /**
+     * Log exceptions
+     *
+     * @param joinPoint the join point
+     * @param e         to log
+     */
     @AfterThrowing(pointcut = "loggingPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         Logger log = getLogger(joinPoint);
@@ -37,6 +46,13 @@ public class LoggingAspect {
         }
     }
 
+    /**
+     * Logging method
+     *
+     * @param joinPoint to log around
+     * @return the original method result
+     * @throws Throwable if there is an exception
+     */
     @Around("loggingPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Logger log = getLogger(joinPoint);

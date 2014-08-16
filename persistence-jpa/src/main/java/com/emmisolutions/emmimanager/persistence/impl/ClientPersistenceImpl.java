@@ -45,10 +45,7 @@ public class ClientPersistenceImpl implements ClientPersistence {
     }
 
     @Override
-    public Client reload(Client client) {
-        if (client == null || client.getId() == null){
-            return null;
-        }
-        return clientRepository.findOne(client.getId());
+    public Client reload(Long id) {
+        return clientRepository.findOne(id);
     }
 }

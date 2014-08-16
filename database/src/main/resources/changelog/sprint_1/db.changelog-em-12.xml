@@ -10,7 +10,7 @@
     <changeSet id="create_app_user_table" author="matt">
         <createTable tableName="app_user">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="app_user_pk"/>
+                <constraints primaryKey="true" primaryKeyName="pk_app_user"/>
             </column>
             <column name="login" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -25,13 +25,13 @@
             <column name="last_modified_by" type="varchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
         </createTable>
-        <addUniqueConstraint tableName="app_user" columnNames="login"/>
+        <addUniqueConstraint tableName="app_user" columnNames="login" constraintName="uk_app_user_login"/>
     </changeSet>
 
     <changeSet id="add_revinfo" author="matt">
         <createTable tableName="revision_info">
             <column autoIncrement="true" name="revision" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="revision_info_pk"/>
+                <constraints primaryKey="true" primaryKeyName="pk_revision_info"/>
             </column>
             <column name="timestamp" type="BIGINT"/>
             <column name="username" type="VARCHAR(50)"/>
@@ -52,13 +52,13 @@
 
         <addPrimaryKey
                 columnNames="id, revision"
-                constraintName="user_audit_pk"
+                constraintName="pk_user_audit"
                 tableName="app_user_audit"/>
 
         <addForeignKeyConstraint
                 baseTableName="app_user_audit"
                 baseColumnNames="revision"
-                constraintName="app_user_audit_revision_fk"
+                constraintName="fk_app_user_audit_revision"
                 referencedTableName="revision_info"
                 referencedColumnNames="revision"/>
 
@@ -86,7 +86,6 @@
         <addColumn tableName="app_user">
             <column name="password" type="VARCHAR(100)"/>
         </addColumn>
-        <addUniqueConstraint tableName="app_user" columnNames="login"/>
     </changeSet>
 
     <changeSet id="add_roles_and_permissions" author="Matt">
@@ -98,7 +97,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addPrimaryKey tableName="app_user_role" columnNames="app_user_id, roles_id"/>
+        <addPrimaryKey tableName="app_user_role" constraintName="pk_app_user_role" columnNames="app_user_id, roles_id"/>
 
         <createTable tableName="app_user_role_audit">
             <column name="revision" type="BIGINT">
@@ -112,17 +111,17 @@
             </column>
             <column name="revision_type" type="TINYINT"/>
         </createTable>
-        <addPrimaryKey tableName="app_user_role_audit" columnNames="revision, app_user_id, roles_id"/>
+        <addPrimaryKey tableName="app_user_role_audit" constraintName="pk_app_user_role_audit" columnNames="revision, app_user_id, roles_id"/>
 
         <createTable tableName="permission">
             <column name="name" type="VARCHAR(255)">
-                <constraints primaryKey="true"/>
+                <constraints primaryKey="true" primaryKeyName="pk_permission"/>
             </column>
         </createTable>
 
         <createTable tableName="role">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="pk_role_id"/>
+                <constraints primaryKey="true" primaryKeyName="pk_role"/>
             </column>
             <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -144,7 +143,7 @@
             <column name="name" type="varchar(50)"/>
             <column name="system_role" type="BOOLEAN"/>
         </createTable>
-        <addPrimaryKey tableName="role_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="role_audit" constraintName="pk_role_audit" columnNames="id, revision"/>
 
         <createTable tableName="role_permission">
             <column name="role_id" type="BIGINT">
@@ -154,7 +153,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addPrimaryKey tableName="role_permission" columnNames="role_id, permissions_name"/>
+        <addPrimaryKey tableName="role_permission" constraintName="pk_role_permission" columnNames="role_id, permissions_name"/>
 
         <createTable tableName="role_permission_audit">
             <column name="revision" type="BIGINT">
@@ -169,10 +168,10 @@
             <column name="revision_type" type="TINYINT"/>
 
         </createTable>
-        <addPrimaryKey tableName="role_permission_audit" columnNames="revision, role_id, permissions_name"/>
+        <addPrimaryKey tableName="role_permission_audit" constraintName="pk_role_permission_audit" columnNames="revision, role_id, permissions_name"/>
 
-        <addUniqueConstraint tableName="role" columnNames="name"/>
-        <addUniqueConstraint tableName="role_permission" columnNames="permissions_name"/>
+        <addUniqueConstraint tableName="role" columnNames="name" constraintName="uk_role_name"/>
+        <addUniqueConstraint tableName="role_permission" columnNames="permissions_name" constraintName="uk_role_permission_permissions_name"/>
         <addForeignKeyConstraint baseTableName="app_user_role"
                                  baseColumnNames="roles_id"
                                  constraintName="fk_app_user_role_role_id"

@@ -49,10 +49,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String REMEMBER_ME_KEY = "emSrm";
 
+    /**
+     * Setup the global authentication settings
+     *
+     * @param auth to setup
+     * @throws Exception if there's a problem with the user details service
+     */
     @Inject
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-            .userDetailsService(userDetailsService)
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder);
     }
 
@@ -60,32 +66,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi/authenticated");
         http
-            .exceptionHandling()
+                .exceptionHandling()
                 .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
                         new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
                 .and()
-            .rememberMe()
-                .key(REMEMBER_ME_KEY)
+                    .rememberMe()
+                        .key(REMEMBER_ME_KEY)
                 .and()
-            .formLogin()
-                .loginProcessingUrl("/webapi/authenticate")
-                .successHandler(ajaxAuthenticationSuccessHandler)
-                .failureHandler(ajaxAuthenticationFailureHandler)
-                .usernameParameter("j_username")
-                .passwordParameter("j_password")
-                .permitAll()
+                    .formLogin()
+                        .loginProcessingUrl("/webapi/authenticate")
+                        .successHandler(ajaxAuthenticationSuccessHandler)
+                        .failureHandler(ajaxAuthenticationFailureHandler)
+                        .usernameParameter("j_username")
+                        .passwordParameter("j_password")
+                        .permitAll()
                 .and()
-            .logout()
-                .logoutUrl("/webapi/logout")
-                .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
+                    .logout()
+                        .logoutUrl("/webapi/logout")
+                        .logoutSuccessHandler(ajaxLogoutSuccessHandler)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
                 .and()
-            .csrf()
-                .disable()
-            .headers()
-                .frameOptions().disable()
-            .authorizeRequests()
+                    .csrf()
+                        .disable()
+                .headers()
+                    .frameOptions().disable()
+                    .authorizeRequests()
                 .antMatchers("/webapi").permitAll()
                 .antMatchers("/webapi.*").permitAll()
                 .antMatchers("/webapi/").permitAll()

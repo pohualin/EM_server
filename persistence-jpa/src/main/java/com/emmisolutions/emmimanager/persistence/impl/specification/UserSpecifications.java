@@ -22,6 +22,8 @@ import com.emmisolutions.emmimanager.model.User_;
  */
 public class UserSpecifications {
 
+    private UserSpecifications(){}
+
     /**
      * Filter to ensure User is a contract owner
      *

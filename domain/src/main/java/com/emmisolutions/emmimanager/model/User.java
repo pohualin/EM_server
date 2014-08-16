@@ -61,11 +61,17 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(length = 100)
     private String email;
 
-    public User(){
+    public User() {
 
     }
 
-    public User(String login, String password){
+    /**
+     * Constructor for security based things
+     *
+     * @param login    the login
+     * @param password the password
+     */
+    public User(String login, String password) {
         this.login = login;
         this.password = password;
     }

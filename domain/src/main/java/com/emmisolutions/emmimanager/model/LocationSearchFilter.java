@@ -21,14 +21,26 @@ public class LocationSearchFilter {
 
     private StatusFilter status;
 
+    /**
+     * Constructor
+     */
     public LocationSearchFilter() {
         status = StatusFilter.ALL;
     }
 
+    /**
+     * Constructor
+     * @param names to filter
+     */
     public LocationSearchFilter(String... names) {
         this(StatusFilter.ALL, names);
     }
 
+    /**
+     * Constructor
+     * @param status filter
+     * @param names to filter
+     */
     public LocationSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
             this.names = new HashSet<>();
@@ -69,5 +81,13 @@ public class LocationSearchFilter {
             }
             return ALL;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "LocationSearchFilter{" +
+                "names=" + names +
+                ", status=" + status +
+                '}';
     }
 }

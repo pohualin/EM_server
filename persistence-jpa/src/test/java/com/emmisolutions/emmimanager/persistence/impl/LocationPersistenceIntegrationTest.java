@@ -16,6 +16,9 @@ import javax.validation.ConstraintViolationException;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Test class
+ */
 public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
@@ -29,17 +32,26 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private User superAdmin;
 
+    /**
+     * before each test
+     */
     @Before
-    public void init(){
+    public void init() {
         superAdmin = userPersistence.reload("super_admin");
     }
 
 
+    /**
+     * save without required
+     */
     @Test(expected = ConstraintViolationException.class)
     public void requiredFields() {
         locationPersistence.save(new Location());
     }
 
+    /**
+     * create a location
+     */
     @Test
     public void create() {
         Location location = new Location();
@@ -52,8 +64,11 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("system is the created by", location.getCreatedBy(), is("system"));
     }
 
+    /**
+     * save location relationship on client
+     */
     @Test
-    public void belongsToRelationship(){
+    public void belongsToRelationship() {
         Client client = new Client();
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
@@ -63,6 +78,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(ClientType.PROVIDER);
         client.setActive(true);
         client.setContractOwner(superAdmin);
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         client = clientPersistence.save(client);
 
         Location location = new Location();
@@ -83,8 +99,11 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("location has client", locationPage.getContent().iterator().next().getBelongsTo(), is(client));
     }
 
+    /**
+     * bad name
+     */
     @Test(expected = ConstraintViolationException.class)
-    public void invalidName(){
+    public void invalidName() {
         Location location = new Location();
         location.setName("Invalid *");
         location.setCity("Valid City");
@@ -93,8 +112,11 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         locationPersistence.save(location);
     }
 
+    /**
+     * bad city
+     */
     @Test(expected = ConstraintViolationException.class)
-    public void invalidCity(){
+    public void invalidCity() {
         Location location = new Location();
         location.setName("Valid Name");
         location.setCity("InValid ^%");

@@ -20,6 +20,8 @@ import com.emmisolutions.emmimanager.model.Client_;
  */
 public class ClientSpecifications {
 
+    private ClientSpecifications(){}
+
     /**
      * Case insensitive name anywhere match
      *

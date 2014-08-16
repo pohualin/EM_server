@@ -59,10 +59,27 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
         return parameter;
     }
 
+    /**
+     * Creates a resource from the page
+     *
+     * @param page      to assemble
+     * @param assembler to use
+     * @param <R>       the resource
+     * @return the paged resource
+     */
     public <R extends ResourceSupport> PagedResources<R> toResource(Page<T> page, ResourceAssembler<T, R> assembler) {
         return createResource(page, assembler, null);
     }
 
+    /**
+     * Creates a resource from the page
+     *
+     * @param page   to assemble
+     * @param assembler to use
+     * @param link to use
+     * @param <R> resource
+     * @return the paged resource
+     */
     public <R extends ResourceSupport> PagedResources<R> toResource(Page<T> page, ResourceAssembler<T, R> assembler,
                                                                     Link link) {
 
@@ -73,7 +90,7 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
     private <S, R extends ResourceSupport> PagedResources<R> createResource(Page<S> page,
                                                                             ResourceAssembler<S, R> assembler, Link link) {
 
-        Assert.notNull(page, "Page must not be null!");
+        Assert.notNull(page, "Page can not be null!");
         Assert.notNull(assembler, "ResourceAssembler must not be null!");
 
         List<R> resources = new ArrayList<>(page.getNumberOfElements());
@@ -125,7 +142,7 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
             foo(resources, first.previousOrFirst(), uri, prefix + Link.REL_LAST);
         }
 
-        if ( current != null) {
+        if (current != null) {
             foo(resources, current, uri, prefix + Link.REL_SELF);
         }
         resources.add(appendPaginationParameterTemplates(new Link(uri)));

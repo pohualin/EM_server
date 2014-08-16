@@ -16,6 +16,7 @@ import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.web.rest.model.salesforce.SalesForceSearchResponseResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -23,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Reference data for client editing
  */
 @XmlRootElement(name = "reference-data")
-public class ReferenceData extends ResourceSupport{	
+public class ReferenceData extends ResourceSupport {
 
     @XmlElement(name = "clientType")
     @XmlElementWrapper(name = "clientTypes")
@@ -46,14 +47,23 @@ public class ReferenceData extends ResourceSupport{
     private Collection<ReferenceGroup> clientGroups; 
 
 
-    public ReferenceData(){
-        add(UserPage.createPotentialOwnersFullSearchLink());     
+    /**
+     * create common links for reference data
+     */
+    public ReferenceData() {
+        add(UserPage.createPotentialOwnersFullSearchLink());
+        add(SalesForceSearchResponseResource.createFindLink());
     }
 
+    /**
+     * Override to change the link property name for serialization
+     *
+     * @return links
+     */
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")
-    public List<Link> getLinks(){
+    public List<Link> getLinks() {
         return super.getLinks();
     }
 

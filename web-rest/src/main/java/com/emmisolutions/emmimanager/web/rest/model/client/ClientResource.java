@@ -26,6 +26,11 @@ public class ClientResource extends ResourceSupport {
         this.entity = entity;
     }
 
+    /**
+     * Override to change the link property name for serialization
+     *
+     * @return links
+     */
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")

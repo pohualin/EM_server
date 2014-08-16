@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
- * HATEOAS wrapper for User
+ * HATEOAS wrapper for User, essentially a DTO instead of a wrapper.
  */
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -31,8 +31,20 @@ public class UserResource extends ResourceSupport {
     @XmlElementWrapper(name = "permissions")
     private List<PermissionName> permissions;
 
-    public UserResource(){}
+    public UserResource() {
+    }
 
+    /**
+     * Big constructor
+     *
+     * @param id          id
+     * @param version     version
+     * @param login       login
+     * @param firstName   first name
+     * @param lastName    last name
+     * @param email       email
+     * @param permissions permissions
+     */
     public UserResource(Long id, Integer version, String login, String firstName, String lastName, String email, List<PermissionName> permissions) {
         this.id = id;
         this.version = version;
@@ -43,13 +55,17 @@ public class UserResource extends ResourceSupport {
         this.permissions = permissions;
     }
 
+    /**
+     * Override to change the link property name for serialization
+     *
+     * @return links
+     */
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")
-    public List<Link> getLinks(){
-       return super.getLinks();
+    public List<Link> getLinks() {
+        return super.getLinks();
     }
-
 
 
 }

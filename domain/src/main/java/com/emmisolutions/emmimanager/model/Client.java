@@ -1,14 +1,14 @@
 package com.emmisolutions.emmimanager.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.envers.Audited;
+import org.joda.time.LocalDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,17 +23,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.envers.Audited;
-import org.joda.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -41,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @Audited
 @Entity
-@Table(name = "client")
+@Table(name = "client", uniqueConstraints = @UniqueConstraint(name = "uk_salesforce_account_id", columnNames = "salesforce_account_id"))
 @XmlRootElement(name = "client")
 public class Client extends AbstractAuditingEntity implements Serializable {
 
@@ -92,8 +88,10 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @Column(name = "contract_end", nullable = false)
     private LocalDate contractEnd;
 
-    @OneToOne(mappedBy = "client")
+    @NotNull
+    @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "salesforce_account_id")
+    @JsonManagedReference
     private SalesForce salesForceAccount;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
@@ -108,14 +106,12 @@ public class Client extends AbstractAuditingEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return !(getId() != null ? !getId().equals(client.getId()) : client.getId() != null) && !(getVersion() != null ? !getVersion().equals(client.getVersion()) : client.getVersion() != null);
+        return !(id != null ? !id.equals(client.id) : client.id != null);
     }
 
     @Override
     public int hashCode() {
-        int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getVersion() != null ? getVersion().hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override

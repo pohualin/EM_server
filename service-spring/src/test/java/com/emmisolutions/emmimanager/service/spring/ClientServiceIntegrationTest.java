@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -19,6 +16,9 @@ import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilte
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Client service integration
+ */
 public class ClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
@@ -30,18 +30,27 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
+    /**
+     * Not all required fields
+     */
     @Test(expected = ConstraintViolationException.class)
     public void createNotAllRequired() {
         Client client = new Client();
         clientService.create(client);
     }
 
+    /**
+     * Create successfully
+     */
     @Test
     public void create() {
         Client client = clientService.create(makeClient("toCreate", "me"));
         assertThat("client was created successfully", client.getId(), is(notNullValue()));
     }
 
+    /**
+     * update successfully
+     */
     @Test
     public void update() {
         final String clientName = "forUpdating";
@@ -56,6 +65,9 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("version should have incremented on update", version ,is(toUpdate.getVersion() - 1));
     }
 
+    /**
+     * Fetch contract owners
+     */
     @Test
     public void contractUserFetch(){
         User contractOwner = userPersistence.reload("contract_owner");
@@ -70,8 +82,8 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        User newGuy = new User(username, "pw");
-        client.setContractOwner(userService.save(newGuy));
+        client.setContractOwner(userService.save(new User(username, "pw")));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
     }
 

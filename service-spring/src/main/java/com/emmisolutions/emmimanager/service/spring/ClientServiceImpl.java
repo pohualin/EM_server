@@ -50,14 +50,23 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(readOnly = true)
     public Client reload(Client client) {
+    /* We probably have to eager load the groups. The commented code was part of EM-40 where we got the groups to load by forcing it with the iterator (hack). 
         Client ret = clientPersistence.reload(client);
         System.out.println(ret.getGroups().iterator().hasNext());
         return ret;
+	*/
+        if (client == null || client.getId() == null){
+            return null;
+        }
+        return clientPersistence.reload(client.getId());
     }
 
     @Override
     @Transactional
     public Client create(Client client) {
+        if (client == null) {
+            throw new IllegalArgumentException("client cannot be null");
+        }
         client.setId(null);
         client.setVersion(null);
         return clientPersistence.save(client);
