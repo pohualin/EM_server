@@ -26,6 +26,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResourceAssembler;
@@ -45,6 +46,9 @@ public class ClientsResource {
 
     @Resource
     ClientService clientService;
+    
+    @Resource
+    GroupService groupService;
 
     @Resource
     ClientResourceAssembler clientResourceAssembler;
@@ -117,8 +121,10 @@ public class ClientsResource {
     @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
-        return new ReferenceData();
-    }
+		ReferenceData r = new ReferenceData();
+		r.setClientGroups(groupService.fetchReferenceGroups());
+		return r;
+    }	
 
     /**
      * GET to retrieve Potential Owner reference data. This data is paginated
@@ -154,7 +160,8 @@ public class ClientsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE"})
-    public ResponseEntity<ClientResource> create(@RequestBody Client client) {
+    public ResponseEntity<ClientResource> create(@RequestBody ClientSaveRequest clientSaveRequest) {
+    	Client client = new Client();
         client = clientService.create(client);
         if (client == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -182,25 +189,5 @@ public class ClientsResource {
             return new ResponseEntity<>(clientResourceAssembler.toResource(client), HttpStatus.OK);
         }
     }
-    
-    
-	@RequestMapping(value = "/clientSaveWithGroups", method = RequestMethod.POST, consumes = {
-			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_CREATE" })
-	public ResponseEntity<ClientResource> create(
-			@RequestBody ClientSaveRequest clientSaveRequest) {
-
-		Client client = clientService.createWithGroups(clientSaveRequest.getClient(),
-				clientSaveRequest.getGroups());
-
-		if (client == null) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(
-					clientResourceAssembler.toResource(client),
-					HttpStatus.CREATED);
-		}
-	}
-    
     
 }
