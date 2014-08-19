@@ -46,11 +46,8 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	public void createGroupWithClientID(){
 		Group group = new Group();
 		group.setName("New Group");
-		
 		Long clientId = 1L;
-		
 		groupService.create(group, clientId);
-		
 		assertThat("Group associated to ClientId was created:", group.getClient().getId(),  is(notNullValue()));
 	}
 	
