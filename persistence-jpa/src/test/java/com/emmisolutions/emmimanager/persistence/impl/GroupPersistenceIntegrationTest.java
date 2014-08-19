@@ -1,25 +1,32 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
 
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
@@ -28,7 +35,10 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientPersistence clientPersistence;
-	
+    
+    @Resource
+    GroupPersistence groupPersistence;
+    
 	@Resource
 	UserPersistence userPersistence;
 	
@@ -95,6 +105,57 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	    client.setType(ClientType.PROVIDER);
 	    client.setActive(false);
 	    client.setContractOwner(superAdmin);
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
 	    return client;
+	}
+	
+	@Test
+	public void testGroupWithTags() {
+
+		Group group = new Group();
+		group.setName("new group");
+		
+		Client client = makeClient();
+		clientRepository.save(client);
+	
+		group.setClient(clientRepository.findOne(client.getId()));
+		
+		Tag tagOne = new Tag();
+		tagOne.setName("new tag one");
+		Tag tagTwo = new Tag();
+		tagTwo.setName("new tag two");
+		Set<Tag> tags = new HashSet<Tag>();
+		tags.add(tagOne);
+		tags.add(tagTwo);
+
+		group.setTags(tags);
+		group = groupRepository.save(group);
+		
+		assertThat("Group with tags was created: ", group.getTags().iterator().next().getId(), is(notNullValue()));
+		assertThat("Group with 2 tags was created ", group.getTags().size(), is(2));
+
+	}
+	
+	@Test
+	public void testListGroupsByClientID(){
+		Group groupOne = new Group();
+		groupOne.setName("TestGroup1");
+		Client clientOne = makeClient();
+		clientRepository.save(clientOne);
+		groupOne.setClient(clientRepository.findOne(clientOne.getId()));
+		groupOne = groupRepository.save(groupOne);
+
+		Group groupTwo = new Group();
+		groupTwo.setName("TestGroup2");
+		groupTwo.setClient(clientRepository.findOne(clientOne.getId()));
+		groupTwo = groupRepository.save(groupTwo);
+		
+		GroupSearchFilter gsf = new GroupSearchFilter(clientOne.getId());
+		Page<Group> groupPage = groupPersistence.list(null, gsf);
+		
+		assertThat("found all of the clients", groupPage.getTotalElements(), is(2l));
+		assertThat("we are on page 0", groupPage.getNumber(), is(0));
+		
+		
 	}
 }
