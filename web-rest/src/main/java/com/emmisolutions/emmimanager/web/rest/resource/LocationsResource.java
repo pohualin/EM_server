@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
-import static com.emmisolutions.emmimanager.model.LocationSearchFilter.StatusFilter.fromStringOrAll;
+import static com.emmisolutions.emmimanager.model.LocationSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -78,8 +78,37 @@ public class LocationsResource {
             PagedResourcesAssembler<Location> assembler,
             @RequestParam(value = "name", required = false) String... names) {
 
+        return findLocations(pageable, assembler, null, status, names);
+    }
+
+    /**
+     * GET to search for location on a client
+     *
+     * @param pageable  paged request
+     * @param sort      sorting request
+     * @param status    to filter by
+     * @param assembler used to create the PagedResources
+     * @param names     to filter by
+     * @return LocationPage or NO_CONTENT
+     */
+    @RequestMapping(value = "/clients/{clientId}/locations",
+            method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST"})
+    public ResponseEntity<LocationPage> clientLocations(
+            @PathVariable Long clientId,
+            @PageableDefault(size = 50) Pageable pageable,
+            @SortDefault(sort = "id") Sort sort,
+            @RequestParam(value = "status", required = false) String status,
+            PagedResourcesAssembler<Location> assembler,
+            @RequestParam(value = "name", required = false) String... names) {
+
+        return findLocations(pageable, assembler, clientId, status, names);
+    }
+
+    private ResponseEntity<LocationPage> findLocations(Pageable pageable, PagedResourcesAssembler<Location> assembler,
+                                                       Long clientId, String status, String... names) {
         // create the search filter
-        LocationSearchFilter locationSearchFilter = new LocationSearchFilter(fromStringOrAll(status), names);
+        LocationSearchFilter locationSearchFilter = new LocationSearchFilter(clientId, fromStringOrActive(status), names);
 
         // find the page of clients
         Page<Location> locationPage = locationService.list(pageable, locationSearchFilter);

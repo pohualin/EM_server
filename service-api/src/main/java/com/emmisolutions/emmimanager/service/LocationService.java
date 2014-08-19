@@ -12,6 +12,7 @@ public interface LocationService {
 
     /**
      * Get the first page (default size) of location objects based upon the filter
+     *
      * @param locationSearchFilter or null
      * @return the first page of location objects
      */
@@ -19,7 +20,8 @@ public interface LocationService {
 
     /**
      * Get a page of location objects.
-     * @param page to retrieve
+     *
+     * @param page                 to retrieve
      * @param locationSearchFilter filtered by
      * @return a page of location objects
      */
@@ -32,4 +34,13 @@ public interface LocationService {
      * @return the reloaded location
      */
     Location reload(Location toFind);
+
+    /**
+     * Creates/Persists a location
+     *
+     * @param location to save
+     * @return the persistent location
+     */
+    Location create(Location location);
+
 }

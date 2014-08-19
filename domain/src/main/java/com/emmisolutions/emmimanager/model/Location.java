@@ -8,6 +8,7 @@ import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -33,7 +34,11 @@ public class Location extends AbstractAuditingEntity {
     @JoinColumn(name = "client_id")
     private Client belongsTo;
 
-    @ManyToMany(mappedBy = "locations")
+    @ManyToMany
+    @JoinTable(
+            name = "client_location",
+            joinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")})
     private Set<Client> usingThisLocation;
 
     @NotNull
@@ -147,5 +152,12 @@ public class Location extends AbstractAuditingEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void addClientUsingThisLocation(Client client){
+        if (usingThisLocation == null){
+            usingThisLocation = new HashSet<>();
+        }
+        usingThisLocation.add(client);
     }
 }

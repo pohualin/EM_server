@@ -15,7 +15,7 @@ public interface LocationPersistence {
      *
      * @param page   to fetch
      * @param filter to filter
-     * @return page of location
+     * @return page of location objects
      */
     Page<Location> list(Pageable page, LocationSearchFilter filter);
 
@@ -34,4 +34,5 @@ public interface LocationPersistence {
      * @return the location
      */
     Location reload(Location location);
+
 }

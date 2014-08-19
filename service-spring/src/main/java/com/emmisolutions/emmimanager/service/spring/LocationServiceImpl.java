@@ -36,4 +36,15 @@ public class LocationServiceImpl implements LocationService {
     public Location reload(Location toFind) {
         return locationPersistence.reload(toFind);
     }
+
+    @Override
+    @Transactional
+    public Location create(Location location) {
+        if (location == null) {
+            throw new IllegalArgumentException("location cannot be null");
+        }
+        location.setId(null);
+        location.setVersion(null);
+        return locationPersistence.save(location);
+    }
 }

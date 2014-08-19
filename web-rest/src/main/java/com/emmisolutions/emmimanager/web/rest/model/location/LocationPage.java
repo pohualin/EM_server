@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.location;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
@@ -30,11 +31,11 @@ public class LocationPage extends PagedResource<LocationResource> {
     }
 
     /**
-     * Wrapper for client resource objects
+     * Creates a page for a location search result
      *
      * @param locationResourceSupports to be wrapped
      * @param locationPage             true page
-     * @param filter                 which caused the response
+     * @param filter                   which caused the response
      */
     public LocationPage(PagedResources<LocationResource> locationResourceSupports, Page<Location> locationPage, LocationSearchFilter filter) {
         pageDefaults(locationResourceSupports, locationPage);
@@ -59,6 +60,18 @@ public class LocationPage extends PagedResource<LocationResource> {
      */
     public static Link createFullSearchLink() {
         Link link = linkTo(methodOn(LocationsResource.class).list(null, null, null, null, (String[]) null)).withRel("locations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+
+    public static Link createFullClientSearchLink(Client client) {
+        Link link = linkTo(methodOn(LocationsResource.class).clientLocations(client.getId(), null, null, null, null, (String[]) null)).withRel("locations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

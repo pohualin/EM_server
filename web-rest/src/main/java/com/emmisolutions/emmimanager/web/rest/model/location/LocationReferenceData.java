@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * Reference data for client editing
+ * Reference data for location editing
  */
 @XmlRootElement(name = "reference-data")
 public class LocationReferenceData extends ResourceSupport {

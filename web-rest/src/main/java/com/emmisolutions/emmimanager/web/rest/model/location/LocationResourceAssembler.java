@@ -9,7 +9,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * Responsible for creating a ClientResource (which has links) from a Client
+ * Responsible for creating a LocationResource (which has links) from a Location (entity)
  */
 @Component
 public class LocationResourceAssembler implements ResourceAssembler<Location, LocationResource> {
