@@ -58,7 +58,5 @@ public interface ClientService {
      * @return a page of User objects
      */
     Page<User> listPotentialContractOwners(Pageable pageable);
-
-	Client createWithGroups(Client client, List<Group> groups);
-
+    
 }
