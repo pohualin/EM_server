@@ -51,4 +51,10 @@ public interface GroupService {
 	 * Find the group by given id
 	 */
 	Group reload(Long id);
+	
+	/**
+	 * Delete the group by given id
+	 */
+	void remove(Long id);
 }
+

@@ -85,4 +85,10 @@ public class GroupServiceImpl implements GroupService {
 		}
 		return groupPersistence.reload(id);
 	}
+	
+	@Override
+	@Transactional
+	public void remove(Long id) {
+		groupPersistence.remove(id);
+	}
 }

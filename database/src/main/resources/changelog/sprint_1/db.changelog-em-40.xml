@@ -98,7 +98,7 @@
 	<changeSet id="create_client_tag" author="Amrita" context="dev">
 		<createTable tableName="client_tag">
 			<column autoIncrement="true" name="id" type="bigint"><constraints primaryKey="true"/> </column>
-			<column name="group_id" type="bigint"/>
+			<column name="group_id" type="bigint"><constraints nullable="false"/></column>
 			<column name="name" type="varchar(255)"><constraints nullable="false"/></column>
 			<column name="version" type="INT"/>
 			<column name="created_by" type="varchar(50)" defaultValue="system"><constraints nullable="false"/></column>

@@ -122,8 +122,10 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 		
 		Tag tagOne = new Tag();
 		tagOne.setName("new tag one");
+		tagOne.setGroup(group);
 		Tag tagTwo = new Tag();
 		tagTwo.setName("new tag two");
+		tagTwo.setGroup(group);
 		Set<Tag> tags = new HashSet<Tag>();
 		tags.add(tagOne);
 		tags.add(tagTwo);
@@ -133,7 +135,6 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 		
 		assertThat("Group with tags was created: ", group.getTags().iterator().next().getId(), is(notNullValue()));
 		assertThat("Group with 2 tags was created ", group.getTags().size(), is(2));
-
 	}
 	
 	@Test
@@ -141,21 +142,35 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 		Group groupOne = new Group();
 		groupOne.setName("TestGroup1");
 		Client clientOne = makeClient();
-		clientRepository.save(clientOne);
-		groupOne.setClient(clientRepository.findOne(clientOne.getId()));
-		groupOne = groupRepository.save(groupOne);
+		clientPersistence.save(clientOne);
+		groupOne.setClient(clientPersistence.reload(clientOne.getId()));
+		groupOne = groupPersistence.save(groupOne);
 
 		Group groupTwo = new Group();
 		groupTwo.setName("TestGroup2");
-		groupTwo.setClient(clientRepository.findOne(clientOne.getId()));
-		groupTwo = groupRepository.save(groupTwo);
+		groupTwo.setClient(clientPersistence.reload(clientOne.getId()));
+		groupTwo = groupPersistence.save(groupTwo);
 		
 		GroupSearchFilter gsf = new GroupSearchFilter(clientOne.getId());
 		Page<Group> groupPage = groupPersistence.list(null, gsf);
 		
 		assertThat("found all of the clients", groupPage.getTotalElements(), is(2l));
 		assertThat("we are on page 0", groupPage.getNumber(), is(0));
+	}
+	
+	@Test(expected=NullPointerException.class)
+	public void deleteGroupById(){
+		Group groupToDelete = new Group();
+		groupToDelete.setName("TestGroupToDelete");
+		Client clientOne = makeClient();
+		clientPersistence.save(clientOne);
+		groupToDelete.setClient(clientPersistence.reload(clientOne.getId()));
+		groupToDelete = groupPersistence.save(groupToDelete);
+		assertThat("Group is created:", groupToDelete.getId(), is(notNullValue()));
 		
-		
+		groupPersistence.remove(groupToDelete.getId());
+		Group group= groupPersistence.reload(groupToDelete.getId());
+		assertThat("Group was removed and no longer exists", group.getId(), is(9l));
+
 	}
 }
