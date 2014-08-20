@@ -113,4 +113,20 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		Group retrievedGroup = groupService.reload(savedGroup.getId());
 		assertThat("Group get by ID successfully retrieved group:", retrievedGroup.getId(), is(savedGroup.getId()));
 	}
+	
+
+	@Test(expected=NullPointerException.class)
+	public void deleteGroupById(){
+		Group groupToDelete = new Group();
+		groupToDelete.setName("TestGroupToDelete");
+		Client clientOne = makeClient();
+		clientService.create(clientOne);
+		groupToDelete.setClient(clientService.reload(clientOne));
+		groupToDelete = groupService.save(groupToDelete);
+		assertThat("Group is created:", groupToDelete.getId(), is(notNullValue()));
+		
+		groupService.remove(groupToDelete.getId());
+		Group group= groupService.reload(groupToDelete.getId());
+		assertThat("Group was removed and no longer exists", group.getId(), is(9l));
+	}
 }

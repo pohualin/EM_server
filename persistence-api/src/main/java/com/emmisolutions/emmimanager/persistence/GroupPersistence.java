@@ -9,6 +9,7 @@ import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 
+
 public interface GroupPersistence {
 
 	/**
@@ -19,16 +20,31 @@ public interface GroupPersistence {
 
 	/**
 	 * Saves a group
+	 * @param Group
+	 * @return Group
 	 */
 	Group save(Group group);
 
 	/**
 	 * List of groups associated with given Client ID
+	 * @param Pageable
+	 * @param GroupSearchFilter
 	 */
 	Page<Group> list(Pageable page, GroupSearchFilter searchFilter);
 
 	/**
 	 * Reloads a group given the id
+	 * @param Long group id
+	 * @return Group
 	 */
 	Group reload(Long id);
+	
+	/**
+	 * 	Deletes a Group by given id
+	 * @param Long	id
+	 * @return void
+	 */	
+	void remove(Long id);
+	
+
 }
