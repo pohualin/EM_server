@@ -1,7 +1,10 @@
 package com.emmisolutions.emmimanager.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,15 +12,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A Group and its containing tags
@@ -41,10 +49,18 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
     @Column(length = 255, nullable = false)
     private String name;
     
-    @ManyToOne
+    @NotNull
+    @ManyToOne(optional = false)
     @JoinColumn(name = "client_id")
     @JsonBackReference
     private Client client;
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlElement(name = "tag")
+    @XmlElementWrapper(name = "tags")
+    @JsonProperty("tag")
+    private Set<Tag> tags = new HashSet<>();
     
     public Group(){}
     
@@ -63,13 +79,13 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return !(getId() != null ? !getId().equals(group.getId()) : group.getId() != null) && !(getVersion() != null ? !getVersion().equals(group.getVersion()) : group.getVersion() != null);
+        return !(getId() != null ? !getId().equals(group.getId()) : group.getId() != null);
     }
 
     @Override
     public int hashCode() {
         int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getVersion() != null ? getVersion().hashCode() : 0);
+        result = 31 * result;
         return result;
     }
 
@@ -77,7 +93,6 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
     public String toString() {
         return "Group{" +
                 "id=" + getId() +
-                ", version=" + getVersion() +
                 ", name='" + getName() + '\'' +
                 '}';
     }
@@ -88,14 +103,6 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Integer getVersion() {
-		return version;
-	}
-
-	public void setVersion(Integer version) {
-		this.version = version;
 	}
 
 	public boolean isActive() {
@@ -120,5 +127,13 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
 
 	public void setClient(Client client) {
 		this.client = client;
+	}
+
+	public Set<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<Tag> tags) {
+		this.tags = tags;
 	}	
 }
