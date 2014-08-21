@@ -3,10 +3,8 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import org.joda.time.LocalDate;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,40 +22,17 @@ import static org.junit.Assert.assertThat;
 public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
-    ClientPersistence clientPersistence;
-
-    @Resource
-    UserPersistence userPersistence;
+    ClientPersistence clientPersistence;  
 
     @Resource
     ClientRepository clientRepository;
-
-    private User superAdmin;
-
-    /**
-     * Before each test
-     */
-    @Before
-    public void init() {
-        superAdmin = userPersistence.reload("super_admin");
-    }
 
     /**
      * Save success
      */
     @Test
-    public void save() {
-        Client client = new Client();
-        client.setTier(ClientTier.THREE);
-        client.setContractEnd(LocalDate.now().plusYears(1));
-        client.setContractStart(LocalDate.now());
-        client.setRegion(ClientRegion.NORTHEAST);
-        client.setName("Test Client");
-        client.setType(ClientType.PROVIDER);
-        client.setActive(false);
-        client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
-        client = clientPersistence.save(client);
+    public void save() {        
+        Client client = clientPersistence.save(makeClient());
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
         assertThat("system is the created by", client.getCreatedBy(), is("system"));
     }
@@ -141,7 +116,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.nanoTime()));
         return client;
     }
 }

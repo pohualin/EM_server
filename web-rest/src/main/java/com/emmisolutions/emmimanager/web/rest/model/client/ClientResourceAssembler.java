@@ -2,6 +2,8 @@ package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
     public ClientResource toResource(Client entity) {
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(TeamsResource.class).clientTeams(entity.getId(),null,null,null,null,(String [])null)).withRel("teams"));
         ret.setEntity(entity);
         return ret;
     }
