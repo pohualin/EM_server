@@ -116,7 +116,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.nanoTime()));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
     }
 }

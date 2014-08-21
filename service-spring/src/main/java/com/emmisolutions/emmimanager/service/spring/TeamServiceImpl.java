@@ -58,10 +58,9 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public Team create(Team team) {
 		if (team == null) {
-            throw new IllegalArgumentException("team cannot be null");
+            throw new IllegalArgumentException("teams cannot be null");
         }
-        team.setId(null);
-        team.setVersion(null);
+					
         return teamPersistence.save(team);
 	}
 }

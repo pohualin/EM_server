@@ -54,6 +54,16 @@ public class TeamSearchFilter {
             this.status = status;
         }
     }
+    
+    public TeamSearchFilter(StatusFilter status, String names) {
+        if (names != null) {
+            this.names = new HashSet<>();
+            Collections.addAll(this.names, names);
+        }
+        if (status != null) {
+            this.status = status;
+        }
+    }
 
     public TeamSearchFilter(Long clientId, StatusFilter status, String... names) {
         this(status, names);
