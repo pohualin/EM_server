@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientLocationModificationRequest;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import org.springframework.data.domain.Page;
@@ -43,4 +45,22 @@ public interface LocationService {
      */
     Location create(Location location);
 
+    /**
+     * This update is for all attributes on the client but not the relationship to clients.
+     * E.g. it wouldn't update which client the location belongs to nor the clients which
+     * use this location
+     *
+     * @param location to update the properties
+     * @return the updated location
+     */
+    Location update(Location location);
+
+    /**
+     * Update the relationships to client for the locations within the modification request
+     *
+     * @param toUpdate            to modify
+     * @param modificationRequest to update the locations
+     * @return the updated client
+     */
+    Client updateClientLocations(Client toUpdate, ClientLocationModificationRequest modificationRequest);
 }

@@ -79,7 +79,7 @@ public class ClientsResource {
             method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LIST"})
     public ResponseEntity<ClientPage> list(
-            @PageableDefault(size = 50) Pageable pageable,
+            @PageableDefault(size = 10) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Client> assembler,

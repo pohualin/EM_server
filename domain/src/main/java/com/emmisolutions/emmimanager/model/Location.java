@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -42,15 +43,18 @@ public class Location extends AbstractAuditingEntity {
     private Set<Client> usingThisLocation;
 
     @NotNull
+    @Length(max = 255)
     @Pattern(regexp = "[A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
     @Column(nullable = false)
     private String name;
 
     @NotNull
-    @Column(length = 20, nullable = false)
+    @Length(max = 255)
+    @Column(nullable = false)
     private String phone;
 
     @NotNull
+    @Length(max = 255)
     @Pattern(regexp = "[A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
     @Column(nullable = false)
     private String city;

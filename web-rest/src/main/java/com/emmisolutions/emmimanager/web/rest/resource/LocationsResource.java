@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientLocationModificationRequest;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.service.LocationService;
@@ -59,6 +61,46 @@ public class LocationsResource {
     }
 
     /**
+     * POST to create new client
+     *
+     * @param client to create
+     * @return ClientResource or INTERNAL_SERVER_ERROR if it could not be created
+     */
+    @RequestMapping(value = "/locations",
+            method = RequestMethod.POST,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
+    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_CREATE"})
+    public ResponseEntity<LocationResource> create(@RequestBody Location location) {
+        location = locationService.create(location);
+        if (location == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(locationResourceAssembler.toResource(location), HttpStatus.CREATED);
+        }
+    }
+
+    /**
+     * POST to create new client
+     *
+     * @param client to create
+     * @return ClientResource or INTERNAL_SERVER_ERROR if it could not be created
+     */
+    @RequestMapping(value = "/locations",
+            method = RequestMethod.PUT,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
+    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_EDIT"})
+    public ResponseEntity<LocationResource> update(@RequestBody Location location) {
+        location = locationService.update(location);
+        if (location == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(locationResourceAssembler.toResource(location), HttpStatus.CREATED);
+        }
+    }
+
+    /**
      * GET to search for locations
      *
      * @param pageable  paged request
@@ -72,7 +114,7 @@ public class LocationsResource {
             method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST"})
     public ResponseEntity<LocationPage> list(
-            @PageableDefault(size = 50) Pageable pageable,
+            @PageableDefault(size = 10) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
@@ -93,16 +135,30 @@ public class LocationsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/locations",
             method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
     public ResponseEntity<LocationPage> clientLocations(
             @PathVariable Long clientId,
-            @PageableDefault(size = 50) Pageable pageable,
+            @PageableDefault(size = 5) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
             @RequestParam(value = "name", required = false) String... names) {
 
         return findLocations(pageable, assembler, clientId, status, names);
+    }
+
+    /**
+     * POST to update the locations on a client
+     */
+    @RequestMapping(value = "/clients/{clientId}/locations",
+            method = RequestMethod.PUT,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_EDIT"})
+    public Client modifyClientLocations(@PathVariable Long clientId, @RequestBody ClientLocationModificationRequest modificationRequest) {
+        Client client = new Client();
+        client.setId(clientId);
+//        client.setVersion(version);
+        return locationService.updateClientLocations(client, modificationRequest);
     }
 
     private ResponseEntity<LocationPage> findLocations(Pageable pageable, PagedResourcesAssembler<Location> assembler,

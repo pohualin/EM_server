@@ -70,7 +70,12 @@ public class LocationPage extends PagedResource<LocationResource> {
         return new Link(uriTemplate, link.getRel());
     }
 
-    public static Link createFullClientSearchLink(Client client) {
+    /**
+     * Create a search link for locations on a client
+     * @param client on which to search for locations
+     * @return the link
+     */
+    public static Link createFullClientLocationsSearchLink(Client client) {
         Link link = linkTo(methodOn(LocationsResource.class).clientLocations(client.getId(), null, null, null, null, (String[]) null)).withRel("locations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
