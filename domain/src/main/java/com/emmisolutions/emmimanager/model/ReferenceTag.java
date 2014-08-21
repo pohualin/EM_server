@@ -12,19 +12,23 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * A Reference Group and its containing tags
+ * A Reference Tag
  */
 @Entity
-@Table(name = "reference_group")
-public class ReferenceGroup implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Table(name = "reference_tag")
+public class ReferenceTag implements Serializable {
 
-    @NotNull
-    @Size(max = 255)
-    @Column(length = 255, nullable = false)
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@NotNull
+	@Size(max = 255)
+	@Column(length = 255, nullable = false)
+	private String name;
+
+	@NotNull
+	private Group group;
 
 	public Long getId() {
 		return id;
@@ -40,5 +44,14 @@ public class ReferenceGroup implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}    
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
 }

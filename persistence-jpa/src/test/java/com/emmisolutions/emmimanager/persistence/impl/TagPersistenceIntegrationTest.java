@@ -4,11 +4,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientRegion;
@@ -17,6 +21,7 @@ import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.Tag;
+import com.emmisolutions.emmimanager.model.TagSearchFilter;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
@@ -44,9 +49,65 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
 	public void init() {
 	    superAdmin = userPersistence.reload("super_admin");
 	}
+	
 	@Test
 	public void saveTag() {
+		Group group = createGroup();
+		Tag tagOne = new Tag();
+		tagOne.setName("Tag One");
+		tagOne.setGroup(group);
+		Tag tagSaved = tagPersistence.save(tagOne);
+		assertThat("TagOne persisted:", tagSaved.getId(), is(notNullValue()));
+	}
 	
+	@Test
+	public void testListTagsByGroupId(){
+		Group group = createGroup();
+		group.setName("TestGroup");
+		
+		Tag tagOne = new Tag();
+		Tag tagTwo = new Tag();
+		tagOne.setName("TagOne");
+		tagTwo.setName("TagTwo");;
+		tagOne.setGroup(group);
+		tagTwo.setGroup(group);
+		
+		List<Tag> tags = new ArrayList<Tag>();
+		
+		tags.add(tagOne);
+		tags.add(tagTwo);
+		tagPersistence.createAll(tags);
+		
+		TagSearchFilter searchFilter = new TagSearchFilter(group.getId());
+		Page<Tag> retreivedTags = tagPersistence.listTagsByGroupId(null, searchFilter);
+		
+		assertThat("List tags by Group ID retrieved two tags", retreivedTags.getTotalElements(), is(2l));
+        assertThat("there is 1 pages", retreivedTags.getTotalPages(), is(1));
+        assertThat("we are on page 0", retreivedTags.getNumber(), is(0));
+        assertThat("Tag Inserted is equal to tag received", retreivedTags.getContent().get(0).getName(), is("TagOne"));
+        assertThat("Tag Inserted is equal to tag received", retreivedTags.getContent().get(1).getName(), is("TagTwo"));
+
+        Tag tag1  = retreivedTags.getContent().get(0);
+        Tag tag2  = retreivedTags.getContent().get(1);
+
+        tag1.setName("TagThree");
+       	tag2.setName("TagFour");
+       	List<Tag> updatedList = new ArrayList<Tag>();
+       	updatedList.add(tag1);
+       	updatedList.add(tag2);
+       	tagPersistence.updateAll(updatedList);
+       	
+       	Page<Tag> retreivedUpdatedTags = tagPersistence.listTagsByGroupId(null, searchFilter);
+       	
+       	assertThat("List tags by Group ID retrieved two tags", retreivedUpdatedTags.getTotalElements(), is(2l));
+        assertThat("there is 1 pages", retreivedUpdatedTags.getTotalPages(), is(1));
+        assertThat("we are on page 0", retreivedUpdatedTags.getNumber(), is(0));
+        assertThat("Tag Inserted is equal to tag received", retreivedUpdatedTags.getContent().get(0).getName(), is("TagThree"));
+        assertThat("Tag Inserted is equal to tag received", retreivedUpdatedTags.getContent().get(1).getName(), is("TagFour"));
+
+	}
+	
+	private Group createGroup(){
 	    Client client = new Client();
 	    client.setTier(ClientTier.THREE);
 	    client.setContractEnd(LocalDate.now().plusYears(1));
@@ -63,13 +124,37 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
 		group.setName("Test Group");
 		group.setClient(clientPersistence.reload(client.getId()));
 		group = groupPersistence.save(group);
+		return group;
+	}
+	
+	private List<Tag> listOfTags(){
+		Group group = createGroup();
+		group.setName("TestGroup");
 		
 		Tag tagOne = new Tag();
-		tagOne.setName("Tag One");
+		Tag tagTwo = new Tag();
+		tagOne.setName("TagOne");
+		tagTwo.setName("TagTwo");;
 		tagOne.setGroup(group);
+		tagTwo.setGroup(group);
 		
-		Tag tagSaved = tagPersistence.save(tagOne);
+		List<Tag> tags = new ArrayList<Tag>();
 		
-		assertThat("TagOne persisted:", tagSaved.getId(), is(notNullValue()));
+		tags.add(tagOne);
+		tags.add(tagTwo);
+		return tags;
+	}
+	
+	@Test
+	public void deleteAllTags() {
+		List<Tag> listOfTags = listOfTags();
+		List<Tag> tags = tagPersistence.createAll(listOfTags);
+		assertThat("Tags are persisted", tags.size(), is(notNullValue()));
+		Long groupId = tags.get(0).getGroup().getId();
+
+		tagPersistence.removeAll(tags);
+
+		Page<Tag> retrievedTagsPage = tagPersistence.listTagsByGroupId(null, new TagSearchFilter(groupId));
+		assertThat("retreivedTagsPage should be empty", retrievedTagsPage.getTotalElements(), is(0l));
 	}
 }

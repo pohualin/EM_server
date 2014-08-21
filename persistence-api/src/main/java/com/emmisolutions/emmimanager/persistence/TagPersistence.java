@@ -1,8 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
 
@@ -28,12 +31,20 @@ public interface TagPersistence {
 	 * @param Long id	of the Tag
 	 * @return Tag
 	 */
-	Tag reload(Long id);
+	Tag reload(Tag tag);
 	
 	/**
 	 * @param Long 	id of the Tag to be deleted
 	 * @return void
 	 */
-	void remove(Long id);
+	void remove(Tag tag);
+	
+	List<ReferenceTag> fetchAllReferenceTags();
+	
+	List<Tag> updateAll(List<Tag> tags);
+	
+	List<Tag> createAll(List<Tag> tags);
+
+	void removeAll(List<Tag> tags);
 
 }
