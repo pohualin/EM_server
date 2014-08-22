@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -33,19 +35,26 @@ public class Location extends AbstractAuditingEntity {
     @JoinColumn(name = "client_id")
     private Client belongsTo;
 
-    @ManyToMany(mappedBy = "locations")
+    @ManyToMany
+    @JoinTable(
+            name = "client_location",
+            joinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")})
     private Set<Client> usingThisLocation;
 
     @NotNull
+    @Length(max = 255)
     @Pattern(regexp = "[A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
     @Column(nullable = false)
     private String name;
 
     @NotNull
-    @Column(length = 20, nullable = false)
+    @Length(max = 255)
+    @Column(nullable = false)
     private String phone;
 
     @NotNull
+    @Length(max = 255)
     @Pattern(regexp = "[A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
     @Column(nullable = false)
     private String city;
@@ -147,5 +156,12 @@ public class Location extends AbstractAuditingEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void addClientUsingThisLocation(Client client){
+        if (usingThisLocation == null){
+            usingThisLocation = new HashSet<>();
+        }
+        usingThisLocation.add(client);
     }
 }

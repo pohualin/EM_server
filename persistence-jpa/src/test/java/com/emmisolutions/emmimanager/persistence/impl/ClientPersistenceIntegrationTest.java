@@ -15,7 +15,8 @@ import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -108,27 +109,6 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(0));
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
         assertThat("we are on page 10", clientPage.getNumber(), is(10));
-    }
-
-    /**
-     * Location test
-     */
-    @Test
-    public void addLocation() {
-        Client client = clientPersistence.save(makeClient(201));
-        Location location = new Location();
-        location.setName("Valid Name");
-        location.setCity("Valid City");
-        location.setPhone("phone number");
-        location.setState(State.IL);
-        client.getLocations().add(location);
-        client = clientPersistence.save(client);
-
-
-        Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter("Demo hospital client 201"));
-        assertThat("Client should be found", clientPage.getContent(), hasItem(client));
-        assertThat("Location should be attached to the client",
-                clientPage.getContent().get(0).getLocations().iterator().next().getName(), is("Valid Name"));
     }
 
     private Client makeClient(long i) {
