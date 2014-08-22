@@ -21,6 +21,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications.*;
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -78,5 +80,10 @@ public class LocationPersistenceImpl implements LocationPersistence {
             return null;
         }
         return locationRepository.findOne(location.getId());
+    }
+
+    @Override
+    public Set<Long> list(Long clientId) {
+        return new HashSet<>(locationRepository.findAllIdsByClientId(clientId));
     }
 }

@@ -7,6 +7,8 @@ import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Set;
+
 /**
  * Location Services
  */
@@ -19,6 +21,13 @@ public interface LocationService {
      * @return the first page of location objects
      */
     Page<Location> list(LocationSearchFilter locationSearchFilter);
+
+    /**
+     * Find all IDs associated to this client
+     * @param clientId to find for
+     * @return Set of all ids
+     */
+    Set<Long> list(Long clientId);
 
     /**
      * Get a page of location objects.
@@ -60,7 +69,7 @@ public interface LocationService {
      *
      * @param toUpdate            to modify
      * @param modificationRequest to update the locations
-     * @return the updated client
      */
-    Client updateClientLocations(Client toUpdate, ClientLocationModificationRequest modificationRequest);
+    void updateClientLocations(Client toUpdate, ClientLocationModificationRequest modificationRequest);
+
 }

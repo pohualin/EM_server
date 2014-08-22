@@ -20,6 +20,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
         ret.add(LocationPage.createFullClientLocationsSearchLink(entity));
+        ret.add(LocationPage.locationIdsAtClient(entity));
         ret.setEntity(entity);
         return ret;
     }

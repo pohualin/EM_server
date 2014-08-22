@@ -87,6 +87,15 @@ public class LocationPage extends PagedResource<LocationResource> {
         return new Link(uriTemplate, link.getRel());
     }
 
+    /**
+     * Create a link to fetch all location ids currently in use by a client
+     * @param client to find
+     * @return the link
+     */
+    public static Link locationIdsAtClient(Client client){
+        return linkTo(methodOn(LocationsResource.class).allClientLocations(client.getId())).withRel("allLocationIds");
+    }
+
     private void addFilterToLinks(LocationSearchFilter filter) {
         this.searchFilter = filter;
         if (CollectionUtils.isEmpty(links)) {

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Set;
 
 /**
  * Location Service Implementation
@@ -31,6 +32,11 @@ public class LocationServiceImpl implements LocationService {
     @Transactional(readOnly = true)
     public Page<Location> list(LocationSearchFilter locationSearchFilter) {
         return list(null, locationSearchFilter);
+    }
+
+    @Override
+    public Set<Long> list(Long clientId) {
+        return locationPersistence.list(clientId);
     }
 
     @Override
@@ -63,25 +69,36 @@ public class LocationServiceImpl implements LocationService {
             throw new IllegalArgumentException("Location Id and Version cannot be null.");
         }
         Location dbLocation = locationPersistence.reload(location);
-        location.setBelongsTo(dbLocation.getBelongsTo());
-        location.setUsingThisLocation(dbLocation.getUsingThisLocation());
+        if (dbLocation != null) {
+            location.setBelongsTo(dbLocation.getBelongsTo());
+            location.setUsingThisLocation(dbLocation.getUsingThisLocation());
+        }
         return locationPersistence.save(location);
     }
 
     @Override
     @Transactional
-    public Client updateClientLocations(Client toUpdate, ClientLocationModificationRequest modificationRequest) {
+    public void updateClientLocations(Client toUpdate, ClientLocationModificationRequest modificationRequest) {
         if (modificationRequest == null || toUpdate == null || toUpdate.getId() == null) {
-            return toUpdate;
+            return;
         }
         Client dbClient = clientPersistence.reload(toUpdate.getId());
-        if (!CollectionUtils.isEmpty(modificationRequest.getAdded())) {
-            for (Location location : modificationRequest.getAdded()) {
-                Location dbLocation = locationPersistence.reload(location);
-                dbLocation.addClientUsingThisLocation(dbClient);
-                locationPersistence.save(dbLocation);
+        if (dbClient != null) {
+            if (!CollectionUtils.isEmpty(modificationRequest.getAdded())) {
+                for (Location location : modificationRequest.getAdded()) {
+                    Location dbLocation = locationPersistence.reload(location);
+                    if (dbLocation != null) {
+                        dbLocation.addClientUsingThisLocation(dbClient);
+                        locationPersistence.save(dbLocation);
+                    }
+                }
+            }
+            if (!CollectionUtils.isEmpty(modificationRequest.getDeleted())) {
+                for (Location location : modificationRequest.getDeleted()) {
+                    Location dbLocation = locationPersistence.reload(location);
+                    dbLocation.getUsingThisLocation().remove(dbClient);
+                }
             }
         }
-        return dbClient;
     }
 }

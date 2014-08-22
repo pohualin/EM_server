@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.Set;
 
 import static com.emmisolutions.emmimanager.model.LocationSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -115,7 +116,7 @@ public class LocationsResource {
     @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST"})
     public ResponseEntity<LocationPage> list(
             @PageableDefault(size = 10) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
+            @SortDefault(sort = {"name","state"}) Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
             @RequestParam(value = "name", required = false) String... names) {
@@ -139,12 +140,26 @@ public class LocationsResource {
     public ResponseEntity<LocationPage> clientLocations(
             @PathVariable Long clientId,
             @PageableDefault(size = 5) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
+            @SortDefault(sort = {"name","state"}) Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
             @RequestParam(value = "name", required = false) String... names) {
 
         return findLocations(pageable, assembler, clientId, status, names);
+    }
+
+    /**
+     * Fetch all of the location IDs associated with a client
+     * @param clientId to find all of the IDs for
+     * @return a Set of IDs
+     */
+    @RequestMapping(value = "/clients/{clientId}/locations/all",
+            method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    public Set<Long> allClientLocations(
+            @PathVariable Long clientId) {
+
+        return locationService.list(clientId);
     }
 
     /**
@@ -154,11 +169,11 @@ public class LocationsResource {
             method = RequestMethod.PUT,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_EDIT"})
-    public Client modifyClientLocations(@PathVariable Long clientId, @RequestBody ClientLocationModificationRequest modificationRequest) {
+    public void modifyClientLocations(@PathVariable Long clientId, @RequestBody ClientLocationModificationRequest modificationRequest) {
         Client client = new Client();
         client.setId(clientId);
 //        client.setVersion(version);
-        return locationService.updateClientLocations(client, modificationRequest);
+        locationService.updateClientLocations(client, modificationRequest);
     }
 
     private ResponseEntity<LocationPage> findLocations(Pageable pageable, PagedResourcesAssembler<Location> assembler,
