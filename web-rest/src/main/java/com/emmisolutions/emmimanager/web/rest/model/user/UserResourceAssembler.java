@@ -6,10 +6,18 @@ import com.emmisolutions.emmimanager.model.Role;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
+import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
+import org.springframework.hateoas.core.DummyInvocationUtils;
+import org.springframework.hateoas.core.MappingDiscoverer;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,10 +48,24 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
                 roles);
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
+        ret.add(createClientByIdLink());
         ret.add(ClientPage.createReferenceDataLink());
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
         return ret;
     }
+
+
+    public Link createClientByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ClientsResource.class).get(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("clientById");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(link.getHref());
+        return new Link(
+                builder.replacePath(discoverer.getMapping(ClientsResource.class, method)).build().toUriString(),
+                link.getRel());
+    }
+
+    private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 
 }
