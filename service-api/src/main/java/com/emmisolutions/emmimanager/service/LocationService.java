@@ -24,6 +24,7 @@ public interface LocationService {
 
     /**
      * Find all IDs associated to this client
+     *
      * @param clientId to find for
      * @return Set of all ids
      */
@@ -47,7 +48,10 @@ public interface LocationService {
     Location reload(Location toFind);
 
     /**
-     * Creates/Persists a location
+     * Creates/Persists a location for all attributes on the location with the exception being
+     * the relationship to clients. E.g. a call here will not update which client the location
+     * belongs to nor the clients which use this location. Use the updateClientLocations for
+     * that purpose.
      *
      * @param location to save
      * @return the persistent location
@@ -55,9 +59,9 @@ public interface LocationService {
     Location create(Location location);
 
     /**
-     * This update is for all attributes on the client but not the relationship to clients.
+     * This update is for all attributes on the location but not the relationship to clients.
      * E.g. it wouldn't update which client the location belongs to nor the clients which
-     * use this location
+     * use this location. Use the updateClientLocations for that purpose.
      *
      * @param location to update the properties
      * @return the updated location
@@ -67,9 +71,9 @@ public interface LocationService {
     /**
      * Update the relationships to client for the locations within the modification request
      *
-     * @param toUpdate            to modify
+     * @param toUpdate            to relate to the passed locations
      * @param modificationRequest to update the locations
      */
-    void updateClientLocations(Client toUpdate, ClientLocationModificationRequest modificationRequest);
+    void updateClientLocations(Client toRelateTo, ClientLocationModificationRequest modificationRequest);
 
 }

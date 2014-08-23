@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -96,31 +95,28 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Test update. Need Transactional annotation here for some reason
-     * it has to do with hibernate flushing things after the update() call.
-     * If you take it off the test will fail on the assertions of the locationPage
+     * Test update.
      */
     @Test
-    @Transactional
     public void update() {
         Client belongsTo = clientService.create(makeClient());
         Client using = clientService.create(makeClient());
-        Location unsaved = makeLocation("for update", 2); // even ids are active
+        Location unsaved = makeLocation("for update", 2);
         unsaved.addClientUsingThisLocation(using);
         Location saved = locationService.create(unsaved);
         saved.setBelongsTo(belongsTo);
-        saved = locationService.update(saved);
-        Page<Location> locationPage = locationService.list(new LocationSearchFilter(using.getId(), LocationSearchFilter.StatusFilter.ACTIVE_ONLY, "for update"));
-        assertThat("found it by client", locationPage.getContent(), hasItem(saved));
-        assertThat("belongs to came back properly", locationPage.getContent().get(0).getBelongsTo(), is(belongsTo));
 
+        locationService.update(saved);
+
+        Page<Location> locationPage = locationService.list(new LocationSearchFilter(using.getId(), LocationSearchFilter.StatusFilter.ACTIVE_ONLY, "for update"));
+        assertThat("should not find anything because update and create should not set the belongs to dependencies", locationPage.getContent().size(), is(0));
     }
 
     /**
      * Test that the client locations update required fields
      */
     @Test
-    public void updateClientLocationsNoWork(){
+    public void updateClientLocationsNoWork() {
         locationService.updateClientLocations(new Client(), new ClientLocationModificationRequest());
         // no exception should be thrown
     }
@@ -131,15 +127,16 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         final Location one = locationService.create(makeLocation("locations-", 1));
         final Location two = locationService.create(makeLocation("locations-", 2));
         ClientLocationModificationRequest modificationRequest = new ClientLocationModificationRequest();
-        modificationRequest.setAdded(new ArrayList<Location>(){{
+        modificationRequest.setAdded(new ArrayList<Location>() {{
             add(one);
             add(two);
         }});
+        modificationRequest.setBelongsToUpdated(new ArrayList<Location>());
         locationService.updateClientLocations(client, modificationRequest);
         Page<Location> locationPage = locationService.list(new LocationSearchFilter("locations"));
         assertThat("locations have a client", locationPage.getContent().get(1).getUsingThisLocation(), hasItem(client));
 
-        modificationRequest.setDeleted(new ArrayList<Location>(){{
+        modificationRequest.setDeleted(new ArrayList<Location>() {{
             add(one);
         }});
         locationService.updateClientLocations(client, modificationRequest);
@@ -148,44 +145,66 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("location is one", shouldBeOne, is(one));
         assertThat("delete takes precedence over add, one should not have client", shouldBeOne.getUsingThisLocation(), not(is(hasItem(client))));
 
+        one.setBelongsTo(client);
+        modificationRequest.setBelongsToUpdated(new ArrayList<Location>() {{
+            add(one);
+        }});
+        locationService.updateClientLocations(client, modificationRequest);
+        locationPage = locationService.list(new LocationSearchFilter("locations"));
+        shouldBeOne = locationPage.getContent().get(0);
+        assertThat("location should still be one", shouldBeOne, is(one));
+        assertThat("belongs to should be correct", shouldBeOne.getBelongsTo(), is(client));
+
+        // attempt to update belongsTo from different client
+        Client anotherClient = clientService.create(makeClient());
+        one.setBelongsTo(anotherClient);
+        modificationRequest = new ClientLocationModificationRequest();
+        modificationRequest.setBelongsToUpdated(new ArrayList<Location>() {{
+            add(one);
+        }});
+        locationService.updateClientLocations(anotherClient, modificationRequest);
+        locationPage = locationService.list(new LocationSearchFilter("locations"));
+        assertThat("should still belong to original client", locationPage.getContent().get(0).getBelongsTo(), is(client));
+
+        //set belongsto to null
+        one.setBelongsTo(null);
+        locationService.updateClientLocations(client, modificationRequest);
+        locationPage = locationService.list(new LocationSearchFilter("locations"));
+        assertThat("client should be null", locationPage.getContent().get(0).getBelongsTo(), is(nullValue()));
+
+        // set it to another client
+        one.setBelongsTo(anotherClient);
+        locationService.updateClientLocations(anotherClient, modificationRequest);
+        locationPage = locationService.list(new LocationSearchFilter("locations"));
+        assertThat("client should be another client, not the first", locationPage.getContent().get(0).getBelongsTo(), is(anotherClient));
+
+
     }
 
     /**
-     * Test search by client
+     * Test list by client that has using relationships
      */
     @Test
-    public void byClient() {
-        Client one = makeClient();
-        one = clientService.create(one);
-        Client two = makeClient();
-        two = clientService.create(two);
-        Client three = makeClient();
-        three = clientService.create(three);
+    public void listByClientWithUsingRelationships() {
+        Client one = clientService.create(makeClient());
+        Client three = clientService.create(makeClient());
 
-        Location oneLocation = makeLocation("BY_CLIENT-", one.getId());
-        Location twoLocation = makeLocation("BY_CLIENT-", two.getId());
-        oneLocation.addClientUsingThisLocation(one);
-        oneLocation.addClientUsingThisLocation(three);
-        twoLocation.addClientUsingThisLocation(two);
+        final Location oneLocation = makeLocation("BY_CLIENT-", 1);
 
-        oneLocation = locationService.create(oneLocation);
-        twoLocation = locationService.create(twoLocation);
+        // create using relationship one client, three client --> one location
+        ClientLocationModificationRequest oneClientUsingModRequest = new ClientLocationModificationRequest();
+        oneClientUsingModRequest.setAdded(new ArrayList<Location>() {{
+            add(locationService.create(oneLocation));
+        }});
+        locationService.updateClientLocations(one, oneClientUsingModRequest);
+        locationService.updateClientLocations(three, oneClientUsingModRequest);
 
         Page<Location> locationPage = locationService.list(new LocationSearchFilter("BY_CLIENT"));
-        assertThat("Should only be two locations in the page", locationPage.getTotalElements(), is(2l));
+        assertThat("Should only be one locations in the page", locationPage.getTotalElements(), is(1l));
+        assertThat("There should be two clients using this location",
+                locationPage.getContent().get(0).getUsingThisLocation(), hasItems(one, three));
 
-        for (Location location : locationPage) {
-            if (location.equals(oneLocation)) {
-                assertThat("There should be two clients using this location", location.getUsingThisLocation(), hasItems(one, three));
-                assertThat("two should not be using this location", location.getUsingThisLocation(), is(not(hasItems(two))));
-            }
-            if (location.equals(twoLocation)) {
-                assertThat("one and three should not be using this location", location.getUsingThisLocation(), is(not(hasItems(one, three))));
-                assertThat("two should be using this location", location.getUsingThisLocation(), hasItem(two));
-            }
-        }
-
-        assertThat("ID fetch by client has the location id", locationService.list(one.getId()), hasItem(oneLocation.getId()));
+        assertThat("reverse way should also work.. ID fetch by client has the location id", locationService.list(one.getId()), hasItem(oneLocation.getId()));
     }
 
     private Client makeClient() {

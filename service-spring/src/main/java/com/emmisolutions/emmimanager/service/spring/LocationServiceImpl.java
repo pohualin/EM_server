@@ -59,44 +59,82 @@ public class LocationServiceImpl implements LocationService {
         location.setId(null);
         location.setVersion(null);
         location.setActive(true);
+        // don't allow relationship setting
+        location.setBelongsTo(null);
+        location.setUsingThisLocation(null);
         return locationPersistence.save(location);
     }
 
     @Override
     @Transactional
     public Location update(Location location) {
-        if (location == null || location.getId() == null || location.getVersion() == null) {
-            throw new IllegalArgumentException("Location Id and Version cannot be null.");
-        }
         Location dbLocation = locationPersistence.reload(location);
-        if (dbLocation != null) {
-            location.setBelongsTo(dbLocation.getBelongsTo());
-            location.setUsingThisLocation(dbLocation.getUsingThisLocation());
+        if (dbLocation == null) {
+            throw new IllegalArgumentException("Attempting to update location which is not in database");
         }
+        location.setBelongsTo(dbLocation.getBelongsTo());
+        location.setUsingThisLocation(dbLocation.getUsingThisLocation());
         return locationPersistence.save(location);
+
     }
 
+    /**
+     * Updates the relationships to the client for the locations passed in this way:
+     * <p/>
+     * For the 'added' locations, the client will be added to the 'using this location' collection
+     * for each of the locations in the list
+     * <p/>
+     * For the 'removed' locations, the client will be removed from the 'using this location' collection
+     * for each of the locations in the list
+     * <p/>
+     * For the 'belongsTo' locations, the client will be set to the toRelateTo client when the location
+     * has no current belongsTo in the db. If the location does have a current belongsTo, the relationship
+     * can only ever be updated to 'null'. The reason for this is that the belongsTo relationship can only
+     * be updated by the client that is already in the existing relationship. The idea is to allow a location
+     * to belongTo only one client at a time, only when that client releases the relationship can it be
+     * set again by a different client.
+     *
+     * @param toRelateTo          client to be used as the relationship
+     * @param modificationRequest to update the locations
+     */
     @Override
     @Transactional
-    public void updateClientLocations(Client toUpdate, ClientLocationModificationRequest modificationRequest) {
-        if (modificationRequest == null || toUpdate == null || toUpdate.getId() == null) {
+    public void updateClientLocations(Client toRelateTo, ClientLocationModificationRequest modificationRequest) {
+        if (modificationRequest == null || toRelateTo == null || toRelateTo.getId() == null) {
             return;
         }
-        Client dbClient = clientPersistence.reload(toUpdate.getId());
+        Client dbClient = clientPersistence.reload(toRelateTo.getId());
         if (dbClient != null) {
             if (!CollectionUtils.isEmpty(modificationRequest.getAdded())) {
                 for (Location location : modificationRequest.getAdded()) {
                     Location dbLocation = locationPersistence.reload(location);
                     if (dbLocation != null) {
                         dbLocation.addClientUsingThisLocation(dbClient);
-                        locationPersistence.save(dbLocation);
                     }
                 }
             }
             if (!CollectionUtils.isEmpty(modificationRequest.getDeleted())) {
                 for (Location location : modificationRequest.getDeleted()) {
                     Location dbLocation = locationPersistence.reload(location);
-                    dbLocation.getUsingThisLocation().remove(dbClient);
+                    if (dbLocation != null) {
+                        dbLocation.getUsingThisLocation().remove(dbClient);
+                    }
+                }
+            }
+            if (!CollectionUtils.isEmpty(modificationRequest.getBelongsToUpdated())) {
+                for (Location location : modificationRequest.getBelongsToUpdated()) {
+                    Location dbLocation = locationPersistence.reload(location);
+                    if (dbLocation != null) {
+                        if (dbLocation.getBelongsTo() == null) {
+                            // wasn't set in db previously, set to passed client
+                            dbLocation.setBelongsTo(dbClient);
+                        } else if (dbLocation.getBelongsTo().equals(dbClient)) {
+                            // was set already, allowed to null out relationship only
+                            if (location.getBelongsTo() == null) {
+                                dbLocation.setBelongsTo(null);
+                            }
+                        }
+                    }
                 }
             }
         }

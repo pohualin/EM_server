@@ -11,7 +11,7 @@ public class ClientLocationModificationRequest {
 
     private List<Location> deleted;
 
-    private List<Location> updated;
+    private List<Location> belongsToUpdated;
 
     public List<Location> getAdded() {
         return added;
@@ -29,11 +29,11 @@ public class ClientLocationModificationRequest {
         this.deleted = deleted;
     }
 
-    public List<Location> getUpdated() {
-        return updated;
+    public List<Location> getBelongsToUpdated() {
+        return belongsToUpdated;
     }
 
-    public void setUpdated(List<Location> updated) {
-        this.updated = updated;
+    public void setBelongsToUpdated(List<Location> belongsToUpdated) {
+        this.belongsToUpdated = belongsToUpdated;
     }
 }
