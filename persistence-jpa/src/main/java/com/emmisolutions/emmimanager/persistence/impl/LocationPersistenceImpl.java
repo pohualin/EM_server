@@ -43,6 +43,7 @@ public class LocationPersistenceImpl implements LocationPersistence {
     ClientPersistence clientPersistence;
 
     @Override
+    @SuppressWarnings("unchecked")
     public Page<Location> list(Pageable page, LocationSearchFilter filter) {
         if (page == null) {
             // default pagination request if none
