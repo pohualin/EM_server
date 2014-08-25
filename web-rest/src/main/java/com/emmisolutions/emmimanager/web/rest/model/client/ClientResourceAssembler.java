@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,8 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
     public ClientResource toResource(Client entity) {
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
+        ret.add(LocationPage.createFullClientLocationsSearchLink(entity));
+        ret.add(LocationPage.locationIdsAtClient(entity));
         ret.setEntity(entity);
         return ret;
     }
