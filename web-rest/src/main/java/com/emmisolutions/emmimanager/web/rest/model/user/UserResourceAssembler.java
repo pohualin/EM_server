@@ -15,7 +15,6 @@ import org.springframework.hateoas.core.DummyInvocationUtils;
 import org.springframework.hateoas.core.MappingDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -60,10 +59,14 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ClientsResource.class).get(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("clientById");
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(link.getHref());
-        return new Link(
-                builder.replacePath(discoverer.getMapping(ClientsResource.class, method)).build().toUriString(),
-                link.getRel());
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
+        if (idx != -1) {
+            return new Link(
+                    href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
+                    link.getRel());
+        }
+        return null;
     }
 
     private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
