@@ -50,11 +50,6 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		superAdmin = userPersistence.reload("super_admin");
 	}
 
-	@Test
-	public void testUpdateAllTags() {
-		Group group = createGroup();
-	}
-
 	private Group createGroup() {
 		Client client = new Client();
 		client.setTier(ClientTier.THREE);
