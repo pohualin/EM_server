@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.Tag;
 
 
 public interface GroupPersistence {
@@ -46,5 +48,11 @@ public interface GroupPersistence {
 	 */	
 	void remove(Long id);
 	
+	List<Group> updateAll(List<Group> groups);
+	
+	List<Group> createAll(List<Group> groups);
+
+	void removeAll(List<Group> groups);
+
 
 }

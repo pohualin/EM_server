@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,11 +39,6 @@ public interface GroupService {
 	Page<Group> list(Pageable pageable, GroupSearchFilter groupSearchFilter);
 
 	/**
-	 * Creates a group and associates client to it
-	 */
-	Group create(Group group, Long clientId);
-
-	/**
 	 * Updates the given group
 	 */
 	Group update(Group group);
@@ -56,5 +52,21 @@ public interface GroupService {
 	 * Delete the group by given id
 	 */
 	void remove(Long id);
+
+	/**
+	 * 	creates new Groups passed in a List 
+	 */
+	List<Group> createAll(List<Group> groups);
+	
+	/**
+	 * 	updates all Groups passed in a List 
+	 */
+	List<Group> updateAll(List<Group> groups);
+
+	/**
+	 * 	Deletes all Groups passed in a List 
+	 */
+	void removeAll(List<Group> groups);
 }
+
 

@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -9,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
@@ -40,21 +40,6 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public Group save(Group group) {
 		return groupPersistence.save(group);
-	}
-
-	@Override
-	@Transactional
-	public Group create(Group group, Long clientId) {
-		if (group == null) {
-			throw new IllegalArgumentException("group cannot be null");
-		}
-
-		Client toFind = new Client();
-		toFind.setId(clientId);
-		toFind = clientService.reload(toFind);
-		group.setClient(toFind);
-
-		return save(group);
 	}
 
     @Override
@@ -90,5 +75,30 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public void remove(Long id) {
 		groupPersistence.remove(id);
+	}
+	
+
+	@Override
+	@Transactional
+	public List<Group> createAll(List<Group> groups) {
+		return groupPersistence.createAll(groups);
+	}
+
+	@Override
+	@Transactional
+	public List<Group> updateAll(List<Group> groups) {
+		for (Group g : groups) {
+			if (g == null || g.getId() == null) {
+				throw new IllegalArgumentException(
+						"Tag cannot be null for update.");
+			}
+		}
+		return groupPersistence.createAll(groups);
+	}
+
+	@Override
+	@Transactional
+	public void removeAll(List<Group> groups) {
+		groupPersistence.removeAll(groups);
 	}
 }

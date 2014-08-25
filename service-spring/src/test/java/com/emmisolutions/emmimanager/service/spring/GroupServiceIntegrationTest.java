@@ -4,6 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.joda.time.LocalDate;
@@ -46,8 +49,12 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	public void createGroupWithClientID(){
 		Group group = new Group();
 		group.setName("New Group");
-		Long clientId = 1L;
-		groupService.create(group, clientId);
+		List<Group> groups = new ArrayList<Group>();
+		Client clientOne = makeClient();
+		clientService.create(clientOne);
+		group.setClient(clientService.reload(clientOne));
+		groups.add(group);
+		groupService.createAll(groups);
 		assertThat("Group associated to ClientId was created:", group.getClient().getId(),  is(notNullValue()));
 	}
 	

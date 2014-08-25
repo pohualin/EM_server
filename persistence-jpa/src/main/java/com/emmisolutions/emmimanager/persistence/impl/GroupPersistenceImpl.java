@@ -4,6 +4,7 @@ import static com.emmisolutions.emmimanager.persistence.impl.specification.Group
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
@@ -60,6 +62,21 @@ public class GroupPersistenceImpl implements GroupPersistence {
 	@Override
 	public void remove(Long id) {
 		groupRepository.delete(id);
+	}
+	
+	@Override
+	public List<Group> updateAll(List<Group> editGroupsList) {
+		return groupRepository.save(editGroupsList);
+	}
+
+	@Override
+	public void removeAll(List<Group> removeGroupsList) {
+		groupRepository.delete(removeGroupsList);
+	}
+
+	@Override
+	public List<Group> createAll(List<Group> createGroupsList) {
+		return groupRepository.save(createGroupsList);
 	}
 
 }

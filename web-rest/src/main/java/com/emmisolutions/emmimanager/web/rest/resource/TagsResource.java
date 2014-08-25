@@ -56,12 +56,14 @@ public class TagsResource {
 	public ResponseEntity<List<Tag>> create(@RequestBody Tag[] tags) {
 
 		List<Tag> tagsList = tagService.saveAll(Arrays.asList(tags));
-		
+
 		if (tagsList == null || tagsList.isEmpty()) {
-			return new ResponseEntity<List<Tag>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<List<Tag>>(
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
 			return new ResponseEntity<>(tagsList, HttpStatus.OK);
-		}	}
+		}
+	}
 	
 	/**
 	 * PUT to update tags
