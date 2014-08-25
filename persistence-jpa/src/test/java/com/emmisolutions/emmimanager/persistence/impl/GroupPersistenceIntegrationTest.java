@@ -54,46 +54,6 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	public void init() {
 	    superAdmin = userPersistence.reload("super_admin");
 	}
-
-	@Test
-	public void testSaveClientWithAGroup() {
-		Client client = makeClient();
-	    client.addGroup(new Group("Test Group", true));
-	    client = clientPersistence.save(client);
-	    assertThat("Groups are not null", client.getGroups(), is(notNullValue()));
-	    assertThat("Group has an id", client.getGroups().iterator().next().getId(), is(notNullValue()));
-	 }
-	
-	@Test
-	public void testGroupBelongsToClient() {
-		Client client = makeClient();
-	    client.addGroup(new Group("Test Group", true));
-	    client = clientPersistence.save(client);
-	    
-	    Group retreivedGroup = groupRepository.findOne(client.getGroups().iterator().next().getId());	    
-	    assertThat("Group saved is the same as the group retreived",client.getGroups().iterator().next(), is(retreivedGroup));
-	}
-	
-	@Test
-    public void testBelongsToRelationship(){
-		Client client = makeClient();
-		client.addGroup(new Group("Test Group", true));
-	    client = clientPersistence.save(client);
-	    
-	    Group retreivedGroup = groupRepository.findOne(client.getGroups().iterator().next().getId());
-	    assertThat("Client in the group is the same as the client that was saved",retreivedGroup.getClient(), is(client));
-	}
-	
-	@Test
-    public void testDuplicateActiveGroup(){
-		Client client = makeClient();
-		client.addGroup(new Group("Test Group", true));
-		client.addGroup(new Group("Test Group", true));		
-		client = clientPersistence.save(client);
-		
-		client = clientRepository.findOne(client.getId());
-		assertThat("Duplicate groups are not stored",client.getGroups().size(), equalTo(1));
-	}
 	
 	private Client makeClient(){
 	    Client client = new Client();

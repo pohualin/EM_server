@@ -3,9 +3,6 @@ package com.emmisolutions.emmimanager.model;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.hibernate.envers.Audited;
-import org.joda.time.LocalDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,18 +16,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Version;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.envers.Audited;
+import org.joda.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * A client.
@@ -93,14 +90,7 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "salesforce_account_id")
     @JsonManagedReference
     private SalesForce salesForceAccount;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true)
-    @JsonManagedReference
-    @XmlElement(name = "group")
-    @XmlElementWrapper(name = "groups")
-    @JsonProperty("group")
-    private Set<Group> groups = new HashSet<>();
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -218,18 +208,5 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     public void setLocations(Set<Location> locations) {
         this.locations = locations;
     }    
-    
-	public Set<Group> getGroups() {
-		return groups;
-	}
-
-	public void setGroups(Set<Group> groups) {
-		this.groups = groups;	
-	}
-
-	public void addGroup(Group group){
-		group.setClient(this);
-		this.getGroups().add(group);		
-	}
 
 }

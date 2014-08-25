@@ -136,4 +136,5 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		Group group= groupService.reload(groupToDelete.getId());
 		assertThat("Group was removed and no longer exists", group.getId(), is(9l));
 	}
+
 }
