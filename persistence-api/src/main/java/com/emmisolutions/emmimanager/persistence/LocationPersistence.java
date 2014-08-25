@@ -5,14 +5,43 @@ import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Set;
+
 /**
  * Location Persistence API
  */
 public interface LocationPersistence {
 
+    /**
+     * Get a page of locations
+     *
+     * @param page   to fetch
+     * @param filter to filter
+     * @return page of location objects
+     */
     Page<Location> list(Pageable page, LocationSearchFilter filter);
 
+    /**
+     * Save a location
+     *
+     * @param location to be saved
+     * @return saved location
+     */
     Location save(Location location);
 
+    /**
+     * re-load location from persistence
+     *
+     * @param location to load
+     * @return the location
+     */
     Location reload(Location location);
+
+    /**
+     * Find all location ids for a client
+     * @param clientId to find
+     * @return set of ids
+     */
+    Set<Long> list(Long clientId);
+
 }

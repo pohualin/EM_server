@@ -14,7 +14,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Created by matt on 7/14/14.
+ * Test authentication/user details fetching
  */
 public class UserDetailsServiceTest extends BaseIntegrationTest {
     @Resource
@@ -23,9 +23,11 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
     @Resource
     UserService userService;
 
-
+    /**
+     * Load the user after they are saved
+     */
     @Test
-    public void testLoad(){
+    public void testLoad() {
         String login = "aUser";
         User aUser = new User(login, "pw");
         userService.save(aUser);

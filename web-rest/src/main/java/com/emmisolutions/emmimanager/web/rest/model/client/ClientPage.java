@@ -29,6 +29,13 @@ public class ClientPage extends PagedResource<ClientResource> {
     public ClientPage() {
     }
 
+    /**
+     * Wrapper for client resource objects
+     *
+     * @param clientResourceSupports to be wrapped
+     * @param clientPage             true page
+     * @param filter                 which caused the response
+     */
     public ClientPage(PagedResources<ClientResource> clientResourceSupports, Page<Client> clientPage, ClientSearchFilter filter) {
         pageDefaults(clientResourceSupports, clientPage);
         addFilterToLinks(filter);

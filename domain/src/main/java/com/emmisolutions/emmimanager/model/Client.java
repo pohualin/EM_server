@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -10,15 +11,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A client.
  */
 @Audited
 @Entity
-@Table(name = "client")
+@Table(name = "client", uniqueConstraints = @UniqueConstraint(name = "uk_salesforce_account_id", columnNames = "salesforce_account_id"))
 @XmlRootElement(name = "client")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Client extends AbstractAuditingEntity implements Serializable {
@@ -46,13 +45,6 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @Column(length = 50)
     private ClientRegion region;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "client_location",
-            joinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")})
-    private Set<Location> locations = new HashSet<>();
-
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
     private ClientTier tier;
@@ -70,8 +62,10 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @Column(name = "contract_end", nullable = false)
     private LocalDate contractEnd;
 
-    @OneToOne(mappedBy = "client")
+    @NotNull
+    @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "salesforce_account_id")
+    @JsonManagedReference
     private SalesForce salesForceAccount;
 
     @Override
@@ -79,14 +73,12 @@ public class Client extends AbstractAuditingEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return !(getId() != null ? !getId().equals(client.getId()) : client.getId() != null) && !(getVersion() != null ? !getVersion().equals(client.getVersion()) : client.getVersion() != null);
+        return !(id != null ? !id.equals(client.id) : client.id != null);
     }
 
     @Override
     public int hashCode() {
-        int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getVersion() != null ? getVersion().hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
@@ -186,11 +178,4 @@ public class Client extends AbstractAuditingEntity implements Serializable {
         this.salesForceAccount = salesForceAccount;
     }
 
-    public Set<Location> getLocations() {
-        return locations;
-    }
-
-    public void setLocations(Set<Location> locations) {
-        this.locations = locations;
-    }
 }

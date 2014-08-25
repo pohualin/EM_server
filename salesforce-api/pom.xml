@@ -15,4 +15,15 @@
     <name>salesforce-api</name>
     <description>This is the SalesForce api that will be use by other modules in the server project.</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>salesforce</groupId>
+            <artifactId>salesforce</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.emmisolutions.emmimanager</groupId>
+            <artifactId>domain</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

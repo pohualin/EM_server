@@ -12,6 +12,8 @@ import static com.emmisolutions.emmimanager.model.PermissionName.PERM_CONTRACT_O
  */
 public class UserSpecifications {
 
+    private UserSpecifications(){}
+
     /**
      * Filter to ensure User is a contract owner
      *
