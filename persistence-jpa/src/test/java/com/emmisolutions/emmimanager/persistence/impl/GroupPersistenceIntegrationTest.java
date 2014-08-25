@@ -70,34 +70,6 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	}
 	
 	@Test
-	public void testGroupWithTags() {
-
-		Group group = new Group();
-		group.setName("new group");
-		
-		Client client = makeClient();
-		clientRepository.save(client);
-	
-		group.setClient(clientRepository.findOne(client.getId()));
-		
-		Tag tagOne = new Tag();
-		tagOne.setName("new tag one");
-		tagOne.setGroup(group);
-		Tag tagTwo = new Tag();
-		tagTwo.setName("new tag two");
-		tagTwo.setGroup(group);
-		Set<Tag> tags = new HashSet<Tag>();
-		tags.add(tagOne);
-		tags.add(tagTwo);
-
-		group.setTags(tags);
-		group = groupRepository.save(group);
-		
-		assertThat("Group with tags was created: ", group.getTags().iterator().next().getId(), is(notNullValue()));
-		assertThat("Group with 2 tags was created ", group.getTags().size(), is(2));
-	}
-	
-	@Test
 	public void testListGroupsByClientID(){
 		Group groupOne = new Group();
 		groupOne.setName("TestGroup1");
