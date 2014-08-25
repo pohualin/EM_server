@@ -70,13 +70,13 @@ From the outside-in the flow looks like this (top is outermost):
 Collaboration-ish Diagram
 =================================
     (client-angular)                 (server)
-    angular ui (javascript) ↴ 
-            XHR (json request) ↴ 
-                             spring-security (security) ↴ 
-                                jackson (serialization framework) ↴ 
-                                    spring-web (rest end-points) ↴ 
-                                        service (business logic) ↴ 
-                                            jpa (persistence logic) ↴ 
-                                                spring-data (persistence implementation) ↴ 
+    angular ui (javascript) --> 
+            XHR (json request) --> 
+                             spring-security (security) --> 
+                                jackson (serialization framework) --> 
+                                    spring-web (rest end-points) --> 
+                                        service (business logic) --> 
+                                            jpa (persistence logic) --> 
+                                                spring-data (persistence implementation) --> 
                                                     h2/postgres/SQL Server 
-                                                ↱ liquibase (db maintainance)
+                                                <-- liquibase (db maintainance)
