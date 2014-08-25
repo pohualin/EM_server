@@ -55,13 +55,6 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
     @JsonBackReference
     private Client client;
     
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    @XmlElement(name = "tag")
-    @XmlElementWrapper(name = "tags")
-    @JsonProperty("tag")
-    private Set<Tag> tags = new HashSet<>();
-    
     public Group(){}
     
     public Group(String name, boolean active){
@@ -128,12 +121,4 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
 	public void setClient(Client client) {
 		this.client = client;
 	}
-
-	public Set<Tag> getTags() {
-		return tags;
-	}
-
-	public void setTags(Set<Tag> tags) {
-		this.tags = tags;
-	}	
 }
