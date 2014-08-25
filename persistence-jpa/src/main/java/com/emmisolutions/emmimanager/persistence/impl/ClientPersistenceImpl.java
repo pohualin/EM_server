@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,8 +40,8 @@ public class ClientPersistenceImpl implements ClientPersistence {
     }
 
     @Override
-    public Client save(Client client) {
-        return clientRepository.save(client);
+    public Client save(Client client) {      
+    	return clientRepository.save(client);
     }
 
     @Override
