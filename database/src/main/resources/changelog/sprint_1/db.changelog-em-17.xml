@@ -12,7 +12,7 @@
             <column name="location_id" type="bigint"><constraints nullable="false"/></column>
             <column name="client_id" type="bigint"><constraints nullable="false"/></column>
         </createTable>
-        <addPrimaryKey tableName="client_location" columnNames="location_id, client_id"/>
+        <addPrimaryKey tableName="client_location" constraintName="pk_client_location" columnNames="location_id, client_id"/>
 
         <createTable tableName="client_location_audit">
             <column name="revision" type="bigint"><constraints nullable="false"/></column>
@@ -20,10 +20,12 @@
             <column name="client_id" type="bigint"><constraints nullable="false"/></column>
             <column name="revision_type" type="TINYINT"/>
         </createTable>
-        <addPrimaryKey tableName="client_location_audit" columnNames="revision, location_id, client_id"/>
+        <addPrimaryKey tableName="client_location_audit" constraintName="pk_client_location_audit" columnNames="revision, location_id, client_id"/>
 
         <createTable tableName="location">
-            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true"/></column>
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_location"/>
+            </column>
             <column name="version" type="INT"/>
             <column name="created_by" type="varchar(50)" defaultValue="system">
                 <constraints nullable="false"/>
@@ -52,7 +54,7 @@
             <column name="state" type="varchar(2)"/>
             <column name="client_id" type="bigint"/>
         </createTable>
-        <addPrimaryKey tableName="location_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="location_audit" constraintName="pk_location_audit" columnNames="id, revision"/>
 
         <addForeignKeyConstraint baseTableName="client_location"
                                  baseColumnNames="client_id"

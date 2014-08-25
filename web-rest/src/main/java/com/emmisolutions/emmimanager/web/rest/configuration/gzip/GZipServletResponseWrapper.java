@@ -8,18 +8,32 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * A response wrapper
+ */
 class GZipServletResponseWrapper extends HttpServletResponseWrapper {
 
     private GZipServletOutputStream gzipOutputStream = null;
     private PrintWriter printWriter = null;
     private boolean disableFlushBuffer = false;
 
+    /**
+     * Constructor
+     *
+     * @param response to wrap
+     * @param gzout    output stream
+     * @throws IOException on error
+     */
     public GZipServletResponseWrapper(HttpServletResponse response, GZIPOutputStream gzout)
             throws IOException {
         super(response);
         gzipOutputStream = new GZipServletOutputStream(gzout);
     }
 
+    /**
+     * Close
+     * @throws IOException exception
+     */
     public void close() throws IOException {
 
         //PrintWriter.close does not throw exceptions. Thus, the call does not need

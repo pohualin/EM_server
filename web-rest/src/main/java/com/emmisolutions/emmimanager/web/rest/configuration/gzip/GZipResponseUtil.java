@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * A helper class for gzipping a respoinse.
+ */
 public final class GZipResponseUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(GZipResponseUtil.class);

@@ -10,7 +10,7 @@
     <changeSet id="create_client" author="Matt">
         <createTable tableName="client">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="client_pk"/>
+                <constraints primaryKey="true" primaryKeyName="pk_client"/>
             </column>
             <column name="active" type="boolean">
                 <constraints nullable="false"/>
@@ -62,13 +62,13 @@
             <column name="type" type="varchar(50)"/>
             <column name="contract_owner_id" type="BIGINT"/>
         </createTable>
-        <addPrimaryKey tableName="client_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="client_audit" constraintName="pk_client_audit" columnNames="id, revision"/>
     </changeSet>
 
     <changeSet id="create_salesforce_client" author="Matt">
         <createTable tableName="salesforce_client">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints primaryKey="true" primaryKeyName="salesforce_client_pk"/>
+                <constraints primaryKey="true" primaryKeyName="pk_salesforce_client"/>
             </column>
             <column name="account_number" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -112,12 +112,14 @@
             <column name="street" type="varchar(255)"/>
             <column name="client_id" type="BIGINT"/>
         </createTable>
-        <addPrimaryKey tableName="salesforce_client_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="salesforce_client_audit" constraintName="pk_salesforce_client_audit" columnNames="id, revision"/>
     </changeSet>
 
     <changeSet id="add_keys_and_indexes" author="Matt">
-        <addUniqueConstraint tableName="salesforce_client" columnNames="client_id"/>
-        <addUniqueConstraint tableName="salesforce_client" columnNames="account_number"/>
+        <addUniqueConstraint tableName="salesforce_client" columnNames="client_id"
+                             constraintName="uk_salesforce_client_client_id"/>
+        <addUniqueConstraint tableName="salesforce_client" columnNames="account_number"
+                             constraintName="uk_salesforce_client_account_number"/>
         <addForeignKeyConstraint baseTableName="client"
                                  baseColumnNames="contract_owner_id"
                                  constraintName="fk_client_user_id"

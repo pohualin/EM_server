@@ -20,11 +20,17 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserService userService;
 
+    /**
+     * Create without login
+     */
     @Test(expected = ConstraintViolationException.class)
     public void testUserCreateWithoutLogin() {
         userService.save(new User());
     }
 
+    /**
+     * Create with required values
+     */
     @Test
     public void testUserCreate() {
         User user = new User("login", "pw");

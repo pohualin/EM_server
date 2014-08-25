@@ -1,8 +1,10 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.model.Location_;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 
@@ -18,10 +20,13 @@ import java.util.List;
  */
 public class LocationSpecifications {
 
+    private LocationSpecifications() {
+    }
+
     /**
      * Case insensitive name anywhere match
      *
-     * @param names to be found
+     * @param searchFilter to be found
      * @return the specification as a filter predicate
      */
     public static Specification<Location> hasNames(final LocationSearchFilter searchFilter) {
@@ -30,10 +35,14 @@ public class LocationSpecifications {
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
                 if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.getNames())) {
+                    boolean addedANameFilter = false;
                     for (String name : searchFilter.getNames()) {
-                        predicates.add(cb.like(cb.lower(root.get(Location_.name)), "%" + name.toLowerCase() + "%"));
+                        if (StringUtils.isNotBlank(name)) {
+                            addedANameFilter = true;
+                            predicates.add(cb.like(cb.lower(root.get(Location_.name)), "%" + name.toLowerCase() + "%"));
+                        }
                     }
-                    return cb.or(predicates.toArray(new Predicate[predicates.size()]));
+                    return addedANameFilter ? cb.or(predicates.toArray(new Predicate[predicates.size()])) : null;
                 }
                 return null;
             }
@@ -51,7 +60,25 @@ public class LocationSpecifications {
             @Override
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (searchFilter != null && LocationSearchFilter.StatusFilter.ALL != searchFilter.getStatus()) {
-                    return cb.equal(root.get(Location_.active), searchFilter.getStatus().equals(LocationSearchFilter.StatusFilter.ACTIVE_ONLY));
+                    return cb.equal(root.get(Location_.active), LocationSearchFilter.StatusFilter.ACTIVE_ONLY.equals(searchFilter.getStatus()));
+                }
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Ensures that the client is a member of the usingThisLocation collection
+     *
+     * @param client to load, if null eager fetches all clients using this location
+     * @return the specification
+     */
+    public static Specification<Location> usedBy(final Client client) {
+        return new Specification<Location>() {
+            @Override
+            public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (client != null) {
+                    return cb.isMember(client, root.get(Location_.usingThisLocation));
                 }
                 return null;
             }

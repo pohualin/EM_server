@@ -21,14 +21,28 @@ public class LocationSearchFilter {
 
     private StatusFilter status;
 
+    private Long clientId;
+
+    /**
+     * Constructor
+     */
     public LocationSearchFilter() {
         status = StatusFilter.ALL;
     }
 
+    /**
+     * Constructor
+     * @param names to filter
+     */
     public LocationSearchFilter(String... names) {
         this(StatusFilter.ALL, names);
     }
 
+    /**
+     * Constructor
+     * @param status filter
+     * @param names to filter
+     */
     public LocationSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
             this.names = new HashSet<>();
@@ -39,6 +53,11 @@ public class LocationSearchFilter {
         }
     }
 
+    public LocationSearchFilter(Long clientId, StatusFilter status, String... names) {
+        this(status, names);
+        this.clientId = clientId;
+    }
+
     public Set<String> getNames() {
         return names;
     }
@@ -46,6 +65,8 @@ public class LocationSearchFilter {
     public StatusFilter getStatus() {
         return status;
     }
+
+    public Long getClientId() {return clientId;}
 
     /**
      * Location Statuses
@@ -69,5 +90,24 @@ public class LocationSearchFilter {
             }
             return ALL;
         }
+
+        public static StatusFilter fromStringOrActive(String status) {
+            if (StringUtils.isNotBlank(status)) {
+                for (StatusFilter statusFilter : values()) {
+                    if (statusFilter.toString().equals(status.toUpperCase())) {
+                        return statusFilter;
+                    }
+                }
+            }
+            return ACTIVE_ONLY;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "LocationSearchFilter{" +
+                "names=" + names +
+                ", status=" + status +
+                '}';
     }
 }

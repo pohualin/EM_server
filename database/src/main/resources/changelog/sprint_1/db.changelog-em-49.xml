@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add_locations_permissions" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_1/data/location_permissions.csv"
+                  separator=";"
+                  tableName="permission"/>
+    </changeSet>
+
+    <changeSet id="update_phone_number_length" author="Matt">
+        <modifyDataType tableName="location" columnName="phone" newDataType="varchar(255)"/>
+        <modifyDataType tableName="location_audit" columnName="phone" newDataType="varchar(255)"/>
+    </changeSet>
+
+</databaseChangeLog>
+        

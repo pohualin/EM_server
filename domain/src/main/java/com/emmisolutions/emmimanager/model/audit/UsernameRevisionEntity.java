@@ -66,16 +66,11 @@ public class UsernameRevisionEntity {
         return (int) (id ^ (id >>> 32));
     }
 
-    @Transient
-    public Date getRevisionDate() {
-        return new Date(timestamp);
-    }
-
     @Override
     public String toString() {
         return "UsernameRevisionEntity{" +
                 "id=" + id +
-                ", revisionDate=" + DateFormat.getDateTimeInstance().format(getRevisionDate()) +
+                ", revisionDate=" + DateFormat.getDateTimeInstance().format(new Date(timestamp)) +
                 ", username='" + username + '\'' +
                 '}';
     }

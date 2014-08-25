@@ -15,9 +15,13 @@ import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+/**
+ * The Client Persistence test
+ */
 public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
@@ -31,11 +35,17 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private User superAdmin;
 
+    /**
+     * Before each test
+     */
     @Before
     public void init() {
         superAdmin = userPersistence.reload("super_admin");
     }
 
+    /**
+     * Save success
+     */
     @Test
     public void save() {
         Client client = new Client();
@@ -47,11 +57,15 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(ClientType.PROVIDER);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        clientPersistence.save(client);
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client = clientPersistence.save(client);
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
         assertThat("system is the created by", client.getCreatedBy(), is("system"));
     }
 
+    /**
+     * List test
+     */
     @Test
     public void list() {
         // push a bunch of clients to the db
@@ -107,24 +121,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
-    }
-
-    @Test
-    public void addLocation() {
-        Client client = clientPersistence.save(makeClient(201));
-        Location location = new Location();
-        location.setName("Valid Name");
-        location.setCity("Valid City");
-        location.setPhone("phone number");
-        location.setState(State.IL);
-        client.getLocations().add(location);
-        client = clientPersistence.save(client);
-
-
-        Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter("Demo hospital client 201"));
-        assertThat("Client should be found", clientPage.getContent(), hasItem(client));
-        assertThat("Location should be attached to the client",
-                clientPage.getContent().get(0).getLocations().iterator().next().getName(), is("Valid Name"));
     }
 }

@@ -39,12 +39,18 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(readOnly = true)
     public Client reload(Client client) {
-        return clientPersistence.reload(client);
+        if (client == null || client.getId() == null){
+            return null;
+        }
+        return clientPersistence.reload(client.getId());
     }
 
     @Override
     @Transactional
     public Client create(Client client) {
+        if (client == null) {
+            throw new IllegalArgumentException("client cannot be null");
+        }
         client.setId(null);
         client.setVersion(null);
         return clientPersistence.save(client);
