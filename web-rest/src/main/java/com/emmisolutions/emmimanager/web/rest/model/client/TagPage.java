@@ -47,8 +47,8 @@ public class TagPage extends PagedResource<TagResource> {
     /**
      * Create the search link
      *
-     * @return Link for group searches
-     * @see com.emmisolutions.emmimanager.web.rest.resource.GroupsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
+     * @return Link for tag searches
+     * @see com.emmisolutions.emmimanager.web.rest.resource.TagsResource#listTagsByGroupID(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
     public static Link createFullSearchLink() {
         Link link = linkTo(methodOn(TagsResource.class).listTagsByGroupID(null, null, null, (Long) null)).withRel("tag");
@@ -56,8 +56,7 @@ public class TagPage extends PagedResource<TagResource> {
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                         new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
                         ));
         return new Link(uriTemplate, link.getRel());
     }

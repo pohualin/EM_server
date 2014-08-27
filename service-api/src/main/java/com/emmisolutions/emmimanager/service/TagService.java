@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
@@ -57,12 +58,25 @@ public interface TagService {
 	 */
 	void remove(Tag tag);
 	
+	/**
+	 * Delete the tag by given id
+	 */
 	List<Tag> saveAll(List<Tag> tags);
 	
+	/**
+	 * Associate Tag to the Group and save
+	 */
+	List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group);
+
+	/**
+	 * Update the tag in given list of tags
+	 */
 	List<Tag> updateAll(List<Tag> tags);
 
+	/**
+	 * Delete all tags from given list of tags
+	 */
 	void removeAll(List<Tag> tags);
-
 
 }
 

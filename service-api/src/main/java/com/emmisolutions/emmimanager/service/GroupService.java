@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 
@@ -67,6 +68,13 @@ public interface GroupService {
 	 * 	Deletes all Groups passed in a List 
 	 */
 	void removeAll(List<Group> groups);
+	
+	/**
+	 * Saves a Group and it's tags
+	 * @param List<GroupSaveRequest>
+	 * @param Long clientID
+	 * @return List<Group>
+	 */
+	public List<Group> saveGroupsAndTags(List<GroupSaveRequest> groupSaveRequests, Long clientId);
+
 }
-
-
