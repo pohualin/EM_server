@@ -65,11 +65,11 @@ public class ClientSearchFilter {
         ALL, ACTIVE_ONLY, INACTIVE_ONLY;
 
         /**
-         * from string or all
+         * from string or ACTIVE
          * @param status the status string
-         * @return never null, the status or ALL
+         * @return never null, the status or ACTIVE
          */
-        public static StatusFilter fromStringOrAll(String status) {
+        public static StatusFilter fromStringOrActive(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {
                     if (statusFilter.toString().equals(status.toUpperCase())) {
@@ -77,7 +77,7 @@ public class ClientSearchFilter {
                     }
                 }
             }
-            return ALL;
+            return ACTIVE_ONLY;
         }
     }
 
