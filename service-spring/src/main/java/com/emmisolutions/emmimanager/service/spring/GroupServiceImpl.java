@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -11,11 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
-import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
+import com.emmisolutions.emmimanager.service.TagService;
 
 /**
  * 
@@ -27,9 +31,9 @@ public class GroupServiceImpl implements GroupService {
 
 	@Resource
 	GroupPersistence groupPersistence;
-
+	
 	@Resource
-	ClientService clientService;
+	TagService tagService;
 
 	@Override
 	public Collection<ReferenceGroup> fetchReferenceGroups() {
@@ -100,5 +104,28 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public void removeAll(List<Group> groups) {
 		groupPersistence.removeAll(groups);
+	}
+
+	
+	@Override
+	@Transactional
+	public List<Group> saveGroupsAndTags(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
+		List<Group> groups = new ArrayList<Group>();
+
+		//drop all previous groups for the client
+		GroupSearchFilter groupSearchFilter = new GroupSearchFilter(clientId);
+		Page<Group> groupPage = list(groupSearchFilter);
+		if (!groupPage.getContent().isEmpty()) {
+			removeAll(groupPage.getContent());
+		}
+		for (GroupSaveRequest request : groupSaveRequests) {
+			Group savedGroup = save(request.getGroup());
+			if (request.getTags() != null && !request.getTags().isEmpty()) {
+				List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
+				savedGroup.setTags(new HashSet<Tag>(savedTags));
+			}
+			groups.add(savedGroup);
+		}
+		return groups;
 	}
 }

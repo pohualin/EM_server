@@ -63,6 +63,5 @@ public class GroupPage extends PagedResource<GroupResource> {
     private void addFilterToLinks(GroupSearchFilter filter) {
         this.searchFilter = filter;
     }
-
-    
+   
 }

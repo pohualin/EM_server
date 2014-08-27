@@ -34,61 +34,69 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "client_group")
 @XmlRootElement(name = "client_group")
-public class Group  extends AbstractAuditingEntity implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Group extends AbstractAuditingEntity implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Version
-    private Integer version;
+	@Version
+	private Integer version;
 
-    private boolean active;
+	private boolean active;
 
-    @NotNull
-    @Size(max = 255)
-    @Column(length = 255, nullable = false)
-    private String name;
-    
-    @NotNull
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "client_id")
-    @JsonBackReference
-    private Client client;
-    
-    public Group(){}
-    
-    public Group(String name, boolean active){
-    	this.name = name;
-    	this.active = active;
-    }
-    
-    public Group(String name, Client client){
-    	this.name = name;
-    	this.client = client;
-    }
+	@NotNull
+	@Size(max = 255)
+	@Column(length = 255, nullable = false)
+	private String name;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Group group = (Group) o;
-        return !(getId() != null ? !getId().equals(group.getId()) : group.getId() != null);
-    }
+	@NotNull
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "client_id")
+	@JsonBackReference
+	private Client client;
 
-    @Override
-    public int hashCode() {
-        int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result;
-        return result;
-    }
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	@XmlElement(name = "tag")
+	@XmlElementWrapper(name = "tags")
+	@JsonProperty("tag")
+	private Set<Tag> tags = new HashSet<>();
 
-    @Override
-    public String toString() {
-        return "Group{" +
-                "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                '}';
-    }
+	public Group() {
+	}
+
+	public Group(String name, boolean active) {
+		this.name = name;
+		this.active = active;
+	}
+
+	public Group(String name, Client client) {
+		this.name = name;
+		this.client = client;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Group group = (Group) o;
+		return !(getId() != null ? !getId().equals(group.getId()) : group
+				.getId() != null);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = getId() != null ? getId().hashCode() : 0;
+		result = 31 * result;
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "Group{" + "id=" + getId() + ", name='" + getName() + '\'' + '}';
+	}
 
 	public Long getId() {
 		return id;
@@ -120,5 +128,13 @@ public class Group  extends AbstractAuditingEntity implements Serializable {
 
 	public void setClient(Client client) {
 		this.client = client;
+	}
+
+	public Set<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<Tag> tags) {
+		this.tags = tags;
 	}
 }

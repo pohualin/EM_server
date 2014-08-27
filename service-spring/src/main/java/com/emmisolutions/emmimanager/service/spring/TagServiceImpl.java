@@ -118,4 +118,14 @@ public class TagServiceImpl implements TagService {
 	public void removeAll(List<Tag> tags) {
 		tagPersistence.removeAll(tags);
 	}
+	
+	@Override
+	@Transactional
+	public List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group){
+		for(Tag tag: tags){
+			tag.setGroup(group);
+		}
+		return saveAll(tags);
+	}
+
 }

@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.service.GroupService;
+import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.web.rest.model.client.GroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.client.GroupResource;
 import com.emmisolutions.emmimanager.web.rest.model.client.GroupResourceAssembler;
@@ -45,6 +47,9 @@ public class GroupsResource {
 	@Resource
 	GroupResourceAssembler groupResourceAssembler;
 
+	@Resource
+	TagService tagService;
+	
 	/**
 	 * GET to search for groups by client id
 	 *
@@ -70,6 +75,29 @@ public class GroupsResource {
 			return new ResponseEntity<>(new GroupPage(assembler.toResource(groupPage, groupResourceAssembler), groupPage, groupSearchFilter), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
+	
+	/**
+	 * POST to save the groups and tags
+	 *
+	 * @param List<GroupSaveRequest>	groups and tags to create
+	 * @return ResponseEntity<List<Group>> or INTERNAL_SERVER_ERROR if update were
+	 *         unsuccessful
+	 */
+	@RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.POST, consumes = {
+			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_EDIT" })
+	public ResponseEntity<List<Group>> create(@RequestBody List<GroupSaveRequest> groupSaveRequests,
+			@PathVariable("clientId") Long clientId) {
+
+		List<Group> groups =	groupService.saveGroupsAndTags(groupSaveRequests, clientId);
+
+		if (groups == null || groups.isEmpty()) {
+			return new ResponseEntity<List<Group>>(
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(groups, HttpStatus.OK);
 		}
 	}
 	
@@ -148,5 +176,5 @@ public class GroupsResource {
 			return new ResponseEntity<>(groupsList, HttpStatus.OK);
 		}
 	}
-
+	
 }
