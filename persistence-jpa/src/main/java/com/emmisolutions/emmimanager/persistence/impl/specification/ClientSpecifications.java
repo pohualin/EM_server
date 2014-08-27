@@ -23,7 +23,7 @@ public class ClientSpecifications {
     /**
      * Case insensitive name anywhere match
      *
-     * @param names to be found
+     * @param searchFilter to be found
      * @return the specification as a filter predicate
      */
     public static Specification<Client> hasNames(final ClientSearchFilter searchFilter) {

@@ -21,6 +21,8 @@ public class LocationSearchFilter {
 
     private StatusFilter status;
 
+    private Long clientId;
+
     /**
      * Constructor
      */
@@ -51,6 +53,11 @@ public class LocationSearchFilter {
         }
     }
 
+    public LocationSearchFilter(Long clientId, StatusFilter status, String... names) {
+        this(status, names);
+        this.clientId = clientId;
+    }
+
     public Set<String> getNames() {
         return names;
     }
@@ -58,6 +65,8 @@ public class LocationSearchFilter {
     public StatusFilter getStatus() {
         return status;
     }
+
+    public Long getClientId() {return clientId;}
 
     /**
      * Location Statuses
@@ -80,6 +89,17 @@ public class LocationSearchFilter {
                 }
             }
             return ALL;
+        }
+
+        public static StatusFilter fromStringOrActive(String status) {
+            if (StringUtils.isNotBlank(status)) {
+                for (StatusFilter statusFilter : values()) {
+                    if (statusFilter.toString().equals(status.toUpperCase())) {
+                        return statusFilter;
+                    }
+                }
+            }
+            return ACTIVE_ONLY;
         }
     }
 

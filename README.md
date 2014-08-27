@@ -67,3 +67,16 @@ From the outside-in the flow looks like this (top is outermost):
 * _database_ - maintains the structure of the database.
 * _domain_ - the set of objects that travels between the layers.
 
+Collaboration-ish Diagram
+=================================
+    (client-angular)                 (server)
+    angular ui (javascript) --> 
+            XHR (json request) --> 
+                             spring-security (security) --> 
+                                jackson (serialization framework) --> 
+                                    spring-web (rest end-points) --> 
+                                        service (business logic) --> 
+                                            jpa (persistence logic) --> 
+                                                spring-data (persistence implementation) --> 
+                                                    h2/postgres/SQL Server 
+                                                <-- liquibase (db maintainance)
