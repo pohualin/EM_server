@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
-import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.fromStringOrAll;
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -86,7 +86,7 @@ public class ClientsResource {
             @RequestParam(value = "name", required = false) String... names) {
 
         // create the search filter
-        ClientSearchFilter clientSearchFilter = new ClientSearchFilter(fromStringOrAll(status), names);
+        ClientSearchFilter clientSearchFilter = new ClientSearchFilter(fromStringOrActive(status), names);
 
         // find the page of clients
         Page<Client> clientPage = clientService.list(pageable, clientSearchFilter);
