@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
 
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
@@ -64,6 +65,43 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
+     * Prohibited characters in name should fail
+     */
+    @Test(expected = ConstraintViolationException.class)
+    public void em_68_BadChars(){
+        Client client = new Client();
+        client.setTier(ClientTier.THREE);
+        client.setContractEnd(LocalDate.now().plusYears(1));
+        client.setContractStart(LocalDate.now());
+        client.setRegion(ClientRegion.NORTHEAST);
+        client.setName("$ % ^ * \\");
+        client.setType(ClientType.PROVIDER);
+        client.setActive(false);
+        client.setContractOwner(superAdmin);
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        clientPersistence.save(client);
+    }
+
+    /**
+     * All valid characters should be allowed
+     */
+    @Test
+    public void em_68_AllValidChars(){
+        Client client = new Client();
+        client.setTier(ClientTier.THREE);
+        client.setContractEnd(LocalDate.now().plusYears(1));
+        client.setContractStart(LocalDate.now());
+        client.setRegion(ClientRegion.NORTHEAST);
+        client.setName("Aa1= ' _ ; : ` @ # & , . ! ( ) /");
+        client.setType(ClientType.PROVIDER);
+        client.setActive(false);
+        client.setContractOwner(superAdmin);
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        clientPersistence.save(client);
+        assertThat("Client was given an id", client.getId(), is(notNullValue()));
+    }
+
+    /**
      * List test
      */
     @Test
@@ -98,7 +136,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         clientPage = clientPersistence.list(new PageRequest(0, 100), new ClientSearchFilter(ACTIVE_ONLY, "client 5", "client 9"));
         assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(10l));
         assertThat("there is 1 page", clientPage.getTotalPages(), is(1));
-        assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(10));
+        assertThat("there are 10 on the page", clientPage.getNumberOfElements(), is(10));
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
         assertThat("we are on page 0", clientPage.getNumber(), is(0));
 
