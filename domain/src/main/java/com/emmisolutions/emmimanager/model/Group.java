@@ -42,8 +42,6 @@ public class Group extends AbstractAuditingEntity implements Serializable {
 	@Version
 	private Integer version;
 
-	private boolean active;
-
 	@NotNull
 	@Size(max = 255)
 	@Column(length = 255, nullable = false)
@@ -63,11 +61,6 @@ public class Group extends AbstractAuditingEntity implements Serializable {
 	private Set<Tag> tags = new HashSet<>();
 
 	public Group() {
-	}
-
-	public Group(String name, boolean active) {
-		this.name = name;
-		this.active = active;
 	}
 
 	public Group(String name, Client client) {
@@ -104,14 +97,6 @@ public class Group extends AbstractAuditingEntity implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
 	}
 
 	public String getName() {
