@@ -12,12 +12,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
+import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
 
@@ -34,7 +36,10 @@ public class GroupServiceImpl implements GroupService {
 	
 	@Resource
 	TagService tagService;
-
+	
+	@Resource
+	ClientService clientService;
+	
 	@Override
 	public Collection<ReferenceGroup> fetchReferenceGroups() {
 		return groupPersistence.fetchReferenceGroups();
@@ -74,13 +79,6 @@ public class GroupServiceImpl implements GroupService {
 		}
 		return groupPersistence.reload(id);
 	}
-	
-	@Override
-	@Transactional
-	public void remove(Long id) {
-		groupPersistence.remove(id);
-	}
-	
 
 	@Override
 	@Transactional
@@ -112,13 +110,13 @@ public class GroupServiceImpl implements GroupService {
 	public List<Group> saveGroupsAndTags(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
 		List<Group> groups = new ArrayList<Group>();
 
-		//drop all previous groups for the client
-		GroupSearchFilter groupSearchFilter = new GroupSearchFilter(clientId);
-		Page<Group> groupPage = list(groupSearchFilter);
-		if (!groupPage.getContent().isEmpty()) {
-			removeAll(groupPage.getContent());
-		}
+		Client client = new Client();
+		client.setId(clientId);
+		client = clientService.reload(client);
+		
 		for (GroupSaveRequest request : groupSaveRequests) {
+			
+			request.getGroup().setClient(client);
 			Group savedGroup = save(request.getGroup());
 			if (request.getTags() != null && !request.getTags().isEmpty()) {
 				List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);

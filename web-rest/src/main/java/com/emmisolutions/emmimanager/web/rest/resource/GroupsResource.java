@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -78,6 +77,7 @@ public class GroupsResource {
 		}
 	}
 	
+	
 	/**
 	 * POST to save the groups and tags
 	 *
@@ -85,13 +85,19 @@ public class GroupsResource {
 	 * @return ResponseEntity<List<Group>> or INTERNAL_SERVER_ERROR if update were
 	 *         unsuccessful
 	 */
-	@RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.POST, consumes = {
-			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.POST)
 	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_EDIT" })
 	public ResponseEntity<List<Group>> create(@RequestBody List<GroupSaveRequest> groupSaveRequests,
 			@PathVariable("clientId") Long clientId) {
 
-		List<Group> groups =	groupService.saveGroupsAndTags(groupSaveRequests, clientId);
+		GroupSearchFilter groupSearchFilter = new GroupSearchFilter(clientId);
+		Page<Group> groupPage = groupService.list(groupSearchFilter);
+		
+		if (groupPage.hasContent() && !groupPage.getContent().isEmpty()) {
+			groupService.removeAll(groupPage.getContent());
+		}
+		
+		List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
 
 		if (groups == null || groups.isEmpty()) {
 			return new ResponseEntity<List<Group>>(
@@ -100,6 +106,7 @@ public class GroupsResource {
 			return new ResponseEntity<>(groups, HttpStatus.OK);
 		}
 	}
+	
 	
 	/**
 	 * GET To get group by id
@@ -118,63 +125,4 @@ public class GroupsResource {
 			return new ResponseEntity<>(groupResourceAssembler.toResource(group), HttpStatus.OK);
 		}
 	}
-	
-	/**
-	 * DELETE to delete groups
-	 *
-	 * @param Group[] 	groups to update
-	 * @return void or error if delete fails
-	 */
-	@RequestMapping(value = "/clients/groups", method = RequestMethod.DELETE, consumes = {
-			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_CREATE" })
-	public void remove(@RequestBody Group[] groups){
-		try {
-			groupService.removeAll(Arrays.asList(groups));
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Delete of tags failed");
-
-		}
-	}
-	
-	/**
-	 * POST to create new groups
-	 *
-	 * @param Group[]	to create
-	 * @return List<Group> or INTERNAL_SERVER_ERROR if it could not be created
-	 */
-	@RequestMapping(value = "/clients/groups", method = RequestMethod.POST, consumes = {
-			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_CREATE" })
-	public ResponseEntity<List<Group>> create(@RequestBody Group[] groups) {
-
-		List<Group> savedGroups = groupService.createAll(Arrays.asList(groups));
-
-		if (savedGroups == null || savedGroups.isEmpty()) {
-			return new ResponseEntity<List<Group>>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(savedGroups, HttpStatus.OK);
-		}
-	}
-	
-
-	/**
-	 * PUT to update the group
-	 *
-	 * @param Group[]	groups to update
-	 * @return ResponseEntity<List<Group>> or INTERNAL_SERVER_ERROR if update were
-	 *         unsuccessful
-	 */
-	@RequestMapping(value = "/clients/groups", method = RequestMethod.PUT, consumes = {
-			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_EDIT" })
-	public ResponseEntity<List<Group>> update(@RequestBody Group[] groups) {
-		List<Group> groupsList = groupService.updateAll(Arrays.asList(groups));
-		if (groupsList == null || groupsList.isEmpty()) {
-			return new ResponseEntity<List<Group>>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(groupsList, HttpStatus.OK);
-		}
-	}
-	
 }

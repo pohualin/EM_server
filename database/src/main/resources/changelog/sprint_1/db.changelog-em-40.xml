@@ -11,9 +11,6 @@
         <createTable tableName="reference_group">
             <column name="id" type="bigint" autoIncrement="true"></column>
             <column name="name" type="varchar(255)"/>
-            <column name="active" type="boolean">
-                <constraints nullable="false"/>
-            </column>
 		</createTable>
 		<addPrimaryKey tableName="reference_group"
                        columnNames="id"
@@ -23,9 +20,6 @@
             <column name="id" type="bigint" autoIncrement="true"></column>
             <column name="name" type="varchar(255)"/>
             <column name="group_id" type="bigint"><constraints nullable="false"/></column>
-            <column name="active" type="boolean">
-                <constraints nullable="false"/>
-            </column>
 		</createTable>
 		<addPrimaryKey tableName="reference_tag"
                        columnNames="id"
@@ -39,9 +33,6 @@
 		
         <createTable tableName="client_group">
             <column name="id" type="bigint" autoIncrement="true"></column>
-            <column name="active" type="boolean">
-                <constraints nullable="false"/>
-            </column>
             <column name="version" type="INT"/>
             <column name="created_by" type="varchar(50)" defaultValue="system">
                 <constraints nullable="false"/>
@@ -59,8 +50,8 @@
 		<addPrimaryKey tableName="client_group"
                        columnNames="id"
                        constraintName="pk_client_group"/>
+        <addUniqueConstraint tableName="client_group" columnNames="client_id,name" constraintName="uk_client_group_id_"/>        
         
-        <addUniqueConstraint tableName="client_group" columnNames="client_id,name,active" constraintName="uk_client_group_id_active_name"/>        
 		<addForeignKeyConstraint baseTableName="client_group"
                                  baseColumnNames="client_id"
                                  constraintName="fk_client_group_client_client_id"
@@ -75,7 +66,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="TINYINT"/>
-            <column name="active" type="boolean"/>
             <column name="name" type="varchar(255)"/>
             <column name="client_id" type="bigint"/>
         </createTable>
@@ -86,11 +76,9 @@
     
     <changeSet id="create_reference_group" author="Vinay" context="dev">
         <insert tableName="reference_group">
-            <column name="active">true</column>
             <column name="name">Region</column>
         </insert>
         <insert tableName="reference_group">
-            <column name="active">true</column>
             <column name="name">Service Group</column>
         </insert>
     </changeSet>                   
