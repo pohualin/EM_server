@@ -85,26 +85,7 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("there is 1 pages", retreivedTags.getTotalPages(), is(1));
         assertThat("we are on page 0", retreivedTags.getNumber(), is(0));
         assertThat("Tag Inserted is equal to tag received", retreivedTags.getContent().get(0).getName(), is("TagOne"));
-        assertThat("Tag Inserted is equal to tag received", retreivedTags.getContent().get(1).getName(), is("TagTwo"));
-
-        Tag tag1  = retreivedTags.getContent().get(0);
-        Tag tag2  = retreivedTags.getContent().get(1);
-
-        tag1.setName("TagThree");
-       	tag2.setName("TagFour");
-       	List<Tag> updatedList = new ArrayList<Tag>();
-       	updatedList.add(tag1);
-       	updatedList.add(tag2);
-       	tagPersistence.updateAll(updatedList);
-       	
-       	Page<Tag> retreivedUpdatedTags = tagPersistence.listTagsByGroupId(null, searchFilter);
-       	
-       	assertThat("List tags by Group ID retrieved two tags", retreivedUpdatedTags.getTotalElements(), is(2l));
-        assertThat("there is 1 pages", retreivedUpdatedTags.getTotalPages(), is(1));
-        assertThat("we are on page 0", retreivedUpdatedTags.getNumber(), is(0));
-        assertThat("Tag Inserted is equal to tag received", retreivedUpdatedTags.getContent().get(0).getName(), is("TagThree"));
-        assertThat("Tag Inserted is equal to tag received", retreivedUpdatedTags.getContent().get(1).getName(), is("TagFour"));
-
+        assertThat("Tag belongs to the group", retreivedTags.getContent().iterator().next().getGroup().getId(), is(group.getId()));
 	}
 	
 	private Group createGroup(){
@@ -143,18 +124,5 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
 		tags.add(tagOne);
 		tags.add(tagTwo);
 		return tags;
-	}
-	
-	@Test
-	public void deleteAllTags() {
-		List<Tag> listOfTags = listOfTags();
-		List<Tag> tags = tagPersistence.createAll(listOfTags);
-		assertThat("Tags are persisted", tags.size(), is(notNullValue()));
-		Long groupId = tags.get(0).getGroup().getId();
-
-		tagPersistence.removeAll(tags);
-
-		Page<Tag> retrievedTagsPage = tagPersistence.listTagsByGroupId(null, new TagSearchFilter(groupId));
-		assertThat("retreivedTagsPage should be empty", retrievedTagsPage.getTotalElements(), is(0l));
 	}
 }

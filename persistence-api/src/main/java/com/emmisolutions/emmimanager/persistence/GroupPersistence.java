@@ -40,17 +40,6 @@ public interface GroupPersistence {
 	 * @return Group
 	 */
 	Group reload(Long id);
-	
-	/**
-	 * 	Deletes a Group by given id
-	 * @param Long	id
-	 * @return void
-	 */	
-	void remove(Long id);
-	
-	List<Group> updateAll(List<Group> groups);
-	
-	List<Group> createAll(List<Group> groups);
 
 	void removeAll(List<Group> groups);
 

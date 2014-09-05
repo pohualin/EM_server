@@ -64,15 +64,6 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public Group update(Group group) {
-		if (group == null || group.getId() == null) {
-			throw new IllegalArgumentException("Group cannot be null.");
-		}
-		return groupPersistence.save(group);
-	}
-
-	@Override
-	@Transactional
 	public Group reload(Long id) {
 		if (id == null) {
 			return null;
@@ -82,28 +73,9 @@ public class GroupServiceImpl implements GroupService {
 
 	@Override
 	@Transactional
-	public List<Group> createAll(List<Group> groups) {
-		return groupPersistence.createAll(groups);
-	}
-
-	@Override
-	@Transactional
-	public List<Group> updateAll(List<Group> groups) {
-		for (Group g : groups) {
-			if (g == null || g.getId() == null) {
-				throw new IllegalArgumentException(
-						"Tag cannot be null for update.");
-			}
-		}
-		return groupPersistence.createAll(groups);
-	}
-
-	@Override
-	@Transactional
 	public void removeAll(List<Group> groups) {
 		groupPersistence.removeAll(groups);
 	}
-
 	
 	@Override
 	@Transactional

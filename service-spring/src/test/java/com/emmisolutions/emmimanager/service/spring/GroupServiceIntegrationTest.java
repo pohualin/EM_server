@@ -51,20 +51,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	public void init() {
 	    superAdmin = userPersistence.reload("super_admin");
 	}
-	
-	@Test
-	public void createGroupWithClientID(){
-		Group group = new Group();
-		group.setName("New Group");
-		List<Group> groups = new ArrayList<Group>();
-		Client clientOne = makeClient();
-		clientService.create(clientOne);
-		group.setClient(clientService.reload(clientOne));
-		groups.add(group);
-		groupService.createAll(groups);
-		assertThat("Group associated to ClientId was created:", group.getClient().getId(),  is(notNullValue()));
-	}
-	
+		
 	@Test
 	public void testListGroupsByClientId(){
 
@@ -99,21 +86,6 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	    client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
 	    return client;
-	}
-	
-	@Test
-	public void testGroupNameUpdate(){
-		Group groupA = new Group();
-		groupA.setName("GroupNameA");
-		Client clientOne = makeClient();
-		clientService.create(clientOne);
-		groupA.setClient(clientService.reload(clientOne));
-		Group savedGroup = groupService.save(groupA);
-		assertThat("original name is: ", savedGroup.getName(), is("GroupNameA"));
-		savedGroup.setName("GroupNameB");
-		Group updatedGroup = groupService.update(savedGroup);
-		assertThat("Group Name is updated: ", updatedGroup.getName(), is("GroupNameB"));
-		assertThat("Update was made on the same group ID: ", savedGroup.getId(), is(updatedGroup.getId()));
 	}
 	
 	@Test

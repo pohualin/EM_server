@@ -83,25 +83,9 @@ public class GroupPersistenceImpl implements GroupPersistence {
 	public Group reload(Long id) {
 		return groupRepository.findOne(id);
 	}
-
-	@Override
-	public void remove(Long id) {
-		groupRepository.delete(id);
-	}
 	
-	@Override
-	public List<Group> updateAll(List<Group> editGroupsList) {
-		return groupRepository.save(editGroupsList);
-	}
-
 	@Override
 	public void removeAll(List<Group> removeGroupsList) {
 		groupRepository.delete(removeGroupsList);
 	}
-
-	@Override
-	public List<Group> createAll(List<Group> createGroupsList) {
-		return groupRepository.save(createGroupsList);
-	}
-
 }

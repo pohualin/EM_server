@@ -1,12 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -22,7 +17,6 @@ import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
@@ -88,21 +82,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 		
 		assertThat("found all of the clients", groupPage.getTotalElements(), is(2l));
 		assertThat("we are on page 0", groupPage.getNumber(), is(0));
-	}
-	
-	@Test(expected=NullPointerException.class)
-	public void deleteGroupById(){
-		Group groupToDelete = new Group();
-		groupToDelete.setName("TestGroupToDelete");
-		Client clientOne = makeClient();
-		clientPersistence.save(clientOne);
-		groupToDelete.setClient(clientPersistence.reload(clientOne.getId()));
-		groupToDelete = groupPersistence.save(groupToDelete);
-		assertThat("Group is created:", groupToDelete.getId(), is(notNullValue()));
-		
-		groupPersistence.remove(groupToDelete.getId());
-		Group group= groupPersistence.reload(groupToDelete.getId());
-		assertThat("Group was removed and no longer exists", group.getId(), is(9l));
+		assertThat("we are on page 0", groupPage.getContent().iterator().next().getClient().getId(), is(clientOne.getId()));
 
 	}
 }
