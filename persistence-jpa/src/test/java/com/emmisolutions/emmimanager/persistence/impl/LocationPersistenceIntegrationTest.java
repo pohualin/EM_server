@@ -55,8 +55,8 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void create() {
         Location location = new Location();
-        location.setName("Valid Name");
-        location.setCity("Valid City");
+        location.setName("Valid Name 1");
+        location.setCity("Valid City 1");
         location.setPhone("phone number");
         location.setState(State.IL);
         locationPersistence.save(location);
