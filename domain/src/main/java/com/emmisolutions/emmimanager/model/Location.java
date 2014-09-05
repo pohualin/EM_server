@@ -44,7 +44,7 @@ public class Location extends AbstractAuditingEntity {
 
     @NotNull
     @Length(max = 255)
-    @Pattern(regexp = "[A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
+    @Pattern(regexp = "[0-9A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
     @Column(nullable = false)
     private String name;
 
@@ -55,7 +55,7 @@ public class Location extends AbstractAuditingEntity {
 
     @NotNull
     @Length(max = 255)
-    @Pattern(regexp = "[A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
+    @Pattern(regexp = "[0-9A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
     @Column(nullable = false)
     private String city;
 
