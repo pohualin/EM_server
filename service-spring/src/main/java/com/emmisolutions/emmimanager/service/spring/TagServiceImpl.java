@@ -41,26 +41,6 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
-	@Transactional
-	public Tag save(Tag tag) {
-		return tagPersistence.save(tag);
-	}
-
-	@Override
-	@Transactional
-	public Tag create(Tag tag, Long groupId) {
-		if (tag == null) {
-			throw new IllegalArgumentException("tag cannot be null");
-		}
-
-		Group toFind = new Group();
-		toFind.setId(groupId);
-		toFind = groupService.reload(groupId);
-		tag.setGroup(toFind);
-		return save(tag);
-	}
-
-	@Override
 	public Page<Tag> list(TagSearchFilter searchFilter) {
 		return tagPersistence.listTagsByGroupId(null, searchFilter);
 	}
@@ -69,15 +49,6 @@ public class TagServiceImpl implements TagService {
 	@Transactional(readOnly = true)
 	public Page<Tag> list(Pageable pageable, TagSearchFilter searchFilter) {
 		return tagPersistence.listTagsByGroupId(pageable, searchFilter);
-	}
-
-	@Override
-	@Transactional
-	public Tag update(Tag tag) {
-		if (tag == null || tag.getId() == null) {
-			throw new IllegalArgumentException("Group cannot be null.");
-		}
-		return tagPersistence.save(tag);
 	}
 
 	@Override
@@ -91,38 +62,14 @@ public class TagServiceImpl implements TagService {
 
 	@Override
 	@Transactional
-	public void remove(Tag tag) {
-		tagPersistence.remove(tag);
-	}
-
-	@Override
-	@Transactional
 	public List<Tag> saveAll(List<Tag> tags) {
 		return tagPersistence.createAll(tags);
 	}
 
 	@Override
 	@Transactional
-	public List<Tag> updateAll(List<Tag> tags) {
-		for (Tag t : tags) {
-			if (t == null || t.getId() == null) {
-				throw new IllegalArgumentException(
-						"Tag cannot be null for update.");
-			}
-		}
-		return tagPersistence.createAll(tags);
-	}
-
-	@Override
-	@Transactional
-	public void removeAll(List<Tag> tags) {
-		tagPersistence.removeAll(tags);
-	}
-	
-	@Override
-	@Transactional
-	public List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group){
-		for(Tag tag: tags){
+	public List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group) {
+		for (Tag tag : tags) {
 			tag.setGroup(group);
 		}
 		return saveAll(tags);

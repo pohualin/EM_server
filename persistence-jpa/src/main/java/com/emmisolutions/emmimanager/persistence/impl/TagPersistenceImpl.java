@@ -49,23 +49,8 @@ public class TagPersistenceImpl implements TagPersistence{
 	}
 
 	@Override
-	public void remove(Tag tag){
-		tagRepository.delete(tag);
-	}
-	
-	@Override
 	public List<ReferenceTag> fetchAllReferenceTags(){
 		return referenceTagRepository.findAll();
-	}
-	
-	@Override
-	public List<Tag> updateAll(List<Tag> editTagsList) {
-		return tagRepository.save(editTagsList);
-	}
-
-	@Override
-	public void removeAll(List<Tag> removeTagsList) {
-		tagRepository.delete(removeTagsList);
 	}
 
 	@Override

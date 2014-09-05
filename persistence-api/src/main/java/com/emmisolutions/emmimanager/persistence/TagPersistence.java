@@ -37,14 +37,9 @@ public interface TagPersistence {
 	 * @param Long 	id of the Tag to be deleted
 	 * @return void
 	 */
-	void remove(Tag tag);
-	
+
 	List<ReferenceTag> fetchAllReferenceTags();
 	
-	List<Tag> updateAll(List<Tag> tags);
-	
 	List<Tag> createAll(List<Tag> tags);
-
-	void removeAll(List<Tag> tags);
 
 }
