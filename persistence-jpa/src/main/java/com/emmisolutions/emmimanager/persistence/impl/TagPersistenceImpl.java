@@ -13,11 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TagRepository;
 
 @Repository
@@ -25,9 +23,6 @@ public class TagPersistenceImpl implements TagPersistence{
 	
 	@Resource
 	TagRepository tagRepository;
-	
-	@Resource
-	ReferenceTagRepository referenceTagRepository;
 	
 	@Override
 	public Page<Tag> listTagsByGroupId(Pageable page, TagSearchFilter searchFilter){
@@ -46,11 +41,6 @@ public class TagPersistenceImpl implements TagPersistence{
 	@Override
 	public Tag reload(Tag tag){
 		return tagRepository.findOne(tag.getId());
-	}
-
-	@Override
-	public List<ReferenceTag> fetchAllReferenceTags(){
-		return referenceTagRepository.findAll();
 	}
 
 	@Override

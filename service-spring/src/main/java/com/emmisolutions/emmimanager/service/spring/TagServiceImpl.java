@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
@@ -36,11 +35,6 @@ public class TagServiceImpl implements TagService {
 	GroupService groupService;
 
 	@Override
-	public List<ReferenceTag> fetchReferenceTags() {
-		return tagPersistence.fetchAllReferenceTags();
-	}
-
-	@Override
 	public Page<Tag> list(TagSearchFilter searchFilter) {
 		return tagPersistence.listTagsByGroupId(null, searchFilter);
 	}
@@ -52,7 +46,7 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Tag reload(Tag tag) {
 		if (tag == null || tag.getId() == null) {
 			return null;
@@ -62,17 +56,11 @@ public class TagServiceImpl implements TagService {
 
 	@Override
 	@Transactional
-	public List<Tag> saveAll(List<Tag> tags) {
-		return tagPersistence.createAll(tags);
-	}
-
-	@Override
-	@Transactional
 	public List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group) {
 		for (Tag tag : tags) {
 			tag.setGroup(group);
 		}
-		return saveAll(tags);
+		return tagPersistence.createAll(tags);
 	}
 
 }

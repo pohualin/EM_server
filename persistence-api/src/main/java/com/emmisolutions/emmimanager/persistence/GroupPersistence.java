@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -8,17 +7,11 @@ import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.Tag;
 
-
+/**
+ * Group Persistence
+ */
 public interface GroupPersistence {
-
-	/**
-	 * Retrieves all reference groups
-	 *
-	 */
-	Collection<ReferenceGroup> fetchReferenceGroups();
 
 	/**
 	 * Saves a group
@@ -28,9 +21,10 @@ public interface GroupPersistence {
 	Group save(Group group);
 
 	/**
-	 * List of groups associated with given Client ID
+	 * Lists groups by groupSearchFilter
 	 * @param Pageable
 	 * @param GroupSearchFilter
+	 * @return Page<Group>
 	 */
 	Page<Group> list(Pageable page, GroupSearchFilter searchFilter);
 
@@ -41,6 +35,11 @@ public interface GroupPersistence {
 	 */
 	Group reload(Long id);
 
+	/**
+	 * Delete all groups
+	 * @param List<Group>
+	 * @return void
+	 */
 	void removeAll(List<Group> groups);
 
 

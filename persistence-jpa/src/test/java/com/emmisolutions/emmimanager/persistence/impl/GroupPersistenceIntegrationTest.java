@@ -63,6 +63,9 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	    return client;
 	}
 	
+	/**
+	 * 	Test list of groups by client id
+	 */
 	@Test
 	public void testListGroupsByClientID(){
 		Group groupOne = new Group();

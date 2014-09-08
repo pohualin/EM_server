@@ -63,6 +63,12 @@ public class Group extends AbstractAuditingEntity implements Serializable {
 	public Group() {
 	}
 
+	/**
+	 * Group constructor
+	 * @param String name of the group
+	 * @param Client client
+	 * @return Group
+	 */
 	public Group(String name, Client client) {
 		this.name = name;
 		this.client = client;

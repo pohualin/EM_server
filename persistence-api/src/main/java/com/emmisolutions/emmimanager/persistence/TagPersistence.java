@@ -5,10 +5,11 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
-
+/**
+ * Tag Persistence
+ */
 public interface TagPersistence {
 
 	/**
@@ -32,14 +33,12 @@ public interface TagPersistence {
 	 * @return Tag
 	 */
 	Tag reload(Tag tag);
-	
-	/**
-	 * @param Long 	id of the Tag to be deleted
-	 * @return void
-	 */
 
-	List<ReferenceTag> fetchAllReferenceTags();
-	
+	/**
+	 * creates tags given the list
+	 * @param List<Tag>
+	 * @return List<Tag>
+	 */
 	List<Tag> createAll(List<Tag> tags);
 
 }

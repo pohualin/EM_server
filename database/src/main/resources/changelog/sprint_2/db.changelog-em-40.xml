@@ -50,7 +50,7 @@
 		<addPrimaryKey tableName="client_group"
                        columnNames="id"
                        constraintName="pk_client_group"/>
-        <addUniqueConstraint tableName="client_group" columnNames="client_id,name" constraintName="uk_client_group_id_"/>        
+        <addUniqueConstraint tableName="client_group" columnNames="client_id,name" constraintName="uk_client_id_group_name"/>        
         
 		<addForeignKeyConstraint baseTableName="client_group"
                                  baseColumnNames="client_id"
@@ -115,7 +115,7 @@
 			<column name="client_group_id" type="bigint"><constraints nullable="false"/></column>
 			<column name="tags_id" type="bigint"><constraints nullable="false"/></column>
 		</createTable>
-		<addPrimaryKey tableName="client_group_client_tag" columnNames="client_group_id, tags_id"/>
+		<addPrimaryKey tableName="client_group_client_tag" columnNames="client_group_id, tags_id" constraintName="pk_client_group_client_tag"/>
 		
 		<createTable tableName="client_group_client_tag_audit">
 			<column name="client_group_id" type="bigint"><constraints nullable="false"/></column>
@@ -123,7 +123,7 @@
             <column name="revision_type" type="TINYINT"></column>
             <column name="tags_id" type="bigint"><constraints nullable="false"/></column>
 		</createTable>
-		<addPrimaryKey tableName="client_group_client_tag_audit" columnNames="revision, tags_id, client_group_id"/>
+		<addPrimaryKey tableName="client_group_client_tag_audit" columnNames="revision, tags_id, client_group_id" constraintName="pk_client_group_client_tag_audit"/>
 		
 		
 		

@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -29,6 +28,11 @@ import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 
+
+/**
+ * Tag persistence integration test
+ *
+ */
 public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
@@ -50,16 +54,9 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
 	    superAdmin = userPersistence.reload("super_admin");
 	}
 	
-	@Test
-	public void saveTag() {
-		Group group = createGroup();
-		Tag tagOne = new Tag();
-		tagOne.setName("Tag One");
-		tagOne.setGroup(group);
-		Tag tagSaved = tagPersistence.save(tagOne);
-		assertThat("TagOne persisted:", tagSaved.getId(), is(notNullValue()));
-	}
-	
+	/**
+	 * 	Test list of tags by group id
+	 */
 	@Test
 	public void testListTagsByGroupId(){
 		Group group = createGroup();
@@ -106,23 +103,5 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
 		group.setClient(clientPersistence.reload(client.getId()));
 		group = groupPersistence.save(group);
 		return group;
-	}
-	
-	private List<Tag> listOfTags(){
-		Group group = createGroup();
-		group.setName("TestGroup");
-		
-		Tag tagOne = new Tag();
-		Tag tagTwo = new Tag();
-		tagOne.setName("TagOne");
-		tagTwo.setName("TagTwo");;
-		tagOne.setGroup(group);
-		tagTwo.setGroup(group);
-		
-		List<Tag> tags = new ArrayList<Tag>();
-		
-		tags.add(tagOne);
-		tags.add(tagTwo);
-		return tags;
 	}
 }
