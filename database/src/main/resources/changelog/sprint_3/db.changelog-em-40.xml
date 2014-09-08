@@ -160,5 +160,12 @@
                                  referencedTableName="client_group"
                                  referencedColumnNames="id"/>                                 
                                  
-	</changeSet>            
+	</changeSet>  
+	<changeSet id="add_groups_permissions" author="Amrita">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_3/data/groups_permissions.csv"
+                  separator=";"
+                  tableName="permission"/>
+    </changeSet>    
+          
 </databaseChangeLog>
