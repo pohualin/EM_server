@@ -27,7 +27,9 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
-
+/**
+ * Tag service integration Test
+ */
 public class TagServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource

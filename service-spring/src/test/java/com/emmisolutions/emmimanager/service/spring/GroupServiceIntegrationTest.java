@@ -31,6 +31,10 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
 
+/**
+ * Group Service Integration Test
+ *
+ */
 public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
