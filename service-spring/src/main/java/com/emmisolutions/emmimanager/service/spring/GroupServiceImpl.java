@@ -73,25 +73,25 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional
 	public List<Group> saveGroupsAndTags(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
-		if (clientId == null || groupSaveRequests.isEmpty()){
-            throw new IllegalArgumentException("group save request or clientID cannot be null");
+		if (clientId == null){
+            throw new IllegalArgumentException("clientID cannot be null");
 		}
 		List<Group> groups = new ArrayList<Group>();
 
-		Client client = new Client();
-		client.setId(clientId);
-		client = clientService.reload(client);
-		
-		for (GroupSaveRequest request : groupSaveRequests) {
-			
-			request.getGroup().setClient(client);
-			Group savedGroup = save(request.getGroup());
-			if (request.getTags() != null && !request.getTags().isEmpty()) {
-				List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
-				savedGroup.setTags(new HashSet<Tag>(savedTags));
+			Client client = new Client();
+			client.setId(clientId);
+			client = clientService.reload(client);
+
+			for (GroupSaveRequest request : groupSaveRequests) {
+
+				request.getGroup().setClient(client);
+				Group savedGroup = save(request.getGroup());
+				if (request.getTags() != null && !request.getTags().isEmpty()) {
+					List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
+					savedGroup.setTags(new HashSet<Tag>(savedTags));
+				}
+				groups.add(savedGroup);
 			}
-			groups.add(savedGroup);
-		}
 		return groups;
 	}
 }

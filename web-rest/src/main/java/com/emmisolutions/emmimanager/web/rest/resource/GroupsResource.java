@@ -96,15 +96,16 @@ public class GroupsResource {
 		if (groupPage.hasContent() && !groupPage.getContent().isEmpty()) {
 			groupService.removeAll(groupPage.getContent());
 		}
-		
-		List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
+		if (!groupSaveRequests.isEmpty()) {
+			List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
 
-		if (groups == null || groups.isEmpty()) {
-			return new ResponseEntity<List<Group>>(
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(groups, HttpStatus.OK);
+			if (groups == null || groups.isEmpty()) {
+				return new ResponseEntity<List<Group>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				return new ResponseEntity<>(groups, HttpStatus.OK);
+			}
 		}
+		return null;
 	}
 	
 	
