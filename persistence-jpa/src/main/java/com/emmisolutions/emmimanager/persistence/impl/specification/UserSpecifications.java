@@ -1,11 +1,21 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.*;
+import static com.emmisolutions.emmimanager.model.PermissionName.PERM_CONTRACT_OWNER;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
-
-import static com.emmisolutions.emmimanager.model.PermissionName.PERM_CONTRACT_OWNER;
+import com.emmisolutions.emmimanager.model.Permission;
+import com.emmisolutions.emmimanager.model.Permission_;
+import com.emmisolutions.emmimanager.model.Role;
+import com.emmisolutions.emmimanager.model.Role_;
+import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.User_;
 
 /**
  * Specifications for a User.
