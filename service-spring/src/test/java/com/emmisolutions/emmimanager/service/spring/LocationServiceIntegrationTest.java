@@ -224,7 +224,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         location.setName(name + suffix);
         location.setCity("Valid City " + suffix);
         location.setActive(i % 2 == 0);
-        location.setPhone("phone number" + suffix);
+        location.setPhone("555-422-1212");
         location.setState(State.IL);
         return location;
     }
