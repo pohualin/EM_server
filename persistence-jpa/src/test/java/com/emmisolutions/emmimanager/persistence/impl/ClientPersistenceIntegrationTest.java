@@ -31,9 +31,6 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
-    @Resource
-    ClientRepository clientRepository;
-
     private User superAdmin;
 
     /**
@@ -108,7 +105,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     public void list() {
         // push a bunch of clients to the db
         for (int i = 0; i < 200; i++) {
-            clientRepository.save(makeClient(i));
+        	clientPersistence.save(makeClient(i));
         }
 
         Page<Client> clientPage = clientPersistence.list(null, null);
@@ -148,7 +145,27 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
         assertThat("we are on page 10", clientPage.getNumber(), is(10));
     }
-
+    
+    /**
+     * search by normalized name test
+     */
+    @Test
+    public void search() {
+    
+        for (int i = 0; i < 200; i++) {
+        	clientPersistence.save(makeClient(i));
+        }
+    	
+    	Client client = clientPersistence.findByNormalizedName("demo hospital client 1");
+        assertThat("Client exists", client.getName(), is("Demo hospital client 1"));
+        assertThat("Client exists", client.getNormalizedName(), is("demo hospital client 1"));
+        
+        client = clientPersistence.findByNormalizedName("demo hospital cloient");
+        Client c = null;
+        assertThat("Client do not exists", client, is(c));
+ 
+    }
+    
     private Client makeClient(long i) {
         Client client = new Client();
         client.setActive(i % 2 == 0);

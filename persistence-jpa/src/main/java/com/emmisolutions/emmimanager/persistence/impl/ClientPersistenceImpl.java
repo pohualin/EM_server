@@ -40,11 +40,19 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Override
     public Client save(Client client) {
+    	if (client.getName()!=null)
+    		client.setNormalizedName(client.getName().toLowerCase()) ; //the normalized is used only for search client
         return clientRepository.save(client);
     }
 
     @Override
     public Client reload(Long id) {
         return clientRepository.findOne(id);
+    }
+    
+    @Override
+    public Client findByNormalizedName(String normalizedName){
+    	normalizedName = normalizedName.toLowerCase(); //always change to lower case
+    	return clientRepository.findByNormalizedName(normalizedName);
     }
 }
