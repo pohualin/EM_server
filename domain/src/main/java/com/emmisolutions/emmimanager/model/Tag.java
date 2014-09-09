@@ -21,8 +21,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Audited
 @Entity
-@Table(name="client_tag")
-@XmlRootElement(name="client_tag")
+@Table(name="client_group_tag")
+@XmlRootElement(name="client_group_tag")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag extends AbstractAuditingEntity implements Serializable{
 

@@ -83,8 +83,8 @@
         </insert>
     </changeSet>                   
     
-	<changeSet id="create_client_tag" author="Amrita" context="dev">
-		<createTable tableName="client_tag">
+	<changeSet id="create_client_group_tag" author="Amrita" context="dev">
+		<createTable tableName="client_group_tag">
 			<column autoIncrement="true" name="id" type="bigint"><constraints primaryKey="true"/> </column>
 			<column name="group_id" type="bigint"><constraints nullable="false"/></column>
 			<column name="name" type="varchar(255)"><constraints nullable="false"/></column>
@@ -95,7 +95,7 @@
 			<column name="last_modified_date" type="timestamp"/>
 		</createTable>
 		
-		<createTable tableName="client_tag_audit">
+		<createTable tableName="client_group_tag_audit">
             <column name="id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
@@ -106,57 +106,57 @@
             <column name="name" type="varchar(255)"/>
             <column name="group_id" type="bigint"/>
         </createTable>
-        <addPrimaryKey tableName="client_tag_audit" 
+        <addPrimaryKey tableName="client_group_tag_audit" 
                        columnNames="id, revision"
-                       constraintName="pk_client_tag_audit"/>        
+                       constraintName="pk_client_group_tag_audit"/>        
 
 
-		<createTable tableName="client_group_client_tag">
+		<createTable tableName="client_group_client_group_tag">
 			<column name="client_group_id" type="bigint"><constraints nullable="false"/></column>
 			<column name="tags_id" type="bigint"><constraints nullable="false"/></column>
 		</createTable>
-		<addPrimaryKey tableName="client_group_client_tag" columnNames="client_group_id, tags_id" constraintName="pk_client_group_client_tag"/>
+		<addPrimaryKey tableName="client_group_client_group_tag" columnNames="client_group_id, tags_id" constraintName="pk_client_group_client_group_tag"/>
 		
-		<createTable tableName="client_group_client_tag_audit">
+		<createTable tableName="client_group_client_group_tag_audit">
 			<column name="client_group_id" type="bigint"><constraints nullable="false"/></column>
             <column name="revision" type="bigint"><constraints nullable="false"/></column>
             <column name="revision_type" type="TINYINT"></column>
             <column name="tags_id" type="bigint"><constraints nullable="false"/></column>
 		</createTable>
-		<addPrimaryKey tableName="client_group_client_tag_audit" columnNames="revision, tags_id, client_group_id" constraintName="pk_client_group_client_tag_audit"/>
+		<addPrimaryKey tableName="client_group_client_group_tag_audit" columnNames="revision, tags_id, client_group_id" constraintName="pk_client_group_client_group_tag_audit"/>
 		
 		
 		
-		<addUniqueConstraint columnNames="tags_id" tableName="client_group_client_tag"/>
+		<addUniqueConstraint columnNames="tags_id" tableName="client_group_client_group_tag"/>
 		
-		<addForeignKeyConstraint baseTableName="client_group_client_tag"
+		<addForeignKeyConstraint baseTableName="client_group_client_group_tag"
                                  baseColumnNames="tags_id"
                                  constraintName="fk_group_tag_tags_id"
-                                 referencedTableName="client_tag"
+                                 referencedTableName="client_group_tag"
                                  referencedColumnNames="id"/> 
                                  
-		<addForeignKeyConstraint baseTableName="client_group_client_tag"
+		<addForeignKeyConstraint baseTableName="client_group_client_group_tag"
                                  baseColumnNames="client_group_id"
                                  constraintName="fk_group_tag_client_group_id"
                                  referencedTableName="client_group"
                                  referencedColumnNames="id"/>
                                  
    
-		<addForeignKeyConstraint baseTableName="client_group_client_tag_audit"
+		<addForeignKeyConstraint baseTableName="client_group_client_group_tag_audit"
                                  baseColumnNames="revision"
                                  constraintName="fk_group_tag_audit_revision"
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>
                                  
-		<addForeignKeyConstraint baseTableName="client_tag_audit"
+		<addForeignKeyConstraint baseTableName="client_group_tag_audit"
                                  baseColumnNames="revision"
                                  constraintName="fk_tag_audit_revision"
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>
                                  
-		<addForeignKeyConstraint baseTableName="client_tag"
+		<addForeignKeyConstraint baseTableName="client_group_tag"
                                  baseColumnNames="group_id"
-                                 constraintName="fk_client_tag"
+                                 constraintName="fk_client_group_tag"
                                  referencedTableName="client_group"
                                  referencedColumnNames="id"/>                                 
                                  
