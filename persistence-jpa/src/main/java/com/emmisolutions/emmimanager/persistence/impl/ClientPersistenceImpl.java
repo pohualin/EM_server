@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-
+import org.apache.commons.lang3.*;
 import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.hasNames;
@@ -40,22 +40,39 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Override
     public Client save(Client client) {
-    	if (client.getName()!=null) {
-    		client.setNormalizedName(client.getName().toLowerCase()) ; //the normalized is used only for search client
-    	}
+    	client.setNormalizedName(normalizeName(client)); 
         return clientRepository.save(client);
     }
 
     @Override
     public Client reload(Long id) {
-        return clientRepository.findOne(id);
+        return clientRepository.findOne(id); 
     }
     
     @Override
     public Client findByNormalizedName(String normalizedName){
-    	//if (String.isNotBlank(normalizedName))
-    	normalizedName = normalizedName == null? "": normalizedName;
-    	normalizedName = normalizedName.toLowerCase(); //always change to lower case
-    	return clientRepository.findByNormalizedName(normalizedName);
+    	return clientRepository.findByNormalizedName(normalizeName(normalizedName));
     }
+
+    /**
+     * remove the special characters replacing it with blank (" ") and change all to lower case
+     * 
+     * @param name
+     * @return
+     */
+    private String normalizeName(String name) {
+    	String normalizedName = "";
+    	if (StringUtils.isNotBlank(name)) {
+    		normalizedName = name.toLowerCase(); //always change to lower case
+    		//regex to replace special characters with blank
+    		normalizedName = normalizedName.replaceAll("[^\\w\\s]"," ");
+    	}
+    	
+    	return normalizedName;
+    }
+    
+    private String normalizeName(Client client){    	
+    	return normalizeName(client.getName()==null?"":client.getName());
+    }
+    
 }
