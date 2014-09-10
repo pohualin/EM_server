@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.Specification;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 
+import com.emmisolutions.emmimanager.model.Group_;
+
 /**
  * This is the specification class that allows for filtering of Group objects.
  */
