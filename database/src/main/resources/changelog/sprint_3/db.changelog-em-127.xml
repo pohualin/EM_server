@@ -9,4 +9,10 @@
             <column name="phone" value=""/>
         </update>
     </changeSet>
+
+    <changeSet id="default_existing_phone_numbers" author="Matt">
+        <update tableName="location">
+            <column name="phone" value="312-555-1212"/>
+        </update>
+    </changeSet>
 </databaseChangeLog>
