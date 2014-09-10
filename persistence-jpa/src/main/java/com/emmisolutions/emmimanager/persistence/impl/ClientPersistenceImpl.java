@@ -61,13 +61,11 @@ public class ClientPersistenceImpl implements ClientPersistence {
      * @return
      */
     private String normalizeName(String name) {
-    	String normalizedName = "";
-    	if (StringUtils.isNotBlank(name)) {
-    		normalizedName = name.toLowerCase(); //always change to lower case
-    		//regex to replace special characters with blank
-    		normalizedName = normalizedName.replaceAll("[^\\w\\s]"," ");
+    	String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
+    	if (StringUtils.isNotBlank(normalizedName)){
+    	    // do regex
+    	     normalizedName = normalizedName.replaceAll("[^\\w\\s]"," ");
     	}
-    	
     	return normalizedName;
     }
     
