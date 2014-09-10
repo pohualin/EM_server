@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-
 import com.emmisolutions.emmimanager.model.Group_;
 
 /**

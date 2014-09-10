@@ -43,7 +43,7 @@ public class ClientPersistenceImpl implements ClientPersistence {
     	client.setNormalizedName(normalizeName(client)); 
         return clientRepository.save(client);
     }
-
+    
     @Override
     public Client reload(Long id) {
         return clientRepository.findOne(id); 

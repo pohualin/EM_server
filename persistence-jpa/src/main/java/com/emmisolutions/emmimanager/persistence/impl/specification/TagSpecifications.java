@@ -9,8 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
-
 import com.emmisolutions.emmimanager.model.Tag_;
+
 /**
  * This is the specification class that allows for filtering of Tag objects.
  */
@@ -29,7 +29,7 @@ public class TagSpecifications {
             @Override
             public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (searchFilter != null && searchFilter.getGroupId()!=null) {
-                    return cb.equal(root.get(Tag.group), searchFilter.getGroupId());
+                    return cb.equal(root.get(Tag_.group), searchFilter.getGroupId());
                 }
                 return null;
             }
