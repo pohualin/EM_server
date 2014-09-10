@@ -34,19 +34,19 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
      */
     @Test
     public void lifecycle(){
-        String accountNumber = "0013000000CqY7OAAV";
+        String uniqueName = "Abbott Northwestern Hospital Heart Hospital";
 
         // search salesforce to make sure this account exists
-        SalesForceSearchResponse salesForceSearchResponse = salesForceService.find(accountNumber);
+        SalesForceSearchResponse salesForceSearchResponse = salesForceService.find(uniqueName);
         assertThat("response has a result", salesForceSearchResponse.getAccounts().size(), is(1));
         assertThat("response does not have an id", salesForceSearchResponse.getAccounts().get(0).getId(), is(nullValue()));
 
         // create a client with this sf account number
-        Client client = clientService.create(makeClient("clientName", "sfUser", accountNumber));
+        Client client = clientService.create(makeClient("clientName", "sfUser", salesForceSearchResponse.getAccounts().get(0).getAccountNumber()));
 
         // ensure that the find returns the client name
         SalesForce sf = client.getSalesForceAccount();
-        salesForceSearchResponse = salesForceService.find(accountNumber);
+        salesForceSearchResponse = salesForceService.find(uniqueName);
         assertThat("response has same id as persisted account", salesForceSearchResponse.getAccounts().get(0).getId(), is(sf.getId()));
         assertThat("response has same version as persisted account", salesForceSearchResponse.getAccounts().get(0).getVersion(), is(sf.getVersion()));
         assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClientName(), is("clientName"));
@@ -57,7 +57,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         assertThat("new sf account was persisted", client.getSalesForceAccount().getId(), is(notNullValue()));
 
         //ensure that the deletion of the first SalesForce object has happened
-        salesForceSearchResponse = salesForceService.find(accountNumber);
+        salesForceSearchResponse = salesForceService.find(uniqueName);
         assertThat("response has same id as persisted account", salesForceSearchResponse.getAccounts().get(0).getId(), is(nullValue()));
         assertThat("response has same version as persisted account", salesForceSearchResponse.getAccounts().get(0).getVersion(), is(nullValue()));
         assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClientName(), is(nullValue()));
