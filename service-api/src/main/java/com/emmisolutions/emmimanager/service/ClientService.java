@@ -1,10 +1,11 @@
 package com.emmisolutions.emmimanager.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Client Service API.
@@ -62,4 +63,5 @@ public interface ClientService {
      * @return a Client object
      */
     Client findByNormalizedName(String normalizedName);
+
 }

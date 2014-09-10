@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,12 +39,11 @@ public class ClientPersistenceImpl implements ClientPersistence {
         return clientRepository.findAll(where(hasNames(searchFilter)).and(isInStatus(searchFilter)), page);
     }
 
-    @Override
     public Client save(Client client) {
     	client.setNormalizedName(normalizeName(client)); 
         return clientRepository.save(client);
     }
-
+    
     @Override
     public Client reload(Long id) {
         return clientRepository.findOne(id); 

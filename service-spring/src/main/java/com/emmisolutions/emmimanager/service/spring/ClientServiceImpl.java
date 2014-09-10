@@ -76,3 +76,4 @@ public class ClientServiceImpl implements ClientService {
 		return clientPersistence.findByNormalizedName(normalizedName);
 	}
 }
+
