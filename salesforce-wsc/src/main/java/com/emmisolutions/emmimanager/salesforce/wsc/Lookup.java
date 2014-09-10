@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.salesforce.service.SalesForceLookup;
 import com.sforce.soap.enterprise.EnterpriseConnection;
-import com.sforce.soap.enterprise.QueryResult;
 import com.sforce.soap.enterprise.SearchRecord;
 import com.sforce.soap.enterprise.SearchResult;
 import com.sforce.soap.enterprise.sobject.Account;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Lookup implementation that uses WSC to query SalesForce.
@@ -29,8 +27,6 @@ public class Lookup implements SalesForceLookup {
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
 
     private static final int DEFAULT_PAGE_SIZE = 20;
-    private static final String ID_QUERY = "SELECT Account.Id, Account.Name, Account.EMMI_Account_ID__c, Account.Type, Account.RecordTypeId, Account.RecordType.Name, Account.Account_Status__c, Account.BillingCity, Account.BillingState, Account.BillingPostalCode, Account.BillingStreet, Account.BillingCountry, Account.Owner.Id, Account.Owner.Alias, Account.Phone, Account.Fax FROM Account WHERE Id = '%s'";
-    private static final Pattern ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{18}");
     private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
     private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
 
@@ -47,12 +43,14 @@ public class Lookup implements SalesForceLookup {
 
     private synchronized void init() {
         try {
-            LOGGER.debug("Attempting to connect to SalesForce");
-            ConnectorConfig config = new ConnectorConfig();
-            config.setUsername(username);
-            config.setPassword(password);
-            config.setAuthEndpoint(url);
-            connection = new EnterpriseConnection(config);
+            if (connection == null) {
+                LOGGER.debug("Attempting to connect to SalesForce");
+                ConnectorConfig config = new ConnectorConfig();
+                config.setUsername(username);
+                config.setPassword(password);
+                config.setAuthEndpoint(url);
+                connection = new EnterpriseConnection(config);
+            }
         } catch (ConnectionException e) {
             LOGGER.error("Error connecting to SalesForce", e);
         }
@@ -120,19 +118,6 @@ public class Lookup implements SalesForceLookup {
                 if (count >= pageSize) {
                     break;
                 }
-            }
-        } else if (ID_PATTERN.matcher(strippedSearchString).matches()) {
-            // no search match, try to query by Id (when search string is a valid id)
-            QueryResult idQueryResult = null;
-            try {
-                idQueryResult = connection.query(String.format(ID_QUERY, strippedSearchString));
-            } catch (ConnectionException e) {
-                connection = null;
-                findAccounts(searchString, pageSizeRequested);
-            }
-            if (idQueryResult != null && idQueryResult.getSize() > 0) {
-                accounts.add(convert((Account) idQueryResult.getRecords()[0]));
-                totalNumber = 1;
             }
         }
         return new SalesForceSearchResponse(totalNumber <= pageSize, accounts);
