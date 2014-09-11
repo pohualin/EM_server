@@ -212,8 +212,6 @@ public class PersistenceConfiguration {
         properties.setProperty(DIALECT, dialect);
         properties.setProperty(SHOW_SQL, showSql.toString());
         properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
-        properties.setProperty("jadira.usertype.javaZone", "UTC");
-        properties.setProperty("jadira.usertype.databaseZone", "UTC");
         properties.setProperty("javax.persistence.validation.mode", "ddl, callback");
         properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
         properties.setProperty("org.hibernate.envers.revision_field_name", "revision");
