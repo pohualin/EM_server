@@ -43,22 +43,11 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * find by id
+     * find by id should not work
      */
     @Test
     public void findById() {
         SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("0013000000CqY7OAAV");
-        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
-        assertThat(SHOULD_HAVE_NO_MORE_RESULTS, searchResponse.isComplete(), is(true));
-        assertThat("total should be 1", searchResponse.getAccounts().size(), is(1));
-    }
-
-    /**
-     * bad id
-     */
-    @Test
-    public void badId() {
-        SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("013000000CqY7OAAV");
         assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
         assertThat(SHOULD_HAVE_NO_MORE_RESULTS, searchResponse.isComplete(), is(true));
         assertThat("total should be 0", searchResponse.getAccounts().size(), is(0));

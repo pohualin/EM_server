@@ -24,6 +24,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(linkTo(methodOn(TeamsResource.class).clientTeams(entity.getId(),null,null,null,null,(String [])null)).withRel("teams"));
         ret.add(LocationPage.createFullClientLocationsSearchLink(entity));
         ret.add(LocationPage.locationIdsAtClient(entity));
+        ret.add(GroupPage.createFullSearchLink(entity.getId()));
         ret.setEntity(entity);
         return ret;
     }
