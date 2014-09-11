@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="insert_ref_groups_tags" author="Amrita" context="dev">
+		<insert tableName="reference_group">
+            <column name="name">REF GROUP ONE</column>
+        </insert>
+        <insert tableName="reference_group">
+            <column name="name">REF GROUP TWO</column>
+        </insert>
+                <insert tableName="reference_group">
+            <column name="name">REF GROUP THREE</column>
+        </insert>
+        <insert tableName="reference_group">
+            <column name="name">REF GROUP FOUR</column>
+        </insert>
+                <insert tableName="reference_group">
+            <column name="name">REF GROUP FIVE</column>
+        </insert>
+        <insert tableName="reference_group">
+            <column name="name">REF GROUP SIX</column>
+        </insert>
+        <sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG1', (SELECT id FROM reference_group WHERE name='REF GROUP ONE'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG2', (SELECT id FROM reference_group WHERE name='REF GROUP ONE'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG3', (SELECT id FROM reference_group WHERE name='REF GROUP TWO'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG4', (SELECT id FROM reference_group WHERE name='REF GROUP TWO'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG5', (SELECT id FROM reference_group WHERE name='REF GROUP THREE'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG6', (SELECT id FROM reference_group WHERE name='REF GROUP FOUR'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG7', (SELECT id FROM reference_group WHERE name='REF GROUP FIVE'))
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>
