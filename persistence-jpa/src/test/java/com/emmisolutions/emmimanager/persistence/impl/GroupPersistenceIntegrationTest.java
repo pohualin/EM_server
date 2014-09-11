@@ -25,6 +25,11 @@ import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
 
+
+/**
+ * Group Persistence Integration Test
+ *
+ */
 public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
@@ -63,6 +68,9 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	    return client;
 	}
 	
+	/**
+	 * 	Test list of groups by client id
+	 */
 	@Test
 	public void testListGroupsByClientID(){
 		Group groupOne = new Group();

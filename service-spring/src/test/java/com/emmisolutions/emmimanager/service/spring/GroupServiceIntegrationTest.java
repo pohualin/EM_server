@@ -31,6 +31,10 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
 
+/**
+ * Group Service Integration Test
+ *
+ */
 public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
@@ -52,6 +56,9 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	    superAdmin = userPersistence.reload("super_admin");
 	}
 		
+	/**
+	 * 	Test list of groups by client id
+	 */
 	@Test
 	public void testListGroupsByClientId(){
 
@@ -88,6 +95,9 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	    return client;
 	}
 	
+	/**
+	 * 	Test group  by id
+	 */
 	@Test
 	public void testGroupById(){
 		Group group = new Group();
@@ -100,7 +110,9 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Group get by ID successfully retrieved group:", retrievedGroup.getId(), is(savedGroup.getId()));
 	}
 
-
+	/**
+	 * 	Test save groups with tags
+	 */
 	@Test
 	public void saveGroupsWithTags(){
 		
@@ -171,6 +183,9 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 
 	}
 	
+	/**
+	 * 	Test drop old groups and save new ones
+	 */
 	@Test
 	public void saveGroupsWithTagsDropAllOldGroups(){
 		
@@ -250,6 +265,9 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		
 	}
 
+	/**
+	 * 	Test save groups with no tags
+	 */
 	@Test
 	public void saveGroupWithOptionalTags(){
 		
@@ -308,6 +326,9 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 
 	}
 	
+	/**
+	 * 	Test tags are deleted on Group delete
+	 */
 	@Test(expected=NoSuchElementException.class)
 	public void verifyTagsDeleteOnCascade(){
 		

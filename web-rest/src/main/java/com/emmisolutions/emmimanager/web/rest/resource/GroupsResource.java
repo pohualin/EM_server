@@ -60,7 +60,7 @@ public class GroupsResource {
 	 * @return GroupPage or NO_CONTENT
 	 */
 	@RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.GET)
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_LIST" })
+	@RolesAllowed({ "PERM_GOD", "PERM_GROUP_LIST" })
 	public ResponseEntity<GroupPage> listGroupsByClientID(
 			@PageableDefault(size = 50) Pageable pageable,
 			@SortDefault(sort = "id") Sort sort,
@@ -86,7 +86,7 @@ public class GroupsResource {
 	 *         unsuccessful
 	 */
 	@RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.POST)
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_EDIT" })
+	@RolesAllowed({ "PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT" })
 	public ResponseEntity<List<Group>> create(@RequestBody List<GroupSaveRequest> groupSaveRequests,
 			@PathVariable("clientId") Long clientId) {
 
@@ -96,15 +96,16 @@ public class GroupsResource {
 		if (groupPage.hasContent() && !groupPage.getContent().isEmpty()) {
 			groupService.removeAll(groupPage.getContent());
 		}
-		
-		List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
+		if (!groupSaveRequests.isEmpty()) {
+			List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
 
-		if (groups == null || groups.isEmpty()) {
-			return new ResponseEntity<List<Group>>(
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(groups, HttpStatus.OK);
+			if (groups == null || groups.isEmpty()) {
+				return new ResponseEntity<List<Group>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				return new ResponseEntity<>(groups, HttpStatus.OK);
+			}
 		}
+		return null;
 	}
 	
 	
@@ -116,7 +117,7 @@ public class GroupsResource {
 	 *
 	 */
 	@RequestMapping(value = "/groups/{id}", method = RequestMethod.GET)
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_EDIT" })
+	@RolesAllowed({ "PERM_GOD", "PERM_GROUP_VIEW" })
 	public ResponseEntity<GroupResource> getGroupById(@PathVariable("id") Long id) {
 		Group group = groupService.reload(id);
 		if (group == null) {

@@ -27,7 +27,9 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
-
+/**
+ * Tag service integration Test
+ */
 public class TagServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
@@ -69,7 +71,11 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		group = groupService.save(group);
 		return group;
 	}
-
+	
+	
+	/**
+ 	* 	Test List tags by group id
+ 	*/
 	@Test
 	public void testListTagsByGroupId(){
 		Group group = createGroup();
@@ -86,7 +92,7 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		
 		tags.add(tagOne);
 		tags.add(tagTwo);
-		tagService.saveAll(tags);
+		tagService.saveAllTagsForGroup(tags, group);
 		
 		TagSearchFilter searchFilter = new TagSearchFilter(group.getId());
 		Page<Tag> retreivedTags = tagService.list(null, searchFilter);

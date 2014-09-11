@@ -19,9 +19,9 @@ public class TagSpecifications {
     private TagSpecifications(){}
 
     /**
-     * match on groupID
      *
-     * @param groupID to be found
+     * match on groupId within the provided TagSearchFilter
+     * @param TagSearchFilter
      * @return the specification as a filter predicate
      */
     public static Specification<Tag> byGroupId(final TagSearchFilter searchFilter) {

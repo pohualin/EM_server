@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
 
@@ -15,13 +14,6 @@ import com.emmisolutions.emmimanager.model.TagSearchFilter;
  *
  */
 public interface TagService {
-
-	/**
-	 * Eager fetch all reference tags
-	 * 
-	 * @return HashSet of reference tags
-	 */
-	List<ReferenceTag> fetchReferenceTags();
 
 	/**
 	 * Returns a Page of Tags based on the search filter with default Page size
@@ -37,11 +29,6 @@ public interface TagService {
 	 * Find the tag by given id
 	 */
 	Tag reload(Tag tag);
-
-	/**
-	 * Delete the tag by given id
-	 */
-	List<Tag> saveAll(List<Tag> tags);
 
 	/**
 	 * Associate Tag to the Group and save

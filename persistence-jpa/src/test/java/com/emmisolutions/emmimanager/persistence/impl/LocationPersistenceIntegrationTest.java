@@ -55,9 +55,9 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void create() {
         Location location = new Location();
-        location.setName("Valid Name");
-        location.setCity("Valid City");
-        location.setPhone("phone number");
+        location.setName("Valid Name 1");
+        location.setCity("Valid City 1");
+        location.setPhone("630-222-8900");
         location.setState(State.IL);
         locationPersistence.save(location);
         assertThat("Location was given an id", location.getId(), is(notNullValue()));
@@ -74,7 +74,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         Location location = new Location();
         location.setName("Valid Name A-Za-z-'=_;:@#&,.!() ");
         location.setCity("Valid City");
-        location.setPhone("phone number");
+        location.setPhone("800-333-2345");
         location.setState(State.IL);
         location.setBelongsTo(client);
         location = locationPersistence.save(location);
@@ -134,7 +134,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         Location location = new Location();
         location.setName("Invalid *");
         location.setCity("Valid City");
-        location.setPhone("phone number");
+        location.setPhone("555-555-5555");
         location.setState(State.IL);
         locationPersistence.save(location);
     }
@@ -147,7 +147,20 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         Location location = new Location();
         location.setName("Valid Name");
         location.setCity("InValid ^%");
-        location.setPhone("phone number");
+        location.setPhone("312-222-1111");
+        location.setState(State.IL);
+        locationPersistence.save(location);
+    }
+
+    /**
+     * Invalid phone number.. the 4th digit cannot be a 1
+     */
+    @Test(expected = ConstraintViolationException.class)
+    public void invalidPhone() {
+        Location location = new Location();
+        location.setName("Valid Name");
+        location.setCity("Valid");
+        location.setPhone("312-122-1111");
         location.setState(State.IL);
         locationPersistence.save(location);
     }

@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.service;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -9,20 +8,12 @@ import org.springframework.data.domain.Pageable;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
 
 /**
  * Group Service API
  *
  */
 public interface GroupService {
-
-	/**
-	 * Eager fetch all reference groups
-	 * 
-	 * @return HashSet of reference groups
-	 */
-	Collection<ReferenceGroup> fetchReferenceGroups();
 
 	/**
 	 * Saves a group

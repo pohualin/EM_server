@@ -19,9 +19,9 @@ public class GroupSpecifications {
     private GroupSpecifications(){}
 
     /**
-     * match on ClientID
-     *
-     * @param names to be found
+     * match on clientId within the provided GroupSearchFilter
+     * 
+     * @param GroupSearchFilter
      * @return the specification as a filter predicate
      */
     public static Specification<Group> byClientId(final GroupSearchFilter searchFilter) {

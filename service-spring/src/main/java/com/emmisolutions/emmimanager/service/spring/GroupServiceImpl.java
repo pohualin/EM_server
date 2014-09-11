@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -41,11 +39,6 @@ public class GroupServiceImpl implements GroupService {
 	ClientService clientService;
 	
 	@Override
-	public Collection<ReferenceGroup> fetchReferenceGroups() {
-		return groupPersistence.fetchReferenceGroups();
-	}
-
-	@Override
 	@Transactional
 	public Group save(Group group) {
 		return groupPersistence.save(group);
@@ -63,7 +56,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Group reload(Long id) {
 		if (id == null) {
 			return null;
@@ -80,22 +73,25 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	@Transactional
 	public List<Group> saveGroupsAndTags(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
+		if (clientId == null){
+            throw new IllegalArgumentException("clientID cannot be null");
+		}
 		List<Group> groups = new ArrayList<Group>();
 
-		Client client = new Client();
-		client.setId(clientId);
-		client = clientService.reload(client);
-		
-		for (GroupSaveRequest request : groupSaveRequests) {
-			
-			request.getGroup().setClient(client);
-			Group savedGroup = save(request.getGroup());
-			if (request.getTags() != null && !request.getTags().isEmpty()) {
-				List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
-				savedGroup.setTags(new HashSet<Tag>(savedTags));
+			Client client = new Client();
+			client.setId(clientId);
+			client = clientService.reload(client);
+
+			for (GroupSaveRequest request : groupSaveRequests) {
+
+				request.getGroup().setClient(client);
+				Group savedGroup = save(request.getGroup());
+				if (request.getTags() != null && !request.getTags().isEmpty()) {
+					List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
+					savedGroup.setTags(new HashSet<Tag>(savedTags));
+				}
+				groups.add(savedGroup);
 			}
-			groups.add(savedGroup);
-		}
 		return groups;
 	}
 }

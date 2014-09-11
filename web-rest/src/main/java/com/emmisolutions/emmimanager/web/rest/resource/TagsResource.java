@@ -51,7 +51,7 @@ public class TagsResource {
 	 * @return TagPage or NO_CONTENT
 	 */
 	@RequestMapping(value = "/groups/{groupId}/tags", method = RequestMethod.GET)
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_LIST" })
+	@RolesAllowed({ "PERM_GOD", "PERM_TAG_LIST" })
 	public ResponseEntity<TagPage> listTagsByGroupID(
 			@PageableDefault(size = 50) Pageable pageable,
 			@SortDefault(sort = "id") Sort sort,
@@ -76,8 +76,8 @@ public class TagsResource {
 	 * @return TagResource or NO_CONTENT on fail
 	 *
 	 */
-	@RequestMapping(value = "/clients/tags/{id}", method = RequestMethod.GET)
-	@RolesAllowed({ "PERM_GOD", "PERM_CLIENT_EDIT" })
+	@RequestMapping(value = "/tags/{id}", method = RequestMethod.GET)
+	@RolesAllowed({ "PERM_GOD", "PERM_TAG_VIEW" })
 	public ResponseEntity<TagResource> getTagById(@PathVariable("id") Long id) {
 		Tag tag = new Tag();
 		tag.setId(id);
