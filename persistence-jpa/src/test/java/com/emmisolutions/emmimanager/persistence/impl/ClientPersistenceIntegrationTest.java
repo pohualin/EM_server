@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import org.joda.time.LocalDate;
+import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -68,7 +69,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
      * Prohibited characters in name should fail
      */
     @Test(expected = ConstraintViolationException.class)
-    public void em_68_BadChars(){
+    public void em_68_BadChars() {
         Client client = new Client();
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
@@ -86,7 +87,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
      * All valid characters should be allowed
      */
     @Test
-    public void em_68_AllValidChars(){
+    public void em_68_AllValidChars() {
         Client client = new Client();
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
@@ -147,6 +148,41 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(0));
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
         assertThat("we are on page 10", clientPage.getNumber(), is(10));
+    }
+
+    /**
+     * Test when the contract end date is after the contract start date
+     */
+    @Test(expected = ConstraintViolationException.class)
+    public void startAfterEnd() {
+        Client client = makeClient(1);
+        client.setContractStart(LocalDate.now());
+        client.setContractEnd(LocalDate.now().minusDays(2));
+        clientPersistence.save(client);
+    }
+
+    /**
+     * Test when the contract end date is not a full day ahead of
+     * the contract start date
+     */
+    @Test(expected = ConstraintViolationException.class)
+    public void lessThanOneDayAhead() {
+        Client client = makeClient(1);
+        client.setContractStart(LocalDate.now());
+        client.setContractEnd(LocalDate.now().plus(Minutes.minutes(12)));
+        clientPersistence.save(client);
+    }
+
+    /**
+     * Test when the contract end date is exactly one day ahead
+     * of the contract start date
+     */
+    @Test
+    public void exactlyOneDayAhead() {
+        Client client = makeClient(1);
+        client.setContractStart(LocalDate.now());
+        client.setContractEnd(LocalDate.now().plusDays(1));
+        clientPersistence.save(client);
     }
 
     private Client makeClient(long i) {
