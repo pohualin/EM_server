@@ -57,7 +57,6 @@ public class ClientPersistenceImpl implements ClientPersistence {
     	   ret = clientRepository.findByNormalizedName(toSearch);
     	}
     	return ret;
-
     }
 
     /**
