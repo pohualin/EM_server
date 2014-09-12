@@ -12,15 +12,24 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 /**
  * A Reference Tag
  */
+@Audited
+@XmlRootElement(name = "reference_tag")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 @Table(name = "reference_tag")
-public class ReferenceTag implements Serializable {
+public class ReferenceTag extends AbstractAuditingEntity implements
+		Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -50,7 +50,57 @@
         ]]></sql>
     </changeSet>
     <changeSet author="Amrita" id="drop_join_tables" context="dev">
-	    <dropTable cascadeConstraints="true" tableName="client_group_client_group_tag"/>
-    	<dropTable cascadeConstraints="true" tableName="client_group_client_group_tag_audit"/>
+		<dropForeignKeyConstraint baseTableName="client_group_client_group_tag" constraintName="fk_group_tag_client_group_id"/>
+		<dropForeignKeyConstraint baseTableName="client_group_client_group_tag_audit" constraintName="fk_group_tag_audit_revision"/>
+		<dropForeignKeyConstraint baseTableName="client_group_client_group_tag" constraintName="fk_group_tag_tags_id"/>
+		<dropPrimaryKey tableName="client_group_client_group_tag" constraintName="pk_client_group_client_group_tag"/>
+		<dropPrimaryKey tableName="client_group_client_group_tag_audit" constraintName="pk_client_group_client_group_tag_audit"/>
+		<dropTable tableName="client_group_client_group_tag"/>
+    	<dropTable tableName="client_group_client_group_tag_audit"/>
+	</changeSet>
+	
+	<changeSet id="audit_table_for_reference_groups" author="Amrita">
+		<createTable tableName="reference_group_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="name" type="varchar(255)"/>
+        </createTable>
+        <addPrimaryKey tableName="reference_group_audit" 
+                       columnNames="id, revision"
+                       constraintName="pk_reference_group_audit"/>        
+		
+		<addForeignKeyConstraint baseTableName="reference_group_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_reference_group_audit"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+	</changeSet>
+	
+	<changeSet id="audit_table_for_reference_tags" author="Amrita">
+		<createTable tableName="reference_tag_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="reference_tag_audit" 
+                       columnNames="id, revision"
+                       constraintName="pk_reference_tag_audit"/>        
+	
+		<addForeignKeyConstraint baseTableName="reference_tag_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_reference_tag_audit"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
 	</changeSet>
 </databaseChangeLog>
