@@ -50,8 +50,14 @@ public class ClientPersistenceImpl implements ClientPersistence {
     }
     
     @Override
-    public Client findByNormalizedName(String normalizedName){
-    	return clientRepository.findByNormalizedName(normalizeName(normalizedName));
+    public Client findByNormalizedName(String normalizedName){		
+    	String toSearch = normalizeName(normalizedName);
+    	Client ret = null;
+    	if (StringUtils.isNotBlank(toSearch)){
+    	   ret = clientRepository.findByNormalizedName(toSearch);
+    	}
+    	return ret;
+
     }
 
     /**
