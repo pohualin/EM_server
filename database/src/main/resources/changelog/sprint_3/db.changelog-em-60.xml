@@ -59,7 +59,7 @@
     	<dropTable tableName="client_group_client_group_tag_audit"/>
 	</changeSet>
 	
-	<changeSet id="audit_table_for_reference_groups" author="Amrita">
+	<changeSet id="audit_table_for_reference_groups" author="Amrita" >
 		<createTable tableName="reference_group_audit">
             <column name="id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -81,7 +81,7 @@
                                  referencedColumnNames="revision"/>
 	</changeSet>
 	
-	<changeSet id="audit_table_for_reference_tags" author="Amrita">
+	<changeSet id="audit_table_for_reference_tags" author="Amrita" context="dev">
 		<createTable tableName="reference_tag_audit">
             <column name="id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -103,4 +103,28 @@
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>
 	</changeSet>
+	
+	<changeSet id="add_version_columns_for_ref_data" author="Amrita"  context="dev">
+		<addColumn tableName="reference_group">
+		   <column name="created_by" type="varchar(50)" defaultValue="system">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="last_modified_by" type="varchar(50)"/>
+	            <column name="last_modified_date" type="timestamp"/>     
+		</addColumn>
+		<addColumn tableName="reference_tag">
+		   <column name="created_by" type="varchar(50)" defaultValue="system">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="last_modified_by" type="varchar(50)"/>
+	            <column name="last_modified_date" type="timestamp"/>     
+		</addColumn>		
+	</changeSet>
+	
 </databaseChangeLog>
