@@ -2,9 +2,11 @@ package com.emmisolutions.emmimanager.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.envers.Audited;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -191,5 +193,11 @@ public class Client extends AbstractAuditingEntity implements Serializable {
 
     public void setNormalizedName(String normalizedName) {
         this.normalizedName = normalizedName;
+    }
+    
+    @AssertTrue(message = "Contract End Date must be at least one day after the Contract Start Date")
+    private boolean isValid() {
+        return contractStart != null && contractEnd != null &&
+                (contractStart.plus(Days.days(1)).isEqual(contractEnd) || contractStart.plus(Days.days(1)).isBefore(contractEnd));
     }
 }
