@@ -25,11 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.service.GroupService;
+import com.emmisolutions.emmimanager.service.ReferenceGroupService;
 import com.emmisolutions.emmimanager.service.TagService;
-import com.emmisolutions.emmimanager.web.rest.model.client.GroupPage;
-import com.emmisolutions.emmimanager.web.rest.model.client.GroupResource;
-import com.emmisolutions.emmimanager.web.rest.model.client.GroupResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.groups.GroupPage;
+import com.emmisolutions.emmimanager.web.rest.model.groups.GroupResource;
+import com.emmisolutions.emmimanager.web.rest.model.groups.GroupResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupResourceAssembler;
 
 /**
  * Groups REST API.
@@ -44,8 +48,14 @@ public class GroupsResource {
 	GroupService groupService;
 
 	@Resource
-	GroupResourceAssembler groupResourceAssembler;
+	ReferenceGroupService referenceGroupService;
 
+	@Resource
+	GroupResourceAssembler groupResourceAssembler;
+	
+	@Resource
+	ReferenceGroupResourceAssembler referenceGroupResourceAssembler;
+	
 	@Resource
 	TagService tagService;
 	
@@ -126,4 +136,28 @@ public class GroupsResource {
 			return new ResponseEntity<>(groupResourceAssembler.toResource(group), HttpStatus.OK);
 		}
 	}
+	
+    /**
+     * GET to retrieve ReferenceGroup data.
+     *
+     * @param pageable  paged request
+     * @param sort      sorting request
+     * @param assembler used to create PagedResources
+     * @return groupPage matching the search request
+     */
+    @RequestMapping(value = "/referenceGroups", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_GROUP_VIEW"})
+    public ResponseEntity<ReferenceGroupPage> getRefGroups(@PageableDefault(size = 50) Pageable pageable,
+                                                           @SortDefault(sort = "id") Sort sort,
+                                                           PagedResourcesAssembler<ReferenceGroup> assembler) {
+    	
+        Page<ReferenceGroup> groupPage = referenceGroupService.loadReferenceGroups(pageable);
+        
+        if (groupPage.hasContent()) {
+			return new ResponseEntity<>(new ReferenceGroupPage(assembler.toResource(groupPage, referenceGroupResourceAssembler), groupPage), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+    }
+    
 }

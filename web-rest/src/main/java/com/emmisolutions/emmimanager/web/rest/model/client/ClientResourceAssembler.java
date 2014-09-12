@@ -1,8 +1,10 @@
 package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.web.rest.model.groups.GroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
