@@ -55,7 +55,7 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(createGroupByClientIdLink());
-        ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
+        ret.add(ReferenceGroupPage.createGroupReferenceDataLink().withRel("refDataGroups"));
         return ret;
     }
 

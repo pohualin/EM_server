@@ -53,7 +53,7 @@ public class Group extends AbstractAuditingEntity implements Serializable {
 	@JsonBackReference
 	private Client client;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="group")
 	@JsonManagedReference
 	@XmlElement(name = "tag")
 	@XmlElementWrapper(name = "tags")

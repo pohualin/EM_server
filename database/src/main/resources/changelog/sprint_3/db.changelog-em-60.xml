@@ -49,5 +49,8 @@
 			 values( 'REF TAG7', (SELECT id FROM reference_group WHERE name='REF GROUP FIVE'))
         ]]></sql>
     </changeSet>
-
+    <changeSet author="Amrita" id="drop_join_tables" context="dev">
+	    <dropTable cascadeConstraints="true" tableName="client_group_client_group_tag"/>
+    	<dropTable cascadeConstraints="true" tableName="client_group_client_group_tag_audit"/>
+	</changeSet>
 </databaseChangeLog>
