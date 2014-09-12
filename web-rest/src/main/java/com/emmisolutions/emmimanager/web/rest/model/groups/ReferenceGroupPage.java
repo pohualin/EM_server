@@ -43,7 +43,7 @@ public class ReferenceGroupPage extends PagedResource<ReferenceGroupResource> {
      * @see com.emmisolutions.emmimanager.web.rest.resource.GroupsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
     public static Link createGroupReferenceDataLink() {
-        Link link = linkTo(methodOn(GroupsResource.class).getRefGroups(null, null, null)).withRel("refdataGroups");
+        Link link = linkTo(methodOn(GroupsResource.class).getRefGroups(null, null, null)).withRel("refDataGroups");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
