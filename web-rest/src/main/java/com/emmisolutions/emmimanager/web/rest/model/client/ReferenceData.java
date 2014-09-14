@@ -13,6 +13,7 @@ import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.salesforce.SalesForceSearchResponseResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -46,6 +47,7 @@ public class ReferenceData extends ResourceSupport {
         add(UserPage.createPotentialOwnersFullSearchLink());
         add(SalesForceSearchResponseResource.createFindLink());
         add(ClientResource.createFindNormalizedNameLink());
+        add(ReferenceGroupPage.createGroupReferenceDataLink());
     }
 
     /**

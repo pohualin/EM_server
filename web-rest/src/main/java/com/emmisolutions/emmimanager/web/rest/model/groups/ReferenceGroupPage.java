@@ -1,9 +1,8 @@
-package com.emmisolutions.emmimanager.web.rest.model.client;
+package com.emmisolutions.emmimanager.web.rest.model.groups;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.domain.Page;
@@ -13,43 +12,38 @@ import org.springframework.hateoas.TemplateVariable;
 import org.springframework.hateoas.TemplateVariables;
 import org.springframework.hateoas.UriTemplate;
 
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
 
 /**
- * A HATEOAS wrapper for a page of GroupResource objects.
+ * A HATEOAS wrapper for a page of ReferenceGroupResource objects.
  */
-@XmlRootElement(name = "group-page")
-public class GroupPage extends PagedResource<GroupResource> {
+@XmlRootElement(name = "ref-group-page")
+public class ReferenceGroupPage extends PagedResource<ReferenceGroupResource> {
 
-    @XmlElement(name = "filter")
-    private GroupSearchFilter searchFilter;
-
-    public GroupPage() {
+	public ReferenceGroupPage() {
     }
 
     /**
-     * Wrapper for group resource objects
+     * Wrapper for ReferenceGroupResource objects
      *
-     * @param groupResourceSupports to be wrapped
-     * @param groupPage             true page
-     * @param filter                 which caused the response
+     * @param PagedResources<ReferenceGroupResource> to be wrapped
+     * @param Page<ReferenceGroup>             true page
+     * @return ReferenceGroupPage
      */
-    public GroupPage(PagedResources<GroupResource> groupResourceSupports, Page<Group> groupPage, GroupSearchFilter filter) {
+    public ReferenceGroupPage(PagedResources<ReferenceGroupResource> groupResourceSupports, Page<ReferenceGroup> groupPage) {
         pageDefaults(groupResourceSupports, groupPage);
-        addFilterToLinks(filter);
     }
-
+    
     /**
-     * Create the search link
+     * Link for ref data
      *
-     * @return Link for group searches
+     * @return Link reference data for groups and tags
      * @see com.emmisolutions.emmimanager.web.rest.resource.GroupsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
-    public static Link createFullSearchLink(Long clientId) {
-        Link link = linkTo(methodOn(GroupsResource.class).listGroupsByClientID(null, null, null, clientId)).withRel("groups");
+    public static Link createGroupReferenceDataLink() {
+        Link link = linkTo(methodOn(GroupsResource.class).getRefGroups(null, null, null)).withRel("refDataGroups");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -57,11 +51,6 @@ public class GroupPage extends PagedResource<GroupResource> {
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
                         ));
         return new Link(uriTemplate, link.getRel());
-    }
-    
-
-    private void addFilterToLinks(GroupSearchFilter filter) {
-        this.searchFilter = filter;
-    }
+    } 
    
 }

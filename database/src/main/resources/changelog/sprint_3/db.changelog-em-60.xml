@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="insert_ref_groups_tags" author="Amrita" context="dev">
+		<insert tableName="reference_group">
+            <column name="name">REF GROUP ONE</column>
+        </insert>
+        <insert tableName="reference_group">
+            <column name="name">REF GROUP TWO</column>
+        </insert>
+                <insert tableName="reference_group">
+            <column name="name">REF GROUP THREE</column>
+        </insert>
+        <insert tableName="reference_group">
+            <column name="name">REF GROUP FOUR</column>
+        </insert>
+                <insert tableName="reference_group">
+            <column name="name">REF GROUP FIVE</column>
+        </insert>
+        <insert tableName="reference_group">
+            <column name="name">REF GROUP SIX</column>
+        </insert>
+        <sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG1', (SELECT id FROM reference_group WHERE name='REF GROUP ONE'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG2', (SELECT id FROM reference_group WHERE name='REF GROUP ONE'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG3', (SELECT id FROM reference_group WHERE name='REF GROUP TWO'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG4', (SELECT id FROM reference_group WHERE name='REF GROUP TWO'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG5', (SELECT id FROM reference_group WHERE name='REF GROUP THREE'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG6', (SELECT id FROM reference_group WHERE name='REF GROUP FOUR'))
+        ]]></sql><sql><![CDATA[	  
+			  INSERT INTO reference_tag (name, group_id)
+			 values( 'REF TAG7', (SELECT id FROM reference_group WHERE name='REF GROUP FIVE'))
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Amrita" id="drop_join_tables" context="dev">
+		<dropForeignKeyConstraint baseTableName="client_group_client_group_tag" constraintName="fk_group_tag_client_group_id"/>
+		<dropForeignKeyConstraint baseTableName="client_group_client_group_tag_audit" constraintName="fk_group_tag_audit_revision"/>
+		<dropForeignKeyConstraint baseTableName="client_group_client_group_tag" constraintName="fk_group_tag_tags_id"/>
+		<dropPrimaryKey tableName="client_group_client_group_tag" constraintName="pk_client_group_client_group_tag"/>
+		<dropPrimaryKey tableName="client_group_client_group_tag_audit" constraintName="pk_client_group_client_group_tag_audit"/>
+		<dropTable tableName="client_group_client_group_tag"/>
+    	<dropTable tableName="client_group_client_group_tag_audit"/>
+	</changeSet>
+	
+	<changeSet id="audit_table_for_reference_groups" author="Amrita" >
+		<createTable tableName="reference_group_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="name" type="varchar(255)"/>
+        </createTable>
+        <addPrimaryKey tableName="reference_group_audit" 
+                       columnNames="id, revision"
+                       constraintName="pk_reference_group_audit"/>        
+		
+		<addForeignKeyConstraint baseTableName="reference_group_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_reference_group_audit"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+	</changeSet>
+	
+	<changeSet id="audit_table_for_reference_tags" author="Amrita" context="dev">
+		<createTable tableName="reference_tag_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="name" type="varchar(255)"/>
+            <column name="group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="reference_tag_audit" 
+                       columnNames="id, revision"
+                       constraintName="pk_reference_tag_audit"/>        
+	
+		<addForeignKeyConstraint baseTableName="reference_tag_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_reference_tag_audit"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+	</changeSet>
+	
+	<changeSet id="add_version_columns_for_ref_data" author="Amrita"  context="dev">
+		<addColumn tableName="reference_group">
+		   <column name="created_by" type="varchar(50)" defaultValue="system">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="last_modified_by" type="varchar(50)"/>
+	            <column name="last_modified_date" type="timestamp"/>     
+		</addColumn>
+		<addColumn tableName="reference_tag">
+		   <column name="created_by" type="varchar(50)" defaultValue="system">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+	                <constraints nullable="false"/>
+	            </column>
+	            <column name="last_modified_by" type="varchar(50)"/>
+	            <column name="last_modified_date" type="timestamp"/>     
+		</addColumn>		
+	</changeSet>
+	
+</databaseChangeLog>
