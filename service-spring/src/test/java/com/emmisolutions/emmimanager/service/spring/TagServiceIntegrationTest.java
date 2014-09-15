@@ -57,7 +57,7 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setContractStart(LocalDate.now());
 		client.setRegion(ClientRegion.NORTHEAST);
-		client.setName("Test Client");
+		client.setName("Test Client" + System.currentTimeMillis());
 		client.setType(ClientType.PROVIDER);
 		client.setActive(false);
 		client.setContractOwner(superAdmin);

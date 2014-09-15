@@ -72,6 +72,11 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @JsonManagedReference
     private SalesForce salesForceAccount;
 
+    @NotNull
+    @Size(max = 255)
+    @Column(name="normalized_name", length = 255, nullable = false)
+    private String normalizedName;    
+ 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -182,6 +187,14 @@ public class Client extends AbstractAuditingEntity implements Serializable {
         this.salesForceAccount = salesForceAccount;
     }
 
+    public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
+    }
+    
     @AssertTrue(message = "Contract End Date must be at least one day after the Contract Start Date")
     private boolean isValid() {
         return contractStart != null && contractEnd != null &&

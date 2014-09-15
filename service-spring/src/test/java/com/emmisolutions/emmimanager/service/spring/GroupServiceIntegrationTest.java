@@ -64,7 +64,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 
 		Group groupOne = new Group();
 		groupOne.setName("TestGroup1");
-		Client clientOne = makeClient();
+		Client clientOne = makeClient(1);
 		clientService.create(clientOne);
 		groupOne.setClient(clientService.reload(clientOne));
 		groupOne = groupService.save(groupOne);
@@ -81,13 +81,13 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		assertThat("we are on page 0", groupPage.getNumber(), is(0));
 	}
 	
-	private Client makeClient(){
+	private Client makeClient(int id){
 	    Client client = new Client();
 	    client.setTier(ClientTier.THREE);
 	    client.setContractEnd(LocalDate.now().plusYears(1));
 	    client.setContractStart(LocalDate.now());
 	    client.setRegion(ClientRegion.NORTHEAST);
-	    client.setName("Test Client");
+	    client.setName("Test Client " + id);
 	    client.setType(ClientType.PROVIDER);
 	    client.setActive(false);
 	    client.setContractOwner(superAdmin);
@@ -102,7 +102,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 	public void testGroupById(){
 		Group group = new Group();
 		group.setName("GroupNameA");
-		Client clientOne = makeClient();
+		Client clientOne = makeClient(2);
 		clientService.create(clientOne);
 		group.setClient(clientService.reload(clientOne));
 		Group savedGroup = groupService.save(group);
@@ -121,7 +121,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		GroupSaveRequest groupSaveReqOne = new GroupSaveRequest();
 		Group groupOne = new Group();
 		groupOne.setName("GroupOne");
-		Client clientOne = makeClient();
+		Client clientOne = makeClient(3);
 		clientService.create(clientOne);
 		groupOne.setClient(clientService.reload(clientOne));
 		Tag tagOneA = new Tag();
@@ -194,7 +194,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		GroupSaveRequest groupSaveReqOne = new GroupSaveRequest();
 		Group groupOne = new Group();
 		groupOne.setName("GroupOne");
-		Client clientOne = makeClient();
+		Client clientOne = makeClient(4);
 		clientService.create(clientOne);
 		groupOne.setClient(clientService.reload(clientOne));
 		Tag tagOneA = new Tag();
@@ -276,12 +276,20 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		GroupSaveRequest groupSaveReqOne = new GroupSaveRequest();
 		Group groupOne = new Group();
 		groupOne.setName("GroupOne");
-		Client clientOne = makeClient();
+		Client clientOne = makeClient(5);
 		clientService.create(clientOne);
 		groupOne.setClient(clientService.reload(clientOne));
 		groupSaveReqOne.setGroup(groupOne);
 		
 		groupSaveRequests.add(groupSaveReqOne);
 		List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientOne.getId());
+		assertThat("groups are saved with tags", groups.size(), is(3));
+
+		Tag tag = new Tag();
+		tag.setId(groups.get(1).getTags().iterator().next().getId());;
+		Tag savedTag = tagService.reload(tag);
+		
+		assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.get(1).getId()));
+
 	}
 }
