@@ -105,4 +105,23 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Tag belongs to the group", retreivedTags.getContent().iterator().next().getGroup().getId(), is(group.getId()));
 
 	}
+	
+	@Test
+	public void testTagSave(){
+		
+		Group group = createGroup();
+		group.setName("TestGroup");
+		group = groupService.save(group);
+
+		List<Tag> tags = new ArrayList<Tag>();
+
+		Tag one = new Tag();
+		Tag two = new Tag();
+		two.setName("two");
+		tags.add(one);
+		tags.add(two);
+
+		List<Tag> savedTags = tagService.saveAllTagsForGroup(tags, group);
+		assertThat("Only one tag with valid tagName was saved", savedTags.size(), is(1));
+	}
 }

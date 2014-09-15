@@ -87,12 +87,11 @@ public class GroupServiceImpl implements GroupService {
 
 				request.getGroup().setClient(client);
 				Group savedGroup = save(request.getGroup());
-				if (request.getTags() != null && !request.getTags().isEmpty()) {
 					List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
+					if(savedTags == null  || savedTags.isEmpty()){
+						throw new IllegalArgumentException("Tags cannot be null");
+					}
 					savedGroup.setTags(new HashSet<Tag>(savedTags));
-				} else {
-					throw new IllegalArgumentException("Tags cannot  be null");
-				}
 				groups.add(savedGroup);
 			}
 		return groups;

@@ -1,9 +1,11 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,10 +59,17 @@ public class TagServiceImpl implements TagService {
 	@Override
 	@Transactional
 	public List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group) {
-		for (Tag tag : tags) {
-			tag.setGroup(group);
+		List<Tag> tagsList = new ArrayList<Tag>();
+		if (tags != null && !tags.isEmpty()) {
+			for (Tag tag : tags) {
+				if (StringUtils.isNotBlank(tag.getName())) {
+					Tag t = new Tag();
+					t.setName(tag.getName());
+					t.setGroup(group);
+					tagsList.add(t);
+				}
+			}
 		}
-		return tagPersistence.createAll(tags);
+		return tagPersistence.createAll(tagsList);
 	}
-
 }
