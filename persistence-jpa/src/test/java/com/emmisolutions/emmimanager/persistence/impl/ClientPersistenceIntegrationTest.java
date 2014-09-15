@@ -32,9 +32,6 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
-    @Resource
-    ClientRepository clientRepository;
-
     private User superAdmin;
 
     /**
@@ -109,7 +106,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     public void list() {
         // push a bunch of clients to the db
         for (int i = 0; i < 200; i++) {
-            clientRepository.save(makeClient(i));
+        	clientPersistence.save(makeClient(i));
         }
 
         Page<Client> clientPage = clientPersistence.list(null, null);
@@ -149,7 +146,59 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
         assertThat("we are on page 10", clientPage.getNumber(), is(10));
     }
+    
+    /**
+     * search by normalized name test
+     */
+    @Test
+    public void search() {
+    
+	   Client client = new Client();
+	   client.setActive(true);
+	   client.setName("Demo hospital client 1" );
+	   client.setType(ClientType.PROVIDER);
+	   client.setRegion(ClientRegion.NORTHEAST);
+	   client.setTier(ClientTier.THREE);
+	   client.setContractOwner(superAdmin);
+	   client.setContractStart(LocalDate.now());
+	   client.setContractEnd(LocalDate.now().plusYears(2));
+	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+       clientPersistence.save(client);
+	 
+    	client = clientPersistence.findByNormalizedName("demo hospital client 1");
+        assertThat("Client exists", client.getName(), is("Demo hospital client 1"));
+        assertThat("Client exists", client.getNormalizedName(), is("demo hospital client 1"));
+        
+        client = clientPersistence.findByNormalizedName("demo hospital cloient");
+        Client c = null;
+        assertThat("Client do not exists", client, is(c));
+        
+        client = clientPersistence.findByNormalizedName(null);
+        assertThat("Client do not exists", client, is(c));        
+ 
+    }
 
+    @Test
+    public void searchSpecialCharacters() {
+    
+	   Client client = new Client();
+	   client.setActive(true);
+	   client.setName("Demo-hospital&client 1" );
+	   client.setType(ClientType.PROVIDER);
+	   client.setRegion(ClientRegion.NORTHEAST);
+	   client.setTier(ClientTier.THREE);
+	   client.setContractOwner(superAdmin);
+	   client.setContractStart(LocalDate.now());
+	   client.setContractEnd(LocalDate.now().plusYears(2));
+	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+       clientPersistence.save(client);
+	
+    	client = clientPersistence.findByNormalizedName("Demo-hospital&client 1");
+        assertThat("Client exists", client.getName(), is("Demo-hospital&client 1"));
+        assertThat("Client exists", client.getNormalizedName(), is("demo hospital client 1"));
+         
+    }
+    
     /**
      * Test when the contract end date is after the contract start date
      */
