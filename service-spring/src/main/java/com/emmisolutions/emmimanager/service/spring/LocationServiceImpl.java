@@ -139,4 +139,25 @@ public class LocationServiceImpl implements LocationService {
             }
         }
     }
+
+    @Override
+    public Location reload(Client client, Location toFind) {
+        return locationPersistence.reload(client, toFind.getId());
+    }
+
+    @Override
+    @Transactional
+    public void delete(Client client, Location toRemove) {
+        if (toRemove == null || client == null ||
+                toRemove.getId() == null || client.getId() == null) {
+            return;
+        }
+        Client dbClient = clientPersistence.reload(client.getId());
+        if (dbClient != null) {
+            Location dbLocation = reload(dbClient, toRemove);
+            if (dbLocation != null) {
+                dbLocation.getUsingThisLocation().remove(dbClient);
+            }
+        }
+    }
 }

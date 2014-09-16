@@ -113,6 +113,37 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
+     * This test ensures we can remove a single location from a client, but doesn't use
+     * the ClientLocationModificationRequest to accomplish this
+     */
+    @Test
+    public void removeSingleLocationFromClient() {
+        Client client = clientService.create(makeClient());
+        String locationName = "" + System.currentTimeMillis();
+        Location unsaved = makeLocation(locationName, 2);
+        final Location location = locationService.create(unsaved);
+
+        ClientLocationModificationRequest modificationRequest = new ClientLocationModificationRequest();
+        modificationRequest.setAdded(new ArrayList<Location>() {{
+            add(location);
+        }});
+        modificationRequest.setBelongsToUpdated(new ArrayList<Location>(){{
+            add(location);
+        }});
+        locationService.updateClientLocations(client, modificationRequest);
+
+        Location populatedLocation = locationService.reload(client, location);
+        assertThat("location is same", populatedLocation, is(location));
+
+        locationService.delete(client, location);
+        populatedLocation = locationService.reload(client, location);
+        assertThat("location is doesn't come back anymore", populatedLocation, is(nullValue()));
+
+        populatedLocation = locationService.reload(location);
+        assertThat("belongs to relationship wasn't removed", populatedLocation.getBelongsTo(), is(client));
+    }
+
+    /**
      * Test that the client locations update required fields
      */
     @Test

@@ -87,4 +87,12 @@ public class LocationPersistenceImpl implements LocationPersistence {
     public Set<Long> list(Long clientId) {
         return new HashSet<>(locationRepository.findAllIdsByClientId(clientId));
     }
+
+    @Override
+    public Location reload(Client client, Long id) {
+        if (client == null || client.getId() == null || id == null){
+            return null;
+        }
+        return locationRepository.loadALocationUsedByClient(client.getId(), id);
+    }
 }
