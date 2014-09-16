@@ -15,10 +15,13 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_1/db.changelog-em-49.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_2/db.changelog-em-67.xml"/>
+    
     <include relativeToChangelogFile="true" file="changelog/sprint_3/db.changelog-em-40.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_3/db.changelog-em-127.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_3/db.changelog-em-60.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_3/db.changelog-em-133.xml"/>
 
 </databaseChangeLog>
