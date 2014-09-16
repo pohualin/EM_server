@@ -26,7 +26,7 @@
 	</changeSet>
 		
 	<changeSet id="addUniqueConstraint_normalized_name_client" author="claudio" >
-	    <addNotNullConstraint tableName="client" columnName="normalized_name"/>
+	    <addNotNullConstraint tableName="client" columnName="normalized_name" columnDataType="varchar(255)"/>
         <addUniqueConstraint tableName="client" columnNames="normalized_name"
                              constraintName="uk_client_normalized_name"/>
 	</changeSet>
