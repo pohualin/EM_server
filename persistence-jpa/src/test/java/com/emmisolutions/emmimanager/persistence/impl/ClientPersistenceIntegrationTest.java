@@ -203,6 +203,22 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("Client exists", client.getName(), is("Demo-hospital-'=_;:`@#&,.!()client 1"));
         assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient 1"));
 
+ 	   client = new Client();
+ 	   client.setActive(true);
+ 	   client.setName("Demo hospital '=_;:`@#&,.!()client 1" );
+ 	   client.setType(ClientType.PROVIDER);
+ 	   client.setRegion(ClientRegion.NORTHEAST);
+ 	   client.setTier(ClientTier.THREE);
+ 	   client.setContractOwner(superAdmin);
+ 	   client.setContractStart(LocalDate.now());
+ 	   client.setContractEnd(LocalDate.now().plusYears(2));
+ 	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        clientPersistence.save(client);
+ 	
+     	client = clientPersistence.findByNormalizedName("Demo hospital '=_;:`@#&,.!()client 1");
+         assertThat("Client exists", client.getName(), is("Demo hospital '=_;:`@#&,.!()client 1"));
+         assertThat("Client exists", client.getNormalizedName(), is("demo hospital client 1"));
+
     }
     
     /**
