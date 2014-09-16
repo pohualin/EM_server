@@ -123,7 +123,7 @@ public class ClientsResource {
      */
     @RequestMapping(value = "/clients/ref/potentialOwners", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
-    public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 50) Pageable pageable,
+    public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 100, sort="firstName") Pageable pageable,
                                                            @SortDefault(sort = "id") Sort sort,
                                                            PagedResourcesAssembler<User> assembler) {
         Page<User> userPage = clientService.listPotentialContractOwners(pageable);
