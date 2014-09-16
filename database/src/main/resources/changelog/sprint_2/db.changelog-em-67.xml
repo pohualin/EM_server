@@ -10,7 +10,7 @@
         </addColumn>
         <sql><![CDATA[	  
 			update client
-			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),',',''),'#',''),'$',''),'%',''),'^',''),'&',''),'*',''))))
+			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'p',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'.',''),'!',''),'(',''),')',''),'/','') )))
         ]]></sql>  
         <sql><![CDATA[	  
 			update client
@@ -23,27 +23,6 @@
 					(select id from client c2 where c2.name = c1.name and c1.id != c2.id)
 			)
     	]]></sql>  
-	</changeSet>
-	
-	<changeSet id="normalizedName_for_client_audit" author="Claudio">
-        <addColumn tableName="client_audit">
-            <column name="normalized_name" type="varchar(255)"><constraints nullable="false"/> </column>
-        </addColumn>
-        <sql><![CDATA[	  
-			update client_audit
-			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),',',''),'#',''),'$',''),'%',''),'^',''),'&',''),'*',''))))
-        ]]></sql>      
-        <sql><![CDATA[	  
-			update client_audit
-    		set normalized_name = normalized_name || cast(id as varchar),
-    		name = name || cast(id as varchar)
-    		where id in(
-				select c1.id
-				from client_audit c1
-				where exists 
-					(select id from client_audit c2 where c2.name = c1.name and c1.id != c2.id)
-			)
-    	]]></sql>              
 	</changeSet>
 
 	<changeSet id="addUniqueConstraint_normalized_name_client" author="claudio" >
