@@ -195,7 +195,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	
     	client = clientPersistence.findByNormalizedName("Demo-hospital&client 1");
         assertThat("Client exists", client.getName(), is("Demo-hospital&client 1"));
-        assertThat("Client exists", client.getNormalizedName(), is("demo hospital client 1"));
+        assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient 1"));
          
     }
     

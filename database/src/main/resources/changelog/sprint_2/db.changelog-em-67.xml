@@ -10,7 +10,7 @@
         </addColumn>
         <sql><![CDATA[	  
 			update client
-			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),',',''),'#',''),'$',''),'%',''),'^',''),'&',''),'*',''))))
+			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'p',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'.',''),'!',''),'(',''),')',''),'/','') )))
         ]]></sql>  
         <sql><![CDATA[	  
 			update client
