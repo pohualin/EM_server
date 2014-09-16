@@ -57,7 +57,7 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setContractStart(LocalDate.now());
 		client.setRegion(ClientRegion.NORTHEAST);
-		client.setName("Test Client");
+		client.setName("Test Client" + System.currentTimeMillis());
 		client.setType(ClientType.PROVIDER);
 		client.setActive(false);
 		client.setContractOwner(superAdmin);
@@ -104,5 +104,24 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Tag Inserted is equal to tag received", retreivedTags.getContent().get(1).getName(), is("TagTwo"));
         assertThat("Tag belongs to the group", retreivedTags.getContent().iterator().next().getGroup().getId(), is(group.getId()));
 
+	}
+	
+	@Test
+	public void testTagSave(){
+		
+		Group group = createGroup();
+		group.setName("TestGroup");
+		group = groupService.save(group);
+
+		List<Tag> tags = new ArrayList<Tag>();
+
+		Tag one = new Tag();
+		Tag two = new Tag();
+		two.setName("two");
+		tags.add(one);
+		tags.add(two);
+
+		List<Tag> savedTags = tagService.saveAllTagsForGroup(tags, group);
+		assertThat("Only one tag with valid tagName was saved", savedTags.size(), is(1));
 	}
 }

@@ -72,10 +72,11 @@ public class GroupServiceImpl implements GroupService {
 	
 	@Override
 	@Transactional
-	public List<Group> saveGroupsAndTags(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
+	public List<Group> saveGroupsAndTags(List<GroupSaveRequest> groupSaveRequests, Long clientId){
 		if (clientId == null){
             throw new IllegalArgumentException("clientID cannot be null");
 		}
+		
 		List<Group> groups = new ArrayList<Group>();
 
 			Client client = new Client();
@@ -86,10 +87,11 @@ public class GroupServiceImpl implements GroupService {
 
 				request.getGroup().setClient(client);
 				Group savedGroup = save(request.getGroup());
-				if (request.getTags() != null && !request.getTags().isEmpty()) {
 					List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
+					if(savedTags == null  || savedTags.isEmpty()){
+						throw new IllegalArgumentException("Tags cannot be null");
+					}
 					savedGroup.setTags(new HashSet<Tag>(savedTags));
-				}
 				groups.add(savedGroup);
 			}
 		return groups;

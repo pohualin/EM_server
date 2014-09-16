@@ -55,5 +55,13 @@ public interface ClientService {
      * @return a page of User objects
      */
     Page<User> listPotentialContractOwners(Pageable pageable);
-    
+
+    /**
+     * Find a client that are equal to normalizedName
+     * 
+     * @param normalizedName
+     * @return a Client object
+     */
+    Client findByNormalizedName(String normalizedName);
+
 }
