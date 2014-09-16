@@ -6,7 +6,7 @@
 
     <changeSet id="normalizedName_for_client" author="Claudio">
         <addColumn tableName="client">
-            <column name="normalized_name" type="varchar(255)"><constraints nullable="false"/> </column>
+            <column name="normalized_name" type="varchar(255)"></column>
         </addColumn>
         <sql><![CDATA[	
 			update client
@@ -24,8 +24,9 @@
 			)
     	]]></sql>  
 	</changeSet>
-
+		
 	<changeSet id="addUniqueConstraint_normalized_name_client" author="claudio" >
+	    <addNotNullConstraint tableName="client" columnName="normalized_name"/>
         <addUniqueConstraint tableName="client" columnNames="normalized_name"
                              constraintName="uk_client_normalized_name"/>
 	</changeSet>
