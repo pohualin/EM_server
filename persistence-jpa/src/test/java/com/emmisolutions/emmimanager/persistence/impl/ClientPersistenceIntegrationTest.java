@@ -1,10 +1,14 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -12,14 +16,16 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
-import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
-import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
 
 /**
  * The Client Persistence test
@@ -183,7 +189,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     
 	   Client client = new Client();
 	   client.setActive(true);
-	   client.setName("Demo-hospital&client 1" );
+	   client.setName("Demo-hospital-'=_;:`@#&,.!()client 1" );
 	   client.setType(ClientType.PROVIDER);
 	   client.setRegion(ClientRegion.NORTHEAST);
 	   client.setTier(ClientTier.THREE);
@@ -193,10 +199,10 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
        clientPersistence.save(client);
 	
-    	client = clientPersistence.findByNormalizedName("Demo-hospital&client 1");
-        assertThat("Client exists", client.getName(), is("Demo-hospital&client 1"));
+    	client = clientPersistence.findByNormalizedName("Demo-hospital-'=_;:`@#&,.!()client 1");
+        assertThat("Client exists", client.getName(), is("Demo-hospital-'=_;:`@#&,.!()client 1"));
         assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient 1"));
-         
+
     }
     
     /**

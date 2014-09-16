@@ -8,9 +8,9 @@
         <addColumn tableName="client">
             <column name="normalized_name" type="varchar(255)"><constraints nullable="false"/> </column>
         </addColumn>
-        <sql><![CDATA[	  
+        <sql><![CDATA[	
 			update client
-			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'p',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'.',''),'!',''),'(',''),')',''),'/','') )))
+        	set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),',',''),'#',''),'$',''),'%',''),'^',''),'&',''),'*',''))))
         ]]></sql>  
         <sql><![CDATA[	  
 			update client
@@ -20,7 +20,7 @@
 				select c1.id
 				from client c1
 				where exists 
-					(select id from client c2 where c2.name = c1.name and c1.id != c2.id)
+					(select id from client c2 where c2.normalized_name = c1.normalized_name and c1.id != c2.id)
 			)
     	]]></sql>  
 	</changeSet>

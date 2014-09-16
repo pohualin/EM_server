@@ -69,7 +69,8 @@ public class ClientPersistenceImpl implements ClientPersistence {
     	String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
     	if (StringUtils.isNotBlank(normalizedName)){
     	    // do regex
-    	     normalizedName = normalizedName.replaceAll("[^\\w\\s]","");
+    	    normalizedName = normalizedName.replaceAll("[^\\w\\s]","");
+    	    normalizedName = normalizedName.replaceAll("_","");
     	}
     	return normalizedName;
     }
