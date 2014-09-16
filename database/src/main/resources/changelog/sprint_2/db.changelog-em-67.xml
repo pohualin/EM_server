@@ -11,8 +11,25 @@
         <sql><![CDATA[	
 			update client
 			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/','') )))
-        ]]></sql>  
+        ]]></sql>   
+	</changeSet>
+	
+	<changeSet id="sql_server_dupe_check_script" author="vinay" dbms="mssql,mysql">
         <sql><![CDATA[	  
+			update client
+    		set normalized_name = concat(normalized_name, id),
+    		name = concat(name,id)
+    		where id in(
+				select c1.id
+				from client c1
+				where exists 
+					(select id from client c2 where c2.normalized_name = c1.normalized_name and c1.id != c2.id)
+			)
+    	]]></sql>  	
+	</changeSet>
+	
+	<changeSet id="ansi_dupe_check_script" author="vinay" dbms="h2,postgresql">
+	        <sql><![CDATA[	  
 			update client
     		set normalized_name = normalized_name || cast(id as varchar),
     		name = name || cast(id as varchar)
@@ -22,9 +39,9 @@
 				where exists 
 					(select id from client c2 where c2.normalized_name = c1.normalized_name and c1.id != c2.id)
 			)
-    	]]></sql>  
-	</changeSet>
-		
+    	]]></sql> 
+	</changeSet>	
+	
 	<changeSet id="addUniqueConstraint_normalized_name_client" author="claudio" >
 	    <addNotNullConstraint tableName="client" columnName="normalized_name" columnDataType="varchar(255)"/>
         <addUniqueConstraint tableName="client" columnNames="normalized_name"
