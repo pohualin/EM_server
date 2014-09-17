@@ -137,7 +137,7 @@ public class LocationsResource {
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
     public ResponseEntity<LocationPage> clientLocations(
             @PathVariable Long clientId,
-            @PageableDefault(size = 5) Pageable pageable,
+            @PageableDefault(size = 50) Pageable pageable,
             @SortDefault(sort = {"name","state"}) Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
