@@ -16,8 +16,7 @@ import javax.validation.ConstraintViolationException;
 
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
 import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -177,6 +176,34 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
  
     }
 
+    /**
+     * Out of order search terms should still find the client, also
+     * tests case insensitive as well as special character stripping.
+     */
+    @Test
+    public void testSearchOutOfOrder(){
+        Client client = new Client();
+        client.setActive(true);
+        client.setName("Dr. Quinn, Medicine Woman" );
+        client.setType(ClientType.PROVIDER);
+        client.setRegion(ClientRegion.NORTHEAST);
+        client.setTier(ClientTier.THREE);
+        client.setContractOwner(superAdmin);
+        client.setContractStart(LocalDate.now());
+        client.setContractEnd(LocalDate.now().plusYears(2));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        clientPersistence.save(client);
+
+        Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter("woman quinn dr"));
+        assertThat("should have found the good doctor", clientPage.getContent(), hasItem(client));
+
+        clientPage = clientPersistence.list(null, new ClientSearchFilter("woman! qu,inn dr%$%$%"));
+        assertThat("still should have found the good doctor b/c of stripping", clientPage.getContent(), hasItem(client));
+    }
+
+    /**
+     * Ensure that special characters are stripped out of normalized name searches
+     */
     @Test
     public void searchSpecialCharacters() {
     
