@@ -10,13 +10,20 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
+import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.service.UserService;
 
 /**
  * Team Service Integration test
@@ -28,6 +35,9 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
 	TeamService teamService;
+	
+	@Resource
+    UserService userService;
 	
 	/**
      * Not all required fields
@@ -43,7 +53,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void create() {
-    	Client client = makeClient("toCreate", "teamUser");
+    	Client client = makeClient("clientTeam", "teamUser");
     	clientService.create(client);
     	
     	Team team = makeTeamForClient(client);
@@ -61,4 +71,15 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 		 team.setClient(client);
 		 return team;
 	 }
+    
+    protected Client makeClient(String clientName, String username){
+        Client client = new Client();
+        client.setType(ClientType.PROVIDER);
+        client.setContractStart(LocalDate.now());
+        client.setContractEnd(LocalDate.now().plusYears(1));
+        client.setName(clientName);
+        client.setContractOwner(userService.save(new User(username, "pw")));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        return client;
+    }
 }

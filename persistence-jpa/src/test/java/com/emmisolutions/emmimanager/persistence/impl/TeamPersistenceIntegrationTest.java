@@ -2,13 +2,20 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import javax.annotation.Resource;
 
+import org.joda.time.LocalDate;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
+import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
@@ -32,6 +39,16 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest{
 	 
 	 @Resource
 	 TeamPersistence teamPersistence;
+	 
+	 private User superAdmin;
+	 
+	 /**
+	  * Before each test
+	  */
+	 @Before
+	 public void init() {
+	     superAdmin = userPersistence.reload("super_admin");
+	 }
 	 
 	 /**
 	  * Test saving a team under a client
@@ -101,5 +118,19 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest{
 		 team.setFax("2222222222");
 		 team.setClient(client);
 		 return team;
+	 }
+	 
+	 private Client makeClient() {
+		 Client client = new Client();
+	     client.setActive(false);
+	     client.setName("Test Client");
+	     client.setType(ClientType.PROVIDER);
+	     client.setRegion(ClientRegion.NORTHEAST);
+	     client.setTier(ClientTier.THREE);
+	     client.setContractOwner(superAdmin);
+	     client.setContractStart(LocalDate.now());
+	     client.setContractEnd(LocalDate.now().plusYears(2));
+	     client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+	     return client;
 	 }
 }

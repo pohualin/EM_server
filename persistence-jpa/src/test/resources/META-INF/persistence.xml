@@ -16,7 +16,8 @@
 		<class>com.emmisolutions.emmimanager.model.Team</class>
         <class>com.emmisolutions.emmimanager.model.Group</class>
 		<class>com.emmisolutions.emmimanager.model.Tag</class>
-        
+        <class>com.emmisolutions.emmimanager.model.ReferenceGroup</class>
+		<class>com.emmisolutions.emmimanager.model.ReferenceTag</class>        
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>

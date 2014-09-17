@@ -4,6 +4,8 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.UserService;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
@@ -20,7 +22,10 @@ import static org.junit.Assert.assertThat;
 public class ClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
-    ClientService clientService;   
+    ClientService clientService;
+    
+    @Resource
+    UserService userService;
 
     @Resource
     UserPersistence userPersistence;
@@ -70,5 +75,15 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }
-
+    
+    private Client makeClient(String clientName, String username){
+        Client client = new Client();
+        client.setType(ClientType.PROVIDER);
+        client.setContractStart(LocalDate.now());
+        client.setContractEnd(LocalDate.now().plusYears(1));
+        client.setName(clientName);
+        client.setContractOwner(userService.save(new User(username, "pw")));
+        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        return client;
+    }
 }

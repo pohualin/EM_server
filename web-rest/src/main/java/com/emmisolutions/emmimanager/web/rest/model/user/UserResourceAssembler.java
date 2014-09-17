@@ -20,6 +20,7 @@ import com.emmisolutions.emmimanager.model.PermissionName;
 import com.emmisolutions.emmimanager.model.Role;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
@@ -54,6 +55,7 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(createGroupByClientIdLink());
+        ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
         return ret;
     }
 

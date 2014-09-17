@@ -35,4 +35,14 @@ public interface ClientPersistence {
      */
     Client reload(Long id);
 
+    /**
+     * This method will normalize the passed value (toCheck) given the same rules 
+     * for the unique client name then do a  simple equality query on the db.. if
+     * a match is found, returns the client otherwise null
+     * 
+     * @param normalizedName
+     * @return
+     */
+    Client findByNormalizedName(String normalizedName);
+
 }
