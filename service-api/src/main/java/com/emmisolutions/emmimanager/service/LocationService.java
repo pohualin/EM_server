@@ -77,12 +77,11 @@ public interface LocationService {
     void updateClientLocations(Client toRelateTo, ClientLocationModificationRequest modificationRequest);
 
     /**
-     * Reloads a location at a client
+     * Reloads a location used by client
      *
-     * @param location to reload
      * @return the reloaded location
      */
-    Location reload(Client client, Location toFind);
+    Location reloadLocationUsedByClient(Client client, Location toFind);
 
     /**
      * Deletes a location from a client

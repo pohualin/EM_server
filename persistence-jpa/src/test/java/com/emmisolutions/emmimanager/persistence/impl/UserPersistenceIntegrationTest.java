@@ -51,7 +51,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * save then reload
+     * save then reloadLocationUsingClient
      */
     @Test
     public void testLoad() {

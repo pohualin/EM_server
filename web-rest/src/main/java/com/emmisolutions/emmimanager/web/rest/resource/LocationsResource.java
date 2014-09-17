@@ -184,7 +184,7 @@ public class LocationsResource {
         client.setId(clientId);
         Location location = new Location();
         location.setId(locationId);
-        Location ret = locationService.reload(client, location);
+        Location ret = locationService.reloadLocationUsedByClient(client, location);
         if (ret != null){
              return new ResponseEntity<>(new ClientLocationResourceAssembler(clientId).toResource(ret),HttpStatus.OK);
         }    else {

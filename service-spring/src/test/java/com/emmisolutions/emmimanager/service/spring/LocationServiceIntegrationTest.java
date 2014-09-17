@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -68,11 +69,11 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Test reload
+     * Test reloadLocationUsingClient
      */
     @Test
     public void reload() {
-        Location saved = locationService.create(makeLocation("for reload", 0));
+        Location saved = locationService.create(makeLocation("for reloadLocationUsingClient", 0));
         Location another = locationService.reload(saved);
 
         assertThat("reloaded location is the same", saved, is(another));
@@ -132,11 +133,11 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         }});
         locationService.updateClientLocations(client, modificationRequest);
 
-        Location populatedLocation = locationService.reload(client, location);
+        Location populatedLocation = locationService.reloadLocationUsedByClient(client, location);
         assertThat("location is same", populatedLocation, is(location));
 
         locationService.delete(client, location);
-        populatedLocation = locationService.reload(client, location);
+        populatedLocation = locationService.reloadLocationUsedByClient(client, location);
         assertThat("location is doesn't come back anymore", populatedLocation, is(nullValue()));
 
         populatedLocation = locationService.reload(location);
@@ -164,27 +165,22 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         }});
         modificationRequest.setBelongsToUpdated(new ArrayList<Location>());
         locationService.updateClientLocations(client, modificationRequest);
-        Page<Location> locationPage = locationService.list(new LocationSearchFilter("locations"));
-        assertThat("locations have a client", locationPage.getContent().get(1).getUsingThisLocation(), hasItem(client));
+        assertThat("locations have a client", locationService.reloadLocationUsedByClient(client, one), is(notNullValue()));
 
         modificationRequest.setDeleted(new ArrayList<Location>() {{
             add(one);
         }});
         locationService.updateClientLocations(client, modificationRequest);
-        locationPage = locationService.list(new LocationSearchFilter("locations"));
-        Location shouldBeOne = locationPage.getContent().get(0);
-        assertThat("location is one", shouldBeOne, is(one));
-        assertThat("delete takes precedence over add, one should not have client", shouldBeOne.getUsingThisLocation(), not(is(hasItem(client))));
+        assertThat("delete takes precedence over add, one should not have client", locationService.reloadLocationUsedByClient(client, one), is(nullValue()));
 
         one.setBelongsTo(client);
         modificationRequest.setBelongsToUpdated(new ArrayList<Location>() {{
             add(one);
         }});
         locationService.updateClientLocations(client, modificationRequest);
-        locationPage = locationService.list(new LocationSearchFilter("locations"));
-        shouldBeOne = locationPage.getContent().get(0);
-        assertThat("location should still be one", shouldBeOne, is(one));
-        assertThat("belongs to should be correct", shouldBeOne.getBelongsTo(), is(client));
+        Page<Location> locationPage = locationService.list(new LocationSearchFilter("locations"));
+        assertThat("location should still be one", locationPage.getContent().get(0), is(one));
+        assertThat("belongs to should be correct", locationPage.getContent().get(0).getBelongsTo(), is(client));
 
         // attempt to update belongsTo from different client
         Client anotherClient = clientService.create(makeClient());
@@ -197,7 +193,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         locationPage = locationService.list(new LocationSearchFilter("locations"));
         assertThat("should still belong to original client", locationPage.getContent().get(0).getBelongsTo(), is(client));
 
-        //set belongsto to null
+        //set belongsTo to null
         one.setBelongsTo(null);
         locationService.updateClientLocations(client, modificationRequest);
         locationPage = locationService.list(new LocationSearchFilter("locations"));
@@ -209,13 +205,13 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         locationPage = locationService.list(new LocationSearchFilter("locations"));
         assertThat("client should be another client, not the first", locationPage.getContent().get(0).getBelongsTo(), is(anotherClient));
 
-
     }
 
     /**
      * Test list by client that has using relationships
      */
     @Test
+    @Transactional // only necessary because we want to traverse the 'using' relationship via a search
     public void listByClientWithUsingRelationships() {
         Client one = clientService.create(makeClient());
         Client three = clientService.create(makeClient());

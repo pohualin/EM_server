@@ -127,10 +127,10 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.addClientUsingThisLocation(client);
         location = locationPersistence.save(location);
 
-        Location reloaded = locationPersistence.reload(null, location.getId());
+        Location reloaded = locationPersistence.reloadLocationUsedByClient(null, location.getId());
         assertThat("should not have found the location, because of no client", reloaded, is(nullValue()));
 
-        reloaded = locationPersistence.reload(client, location.getId());
+        reloaded = locationPersistence.reloadLocationUsedByClient(client, location.getId());
         assertThat("location should be found now", reloaded, is(location));
     }
 

@@ -141,8 +141,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Location reload(Client client, Location toFind) {
-        return locationPersistence.reload(client, toFind.getId());
+    public Location reloadLocationUsedByClient(Client client, Location toFind) {
+        return locationPersistence.reloadLocationUsedByClient(client, toFind.getId());
     }
 
     @Override
@@ -154,7 +154,7 @@ public class LocationServiceImpl implements LocationService {
         }
         Client dbClient = clientPersistence.reload(client.getId());
         if (dbClient != null) {
-            Location dbLocation = reload(dbClient, toRemove);
+            Location dbLocation = reloadLocationUsedByClient(dbClient, toRemove);
             if (dbLocation != null) {
                 dbLocation.getUsingThisLocation().remove(dbClient);
             }

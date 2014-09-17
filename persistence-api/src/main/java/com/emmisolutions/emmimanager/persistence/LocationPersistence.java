@@ -48,8 +48,8 @@ public interface LocationPersistence {
     /**
      * reload a location at a particular client
      * @param client to use
-     * @param id location id to reload
+     * @param id location id using client
      * @return the location at the client
      */
-    Location reload(Client client, Long id);
+    Location reloadLocationUsedByClient(Client client, Long id);
 }
