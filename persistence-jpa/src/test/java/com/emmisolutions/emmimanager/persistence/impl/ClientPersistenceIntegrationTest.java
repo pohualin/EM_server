@@ -1,14 +1,9 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
-import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -16,16 +11,14 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.ACTIVE_ONLY;
+import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.INACTIVE_ONLY;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * The Client Persistence test
@@ -138,15 +131,15 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
         // search for active, page size 100, multiple names
         clientPage = clientPersistence.list(new PageRequest(0, 100), new ClientSearchFilter(ACTIVE_ONLY, "client 5", "client 9"));
-        assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(10l));
+        assertThat("only clients containing with 5 or 9 should come back", clientPage.getTotalElements(), is(20l));
         assertThat("there is 1 page", clientPage.getTotalPages(), is(1));
-        assertThat("there are 10 on the page", clientPage.getNumberOfElements(), is(10));
+        assertThat("there are 20 on the page", clientPage.getNumberOfElements(), is(20));
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
         assertThat("we are on page 0", clientPage.getNumber(), is(0));
 
         // request a page out of bounds
         clientPage = clientPersistence.list(new PageRequest(10, 100), new ClientSearchFilter(ACTIVE_ONLY, "client 5", "client 9"));
-        assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(10l));
+        assertThat("only clients starting with 5 or 9 should come back", clientPage.getTotalElements(), is(20l));
         assertThat("there is 1 page", clientPage.getTotalPages(), is(1));
         assertThat("there is nothing on this page", clientPage.getNumberOfElements(), is(0));
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
