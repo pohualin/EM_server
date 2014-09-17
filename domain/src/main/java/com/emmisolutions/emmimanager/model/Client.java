@@ -1,11 +1,21 @@
 package com.emmisolutions.emmimanager.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.hibernate.envers.Audited;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
+import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -13,7 +23,13 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * A client.
@@ -72,6 +88,13 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @JsonManagedReference
     private SalesForce salesForceAccount;
 
+    @NotNull
+    @Size(max = 255)
+    @Column(name="normalized_name", length = 255, nullable = false)
+    @NotAudited
+    @Pattern(regexp = "[a-z0-9 ]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
+    private String normalizedName;    
+ 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -182,6 +205,14 @@ public class Client extends AbstractAuditingEntity implements Serializable {
         this.salesForceAccount = salesForceAccount;
     }
 
+    public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
+    }
+    
     @AssertTrue(message = "Contract End Date must be at least one day after the Contract Start Date")
     private boolean isValid() {
         return contractStart != null && contractEnd != null &&

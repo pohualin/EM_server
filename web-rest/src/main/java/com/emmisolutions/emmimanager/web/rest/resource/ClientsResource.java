@@ -123,7 +123,7 @@ public class ClientsResource {
      */
     @RequestMapping(value = "/clients/ref/potentialOwners", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
-    public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 50) Pageable pageable,
+    public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 100, sort="firstName") Pageable pageable,
                                                            @SortDefault(sort = "id") Sort sort,
                                                            PagedResourcesAssembler<User> assembler) {
         Page<User> userPage = clientService.listPotentialContractOwners(pageable);
@@ -174,5 +174,18 @@ public class ClientsResource {
         } else {
             return new ResponseEntity<>(clientResourceAssembler.toResource(client), HttpStatus.OK);
         }
+    }
+    
+   @RequestMapping(value = "/clients/ref/findByNormalizedName", 
+            method = RequestMethod.GET)
+   @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
+   public ResponseEntity<ClientResource> findByNormalizedName(@RequestParam(value = "normalizedName", required = false)String normalizedName) {
+
+       Client toFind = clientService.findByNormalizedName(normalizedName);
+       if (toFind != null) {
+           return new ResponseEntity<>(clientResourceAssembler.toResource(toFind), HttpStatus.OK);
+       } else {
+           return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+       } 
     }
 }
