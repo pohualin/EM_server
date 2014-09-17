@@ -5,16 +5,14 @@ import com.emmisolutions.emmimanager.model.ClientLocationModificationRequest;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.service.LocationService;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationReferenceData;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationResource;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.location.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -121,7 +119,7 @@ public class LocationsResource {
             PagedResourcesAssembler<Location> assembler,
             @RequestParam(value = "name", required = false) String... names) {
 
-        return findLocations(pageable, assembler, null, status, names);
+        return findLocations(pageable, assembler, locationResourceAssembler,  null, status, names);
     }
 
     /**
@@ -139,13 +137,13 @@ public class LocationsResource {
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
     public ResponseEntity<LocationPage> clientLocations(
             @PathVariable Long clientId,
-            @PageableDefault(size = 5) Pageable pageable,
+            @PageableDefault(size = 50) Pageable pageable,
             @SortDefault(sort = {"name","state"}) Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
             @RequestParam(value = "name", required = false) String... names) {
 
-        return findLocations(pageable, assembler, clientId, status, names);
+        return findLocations(pageable, assembler, new ClientLocationResourceAssembler(clientId), clientId, status, names);
     }
 
     /**
@@ -172,11 +170,44 @@ public class LocationsResource {
     public void modifyClientLocations(@PathVariable Long clientId, @RequestBody ClientLocationModificationRequest modificationRequest) {
         Client client = new Client();
         client.setId(clientId);
-//        client.setVersion(version);
         locationService.updateClientLocations(client, modificationRequest);
     }
 
+    /**
+     * DELETE to remove a location on a client
+     */
+    @RequestMapping(value = "/clients/{clientId}/locations/{locationId}",
+            method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_EDIT"})
+    public ResponseEntity<LocationResource> getLocationAtClient(@PathVariable Long clientId, @PathVariable Long locationId) {
+        Client client = new Client();
+        client.setId(clientId);
+        Location location = new Location();
+        location.setId(locationId);
+        Location ret = locationService.reloadLocationUsedByClient(client, location);
+        if (ret != null){
+             return new ResponseEntity<>(new ClientLocationResourceAssembler(clientId).toResource(ret),HttpStatus.OK);
+        }    else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
+     * DELETE to remove a location on a client
+     */
+    @RequestMapping(value = "/clients/{clientId}/locations/{locationId}",
+            method = RequestMethod.DELETE)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_EDIT"})
+    public void deleteClientLocation(@PathVariable Long clientId, @PathVariable Long locationId) {
+        Client client = new Client();
+        client.setId(clientId);
+        Location location = new Location();
+        location.setId(locationId);
+        locationService.delete(client, location);
+    }
+
     private ResponseEntity<LocationPage> findLocations(Pageable pageable, PagedResourcesAssembler<Location> assembler,
+                                                       ResourceAssembler<Location, LocationResource> locationResourceAssembler,
                                                        Long clientId, String status, String... names) {
         // create the search filter
         LocationSearchFilter locationSearchFilter = new LocationSearchFilter(clientId, fromStringOrActive(status), names);

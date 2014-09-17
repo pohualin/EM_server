@@ -70,4 +70,10 @@ public class ClientServiceImpl implements ClientService {
     public Page<User> listPotentialContractOwners(Pageable pageable) {
         return userPersistence.listPotentialContractOwners(pageable);
     }
+    
+	@Override
+	public Client findByNormalizedName(String normalizedName) {
+		return clientPersistence.findByNormalizedName(normalizedName);
+	}
 }
+
