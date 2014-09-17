@@ -61,7 +61,13 @@ public class ClientSpecifications {
         List<String> permutations = new ArrayList<>();
         List<List<String>> batches = new ArrayList<>();
         List<String> searchTerms = new ArrayList<>();
-        Collections.addAll(searchTerms, StringUtils.split(normalizeName(searchTerm), " "));
+
+        // filter out duplicate terms
+        for (String term : StringUtils.split(normalizeName(searchTerm), " ")) {
+            if (!searchTerms.contains(term)) {
+                searchTerms.add(term);
+            }
+        }
 
         // make sure we only do permutations of up to 4 terms at a time
         List<String> aSubList = fourAtATime(searchTerms);
