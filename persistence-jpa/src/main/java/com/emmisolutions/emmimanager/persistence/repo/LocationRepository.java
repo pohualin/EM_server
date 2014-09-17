@@ -14,5 +14,9 @@ import java.util.List;
 public interface LocationRepository extends JpaRepository<Location, Long>, JpaSpecificationExecutor<Location> {
 
     @Query("select l.id from Location l left join l.usingThisLocation u where u.id = :clientId")
-    List<Long> findAllIdsByClientId(@Param("clientId")Long clientId);
+    List<Long> findAllIdsByClientId(@Param("clientId") Long clientId);
+
+
+    @Query("select l from Location l left join l.usingThisLocation u where u.id = :clientId and l.id = :locationId")
+    Location loadALocationUsedByClient(@Param("clientId") Long clientId, @Param("locationId") Long locationId);
 }
