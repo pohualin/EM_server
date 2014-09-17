@@ -83,7 +83,7 @@ public class ClientsResource {
             @SortDefault(sort = "id") Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Client> assembler,
-            @RequestParam(value = "name", required = false) String... names) {
+            @RequestParam(value = "name", required = false) String names) {
 
         // create the search filter
         ClientSearchFilter clientSearchFilter = new ClientSearchFilter(fromStringOrActive(status), names);
