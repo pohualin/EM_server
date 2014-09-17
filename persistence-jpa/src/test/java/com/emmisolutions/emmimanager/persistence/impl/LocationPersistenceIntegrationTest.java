@@ -112,6 +112,28 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
 
     }
 
+    /**
+     * Ensure we can remove a location from a client
+     */
+    @Test
+    public void reloadLocationForAClient() {
+        Client client = makeClient();
+        client = clientPersistence.save(client);
+        Location location = new Location();
+        location.setName("Covenant Hospital");
+        location.setCity("Chicago");
+        location.setPhone("312-555-1212");
+        location.setState(State.IL);
+        location.addClientUsingThisLocation(client);
+        location = locationPersistence.save(location);
+
+        Location reloaded = locationPersistence.reloadLocationUsedByClient(null, location.getId());
+        assertThat("should not have found the location, because of no client", reloaded, is(nullValue()));
+
+        reloaded = locationPersistence.reloadLocationUsedByClient(client, location.getId());
+        assertThat("location should be found now", reloaded, is(location));
+    }
+
     private Client makeClient() {
         Client client = new Client();
         client.setTier(ClientTier.THREE);
