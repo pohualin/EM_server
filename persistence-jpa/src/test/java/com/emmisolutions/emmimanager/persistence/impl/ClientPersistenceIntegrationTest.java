@@ -197,8 +197,8 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter("woman quinn dr"));
         assertThat("should have found the good doctor", clientPage.getContent(), hasItem(client));
 
-        clientPage = clientPersistence.list(null, new ClientSearchFilter("woman! qu,inn dr%$%$%"));
-        assertThat("still should have found the good doctor b/c of stripping", clientPage.getContent(), hasItem(client));
+        clientPage = clientPersistence.list(null, new ClientSearchFilter("woman! woman woman woman qui,nn woman woman woman dr%$%$%"));
+        assertThat("still should have found the good doctor b/c of stripping and dupe cleaning", clientPage.getContent(), hasItem(client));
     }
 
     /**
