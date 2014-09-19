@@ -12,9 +12,6 @@
 	</changeSet>
 
     <changeSet id="normalizedName_for_client" author="Claudio">
-        <addColumn tableName="client">
-            <column name="normalized_name" type="varchar(255)"></column>
-        </addColumn>
         <sql><![CDATA[	
 			update client
 			set normalized_name = replace(normalized_name, ' ' ,'') ]]></sql>   
