@@ -165,7 +165,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	 
     	client = clientPersistence.findByNormalizedName("demo hospital client 1");
         assertThat("Client exists", client.getName(), is("Demo hospital client 1"));
-        assertThat("Client exists", client.getNormalizedName(), is("demo hospital client 1"));
+        assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient1"));
         
         client = clientPersistence.findByNormalizedName("demo hospital cloient");
         Client c = null;
@@ -221,11 +221,11 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	
     	client = clientPersistence.findByNormalizedName("Demo-hospital-'=_;:`@#&,.!()client 1");
         assertThat("Client exists", client.getName(), is("Demo-hospital-'=_;:`@#&,.!()client 1"));
-        assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient 1"));
+        assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient1"));
 
  	   client = new Client();
  	   client.setActive(true);
- 	   client.setName("Demo hospital '=_;:`@#&,.!()client 1" );
+ 	   client.setName("Demo hospital '=_;:`@#&,.!()client 2" );
  	   client.setType(ClientType.PROVIDER);
  	   client.setRegion(ClientRegion.NORTHEAST);
  	   client.setTier(ClientTier.THREE);
@@ -235,10 +235,25 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
  	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         clientPersistence.save(client);
  	
-     	client = clientPersistence.findByNormalizedName("Demo hospital '=_;:`@#&,.!()client 1");
-         assertThat("Client exists", client.getName(), is("Demo hospital '=_;:`@#&,.!()client 1"));
-         assertThat("Client exists", client.getNormalizedName(), is("demo hospital client 1"));
+     	client = clientPersistence.findByNormalizedName("Demo hospital '=_;:`@#&,.!()client 2");
+         assertThat("Client exists", client.getName(), is("Demo hospital '=_;:`@#&,.!()client 2"));
+         assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient2"));
 
+   	   client = new Client();
+   	   client.setActive(true);
+   	   client.setName("test client123" );
+   	   client.setType(ClientType.PROVIDER);
+   	   client.setRegion(ClientRegion.NORTHEAST);
+   	   client.setTier(ClientTier.THREE);
+   	   client.setContractOwner(superAdmin);
+   	   client.setContractStart(LocalDate.now());
+   	   client.setContractEnd(LocalDate.now().plusYears(2));
+   	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+          clientPersistence.save(client);
+   	
+       	client = clientPersistence.findByNormalizedName("test-client123");
+        assertThat("Client exists", client.getName(), is("test client123"));
+        assertThat("Client exists", client.getNormalizedName(), is("testclient123"));
     }
     
     /**
