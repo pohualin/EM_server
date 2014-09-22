@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
@@ -23,7 +21,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * A HATEOAS wrapper for a page of LocationResource objects.
+ * A HATEOAS wrapper for a page of TeamResource objects.
  */
 @XmlRootElement(name = "team-page")
 public class TeamPage extends PagedResource<TeamResource> {
@@ -38,8 +36,8 @@ public class TeamPage extends PagedResource<TeamResource> {
      * Creates a page for a team search result
      *
      * @param teamResourceSupports to be wrapped
-     * @param locationPage             true page
-     * @param filter                   which caused the response
+     * @param teamPage                true page
+     * @param filter                  which caused the response
      */
     public TeamPage(PagedResources<TeamResource> teamResourceSupports, Page<Team> teamPage, TeamSearchFilter filter) {
         pageDefaults(teamResourceSupports, teamPage);
