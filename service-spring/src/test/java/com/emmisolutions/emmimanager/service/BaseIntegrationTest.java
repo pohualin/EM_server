@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
-
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,5 +16,6 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @ActiveProfiles("test")
 //@Transactional - do not enable this.. the service implementation should be annotated correctly!
 public abstract class BaseIntegrationTest {
-	
+
 }
+

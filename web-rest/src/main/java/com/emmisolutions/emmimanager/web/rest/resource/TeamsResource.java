@@ -55,7 +55,7 @@ public class TeamsResource {
 	 * @param id to load
 	 * @return ClientResource or NO_CONTENT
 	 */
-	 @RequestMapping(value = "/clients/teams/{id}", method = RequestMethod.GET)
+	 @RequestMapping(value = "/teams/{id}", method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_VIEW"})
 	 public ResponseEntity<TeamResource> get(@PathVariable("id") Long id) {
 	     Team toFind = new Team();

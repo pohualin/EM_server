@@ -54,7 +54,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	    superAdmin = userPersistence.reload("super_admin");
 	}
 	
-	protected Client makeClient(){
+	private Client makeClient(){
 	    Client client = new Client();
 	    client.setTier(ClientTier.THREE);
 	    client.setContractEnd(LocalDate.now().plusYears(1));

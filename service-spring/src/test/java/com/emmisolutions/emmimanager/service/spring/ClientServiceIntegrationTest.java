@@ -23,7 +23,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientService clientService;
-    
+
     @Resource
     UserService userService;
 
@@ -75,7 +75,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }
-    
+
     private Client makeClient(String clientName, String username){
         Client client = new Client();
         client.setType(ClientType.PROVIDER);
@@ -86,4 +86,5 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
     }
+
 }
