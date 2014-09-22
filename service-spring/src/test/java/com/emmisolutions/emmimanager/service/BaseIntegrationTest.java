@@ -18,4 +18,3 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 public abstract class BaseIntegrationTest {
 
 }
-
