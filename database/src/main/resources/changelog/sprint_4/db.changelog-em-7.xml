@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create_team" author="Vinay">
+        <createTable tableName="client_team">
+            <column autoIncrement="true" name="id" type="BIGINT"/>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="phone" type="varchar(30)"/>
+            <column name="fax" type="varchar(30)"/>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>            
+            <column name="version" type="INT"/>
+            <column name="created_by" type="varchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+        <addPrimaryKey tableName="client_team"
+                       columnNames="id"
+                       constraintName="pk_client_team"/>
+        <addForeignKeyConstraint baseTableName="client_team"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_client_team_client_client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addUniqueConstraint tableName="client_team" columnNames="client_id,name" constraintName="uk_client_team_client_id_name"/>                                                
+    </changeSet>
+    
+    <changeSet id="create_client_team_audit" author="Vinay">
+        <createTable tableName="client_team_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="active" type="boolean"/>
+            <column name="name" type="varchar(100)"/>
+            <column name="description" type="varchar(255)"/>
+            <column name="phone" type="varchar(30)"/>
+            <column name="fax" type="varchar(30)"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="client_team_audit" constraintName="pk_client_team_audit" columnNames="id, revision"/>
+        
+    </changeSet>
+</databaseChangeLog>    
