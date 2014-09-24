@@ -57,7 +57,7 @@ public class TeamsResource {
 	 */
 	 @RequestMapping(value = "/teams/{id}", method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_VIEW"})
-	 public ResponseEntity<TeamResource> get(@PathVariable("id") Long id) {
+	 public ResponseEntity<TeamResource> getTeam(@PathVariable("id") Long id) {
 	     Team toFind = new Team();
 	     toFind.setId(id);
 	     toFind = teamService.reload(toFind);
