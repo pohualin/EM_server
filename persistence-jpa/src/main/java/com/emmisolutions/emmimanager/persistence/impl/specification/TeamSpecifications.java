@@ -68,7 +68,7 @@ public class TeamSpecifications {
     /**
      * Ensures that the team belongs to the client
      *
-     * @param client to load, if null eager fetches all clients using this location
+     * @param team to load for a client, if null eager fetches all teams
      * @return the specification
      */
     public static Specification<Team> usedBy(final Client client) {

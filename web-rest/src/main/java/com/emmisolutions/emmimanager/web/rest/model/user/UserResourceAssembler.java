@@ -22,8 +22,10 @@ import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 
 /**
@@ -56,6 +58,8 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(createGroupByClientIdLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
+        ret.add(TeamPage.createFullSearchLink());
+        ret.add(createTeamByIdLink());
         return ret;
     }
 
@@ -84,6 +88,20 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         if (idx != -1) {
             return new Link(
                     href.substring(0, idx) + discoverer.getMapping(GroupsResource.class, method),
+                    link.getRel());
+        }
+        return null;
+    }
+    
+    public Link createTeamByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).getTeam(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("teamById");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
+        if (idx != -1) {
+            return new Link(
+                    href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
                     link.getRel());
         }
         return null;
