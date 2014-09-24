@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
@@ -50,7 +49,7 @@ public class TeamPage extends PagedResource<TeamResource> {
      * @return Link for team searches
      * @see com.emmisolutions.emmimanager.web.rest.resource.TeamsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
-    public static Link createFullClientSearchLink(Client client) {
+    public static Link createFullSearchLink() {
         Link link = linkTo(methodOn(TeamsResource.class).list(null, null, null, null, (String[]) null)).withRel("teams");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
