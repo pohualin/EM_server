@@ -63,4 +63,12 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
         assertThat(SHOULD_HAVE_MORE_RESULTS, searchResponse.isComplete(), is(true));
         assertThat("total should be one", searchResponse.getAccounts().size(), is(1));
     }
+
+    @Test
+    public void attemptToFindBlank(){
+        SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("        ");
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
+        assertThat(SHOULD_HAVE_MORE_RESULTS, searchResponse.isComplete(), is(true));
+        assertThat("total should be zero", searchResponse.getAccounts().size(), is(0));
+    }
 }
