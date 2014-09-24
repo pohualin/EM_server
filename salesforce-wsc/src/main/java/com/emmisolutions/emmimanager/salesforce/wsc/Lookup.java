@@ -85,7 +85,7 @@ public class Lookup implements SalesForceLookup {
         String strippedSearchString = StringUtils.stripToNull(searchString);
 
         // make sure a filter is there
-        if (StringUtils.length(strippedSearchString) < 5) {
+        if (StringUtils.isBlank(strippedSearchString)) {
             return new SalesForceSearchResponse(true, new ArrayList<SalesForce>());
         }
 
