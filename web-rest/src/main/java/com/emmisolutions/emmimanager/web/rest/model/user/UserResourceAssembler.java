@@ -59,7 +59,8 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(createGroupByClientIdLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
         ret.add(TeamPage.createFullSearchLink());
-        ret.add(createTeamByIdLink());
+        ret.add(createTeamByClientIdLink());
+        ret.add(createTeamByTeamIdLink());
         return ret;
     }
 
@@ -93,10 +94,10 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         return null;
     }
     
-    public Link createTeamByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).getTeam(1l);
+    public Link createTeamByClientIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).createTeam(1l,null);
         Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("teamById");
+        Link link = linkTo(invocations).withRel("teamsByClientId");
         String href = link.getHref();
         int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
         if (idx != -1) {
@@ -106,7 +107,21 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         }
         return null;
     }
-
+    
+    public Link createTeamByTeamIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).getTeam(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("teamByTeamId");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
+        if (idx != -1) {
+            return new Link(
+                    href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
+                    link.getRel());
+        }
+        return null;
+    }
+    
     private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 
 }
