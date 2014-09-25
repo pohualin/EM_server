@@ -1,0 +1,16 @@
+language_id;key_path;message
+1;team_edit_page.new.title;New
+1;team_edit_page.edit.title;Edit
+1;team_edit_page.information.title;Team Information
+1;team_edit_page.information.name;Name:
+1;team_edit_page.information.description;Description:
+1;team_edit_page.information.phone;Phone:
+1;team_edit_page.information.fax;Fax:
+1;team_edit_page.continue_button;Continue
+1;team_view_page.edit_button;Edit Team
+1;team_view_page.title;View Team
+1;team_view_page.information.title;Team Information
+1;team_view_page.information.name;Name:
+1;team_view_page.information.description;Description:
+1;team_view_page.information.phone;Phone:
+1;team_view_page.information.fax;Fax:

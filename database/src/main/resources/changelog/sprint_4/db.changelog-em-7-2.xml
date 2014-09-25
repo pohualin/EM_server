@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="Add English Strings for Team CRUD pages" author="Vinay">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_4/data/em-7.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
+    
+    <changeSet id="Missed foreign key" author="Vinay">
+        <addForeignKeyConstraint baseTableName="client_team_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_team_audit_revision_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+</databaseChangeLog>    
+        
