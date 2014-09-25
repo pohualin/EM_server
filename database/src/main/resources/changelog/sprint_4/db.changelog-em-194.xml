@@ -118,4 +118,11 @@
                   tableName="strings"/>
     </changeSet>
 
+    <changeSet id="Update Column Name" author="Matt">
+        <renameColumn tableName="strings" oldColumnName="key" newColumnName="key_path" columnDataType="nvarchar(1024)"/>
+        <renameColumn tableName="strings_audit" oldColumnName="key" newColumnName="key_path" columnDataType="nvarchar(1024)"/>
+        <renameColumn tableName="strings" oldColumnName="value" newColumnName="message" columnDataType="nvarchar(2048)"/>
+        <renameColumn tableName="strings_audit" oldColumnName="value" newColumnName="message" columnDataType="nvarchar(2048)"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Table(name = "strings",
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_strings_language_id_key",
-                columnNames = {"language_id", "key"}))
+                columnNames = {"language_id", "key_path"}))
 public class Strings extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -32,10 +32,11 @@ public class Strings extends AbstractAuditingEntity implements Serializable {
 
     @NotNull
     @Size(max = 1024)
-    @Column(name = "key", nullable = false)
+    @Column(name = "key_path", nullable = false)
     private String key;
 
     @Size(max = 2048)
+    @Column(name = "message")
     private String value;
 
     public Long getId() {
