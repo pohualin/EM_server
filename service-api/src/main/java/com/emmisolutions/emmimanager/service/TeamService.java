@@ -15,7 +15,7 @@ public interface TeamService {
      * Get the first page (default size) of team objects based upon the filter
      *
      * @param teamSearchFilter or null
-     * @return the first page of location objects
+     * @return the first page of team objects
      */
     Page<Team> list(TeamSearchFilter teamSearchFilter);
 
