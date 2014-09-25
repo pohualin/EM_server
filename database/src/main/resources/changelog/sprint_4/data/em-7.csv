@@ -1,4 +1,4 @@
-language_id;key;value
+language_id;key_path;message
 1;team_edit_page.new.title;New
 1;team_edit_page.edit.title;Edit
 1;team_edit_page.information.title;Team Information
