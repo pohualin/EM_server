@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.api;
 
 import com.emmisolutions.emmimanager.web.rest.resource.ApiResource;
+import com.emmisolutions.emmimanager.web.rest.resource.InternationalizationResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
@@ -29,6 +30,7 @@ public class PublicApi extends ResourceSupport {
         add(linkTo(methodOn(UsersResource.class).authenticated()).withRel("authenticated"));
         add(new Link(self.getHref() + "/authenticate", "authenticate"));
         add(new Link(self.getHref() + "/logout", "logout"));
+        add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
     }
 
     /**
