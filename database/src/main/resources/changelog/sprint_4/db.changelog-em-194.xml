@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+   <changeSet id="Create Language Table" author="Matt">
+       <createTable tableName="language">
+           <column autoIncrement="true" name="id" type="BIGINT">
+               <constraints primaryKey="true" primaryKeyName="pk_language"/>
+           </column>
+           <column name="version" type="INT"/>
+           <column name="created_by" type="nvarchar(50)" defaultValue="system">
+               <constraints nullable="false"/>
+           </column>
+           <column name="created_date" type="timestamp" defaultValueDate="${now}">
+               <constraints nullable="false"/>
+           </column>
+           <column name="last_modified_by" type="nvarchar(50)"/>
+           <column name="last_modified_date" type="timestamp"/>
+           <column name="rfc5646_language_tag" type="nvarchar(255)">
+               <constraints nullable="false"/>
+           </column>
+       </createTable>
+       <addUniqueConstraint tableName="language"
+                            constraintName="uk_language_rfc5646_language_tag"
+                            columnNames="rfc5646_language_tag"/>
+   </changeSet>
+
+    <changeSet id="Create Language Audit Table" author="Matt">
+        <createTable tableName="language_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="key" type="nvarchar(1024)"/>
+            <column name="rfc5646_language_tag" type="nvarchar(255)"/>
+            <column name="value" type="varchar(2048)"/>
+        </createTable>
+        <addPrimaryKey tableName="language_audit" constraintName="pk_language_audit" columnNames="id, revision"/>
+        <addForeignKeyConstraint baseTableName="language_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_language_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="Create Strings Table" author="Matt">
+        <createTable tableName="strings">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_strings"/>
+            </column>
+            <column name="version" type="INT"/>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="key" type="nvarchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="nvarchar(2048)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="strings"
+                                 baseColumnNames="language_id"
+                                 constraintName="fk_language_language_id"
+                                 referencedTableName="language"
+                                 referencedColumnNames="id"/>
+        <addUniqueConstraint tableName="strings"
+                             constraintName="uk_strings_language_id_key"
+                             columnNames="language_id, key"/>
+    </changeSet>
+
+    <changeSet id="Create Strings Audit Table" author="Matt">
+        <createTable tableName="strings_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="key" type="nvarchar(1024)"/>
+            <column name="language_id" type="BIGINT"/>
+            <column name="value" type="varchar(2048)"/>
+        </createTable>
+        <addPrimaryKey tableName="strings_audit" constraintName="pk_strings_audit" columnNames="id, revision"/>
+        <addForeignKeyConstraint baseTableName="strings_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_strings_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+    </changeSet>
+
+    <changeSet id="Add English Language" author="Matt">
+        <insert tableName="language">
+            <column name="rfc5646_language_tag" value="en"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Add English Strings" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_4/data/em-194.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
+
+</databaseChangeLog>
