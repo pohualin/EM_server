@@ -1,0 +1,68 @@
+language_id;key;value
+1;global.title;Emmi Manager 2.0
+1;global.menu.login;Login
+1;global.menu.logout;Logout
+1;global.menu.clients;Clients
+1;global.messages.error.dontmatch;The password and its confirmation do not match!
+1;global.messages.search.no_results_found;No results found.
+1;global.labels.search;Search:
+1;global.labels.statusFilter;Show:
+1;global.labels.total; results
+1;global.labels.totalSingular; result
+1;global.buttons.search;Search
+1;main.welcome;Welcome {{ username }}. The date is {{ today }}.
+1;login.title;Authentication
+1;login.form.user;User:
+1;login.form.password;Password:
+1;login.form.rememberme;Remember me on this computer.
+1;login.form.button;Login
+1;login.messages.error.authentication;<strong>Authentication failed!</strong> Please check your credentials and try again.
+1;errors.title;Error page!
+1;errors.403;You are not authorized.
+1;client_view_page.title;View Client
+1;client_view_page.edit_button;Edit
+1;client_view_page.information.title;Client Information
+1;client_view_page.information.name;Name:
+1;client_view_page.information.type;Type:
+1;client_view_page.information.region;Region:
+1;client_view_page.information.tier;Tier:
+1;client_view_page.information.contract.owner;Contract Owner:
+1;client_view_page.information.contract.start;Contract Start:
+1;client_view_page.information.contract.end;Contract End:
+1;client_view_page.information.salesforce;Salesforce Account:
+1;client_view_page.teams;Team Tags
+1;client_view_page.locations.title;Locations
+1;client_view_page.locations.none_found;no active locations
+1;client_view_page.locations.no_client_owner;no client owner
+1;client_edit_page.save_button;Continue
+1;client_edit_page.cancel_dialog.title;Are you sure you want to cancel?
+1;client_edit_page.cancel_dialog.content;Your changes and any newly-created locations won’t be saved.
+1;client_edit_page.cancel_dialog.ok_button;Yes
+1;client_edit_page.cancel_dialog.cancel_button;No
+1;client_edit_page.deactivate_dialog.title;
+1;client_edit_page.deactivate_dialog.content;Are you sure you want to deactivate this client?
+1;client_edit_page.deactivate_dialog.ok_button;Yes
+1;client_edit_page.deactivate_dialog.cancel_button;No
+1;client_edit_page.unique_popup_dialog.message;This client name already exists.
+1;client_edit_page.unique_popup_dialog.name;NAME:
+1;client_edit_page.unique_popup_dialog.city;CITY/STATE:
+1;client_edit_page.locations.title;Locations
+1;client_edit_page.locations.none_found;no active locations
+1;client_edit_page.locations.no_client_owner;no client owner
+1;ALL;All
+1;ACTIVE_ONLY;Active
+1;INACTIVE_ONLY;Inactive
+1;ONE;1
+1;TWO;2
+1;THREE;3
+1;FOUR;4
+1;PROVIDER;Provider
+1;PHYSICIAN_PRACTICE;Physician Practice
+1;PAYER;Payer
+1;PHARMA;Pharma
+1;OTHER;Other
+1;ALTERNATIVE;Alternative
+1;SOUTHEAST;Southeast
+1;NORTHEAST;Northeast
+1;MIDWEST;Midwest
+1;WEST;West
