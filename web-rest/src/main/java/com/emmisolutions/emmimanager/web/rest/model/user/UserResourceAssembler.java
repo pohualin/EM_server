@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.emmisolutions.emmimanager.web.rest.resource.*;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
@@ -23,10 +24,6 @@ import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 
 /**
  * Creates a UserResource from a User
@@ -61,6 +58,7 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(TeamPage.createFullSearchLink());
         ret.add(createTeamByClientIdLink());
         ret.add(createTeamByTeamIdLink());
+        ret.add(createTeamTagAssociationLink());
         return ret;
     }
 
@@ -122,6 +120,20 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         return null;
     }
     
+    public Link createTeamTagAssociationLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamTagsResource.class).list(1l,null,null,null,null,null);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("teamTagAssociation");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(TeamTagsResource.class));
+        if (idx != -1) {
+            return new Link(
+                    href.substring(0, idx) + discoverer.getMapping(TeamTagsResource.class, method),
+                    link.getRel());
+        }
+        return null;
+    }
+
     private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 
 }

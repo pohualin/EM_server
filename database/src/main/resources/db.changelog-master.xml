@@ -36,4 +36,6 @@
     
     <include relativeToChangelogFile="true" file="changelog/sprint_4/db.changelog-em-7-3.xml"/>
 
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_4/db.changelog-em-221.xml"/>
 </databaseChangeLog>
