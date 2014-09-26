@@ -1,0 +1,4 @@
+language_id;key_path;message
+1;team_edit_page.error_msg.required;Required
+1;team_edit_page.error_msg.invalid_team_name;Please enter a valid team name
+1;team_edit_page.error_msg.invalid_team_description;Please enter a valid team description
