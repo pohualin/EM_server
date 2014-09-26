@@ -123,7 +123,7 @@ public class TeamsResource {
 	         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
 	 )
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE"})
-	 public ResponseEntity<TeamResource> create(@PathVariable Long clientId, @RequestBody Team team) {
+	 public ResponseEntity<TeamResource> createTeam(@PathVariable Long clientId, @RequestBody Team team) {
 		 Client client = new Client();
 		 client.setId(clientId);
 		 client = clientService.reload(client);
