@@ -82,7 +82,7 @@ public class TeamsResource {
 	            method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_LIST"})
 	 public ResponseEntity<TeamPage> list(
-	         @PageableDefault(size = 50) Pageable pageable,
+	         @PageableDefault(size = 10) Pageable pageable,
 	         @SortDefault(sort = "id") Sort sort,
 	         @RequestParam(value = "status", required = false) String status,
 	         PagedResourcesAssembler<Team> assembler,
@@ -123,7 +123,7 @@ public class TeamsResource {
 	         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
 	 )
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE"})
-	 public ResponseEntity<TeamResource> create(@PathVariable Long clientId, @RequestBody Team team) {
+	 public ResponseEntity<TeamResource> createTeam(@PathVariable Long clientId, @RequestBody Team team) {
 		 Client client = new Client();
 		 client.setId(clientId);
 		 client = clientService.reload(client);
