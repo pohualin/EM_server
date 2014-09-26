@@ -1,14 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.model.client;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
-
 import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientTier;
@@ -17,6 +8,14 @@ import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.salesforce.SalesForceSearchResponseResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Reference data for client editing
@@ -26,7 +25,7 @@ public class ReferenceData extends ResourceSupport {
 
     @XmlElement(name = "clientType")
     @XmlElementWrapper(name = "clientTypes")
-    private ClientType[] clientTypes = ClientType.values();
+    private Collection<ClientType> clientTypes;
 
     @XmlElement(name = "clientRegion")
     @XmlElementWrapper(name = "clientRegions")
@@ -43,7 +42,8 @@ public class ReferenceData extends ResourceSupport {
     /**
      * create common links for reference data
      */
-    public ReferenceData() {
+    public ReferenceData(Collection<ClientType> clientTypes) {
+        this.clientTypes = clientTypes;
         add(UserPage.createPotentialOwnersFullSearchLink());
         add(SalesForceSearchResponseResource.createFindLink());
         add(ClientResource.createFindNormalizedNameLink());
