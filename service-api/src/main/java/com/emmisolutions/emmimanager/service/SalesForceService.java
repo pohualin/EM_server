@@ -16,4 +16,12 @@ public interface SalesForceService {
      * @return a SalesForceSearchResponse
      */
     SalesForceSearchResponse find(String searchString);
+    
+    /**
+     * Searches Team SalesForce for accounts containing the search string. 
+     *
+     * @param searchString to find
+     * @return a TeamSalesForceSearchResponse
+     */
+    SalesForceSearchResponse findForTeam(String searchString);
 }

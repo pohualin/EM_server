@@ -45,5 +45,21 @@ public class SalesForceResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-
+    
+    /**
+     * Find salesforce accounts for teams
+     *
+     * @param searchString using this
+     * @return the account resources
+     */
+    @RequestMapping(value = "/teams/sf/find", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
+    public ResponseEntity<SalesForceSearchResponseResource> findForTeam(@RequestParam(value = "q", required = false) String searchString) {
+        SalesForceSearchResponse searchResponse = salesForceService.findForTeam(searchString);
+        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getAccounts())) {
+            return new ResponseEntity<>(new SalesForceSearchResponseResource(searchResponse, searchString), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 }

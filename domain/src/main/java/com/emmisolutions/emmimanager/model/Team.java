@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
@@ -17,6 +19,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * A Team that corresponds to a Client
@@ -58,6 +62,12 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "client_id")
     private Client client;
 
+    @NotNull
+    @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "salesforce_account_id")
+    @JsonManagedReference
+    private TeamSalesForce teamSalesForceAccount;   
+    
 	public Long getId() {
 		return id;
 	}
@@ -120,6 +130,14 @@ public class Team extends AbstractAuditingEntity implements Serializable {
 
 	public void setClient(Client client) {
 		this.client = client;
+	}
+
+	public TeamSalesForce getTeamSalesForceAccount() {
+		return teamSalesForceAccount;
+	}
+
+	public void setTeamSalesForceAccount(TeamSalesForce teamSalesForceAccount) {
+		this.teamSalesForceAccount = teamSalesForceAccount;
 	}
 
 	@Override
