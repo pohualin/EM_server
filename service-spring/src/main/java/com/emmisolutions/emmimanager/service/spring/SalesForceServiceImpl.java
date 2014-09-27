@@ -47,26 +47,4 @@ public class SalesForceServiceImpl implements SalesForceService {
         return salesForceSearchResponse;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public SalesForceSearchResponse findForTeam(String searchString) {
-        SalesForceSearchResponse salesForceSearchResponse = salesForceLookup.findAccounts(searchString, 20);
-        Set<String> accountNumbersToMatch = new HashSet<>();
-        for (SalesForce salesForce : salesForceSearchResponse.getAccounts()) {
-            accountNumbersToMatch.add(salesForce.getAccountNumber());
-        }
-        List<SalesForce> persistentAccounts = salesForcePersistence.findByAccountNumbers(accountNumbersToMatch);
-        // update the id, version and client on accounts found within the search response
-        for (SalesForce persistentAccount : persistentAccounts) {
-            for (SalesForce salesForce : salesForceSearchResponse.getAccounts()) {
-                if (persistentAccount.getAccountNumber().equals(salesForce.getAccountNumber())) {
-                    salesForce.setId(persistentAccount.getId());
-                    salesForce.setVersion(persistentAccount.getVersion());
-                    salesForce.setClient(persistentAccount.getClient());
-                }
-            }
-        }
-        return salesForceSearchResponse;
-    }
-
 }

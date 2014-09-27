@@ -1,14 +1,24 @@
 package com.emmisolutions.emmimanager.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import org.hibernate.envers.Audited;
+import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+
+import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 /**
  * A SalesForce account.
@@ -45,7 +55,8 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     private String country;
     @Column(name = "phone_number")
     private String phoneNumber;
-
+    private transient String fax;
+    
     public SalesForce() {
     }
 
@@ -175,5 +186,13 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     public String getClientName() {
         return (client != null) ? client.getName() : null;
     }
+
+	public String getFax() {
+		return fax;
+	}
+
+	public void setFax(String fax) {
+		this.fax = fax;
+	}
 
 }

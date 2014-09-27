@@ -29,37 +29,32 @@ public class SalesForceResource {
     @Resource
     SalesForceService salesForceService;
 
+    @RequestMapping(value = "/sf/find", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
+    public ResponseEntity<SalesForceSearchResponseResource> find(@RequestParam(value = "q", required = false) String searchString) {
+        return findAccounts(searchString);
+    }
+    
+    @RequestMapping(value = "/teams/sf/find", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE", "PERM_TEAM_EDIT"})
+    public ResponseEntity<SalesForceSearchResponseResource> findForTeam(@RequestParam(value = "q", required = false) String searchString) {
+    	return findAccounts(searchString);
+    }
+
     /**
      * Find salesforce accounts
      *
      * @param searchString using this
      * @return the account resources
      */
-    @RequestMapping(value = "/sf/find", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
-    public ResponseEntity<SalesForceSearchResponseResource> find(@RequestParam(value = "q", required = false) String searchString) {
-        SalesForceSearchResponse searchResponse = salesForceService.find(searchString);
+	private ResponseEntity<SalesForceSearchResponseResource> findAccounts(
+			String searchString) {
+		SalesForceSearchResponse searchResponse = salesForceService.find(searchString);
         if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getAccounts())) {
             return new ResponseEntity<>(new SalesForceSearchResponseResource(searchResponse, searchString), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-    }
-    
-    /**
-     * Find salesforce accounts for teams
-     *
-     * @param searchString using this
-     * @return the account resources
-     */
-    @RequestMapping(value = "/teams/sf/find", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
-    public ResponseEntity<SalesForceSearchResponseResource> findForTeam(@RequestParam(value = "q", required = false) String searchString) {
-        SalesForceSearchResponse searchResponse = salesForceService.findForTeam(searchString);
-        if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getAccounts())) {
-            return new ResponseEntity<>(new SalesForceSearchResponseResource(searchResponse, searchString), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
+	}
+
 }
