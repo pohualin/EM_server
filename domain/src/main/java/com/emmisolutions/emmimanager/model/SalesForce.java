@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
@@ -55,7 +56,8 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     private String country;
     @Column(name = "phone_number")
     private String phoneNumber;
-    private transient String fax;
+    @Transient
+    private String fax;
     
     public SalesForce() {
     }

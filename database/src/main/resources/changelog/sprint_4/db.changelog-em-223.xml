@@ -8,15 +8,16 @@
     <property name="now" value="GETDATE()" dbms="mssql"/>
     
     <changeSet id="teams_salesforce_team" author="Claudio">
+    	<!-- kill all saved teams as they are invalid due to no SF account -->
+        <delete tableName="client_team"/>
+        <delete tableName="client_team_audit"/>
+    
         <addColumn tableName="client_team">
             <column name="salesforce_account_id" type="BIGINT"></column>
         </addColumn>
         <addColumn tableName="client_team_audit">
             <column name="salesforce_account_id" type="BIGINT"></column>
         </addColumn>        
-        <!-- sql><![CDATA[	
-			TODO need to add a TeamSalesForce, then this ID will be updated in all current teams
-			 ]]></sql-->   
 	</changeSet>
 	
     <changeSet id="create_salesforce_team" author="Claudio">
@@ -36,6 +37,7 @@
             <column name="state" type="varchar(255)"/>
             <column name="street" type="varchar(255)"/>
             <column name="version" type="INT"/>
+        
             <column name="created_by" type="varchar(50)" defaultValue="system">
                 <constraints nullable="false"/>
             </column>
@@ -73,12 +75,14 @@
 
         <addUniqueConstraint tableName="salesforce_team" columnNames="account_number"
                              constraintName="uk_salesforce_team_account_number"/>
+
+		<addNotNullConstraint tableName="client_team" columnName="salesforce_account_id" columnDataType="BIGINT"/>
+		
         <addForeignKeyConstraint baseTableName="client_team"
                                  baseColumnNames="salesforce_account_id"
-                                 constraintName="fk_salesforce_team_team_id"
+                                 constraintName="fk_salesforce_team_account_id"
                                  referencedTableName="salesforce_team"
-                                 referencedColumnNames="id"/>
-		<addNotNullConstraint tableName="client_team" columnName="salesforce_account_id" columnDataType="BIGINT"/>
+                                 referencedColumnNames="id"/>		
     </changeSet>  
 
 </databaseChangeLog>    

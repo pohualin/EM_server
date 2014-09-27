@@ -1,12 +1,16 @@
 package com.emmisolutions.emmimanager.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -15,6 +19,8 @@ import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 /**
  * A Team SalesForce account.
@@ -49,6 +55,10 @@ public class TeamSalesForce extends AbstractAuditingEntity implements Serializab
     private String phoneNumber;
     @Column(name = "fax_number")
     private String faxNumber;
+    
+    @OneToOne(mappedBy = "teamSalesForceAccount")
+    @JsonBackReference
+    private Team team ;
     
     public TeamSalesForce() {
     }
@@ -169,6 +179,14 @@ public class TeamSalesForce extends AbstractAuditingEntity implements Serializab
 
 	public void setFaxNumber(String faxNumber) {
 		this.faxNumber = faxNumber;
+	}
+
+	public Team getTeam() {
+		return team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
 }
