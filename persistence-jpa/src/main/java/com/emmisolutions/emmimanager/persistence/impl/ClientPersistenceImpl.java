@@ -5,14 +5,16 @@ import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import org.apache.commons.lang3.*;
+
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.hasNames;
 import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.isInStatus;
@@ -36,6 +38,13 @@ public class ClientPersistenceImpl implements ClientPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
+        List<Sort.Order> insensitiveOrders = new ArrayList<>();
+        if (page.getSort() != null) {
+            for (Sort.Order sort : page.getSort()) {
+                insensitiveOrders.add(new Sort.Order(sort.getDirection(), sort.getProperty()).ignoreCase());
+            }
+        }
+        page = new PageRequest(page.getPageNumber(), page.getPageSize(), new Sort(insensitiveOrders));
         return clientRepository.findAll(where(hasNames(searchFilter)).and(isInStatus(searchFilter)), page);
     }
 
