@@ -11,6 +11,9 @@
         <addColumn tableName="client_team">
             <column name="salesforce_account_id" type="BIGINT"></column>
         </addColumn>
+        <addColumn tableName="client_team_audit">
+            <column name="salesforce_account_id" type="BIGINT"></column>
+        </addColumn>        
         <!-- sql><![CDATA[	
 			TODO need to add a TeamSalesForce, then this ID will be updated in all current teams
 			 ]]></sql-->   
