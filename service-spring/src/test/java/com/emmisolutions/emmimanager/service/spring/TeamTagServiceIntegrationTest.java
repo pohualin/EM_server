@@ -51,7 +51,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
-        client.setName("Test Client");
+        client.setName("Test Client "+uniqueId);
         client.setType(ClientType.PROVIDER);
         client.setContractOwner(user);
         client.setActive(false);
