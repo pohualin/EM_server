@@ -57,7 +57,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "phone_number")
     private String phoneNumber;
     @Transient
-    private String fax;
+    private String faxNumber;
     
     public SalesForce() {
     }
@@ -190,11 +190,11 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     }
 
 	public String getFax() {
-		return fax;
+		return faxNumber;
 	}
 
 	public void setFax(String fax) {
-		this.fax = fax;
+		this.faxNumber = fax;
 	}
 
 }

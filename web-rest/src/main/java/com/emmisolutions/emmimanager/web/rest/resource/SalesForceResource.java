@@ -35,11 +35,11 @@ public class SalesForceResource {
         return findAccounts(searchString);
     }
     
-    @RequestMapping(value = "/teams/sf/find", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/teams/sf/find", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE", "PERM_TEAM_EDIT"})
     public ResponseEntity<SalesForceSearchResponseResource> findForTeam(@RequestParam(value = "q", required = false) String searchString) {
     	return findAccounts(searchString);
-    }
+    }*/
 
     /**
      * Find salesforce accounts

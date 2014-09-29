@@ -56,7 +56,7 @@ public class TeamSalesForce extends AbstractAuditingEntity implements Serializab
     @Column(name = "fax_number")
     private String faxNumber;
     
-    @OneToOne(mappedBy = "teamSalesForceAccount")
+    @OneToOne(mappedBy = "salesForceAccount")
     @JsonBackReference
     private Team team ;
     

@@ -73,9 +73,6 @@
     
     <changeSet id="add_keys_and_indexes" author="Claudio">
 
-        <addUniqueConstraint tableName="salesforce_team" columnNames="account_number"
-                             constraintName="uk_salesforce_team_account_number"/>
-
 		<addNotNullConstraint tableName="client_team" columnName="salesforce_account_id" columnDataType="BIGINT"/>
 		
         <addForeignKeyConstraint baseTableName="client_team"

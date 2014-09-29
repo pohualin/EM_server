@@ -66,7 +66,7 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "salesforce_account_id")
     @JsonManagedReference
-    private TeamSalesForce teamSalesForceAccount;   
+    private TeamSalesForce salesForceAccount;   
     
 	public Long getId() {
 		return id;
@@ -132,12 +132,12 @@ public class Team extends AbstractAuditingEntity implements Serializable {
 		this.client = client;
 	}
 
-	public TeamSalesForce getTeamSalesForceAccount() {
-		return teamSalesForceAccount;
+	public TeamSalesForce getSalesForceAccount() {
+		return salesForceAccount;
 	}
 
-	public void setTeamSalesForceAccount(TeamSalesForce teamSalesForceAccount) {
-		this.teamSalesForceAccount = teamSalesForceAccount;
+	public void setSalesForceAccount(TeamSalesForce teamSalesForceAccount) {
+		this.salesForceAccount = teamSalesForceAccount;
 	}
 
 	@Override

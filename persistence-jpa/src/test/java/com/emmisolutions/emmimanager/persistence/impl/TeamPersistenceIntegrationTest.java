@@ -119,7 +119,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest{
 		 team.setPhone("1111111111");
 		 team.setFax("2222222222");
 		 team.setClient(client);
-		 team.setTeamSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		 team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
 		 return team;
 	 }
 	 
