@@ -1,15 +1,11 @@
-package com.emmisolutions.emmimanager.web.rest.model.client;
+package com.emmisolutions.emmimanager.web.rest.model.team;
 
 import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamTagsResource;
 import org.springframework.data.domain.Page;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * A HATEOAS wrapper for a page of TeamTagsResource objects.

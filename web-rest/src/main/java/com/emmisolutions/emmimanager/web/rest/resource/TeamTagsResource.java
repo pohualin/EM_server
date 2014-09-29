@@ -3,10 +3,8 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.TeamTagService;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
-import com.emmisolutions.emmimanager.web.rest.model.client.TeamTagPage;
-import com.emmisolutions.emmimanager.web.rest.model.client.TeamTagResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagResourceAssembler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,7 +20,6 @@ import javax.annotation.security.RolesAllowed;
 
 import java.util.Set;
 
-import static com.emmisolutions.emmimanager.model.ClientSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 

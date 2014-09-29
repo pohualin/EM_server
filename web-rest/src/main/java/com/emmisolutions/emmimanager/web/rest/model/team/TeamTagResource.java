@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.model.client;
+package com.emmisolutions.emmimanager.web.rest.model.team;
 
 
 import com.emmisolutions.emmimanager.model.Tag;

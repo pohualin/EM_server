@@ -29,24 +29,8 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
 	 public TeamResource toResource(Team entity) {
 		 TeamResource ret = new TeamResource();
 	     ret.add(linkTo(methodOn(TeamsResource.class).getTeam(entity.getId())).withSelfRel());
-         ret.add(createTeamTagAssociationLink());
+         ret.add(linkTo(methodOn(TeamTagsResource.class).list(1l,null,null,null,null,null)).withSelfRel());
 	     ret.setEntity(entity);
 	     return ret; 
 	 }
-
-    public Link createTeamTagAssociationLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamTagsResource.class).list(1l,null,null,null,null,null);
-        Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("teamTagAssociation");
-        String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(TeamTagsResource.class));
-        if (idx != -1) {
-            return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(TeamTagsResource.class, method),
-                    link.getRel());
-        }
-        return null;
-    }
-
-    private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 }
