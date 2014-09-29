@@ -92,7 +92,7 @@ public class TeamTagsResource {
     public void create(@PathVariable("teamId") Long teamId,@RequestBody Set<Tag> tagSet) {
         Team toFind = new Team();
         toFind.setId(teamId);
-        toFind = teamService.reload(toFind);
+
         teamTagService.save(toFind,tagSet);
     }
 }

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * TeamTag Service API
+ */
 @Service
 public interface TeamTagService {
     /**

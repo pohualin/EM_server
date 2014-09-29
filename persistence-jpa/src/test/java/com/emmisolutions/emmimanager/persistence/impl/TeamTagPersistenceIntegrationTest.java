@@ -2,6 +2,8 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.*;
+import org.hibernate.TransientObjectException;
+import org.hibernate.TransientPropertyValueException;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +57,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     public void save() {
         TeamTag teamTag = new TeamTag();
 
-        Client client = createClient();
+        Client client = createClient("1");
         Group group = createGroup(client);
 
         Tag tag = createTag(group,"");
@@ -73,11 +75,11 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     /*
      * try to save a null team tag
      */
-    @Test(expected=InvalidDataAccessApiUsageException.class)
+    @Test
     public void saveNull() {
         TeamTag teamTag = new TeamTag();
 
-        Client client = createClient();
+        Client client = createClient("1");
         Group group = createGroup(client);
 
         Tag tag = createTag(group,"");
@@ -88,17 +90,18 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTag.setTeam(team);
 
         TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(null);
+        assertThat("afterSaveTeamTag was null", afterSaveTeamTag, is(nullValue()));
     }
 
 
     /*
      * try to save a team tag with no team
      */
-    @Test(expected=ConstraintViolationException.class)
+    @Test
     public void saveNullTeam() {
         TeamTag teamTag = new TeamTag();
 
-        Client client = createClient();
+        Client client = createClient("1");
         Group group = createGroup(client);
 
         Tag tag = createTag(group,"");
@@ -109,21 +112,44 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTag.setTeam(null);
 
         TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(teamTag);
+        assertThat("afterSaveTeamTag was null", afterSaveTeamTag, is(nullValue()));
     }
 
-     /*
-     * try to save a team tag with a team that doesnt exist
+    /*
+     * try to save a team tag with no tag
      */
-    @Test(expected=InvalidDataAccessApiUsageException.class)
-    public void saveBadTeam() {
+    @Test
+    public void saveNullTag() {
         TeamTag teamTag = new TeamTag();
 
-        Client client = createClient();
+        Client client = createClient("1");
         Group group = createGroup(client);
 
         Tag tag = createTag(group,"");
 
         Team team = createTeam(client, 1);
+
+        teamTag.setTag(null);
+        teamTag.setTeam(team);
+
+        TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(teamTag);
+        assertThat("afterSaveTeamTag was null", afterSaveTeamTag, is(nullValue()));
+    }
+
+     /*
+     * try to save a team tag with a team that has a different client than the tag
+     */
+    @Test()
+    public void saveDifferentClientTeam() {
+        TeamTag teamTag = new TeamTag();
+
+        Client client1 = createClient("1");
+        Client client2 = createClient("2");
+        Group group = createGroup(client1);
+
+        Tag tag = createTag(group,"");
+
+        Team team = createTeam(client2, 1);
 
         teamTag.setTag(tag);
         Team newTeam = new Team();
@@ -131,28 +157,31 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTag.setTeam(newTeam);
 
         TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(teamTag);
+        assertThat("afterSaveTeamTag was null", afterSaveTeamTag, is(nullValue()));
     }
 
     /*
-     * try to save a team tag with a tag that doesnt exist
+     * try to save a team tag with a tag that has a different client than the team
      */
-    @Test(expected=InvalidDataAccessApiUsageException.class)
-    public void saveBadTag() {
+    @Test()
+    public void saveDifferentClientTag() {
         TeamTag teamTag = new TeamTag();
 
-        Client client = createClient();
-        Group group = createGroup(client);
+        Client client1 = createClient("1");
+        Client client2 = createClient("2");
+        Group group = createGroup(client2);
 
         Tag tag = createTag(group,"");
 
-        Team team = createTeam(client, 1);
+        Team team = createTeam(client1, 1);
 
-        Tag newTag = new Tag();
-
-        teamTag.setTag(newTag);
-        teamTag.setTeam(team);
+        teamTag.setTag(tag);
+        Team newTeam = new Team();
+        newTeam.setName("Team Not in DB");
+        teamTag.setTeam(newTeam);
 
         TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(teamTag);
+        assertThat("afterSaveTeamTag was null", afterSaveTeamTag, is(nullValue()));
     }
 
     private Team createTeam(Client client, int i) {
@@ -183,13 +212,13 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         return group;
     }
 
-    private Client createClient() {
+    private Client createClient(String uniqueId) {
         Client client = new Client();
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
-        client.setName("Test Client");
+        client.setName("Test Client "+uniqueId);
         client.setType(ClientType.PROVIDER);
         client.setActive(false);
         client.setContractOwner(superAdmin);
@@ -205,7 +234,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     public void delete() {
         TeamTag teamTag = new TeamTag();
 
-        Client client = createClient();
+        Client client = createClient("1");
         Group group = createGroup(client);
 
         Tag tag = createTag(group,"");
@@ -231,7 +260,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         TeamTag teamTag2 = new TeamTag();
         TeamTag teamTag3 = new TeamTag();
 
-        Client client = createClient();
+        Client client = createClient("1");
         Group group = createGroup(client);
 
         Tag tag1 = createTag(group,"1");
@@ -257,5 +286,4 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Page<TeamTag> associatedTeamTagsPage = teamTagPersistence.getAllTeamTagsForTeam(null,team1);
         assertThat("2 teams were correctly returned", associatedTeamTagsPage.getTotalElements(), is(2L));
     }
-
 }

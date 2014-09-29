@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-
+/**
+ * TeamTag persistence class
+ */
 public interface TeamTagPersistence {
     /**
      * Saves a TeamTag

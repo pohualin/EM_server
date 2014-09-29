@@ -12,14 +12,14 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="pk_team_tag_id"/>
             </column>
-            <column name="created_by" type="varchar(50)" defaultValue="system">
+            <column name="created_by" type="nvarchar(50)" defaultValue="system"></column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}"></column>
+            <column name="last_modified_by" type="nvarchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+            <column name="last_modified_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_modified_by" type="varchar(50)"/>
-            <column name="last_modified_date" type="timestamp"/>
             <column name="tag_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
@@ -51,16 +51,12 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="TINYINT"/>
-            <column name="tag_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="team_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="tag_id" type="BIGINT"></column>
+            <column name="team_id" type="BIGINT"></column>
         </createTable>
         <addPrimaryKey
                 columnNames="id, revision"
-                constraintName="pk_team_tag_audit"
+                constraintName="pk_client_team_tag_audit"
                 tableName="client_team_tag_audit"/>
         <addForeignKeyConstraint
                 baseTableName="client_team_tag_audit"

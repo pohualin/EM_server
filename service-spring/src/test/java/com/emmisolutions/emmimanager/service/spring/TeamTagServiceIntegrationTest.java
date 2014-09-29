@@ -20,6 +20,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -42,8 +43,9 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
     UserService userService;
 
 
-    private Client createClient() {
-        User user = userService.save(new User("login","pw"));
+    private Client createClient(String uniqueId) {
+        User user = userService.save(new User("login "+uniqueId,"pw"));
+
         Client client = new Client();
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
@@ -87,15 +89,10 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testSaveAndFind(){
-        Client client = clientService.create(createClient());
+        Client client = clientService.create(createClient("1"));
         Group group = groupService.save(createGroup(client));
 
-        Tag tag1 = createTag(group, "1");
-        Tag tag2 = createTag(group,"2");
-        List<Tag> tagList = new ArrayList<>();
-        tagList.add(tag1);
-        tagList.add(tag2);
-        tagList = tagService.saveAllTagsForGroup(tagList,group);
+        List<Tag> tagList = createTagList(group,2);
 
         Team team1 = teamService.create(createTeam(client, 1));
 
@@ -107,6 +104,67 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
         Page<TeamTag> teamTagPage = teamTagService.findAllTeamTagsWithTeam(null, team1);
         assertThat("teamTagPage has two teams", teamTagPage.getTotalElements(), is(2L));
+    }
+
+    private List<Tag> createTagList(Group group, int numberOfTags) {
+        List<Tag> tagList = new ArrayList<>();
+        for(int i=0;i<numberOfTags;i++) {
+            Tag tag = createTag(group, Integer.toString(i));
+            tagList.add(tag);
+        }
+
+        tagList = tagService.saveAllTagsForGroup(tagList,group);
+        return tagList;
+    }
+
+    /**
+     * 	Test the save method deletes items in between saves
+     */
+    @Test
+    public void testSaveDeletesItems(){
+        Client client = clientService.create(createClient("2"));
+        Group group = groupService.save(createGroup(client));
+
+        List<Tag> tagListComplete = createTagList(group,4);
+        List<Tag> tagListFirstHalf = tagListComplete.subList(0,2);
+        List<Tag> tagListSecondHalf = tagListComplete.subList(2,4);
+
+        tagService.saveAllTagsForGroup(tagListFirstHalf,group);
+
+        Team team1 = teamService.create(createTeam(client, 1));
+
+        Set<Tag> tagSet = new HashSet<>();
+        tagSet.add(tagListFirstHalf.get(0));
+        tagSet.add(tagListFirstHalf.get(1));
+
+        teamTagService.save(team1, tagSet);
+
+        Page<TeamTag> teamTagPage = teamTagService.findAllTeamTagsWithTeam(null, team1);
+        assertThat("teamTagPage has two teams", teamTagPage.getTotalElements(), is(2L));
+        assertTrue("teamTagPage should have correct 1st team",
+                teamTagPage.getContent().get(0).equals(new TeamTag(team1, tagListFirstHalf.get(0))));
+        assertTrue("teamTagPage should have correct 2nd team",
+                teamTagPage.getContent().get(1).equals(new TeamTag(team1, tagListFirstHalf.get(1))));
+
+        tagService.saveAllTagsForGroup(tagListSecondHalf,group);
+
+        Set<Tag> tagSet2 = new HashSet<>();
+        tagSet2.add(tagListSecondHalf.get(0));
+        tagSet2.add(tagListSecondHalf.get(1));
+
+        teamTagService.save(team1, tagSet2);
+
+        Page<TeamTag> teamTagPage2 = teamTagService.findAllTeamTagsWithTeam(null, team1);
+        System.out.println(teamTagPage2.getContent().get(0).getTeam().getName());
+        System.out.println(team1.getName());
+        System.out.println(teamTagPage2.getContent().get(0).getTag().getName());
+        System.out.println(tagListSecondHalf.get(0).getName());
+        assertThat("teamTagPage2 has two teams", teamTagPage2.getTotalElements(), is(2L));
+        assertTrue("teamTagPage2 should have correct 1st team",
+                teamTagPage2.getContent().get(0).equals(new TeamTag(team1, tagListSecondHalf.get(0))));
+        assertTrue("teamTagPage2 should have correct 2nd team",
+                teamTagPage2.getContent().get(1).equals(new TeamTag(team1, tagListSecondHalf.get(1))));
+
     }
 
 

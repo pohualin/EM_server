@@ -11,7 +11,15 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+/**
+ * TeamTag repo.
+ */
 public interface TeamTagRepository extends JpaRepository<TeamTag, Long>, JpaSpecificationExecutor<TeamTag> {
+    /*
+    * Find all of the teamTags that have a given team
+    * @param team to search for
+    * @return a Page of TeamTags or null
+    */
+
     Page<TeamTag> findByTeam(Team team, Pageable pageable);
 }

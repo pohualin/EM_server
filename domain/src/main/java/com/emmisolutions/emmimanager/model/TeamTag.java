@@ -17,19 +17,20 @@ import java.io.Serializable;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TeamTag extends AbstractAuditingEntity implements Serializable {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "team_id")
+    @JoinColumn(name = "team_id", nullable = false)
     @JsonBackReference
     private Team team;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tag_id", nullable = false)
     @JsonBackReference
     private Tag tag;
 
@@ -61,5 +62,25 @@ public class TeamTag extends AbstractAuditingEntity implements Serializable {
 
     public void setTag(Tag tag) {
         this.tag = tag;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TeamTag teamTag = (TeamTag) o;
+
+        if (!tag.equals(teamTag.tag)) return false;
+        if (!team.equals(teamTag.team)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = team.hashCode();
+        result = 31 * result + tag.hashCode();
+        return result;
     }
 }

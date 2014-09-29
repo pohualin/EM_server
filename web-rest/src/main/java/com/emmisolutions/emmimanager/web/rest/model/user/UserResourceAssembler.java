@@ -58,7 +58,6 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(TeamPage.createFullSearchLink());
         ret.add(createTeamByClientIdLink());
         ret.add(createTeamByTeamIdLink());
-        ret.add(createTeamTagAssociationLink());
         return ret;
     }
 
@@ -115,20 +114,6 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         if (idx != -1) {
             return new Link(
                     href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
-                    link.getRel());
-        }
-        return null;
-    }
-    
-    public Link createTeamTagAssociationLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamTagsResource.class).list(1l,null,null,null,null,null);
-        Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("teamTagAssociation");
-        String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(TeamTagsResource.class));
-        if (idx != -1) {
-            return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(TeamTagsResource.class, method),
                     link.getRel());
         }
         return null;
