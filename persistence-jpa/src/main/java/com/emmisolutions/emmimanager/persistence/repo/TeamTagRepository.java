@@ -22,4 +22,5 @@ public interface TeamTagRepository extends JpaRepository<TeamTag, Long>, JpaSpec
     */
 
     Page<TeamTag> findByTeam(Team team, Pageable pageable);
+    List<TeamTag> findByTeam(Team team);
 }

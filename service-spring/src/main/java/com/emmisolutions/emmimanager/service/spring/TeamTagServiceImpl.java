@@ -31,10 +31,13 @@ public class TeamTagServiceImpl implements TeamTagService {
 
     @Override
     public void save(Team team, Set<Tag> tagSet) {
+        if(tagSet==null||tagSet.isEmpty()){
+            return;
+        }
         Team teamToFind = teamPersistence.reload(team);
-        Page<TeamTag> teamTagPage = teamTagPersistence.getAllTeamTagsForTeam(null, teamToFind);
+        List<TeamTag> teamTagList = teamTagPersistence.getAllTagsForTeam(teamToFind);
 
-        for(TeamTag teamTag:teamTagPage.getContent()){
+        for(TeamTag teamTag:teamTagList){
             teamTagPersistence.deleteTeamTag(teamTag);
         }
 

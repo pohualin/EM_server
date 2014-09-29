@@ -67,6 +67,14 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
         return teamTagRepository.findByTeam(team, pageable);
     }
 
+    @Override
+    public List<TeamTag> getAllTagsForTeam(Team team) {
+        if (team == null) {
+            throw new IllegalArgumentException("team tag is null");
+        }
+        return teamTagRepository.findByTeam(team);
+    }
+
     private void checkTeamTagNull(TeamTag teamTag) {
         if (teamTag == null) {
             throw new IllegalArgumentException("team tag is null");

@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
@@ -238,6 +239,45 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Page<TeamTag> associatedTeamTagsPage = teamTagPersistence.getAllTeamTagsForTeam(null,team1);
         assertThat("2 teams were correctly returned", associatedTeamTagsPage.getTotalElements(), is(2L));
     }
+
+    /*
+    * try to save a team tag with a tag that has a different client than the team
+    */
+    @Test
+    public void getAllTeamsForTag() {
+        TeamTag teamTag1 = new TeamTag();
+        TeamTag teamTag2 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1);
+
+        Tag tag1 = createTag(group,"1");
+        Tag tag2 = createTag(group,"2");
+        Team team1 = createTeam(client1, 1);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTag2.setTag(tag2);
+        teamTag2.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+        teamTagPersistence.saveTeamTag(teamTag2);
+
+        List<TeamTag> teamList = teamTagPersistence.getAllTagsForTeam(team1);
+        assertTrue("incorrect tag returned for tag 1",teamList.get(0).getTag().equals(tag1));
+        assertTrue("incorrect tag returned for tag 2",teamList.get(1).getTag().equals(tag2));
+
+    }
+
+ /*
+    * try to save a team tag with a tag that has a different client than the team
+    */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void getAllTeamsForTagNull() {
+        teamTagPersistence.getAllTagsForTeam(null);
+    }
+
 
     private Team createTeam(Client client, int i) {
         Team team = new Team();

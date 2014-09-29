@@ -37,4 +37,11 @@ public interface TeamTagPersistence {
      * @return Page of associated tags for given team
      */
     Page<TeamTag> getAllTeamTagsForTeam(Pageable pageable,Team team);
+
+    /**
+     * Gets all the teams associated with a given tag
+     * @param Team to look for
+     * @return List of matching TeamTags
+     */
+    List<TeamTag> getAllTagsForTeam(Team team);
 }

@@ -52,7 +52,7 @@ public class TeamTagsResource {
      * @return ClientPage or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG"})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
     public ResponseEntity<TeamTagPage> list(
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10) Pageable pageable,
@@ -85,7 +85,7 @@ public class TeamTagsResource {
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG"})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
     public void create(@PathVariable("teamId") Long teamId,@RequestBody Set<Tag> tagSet) {
         Team toFind = new Team();
         toFind.setId(teamId);
