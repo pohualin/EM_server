@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
+import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -29,8 +30,6 @@ import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
-
-import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.fromStringOrActive;
 /**
  * Teams REST API
  */
@@ -155,4 +154,20 @@ public class TeamsResource {
 	    	 	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	     }
 	 }
+
+	@RequestMapping(value = "/teams/ref/findByNormalizedNameForClient", method = RequestMethod.GET)
+	public ResponseEntity<TeamResource> findByNormalizedNameForClient(
+			@RequestParam(value = "normalizedName", required = false) String normalizedName,
+			@PageableDefault(size = 1) Pageable pageable,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+
+		Team toFind = teamService.findByNormalizedNameAndClientId(normalizedName, clientId);
+
+		if (toFind != null) {
+			return new ResponseEntity<>(
+					teamResourceAssembler.toResource(toFind), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
 }

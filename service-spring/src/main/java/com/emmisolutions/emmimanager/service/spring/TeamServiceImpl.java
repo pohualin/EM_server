@@ -63,4 +63,10 @@ public class TeamServiceImpl implements TeamService {
 					
         return teamPersistence.save(team);
 	}
+	
+	@Override
+	public Team findByNormalizedNameAndClientId(String normalizedName, Long clientId){
+		return teamPersistence.findByNormalizedTeamNameAndClientId(normalizedName, clientId);
+	}
+	
 }

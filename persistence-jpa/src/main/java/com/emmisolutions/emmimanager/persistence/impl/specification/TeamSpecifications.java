@@ -1,21 +1,21 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-import com.emmisolutions.emmimanager.model.Team_;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.CollectionUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
+
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSearchFilter;
+import com.emmisolutions.emmimanager.model.Team_;
 public class TeamSpecifications {
 	
 	private TeamSpecifications(){		
@@ -33,20 +33,36 @@ public class TeamSpecifications {
             public Predicate toPredicate(Root<Team> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
                 if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.getNames())) {
-                    boolean addedANameFilter = false;
-                    for (String name : searchFilter.getNames()) {
-                        if (StringUtils.isNotBlank(name)) {
-                            addedANameFilter = true;
-                            predicates.add(cb.like(cb.lower(root.get(Team_.name)), "%" + name.toLowerCase() + "%"));
-                        }
-                    }
-                    return addedANameFilter ? cb.or(predicates.toArray(new Predicate[predicates.size()])) : null;
+                for (String name: searchFilter.getNames()) {
+                	List<String> searchTerms = new ArrayList<>();
+                	
+                	for (String term: StringUtils.split(normalizeName(name), " ")) {
+                		if (!searchTerms.contains(term)){
+                			searchTerms.add(term);
+                		}
+                	}
+                	
+                	List<Predicate> andClause = new ArrayList<>();
+                	for (String searchTerm: searchTerms){
+                		andClause.add(cb.like(root.get(Team_.normalizedTeamName), "%" + searchTerm + "%"));
+                	}
+                	predicates.add(cb.and(andClause.toArray(new Predicate[andClause.size()])));
+                }
+                	
+                return cb.or(predicates.toArray(new Predicate[predicates.size()]));
                 }
                 return null;
             }
         };
     }
 
+    private static String normalizeName(String name){
+    	String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
+    	if (StringUtils.isNotBlank(normalizedName)){
+    		normalizedName = normalizedName.replaceAll("[^a-z0-9 ]*", "");
+    	}
+    	return normalizedName;
+    }
     /**
      * Ensures that the Team is in a particular status
      *

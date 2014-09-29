@@ -35,4 +35,14 @@ public interface TeamPersistence {
      * @return the team or null
      */
     Team reload(Team team);
+    
+    /**
+     * Returns a team by normalized name and Client ID
+     *
+     * @param String normalizedName
+     * @param Long clientId
+     * @return Team
+     */
+	Team findByNormalizedTeamNameAndClientId(String normalizedName, Long clientId);
+
 }

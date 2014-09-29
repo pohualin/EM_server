@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 /**
  * A Team that corresponds to a Client
@@ -57,6 +58,22 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
+    
+    @NotNull
+    @Size(max = 255)
+    @Column(name="normalized_team_name", length = 255, nullable = false)
+    @NotAudited
+    @Pattern(regexp = "[a-z0-9 ]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
+    private String normalizedTeamName;    
+ 
+
+	public String getNormalizedTeamName() {
+		return normalizedTeamName;
+	}
+
+	public void setNormalizedTeamName(String normalizedTeamName) {
+		this.normalizedTeamName = normalizedTeamName;
+	}
 
 	public Long getId() {
 		return id;

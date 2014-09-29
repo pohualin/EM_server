@@ -1,14 +1,15 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.CrudRepository;
 
 import com.emmisolutions.emmimanager.model.Team;
 
 /**
  * Spring data repo for Team objects
  */
-public interface TeamRepository extends PagingAndSortingRepository<Team, Long>, JpaSpecificationExecutor<Team>, CrudRepository<Team, Long> {
+public interface TeamRepository extends JpaRepository<Team, Long>, JpaSpecificationExecutor<Team> {
+
+	Team findByNormalizedTeamNameAndClientId(String normalizedTeamName, Long client);
 
 }
