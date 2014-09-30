@@ -63,6 +63,7 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     private Client client;
 
     @NotNull
+    @Column(nullable = false)
     @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "salesforce_account_id")
     @JsonManagedReference

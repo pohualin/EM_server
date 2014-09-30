@@ -34,7 +34,7 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
         this.query = query;
         this.entity = entity;
         add(linkTo(methodOn(SalesForceResource.class).find(query)).withSelfRel());
-        //add(linkTo(methodOn(SalesForceResource.class).findForTeam(query)).withSelfRel());
+        add(linkTo(methodOn(SalesForceResource.class).findForTeam(query)).withSelfRel());
     }
 
     /**
@@ -53,13 +53,13 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
      * The link to find all sf accounts from team
      * @return the link
      */
-    /*public static Link createFindTeamLink() {
+    public static Link createFindTeamLink() {
         Link link = linkTo(methodOn(SalesForceResource.class).findForTeam(null)).withRel("findTeamSalesForceAccount");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("q", TemplateVariable.VariableType.REQUEST_PARAM)));
         return new Link(uriTemplate, link.getRel());
-    }*/
+    }
     
     /**
      * Override to change the link property name for serialization

@@ -47,4 +47,10 @@ public class SalesForceServiceImpl implements SalesForceService {
         return salesForceSearchResponse;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public SalesForceSearchResponse findForTeam(String searchString) {
+        return salesForceLookup.findAccounts(searchString, 20);
+
+    }
 }
