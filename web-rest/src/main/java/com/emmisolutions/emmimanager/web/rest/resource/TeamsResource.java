@@ -144,7 +144,7 @@ public class TeamsResource {
 	 }
 
     /**
-     * GET to Retrieve reference data about clients.
+     * GET to Retrieve reference data about teams.
      *
      * @return ReferenceData
      */
