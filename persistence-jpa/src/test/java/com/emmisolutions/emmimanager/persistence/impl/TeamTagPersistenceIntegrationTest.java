@@ -201,7 +201,8 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("TeamTag was given an id", teamTag.getId(), is(notNullValue()));
 
         teamTagPersistence.deleteTeamTag(teamTag);
-        teamTagPersistence.reload(teamTag);
+        teamTag = teamTagPersistence.reload(teamTag);
+        assertThat("TeamTag was deleted", teamTag, is(nullValue()));
     }
 
     /**
@@ -271,9 +272,9 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTagPersistence.saveTeamTag(teamTag3);
 
         teamTagPersistence.deleteTeamTagsWithTeam(team1);
-        assertThat("teamtag1 not deleted",teamTagPersistence.reload(teamTag1),is(nullValue()));
-        assertThat("teamtag3 not deleted",teamTagPersistence.reload(teamTag3),is(nullValue()));
-        assertThat("teamtag2 was deleted",teamTagPersistence.reload(teamTag2),is(notNullValue()));
+        assertThat("teamtag1 was deleted",teamTagPersistence.reload(teamTag1),is(nullValue()));
+        assertThat("teamtag3 was deleted",teamTagPersistence.reload(teamTag3),is(nullValue()));
+        assertThat("teamtag2 was not deleted",teamTagPersistence.reload(teamTag2),is(notNullValue()));
 
     }
 
@@ -294,6 +295,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         team.setPhone("1111111111");
         team.setFax("2222222222");
         team.setClient(client);
+        team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
         team = teamPersistence.save(team);
         return team;
     }

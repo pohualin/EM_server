@@ -20,7 +20,11 @@ public interface TeamTagRepository extends JpaRepository<TeamTag, Long>, JpaSpec
     * @param team to search for
     * @return a Page of TeamTags or null
     */
-
     Page<TeamTag> findByTeam(Team team, Pageable pageable);
+
+    /**
+     * Delete all TeamTags with given team
+     * @param team to delete
+     */
     void deleteByTeam(Team team);
 }

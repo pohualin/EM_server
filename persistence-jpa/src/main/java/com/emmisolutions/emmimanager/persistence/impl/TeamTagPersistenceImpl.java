@@ -50,7 +50,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     @Override
     public void deleteTeamTag(TeamTag teamTag) {
         checkTeamTagNull(teamTag);
-        teamTagRepository.delete(teamTag.getId());
+        teamTagRepository.delete(teamTag);
     }
 
     @Override
