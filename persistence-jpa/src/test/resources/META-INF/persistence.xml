@@ -12,6 +12,7 @@
         <class>com.emmisolutions.emmimanager.model.Role</class>
         <class>com.emmisolutions.emmimanager.model.Client</class>
         <class>com.emmisolutions.emmimanager.model.SalesForce</class>
+        <class>com.emmisolutions.emmimanager.model.TeamSalesForce</class>
         <class>com.emmisolutions.emmimanager.model.Location</class>
 		<class>com.emmisolutions.emmimanager.model.Team</class>
         <class>com.emmisolutions.emmimanager.model.Group</class>
