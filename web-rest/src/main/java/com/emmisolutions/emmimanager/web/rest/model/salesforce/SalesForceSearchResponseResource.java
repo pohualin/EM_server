@@ -30,11 +30,14 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
      * @param entity the wrapped entity
      * @param query  the query that caused the response
      */
-    public SalesForceSearchResponseResource(SalesForceSearchResponse entity, String query) {
+    public SalesForceSearchResponseResource(SalesForceSearchResponse entity, String query, boolean teamSearch) {
         this.query = query;
         this.entity = entity;
-        add(linkTo(methodOn(SalesForceResource.class).find(query)).withSelfRel());
-        add(linkTo(methodOn(SalesForceResource.class).findForTeam(query)).withSelfRel());
+        if (!teamSearch) {
+            add(linkTo(methodOn(SalesForceResource.class).find(query)).withSelfRel());
+        } else {
+            add(linkTo(methodOn(SalesForceResource.class).findForTeam(query)).withSelfRel());
+        }
     }
 
     /**

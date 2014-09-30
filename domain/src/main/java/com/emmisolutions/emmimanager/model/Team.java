@@ -47,7 +47,7 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     private String fax;
     
     @ManyToOne
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
     @NotNull

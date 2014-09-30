@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.web.rest.model.team.ReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
@@ -141,6 +142,17 @@ public class TeamsResource {
 	         return new ResponseEntity<>(teamResourceAssembler.toResource(team), HttpStatus.CREATED);
 	     }
 	 }
+
+    /**
+     * GET to Retrieve reference data about clients.
+     *
+     * @return ReferenceData
+     */
+    @RequestMapping(value = "/teams/ref", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE", "PERM_TEAM_EDIT"})
+    public ReferenceData getReferenceData() {
+        return new ReferenceData();
+    }
 	 	 
 	 private ResponseEntity<TeamPage> findTeams(Pageable pageable, PagedResourcesAssembler<Team> assembler,Long clientId, String status, String... names) {
 	 	 // create the search filter

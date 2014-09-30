@@ -33,14 +33,14 @@ public class SalesForceResource {
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ResponseEntity<SalesForceSearchResponseResource> find(@RequestParam(value = "q", required = false) String searchString) {
     	SalesForceSearchResponse searchResponse = salesForceService.find(searchString);
-    	return findAccounts(searchString,searchResponse); 
+    	return findAccounts(searchString,searchResponse, false);
     }
-    
+
     @RequestMapping(value = "/teams/sf/find", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE", "PERM_TEAM_EDIT"})
     public ResponseEntity<SalesForceSearchResponseResource> findForTeam(@RequestParam(value = "q", required = false) String searchString) {
     	SalesForceSearchResponse searchResponse = salesForceService.findForTeam(searchString);
-    	return findAccounts(searchString,searchResponse);
+    	return findAccounts(searchString,searchResponse, true);
     }
 
     /**
@@ -50,10 +50,9 @@ public class SalesForceResource {
      * @return the account resources
      */
 	private ResponseEntity<SalesForceSearchResponseResource> findAccounts(String searchString,
-			SalesForceSearchResponse searchResponse) {
-		//SalesForceSearchResponse searchResponse = salesForceService.find(searchString);
+			SalesForceSearchResponse searchResponse, boolean forTeam) {
         if (searchResponse != null && !CollectionUtils.isEmpty(searchResponse.getAccounts())) {
-            return new ResponseEntity<>(new SalesForceSearchResponseResource(searchResponse, searchString), HttpStatus.OK);
+            return new ResponseEntity<>(new SalesForceSearchResponseResource(searchResponse, searchString, forTeam), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
