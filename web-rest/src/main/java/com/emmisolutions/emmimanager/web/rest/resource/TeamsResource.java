@@ -1,26 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
@@ -29,8 +8,22 @@ import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 
 import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 /**
  * Teams REST API
  */
@@ -67,6 +60,18 @@ public class TeamsResource {
 	         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	     }
 	 }
+
+    @RequestMapping(value = "/teams/{teamId}", method = RequestMethod.PUT,
+            consumes = {APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_EDIT"})
+    public ResponseEntity<TeamResource> updateTeam(@PathVariable Long teamId, @RequestBody Team team) {
+        Team updated = teamService.update(team);
+        if (updated != null) {
+            return new ResponseEntity<>(teamResourceAssembler.toResource(updated), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 	 
 	 /**
 	  * GET to search for teams
