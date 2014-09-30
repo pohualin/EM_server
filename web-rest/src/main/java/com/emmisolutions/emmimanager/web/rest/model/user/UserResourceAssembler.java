@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.emmisolutions.emmimanager.web.rest.resource.*;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
@@ -23,10 +24,6 @@ import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 
 /**
  * Creates a UserResource from a User
@@ -121,7 +118,7 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         }
         return null;
     }
-    
+
     private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 
 }

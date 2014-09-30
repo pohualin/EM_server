@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tag extends AbstractAuditingEntity implements Serializable{
 
-	@Id
+    @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
@@ -63,6 +63,21 @@ public class Tag extends AbstractAuditingEntity implements Serializable{
 	public void setGroup(Group group) {
 		this.group = group;
 	}
-	
-	
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tag tag = (Tag) o;
+
+        if (id != null ? !id.equals(tag.id) : tag.id != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
