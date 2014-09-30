@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
-
-import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.web.rest.model.salesforce.SalesForceSearchResponseResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -12,19 +11,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * A HATEOAS wrapper for a Tag entity.
+ * Common reference data for Team operations.
  */
-@XmlRootElement(name = "teamTag")
-public class TeamTagResource extends ResourceSupport {
+@XmlRootElement(name = "reference-data")
+public class ReferenceData extends ResourceSupport {
 
-    private TeamTag entity;
-
-    public TeamTag getEntity() {
-        return entity;
-    }
-
-    public void setEntity(TeamTag entity) {
-        this.entity = entity;
+    public ReferenceData(){
+       add(SalesForceSearchResponseResource.createFindTeamLink());
     }
 
     /**
@@ -35,7 +28,7 @@ public class TeamTagResource extends ResourceSupport {
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")
-    public List<Link> getLinks(){
+    public List<Link> getLinks() {
         return super.getLinks();
     }
 }

@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -42,4 +41,11 @@ public interface TeamService {
      * @return the new team (with id/version)
      */
     Team create(Team team);
+
+    /**
+     * Updates an existing team
+     * @param team to save
+     * @return the saved team
+     */
+    Team update(Team team);
 }
