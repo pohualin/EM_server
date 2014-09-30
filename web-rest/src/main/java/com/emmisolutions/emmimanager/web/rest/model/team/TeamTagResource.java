@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
 
-import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TeamTag;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;

@@ -1,24 +1,18 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.*;
-import com.emmisolutions.emmimanager.persistence.repo.TagRepository;
-import com.emmisolutions.emmimanager.persistence.repo.TeamTagRepository;
 import com.emmisolutions.emmimanager.service.*;
 import org.joda.time.LocalDate;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 

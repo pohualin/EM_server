@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TeamRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TeamTagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolationException;
-import java.util.List;
 
 /*
  * TeamTag persistence implementation

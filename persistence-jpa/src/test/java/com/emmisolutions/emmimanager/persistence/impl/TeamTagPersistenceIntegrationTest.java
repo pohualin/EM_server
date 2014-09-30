@@ -2,26 +2,16 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.*;
-import org.hibernate.TransientObjectException;
-import org.hibernate.TransientPropertyValueException;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
 
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
