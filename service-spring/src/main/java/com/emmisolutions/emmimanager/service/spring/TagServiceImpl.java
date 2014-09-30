@@ -57,7 +57,7 @@ public class TagServiceImpl implements TagService {
 	@Override
 	@Transactional
 	public List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group) {
-		List<Tag> tagsList = new ArrayList<Tag>();
+		List<Tag> tagsList = new ArrayList<>();
 		if (tags != null && !tags.isEmpty()) {
 			for (Tag tag : tags) {
 				if (StringUtils.isNotBlank(tag.getName())) {
