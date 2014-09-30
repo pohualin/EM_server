@@ -4,6 +4,8 @@ import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -155,14 +158,13 @@ public class TeamsResource {
 	     }
 	 }
 
-	@RequestMapping(value = "/teams/ref/findByNormalizedNameForClient", method = RequestMethod.GET)
+	@RequestMapping(value = "/clients/{clientId}/teams/findNormalizedName", method = RequestMethod.GET)
 	public ResponseEntity<TeamResource> findByNormalizedNameForClient(
-			@RequestParam(value = "normalizedName", required = false) String normalizedName,
+			@RequestParam(value = "normalizedName",  required = false) String normalizedName,
 			@PageableDefault(size = 1) Pageable pageable,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+			@PathVariable("clientId") Long clientId) {
 
 		Team toFind = teamService.findByNormalizedNameAndClientId(normalizedName, clientId);
-
 		if (toFind != null) {
 			return new ResponseEntity<>(
 					teamResourceAssembler.toResource(toFind), HttpStatus.OK);
