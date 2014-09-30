@@ -1,26 +1,14 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.envers.Audited;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.io.Serializable;
 
 /**
  * A Team that corresponds to a Client
@@ -63,9 +51,8 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     private Client client;
 
     @NotNull
-    @Column(nullable = false)
     @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "salesforce_account_id")
+    @JoinColumn(name = "salesforce_account_id", nullable = false)
     @JsonManagedReference
     private TeamSalesForce salesForceAccount;   
     
