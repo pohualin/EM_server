@@ -46,6 +46,7 @@ public class ReferenceData extends ResourceSupport {
     public ReferenceData() {
         add(UserPage.createPotentialOwnersFullSearchLink());
         add(SalesForceSearchResponseResource.createFindLink());
+        add(SalesForceSearchResponseResource.createFindTeamLink());
         add(ClientResource.createFindNormalizedNameLink());
         add(ReferenceGroupPage.createGroupReferenceDataLink());
     }
