@@ -12,9 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -37,15 +36,15 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
     UserService userService;
 
 
-    private Client createClient(String uniqueId) {
-        User user = userService.save(new User("login "+uniqueId,"pw"));
+    private Client createClient() {
+        User user = userService.save(new User("login " + System.currentTimeMillis(), "pw"));
 
         Client client = new Client();
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
-        client.setName("Test Client "+uniqueId);
+        client.setName("Test Client " + System.currentTimeMillis());
         client.setType(ClientType.PROVIDER);
         client.setContractOwner(user);
         client.setActive(false);
@@ -60,18 +59,18 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         return group;
     }
 
-    private Tag createTag(Group group, String uniqueId ) {
+    private Tag createTag(Group group, String uniqueId) {
         Tag tag = new Tag();
-        tag.setName("Test Tag "+ uniqueId);
+        tag.setName("Test Tag " + uniqueId);
         tag.setGroup(group);
         return tag;
     }
 
-    private Team createTeam(Client client, int i) {
+    private Team createTeam(Client client) {
         Team team = new Team();
-        team.setName("Test Team"+i);
+        team.setName("Test Team" + System.currentTimeMillis());
         team.setDescription("Test Team description");
-        team.setActive(i % 2 == 0);
+        team.setActive(true);
         team.setPhone("1111111111");
         team.setFax("2222222222");
         team.setClient(client);
@@ -81,16 +80,16 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * 	Test List tags by group id
+     * Test List tags by group id
      */
     @Test
-    public void testSaveAndFind(){
-        Client client = clientService.create(createClient("1"));
+    public void testSaveAndFind() {
+        Client client = clientService.create(createClient());
         Group group = groupService.save(createGroup(client));
 
-        List<Tag> tagList = createTagList(group,2);
+        List<Tag> tagList = createTagList(group, 2);
 
-        Team team1 = teamService.create(createTeam(client, 1));
+        Team team1 = teamService.create(createTeam(client));
 
         Set<Tag> tagSet = new HashSet<>();
         tagSet.add(tagList.get(0));
@@ -104,66 +103,57 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
     private List<Tag> createTagList(Group group, int numberOfTags) {
         List<Tag> tagList = new ArrayList<>();
-        for(int i=0;i<numberOfTags;i++) {
+        for (int i = 0; i < numberOfTags; i++) {
             Tag tag = createTag(group, Integer.toString(i));
             tagList.add(tag);
         }
 
-        tagList = tagService.saveAllTagsForGroup(tagList,group);
+        tagList = tagService.saveAllTagsForGroup(tagList, group);
         return tagList;
     }
 
     /**
-     * 	Test the save method deletes items in between saves
+     * Test the save method deletes items in between saves
      */
     @Test
-    public void testSaveDeletesItems(){
-        Client client = clientService.create(createClient("2"));
+    public void testSaveDeletesItems() {
+        Client client = clientService.create(createClient());
         Group group = groupService.save(createGroup(client));
 
-        List<Tag> tagListComplete = createTagList(group,4);
-        List<Tag> tagListFirstHalf = tagListComplete.subList(0,2);
-        List<Tag> tagListSecondHalf = tagListComplete.subList(2,4);
+        // create 4 tags in a group
+        List<Tag> tagListComplete = createTagList(group, 4);
 
-        tagService.saveAllTagsForGroup(tagListFirstHalf,group);
+        // split into two groups
+        List<Tag> tagListFirstHalf = tagListComplete.subList(0, 2);
+        List<Tag> tagListSecondHalf = tagListComplete.subList(2, 4);
 
-        Team team1 = teamService.create(createTeam(client, 1));
+        // make a team
+        Team team1 = teamService.create(createTeam(client));
 
+        // associate half of the tags to this team
         Set<Tag> tagSet = new HashSet<>();
-        tagSet.add(tagListFirstHalf.get(0));
-        tagSet.add(tagListFirstHalf.get(1));
-
+        tagSet.addAll(tagListFirstHalf);
         teamTagService.save(team1, tagSet);
 
-        Page<TeamTag> teamTagPage = teamTagService.findAllTeamTagsWithTeam(null, team1);
-        assertThat("teamTagPage has two teams", teamTagPage.getTotalElements(), is(2L));
-        assertTrue("teamTagPage should have correct 1st team",
-                teamTagPage.getContent().get(0).getTeam().equals(team1));
-        assertTrue("teamTagPage should have correct 1st tag",
-                teamTagPage.getContent().get(0).getTag().equals(tagListFirstHalf.get(0)));
-        assertTrue("teamTagPage should have correct 2nd team",
-                teamTagPage.getContent().get(1).getTeam().equals(team1));
-        assertTrue("teamTagPage should have correct 2nd tag",
-                teamTagPage.getContent().get(1).getTag().equals(tagListFirstHalf.get(1)));
+        Page<TeamTag> tags = teamTagService.findAllTeamTagsWithTeam(null, team1);
+        List<Tag> savedTags = new ArrayList<>();
+        for (TeamTag tag : tags) {
+            savedTags.add(tag.getTag());
+        }
+        assertThat("tags should be found", savedTags, hasItems(tagListFirstHalf.toArray(new Tag[tagListFirstHalf.size()])));
 
+        // check that new tag save, overwrites the first save
+        Set<Tag> overwriteTags = new HashSet<>();
+        overwriteTags.addAll(tagListSecondHalf);
+        teamTagService.save(team1, overwriteTags);
 
-        tagService.saveAllTagsForGroup(tagListSecondHalf,group);
-
-        Set<Tag> tagSet2 = new HashSet<>();
-        tagSet2.add(tagListSecondHalf.get(0));
-        tagSet2.add(tagListSecondHalf.get(1));
-
-        teamTagService.save(team1, tagSet2);
-
-        Page<TeamTag> teamTagPage2 = teamTagService.findAllTeamTagsWithTeam(null, team1);
-        assertThat("teamTagPage2 has two teams", teamTagPage2.getTotalElements(), is(2L));
-        assertTrue("teamTagPage2 should have correct 1st team",
-                teamTagPage2.getContent().get(0).getTeam().equals(team1));
-        assertTrue("teamTagPage2 should have correct 1st tag",
-                teamTagPage2.getContent().get(0).getTag().equals(tagListSecondHalf.get(0)));
-        assertTrue("teamTagPage2 should have correct 2nd team",
-                teamTagPage2.getContent().get(1).getTeam().equals(team1));
-        assertTrue("teamTagPage2 should have correct 2nd tag",
-                teamTagPage2.getContent().get(1).getTag().equals(tagListSecondHalf.get(1)));
+        // load the tags again
+        savedTags = new ArrayList<>();
+        tags = teamTagService.findAllTeamTagsWithTeam(null, team1);
+        for (TeamTag tag : tags) {
+            savedTags.add(tag.getTag());
+        }
+        assertThat("first set should not be found", savedTags, not(hasItems(tagListFirstHalf.toArray(new Tag[tagListFirstHalf.size()]))));
+        assertThat("second set should be found", savedTags, hasItems(tagListSecondHalf.toArray(new Tag[tagListSecondHalf.size()])));
     }
 }
