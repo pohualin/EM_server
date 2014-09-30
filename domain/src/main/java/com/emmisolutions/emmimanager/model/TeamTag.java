@@ -17,7 +17,6 @@ import java.io.Serializable;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TeamTag extends AbstractAuditingEntity implements Serializable {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -71,16 +70,13 @@ public class TeamTag extends AbstractAuditingEntity implements Serializable {
 
         TeamTag teamTag = (TeamTag) o;
 
-        if (!tag.equals(teamTag.tag)) return false;
-        if (!team.equals(teamTag.team)) return false;
+        if (id != null ? !id.equals(teamTag.id) : teamTag.id != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = team.hashCode();
-        result = 31 * result + tag.hashCode();
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 }

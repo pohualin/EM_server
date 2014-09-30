@@ -144,9 +144,14 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         Page<TeamTag> teamTagPage = teamTagService.findAllTeamTagsWithTeam(null, team1);
         assertThat("teamTagPage has two teams", teamTagPage.getTotalElements(), is(2L));
         assertTrue("teamTagPage should have correct 1st team",
-                teamTagPage.getContent().get(0).equals(new TeamTag(team1, tagListFirstHalf.get(0))));
+                teamTagPage.getContent().get(0).getTeam().equals(team1));
+        assertTrue("teamTagPage should have correct 1st tag",
+                teamTagPage.getContent().get(0).getTag().equals(tagListFirstHalf.get(0)));
         assertTrue("teamTagPage should have correct 2nd team",
-                teamTagPage.getContent().get(1).equals(new TeamTag(team1, tagListFirstHalf.get(1))));
+                teamTagPage.getContent().get(1).getTeam().equals(team1));
+        assertTrue("teamTagPage should have correct 2nd tag",
+                teamTagPage.getContent().get(1).getTag().equals(tagListFirstHalf.get(1)));
+
 
         tagService.saveAllTagsForGroup(tagListSecondHalf,group);
 
@@ -157,17 +162,14 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         teamTagService.save(team1, tagSet2);
 
         Page<TeamTag> teamTagPage2 = teamTagService.findAllTeamTagsWithTeam(null, team1);
-        System.out.println(teamTagPage2.getContent().get(0).getTeam().getName());
-        System.out.println(team1.getName());
-        System.out.println(teamTagPage2.getContent().get(0).getTag().getName());
-        System.out.println(tagListSecondHalf.get(0).getName());
         assertThat("teamTagPage2 has two teams", teamTagPage2.getTotalElements(), is(2L));
         assertTrue("teamTagPage2 should have correct 1st team",
-                teamTagPage2.getContent().get(0).equals(new TeamTag(team1, tagListSecondHalf.get(0))));
+                teamTagPage2.getContent().get(0).getTeam().equals(team1));
+        assertTrue("teamTagPage2 should have correct 1st tag",
+                teamTagPage2.getContent().get(0).getTag().equals(tagListSecondHalf.get(0)));
         assertTrue("teamTagPage2 should have correct 2nd team",
-                teamTagPage2.getContent().get(1).equals(new TeamTag(team1, tagListSecondHalf.get(1))));
-
+                teamTagPage2.getContent().get(1).getTeam().equals(team1));
+        assertTrue("teamTagPage2 should have correct 2nd tag",
+                teamTagPage2.getContent().get(1).getTag().equals(tagListSecondHalf.get(1)));
     }
-
-
 }
