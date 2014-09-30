@@ -241,12 +241,13 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /*
-    * try to save a team tag with a tag that has a different client than the team
+    * delete all teamTags with a given team
     */
     @Test
-    public void getAllTeamsForTag() {
+    public void deleteTeamTagsWithTeam() {
         TeamTag teamTag1 = new TeamTag();
         TeamTag teamTag2 = new TeamTag();
+        TeamTag teamTag3 = new TeamTag();
 
         Client client1 = createClient("1");
         Group group = createGroup(client1);
@@ -254,19 +255,25 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Tag tag1 = createTag(group,"1");
         Tag tag2 = createTag(group,"2");
         Team team1 = createTeam(client1, 1);
+        Team team2 = createTeam(client1, 2);
 
         teamTag1.setTag(tag1);
         teamTag1.setTeam(team1);
 
-        teamTag2.setTag(tag2);
-        teamTag2.setTeam(team1);
+        teamTag2.setTag(tag1);
+        teamTag2.setTeam(team2);
+
+        teamTag3.setTag(tag2);
+        teamTag3.setTeam(team1);
 
         teamTagPersistence.saveTeamTag(teamTag1);
         teamTagPersistence.saveTeamTag(teamTag2);
+        teamTagPersistence.saveTeamTag(teamTag3);
 
-        List<TeamTag> teamList = teamTagPersistence.getAllTagsForTeam(team1);
-        assertTrue("incorrect tag returned for tag 1",teamList.get(0).getTag().equals(tag1));
-        assertTrue("incorrect tag returned for tag 2",teamList.get(1).getTag().equals(tag2));
+        teamTagPersistence.deleteTeamTagsWithTeam(team1);
+        assertThat("teamtag1 not deleted",teamTagPersistence.reload(teamTag1),is(nullValue()));
+        assertThat("teamtag3 not deleted",teamTagPersistence.reload(teamTag3),is(nullValue()));
+        assertThat("teamtag2 was deleted",teamTagPersistence.reload(teamTag2),is(notNullValue()));
 
     }
 
@@ -275,7 +282,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void getAllTeamsForTagNull() {
-        teamTagPersistence.getAllTagsForTeam(null);
+        teamTagPersistence.deleteTeamTagsWithTeam(null);
     }
 
 

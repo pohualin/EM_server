@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 
@@ -68,11 +69,12 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     }
 
     @Override
-    public List<TeamTag> getAllTagsForTeam(Team team) {
+    @Transactional
+    public void deleteTeamTagsWithTeam(Team team) {
         if (team == null) {
             throw new IllegalArgumentException("team tag is null");
         }
-        return teamTagRepository.findByTeam(team);
+        teamTagRepository.deleteByTeam(team);
     }
 
     private void checkTeamTagNull(TeamTag teamTag) {
@@ -80,4 +82,5 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
             throw new IllegalArgumentException("team tag is null");
         }
     }
+
 }

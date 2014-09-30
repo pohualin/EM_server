@@ -35,11 +35,7 @@ public class TeamTagServiceImpl implements TeamTagService {
             return;
         }
         Team teamToFind = teamPersistence.reload(team);
-        List<TeamTag> teamTagList = teamTagPersistence.getAllTagsForTeam(teamToFind);
-
-        for(TeamTag teamTag:teamTagList){
-            teamTagPersistence.deleteTeamTag(teamTag);
-        }
+        teamTagPersistence.deleteTeamTagsWithTeam(teamToFind);
 
         for(Tag tag: tagSet){
             TeamTag teamTag = new TeamTag(team, tag);
