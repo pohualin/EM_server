@@ -1,31 +1,22 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.ACTIVE_ONLY;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSalesForce;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import javax.annotation.Resource;
+
+import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.ACTIVE_ONLY;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Team Persistence Integration test 
@@ -116,8 +107,6 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest{
 		 team.setName("Test Team"+i);
 		 team.setDescription("Test Team description");
 		 team.setActive(i % 2 == 0);
-		 team.setPhone("1111111111");
-		 team.setFax("2222222222");
 		 team.setClient(client);
 		 team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
 		 return team;

@@ -70,8 +70,6 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 		 team.setName("Test Team");
 		 team.setDescription("Test Team description");
 		 team.setActive(false);
-		 team.setPhone("1111111111");
-		 team.setFax("2222222222");
 		 team.setClient(client);
 		 team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
 		 return team;

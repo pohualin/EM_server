@@ -95,8 +95,6 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         team.setName("Test Team");
         team.setDescription("Test Team description");
         team.setActive(true);
-        team.setPhone("1111111111");
-        team.setFax("2222222222");
         team.setClient(client);
 
         teamTag.setTag(tag);
@@ -282,8 +280,6 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         team.setName("Test Team"+i);
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
-        team.setPhone("1111111111");
-        team.setFax("2222222222");
         team.setClient(client);
         team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
         team = teamPersistence.save(team);

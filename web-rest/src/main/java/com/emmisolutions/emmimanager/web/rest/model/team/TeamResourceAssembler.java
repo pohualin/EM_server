@@ -20,7 +20,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
 	 @Override
 	 public TeamResource toResource(Team entity) {
 		 TeamResource ret = new TeamResource();
-	     ret.add(linkTo(methodOn(TeamsResource.class).getTeam(entity.getId())).withSelfRel());
+	     ret.add(linkTo(methodOn(TeamsResource.class).getTeam(entity.getClient().getId(), entity.getId())).withSelfRel());
          ret.add(linkTo(methodOn(TeamTagsResource.class).list(1l, null, null, null, null, null)).withRel("tags"));
 	     ret.setEntity(entity);
 	     return ret; 

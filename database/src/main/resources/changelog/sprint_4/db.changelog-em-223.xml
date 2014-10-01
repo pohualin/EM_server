@@ -86,6 +86,13 @@
                                  constraintName="fk_client_team_revision_info"
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>
-    </changeSet>  
+    </changeSet>
+
+    <changeSet id="drop extraneous phone and fax" author="Matt">
+        <dropColumn tableName="client_team" columnName="phone"/>
+        <dropColumn tableName="client_team" columnName="fax"/>
+        <dropColumn tableName="client_team_audit" columnName="phone"/>
+        <dropColumn tableName="client_team_audit" columnName="fax"/>
+    </changeSet>
 
 </databaseChangeLog>    
