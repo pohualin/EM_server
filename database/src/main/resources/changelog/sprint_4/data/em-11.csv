@@ -1,0 +1,6 @@
+language_id;key_path;message
+1;team_edit_page.deactivate_dialog.title;
+1;team_edit_page.deactivate_dialog.content;Are you sure you want to deactivate this team?
+1;team_edit_page.deactivate_dialog.cancel_button;No
+1;team_edit_page.deactivate_dialog.ok_button;Yes
+
