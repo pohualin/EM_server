@@ -59,11 +59,9 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
         ret.add(TeamPage.createFullSearchLink());
         ret.add(createTeamByClientIdLink());
-        ret.add(createTeamByTeamIdLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         return ret;
     }
-
 
     public Link createClientByIdLink() {
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ClientsResource.class).get(1l);
@@ -98,20 +96,6 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).createTeam(1l,null);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("teamsByClientId");
-        String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
-        if (idx != -1) {
-            return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
-                    link.getRel());
-        }
-        return null;
-    }
-    
-    public Link createTeamByTeamIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).getTeam(1l);
-        Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("teamByTeamId");
         String href = link.getHref();
         int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
         if (idx != -1) {

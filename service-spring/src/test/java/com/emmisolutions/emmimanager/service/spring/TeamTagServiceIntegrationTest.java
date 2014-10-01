@@ -71,8 +71,6 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         team.setName("Test Team" + System.currentTimeMillis());
         team.setDescription("Test Team description");
         team.setActive(true);
-        team.setPhone("1111111111");
-        team.setFax("2222222222");
         team.setClient(client);
         team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
 

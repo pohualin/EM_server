@@ -1,25 +1,14 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.envers.Audited;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.io.Serializable;
 
 /**
  * A SalesForce account.
@@ -189,6 +178,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
         return (client != null) ? client.getName() : null;
     }
 
+    @XmlElement(name = "fax")
 	public String getFax() {
 		return faxNumber;
 	}

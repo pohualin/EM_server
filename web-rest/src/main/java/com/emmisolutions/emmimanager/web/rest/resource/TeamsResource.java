@@ -49,9 +49,9 @@ public class TeamsResource {
 	 * @param id to load
 	 * @return ClientResource or NO_CONTENT
 	 */
-	 @RequestMapping(value = "/teams/{id}", method = RequestMethod.GET)
+	 @RequestMapping(value = "/clients/{clientId}/teams/{id}", method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_VIEW"})
-	 public ResponseEntity<TeamResource> getTeam(@PathVariable("id") Long id) {
+	 public ResponseEntity<TeamResource> getTeam(@PathVariable Long clientId, @PathVariable("id") Long id) {
 	     Team toFind = new Team();
 	     toFind.setId(id);
 	     toFind = teamService.reload(toFind);
@@ -62,10 +62,10 @@ public class TeamsResource {
 	     }
 	 }
 
-    @RequestMapping(value = "/teams/{teamId}", method = RequestMethod.PUT,
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}", method = RequestMethod.PUT,
             consumes = {APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_EDIT"})
-    public ResponseEntity<TeamResource> updateTeam(@PathVariable Long teamId, @RequestBody Team team) {
+    public ResponseEntity<TeamResource> updateTeam(@PathVariable Long clientId, @PathVariable Long teamId, @RequestBody Team team) {
         Team updated = teamService.update(team);
         if (updated != null) {
             return new ResponseEntity<>(teamResourceAssembler.toResource(updated), HttpStatus.OK);
