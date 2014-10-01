@@ -1,10 +1,10 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 
 /**
  * Team Service API
@@ -42,4 +42,20 @@ public interface TeamService {
      * @return the new team (with id/version)
      */
     Team create(Team team);
+
+    /**
+     * Returns a team by normalized name and Client ID
+     *
+     * @param String normalizedName
+     * @param Long clientId
+     * @return Team
+     */
+	Team findByNormalizedNameAndClientId(String normalizedName, Long clientId);
+	
+	/**
+     * Updates an existing team
+     * @param team to save
+     * @return the saved team
+     */
+    Team update(Team team);
 }

@@ -11,14 +11,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
- * A SalesForce account.
+ * A Team SalesForce account.
  */
 @Audited
 @Entity
-@Table(name = "salesforce_client",
-        uniqueConstraints = @UniqueConstraint(name = "uk_account_number", columnNames = "account_number"))
+@Table(name = "salesforce_team",
+        uniqueConstraints = @UniqueConstraint(name = "uk_salesforce_team_account_number", columnNames = "account_number"))
 @XmlRootElement(name = "salesforce")
-public class SalesForce extends AbstractAuditingEntity implements Serializable {
+public class TeamSalesForce extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +32,6 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
-    @OneToOne(mappedBy = "salesForceAccount")
-    @JsonBackReference
-    private Client client;
-
     private String name;
     private String street;
     private String city;
@@ -45,17 +41,22 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
     private String country;
     @Column(name = "phone_number")
     private String phoneNumber;
-    @Transient
+    @Column(name = "fax_number")
+    @XmlElement(name = "fax")
     private String faxNumber;
     
-    public SalesForce() {
+    @OneToOne(mappedBy = "salesForceAccount")
+    @JsonBackReference
+    private Team team ;
+    
+    public TeamSalesForce() {
     }
 
     /**
      * Constructor
      * @param accountNumber required field
      */
-    public SalesForce(String accountNumber) {
+    public TeamSalesForce(String accountNumber) {
         this.accountNumber = accountNumber;
     }
 
@@ -131,19 +132,11 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
         this.version = version;
     }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SalesForce that = (SalesForce) o;
+        TeamSalesForce that = (TeamSalesForce) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }
 
@@ -154,7 +147,7 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "SalesForce{" +
+        return "TeamSalesForce{" +
                 "accountNumber='" + accountNumber + '\'' +
                 ", name='" + name + '\'' +
                 ", id=" + id +
@@ -169,22 +162,20 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
         this.city = city;
     }
 
-    /**
-     * Helper for serialization
-     * @return the client name if a client exists
-     */
-    @XmlElement
-    public String getClientName() {
-        return (client != null) ? client.getName() : null;
-    }
-
-    @XmlElement(name = "fax")
-	public String getFax() {
+	public String getFaxNumber() {
 		return faxNumber;
 	}
 
-	public void setFax(String fax) {
-		this.faxNumber = fax;
+	public void setFaxNumber(String faxNumber) {
+		this.faxNumber = faxNumber;
+	}
+
+	public Team getTeam() {
+		return team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
 }

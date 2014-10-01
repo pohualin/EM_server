@@ -1,0 +1,3 @@
+language_id;key_path;message
+1;team_edit_page.unique_popup_dialog.message;This team name already exists within client: 
+1;team_edit_page.unique_popup_dialog.name;Team Validation Error
