@@ -51,5 +51,11 @@ public interface TeamService {
      * @return Team
      */
 	Team findByNormalizedNameAndClientId(String normalizedName, Long clientId);
-
+	
+	/**
+     * Updates an existing team
+     * @param team to save
+     * @return the saved team
+     */
+    Team update(Team team);
 }

@@ -4,8 +4,6 @@ import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
@@ -25,11 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.web.rest.model.client.ReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
@@ -69,6 +67,18 @@ public class TeamsResource {
 	         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	     }
 	 }
+
+    @RequestMapping(value = "/teams/{teamId}", method = RequestMethod.PUT,
+            consumes = {APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_EDIT"})
+    public ResponseEntity<TeamResource> updateTeam(@PathVariable Long teamId, @RequestBody Team team) {
+        Team updated = teamService.update(team);
+        if (updated != null) {
+            return new ResponseEntity<>(teamResourceAssembler.toResource(updated), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 	 
 	 /**
 	  * GET to search for teams
@@ -138,6 +148,17 @@ public class TeamsResource {
 	         return new ResponseEntity<>(teamResourceAssembler.toResource(team), HttpStatus.CREATED);
 	     }
 	 }
+
+    /**
+     * GET to Retrieve reference data about teams.
+     *
+     * @return ReferenceData
+     */
+    @RequestMapping(value = "/teams/ref", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE", "PERM_TEAM_EDIT"})
+    public ReferenceData getReferenceData() {
+        return new ReferenceData();
+    }
 	 	 
 	 private ResponseEntity<TeamPage> findTeams(Pageable pageable, PagedResourcesAssembler<Team> assembler,Long clientId, String status, String... names) {
 	 	 // create the search filter
