@@ -1,14 +1,27 @@
 package com.emmisolutions.emmimanager.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.hibernate.envers.Audited;
+import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * A Team that corresponds to a Client
@@ -49,6 +62,22 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
+    
+    @NotNull
+    @Size(max = 255)
+    @Column(name="normalized_team_name", length = 255, nullable = false)
+    @NotAudited
+    @Pattern(regexp = "[a-z0-9 ]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
+    private String normalizedTeamName;    
+ 
+
+	public String getNormalizedTeamName() {
+		return normalizedTeamName;
+	}
+
+	public void setNormalizedTeamName(String normalizedTeamName) {
+		this.normalizedTeamName = normalizedTeamName;
+	}
 
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
