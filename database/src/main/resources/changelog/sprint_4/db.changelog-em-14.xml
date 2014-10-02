@@ -11,4 +11,11 @@
                   tableName="strings"/>
     </changeSet>
 
+    <changeSet id="Cancel Button On Edit Page" author="Matt">
+        <insert tableName="strings">
+            <column name="language_id" valueNumeric="1"/>
+            <column name="key_path" value="team_edit_page.cancel_button"/>
+            <column name="message" value="cancel"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
