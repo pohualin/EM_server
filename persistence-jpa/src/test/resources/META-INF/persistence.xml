@@ -19,6 +19,7 @@
 		<class>com.emmisolutions.emmimanager.model.Tag</class>
 		<class>com.emmisolutions.emmimanager.model.TeamTag</class>
         <class>com.emmisolutions.emmimanager.model.ReferenceGroup</class>
+        <class>com.emmisolutions.emmimanager.model.ReferenceGroupType</class>
 		<class>com.emmisolutions.emmimanager.model.ReferenceTag</class>
         <class>com.emmisolutions.emmimanager.model.Strings</class>
         <class>com.emmisolutions.emmimanager.model.Language</class>
