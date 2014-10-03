@@ -27,9 +27,6 @@
 			<column name="message">This team name already exists within</column>
 			<where>key_path = 'team_edit_page.unique_popup_dialog.message'</where>
 		</update>
-	</changeSet>
-	
-	<changeSet id="modify_msg_for_key_path_team" author="Amrita">
 		<update tableName="strings">
 			<column name="message">Save</column>
 			<where>key_path = 'team_edit_page.continue_button'</where>
