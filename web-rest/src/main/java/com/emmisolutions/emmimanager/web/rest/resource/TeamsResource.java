@@ -9,6 +9,8 @@ import com.emmisolutions.emmimanager.web.rest.model.team.ReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -87,6 +89,11 @@ public class TeamsResource {
 	 @RequestMapping(value = "/teams",
 	            method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_LIST"})
+     @ApiImplicitParams(value = {
+             @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+     })
 	 public ResponseEntity<TeamPage> list(
 	         @PageableDefault(size = 10) Pageable pageable,
 	         @SortDefault(sort = "id") Sort sort,
@@ -109,6 +116,11 @@ public class TeamsResource {
 	     */
 	 @RequestMapping(value = "/clients/{clientId}/teams", method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_LIST"})
+     @ApiImplicitParams(value = {
+             @ApiImplicitParam(name="size", defaultValue="50", value = "number of items on a page", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+     })
 	 public ResponseEntity<TeamPage> clientTeams( @PathVariable Long clientId,
 	         @PageableDefault(size = 50) Pageable pageable,
 	         @SortDefault(sort = "id") Sort sort,
@@ -174,6 +186,11 @@ public class TeamsResource {
 	 }
 
 	@RequestMapping(value = "/clients/{clientId}/teams/findNormalizedName", method = RequestMethod.GET)
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="1", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
 	public ResponseEntity<TeamResource> findByNormalizedNameForClient(
 			@RequestParam(value = "normalizedName",  required = false) String normalizedName,
 			@PageableDefault(size = 1) Pageable pageable,

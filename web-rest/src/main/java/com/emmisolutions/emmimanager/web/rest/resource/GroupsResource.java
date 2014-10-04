@@ -1,13 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
+import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSaveRequest;
+import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.service.GroupService;
+import com.emmisolutions.emmimanager.service.ReferenceGroupService;
+import com.emmisolutions.emmimanager.service.TagService;
+import com.emmisolutions.emmimanager.web.rest.model.groups.*;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,24 +18,14 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSaveRequest;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.service.GroupService;
-import com.emmisolutions.emmimanager.service.ReferenceGroupService;
-import com.emmisolutions.emmimanager.service.TagService;
-import com.emmisolutions.emmimanager.web.rest.model.groups.GroupPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.GroupResource;
-import com.emmisolutions.emmimanager.web.rest.model.groups.GroupResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupResourceAssembler;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * Groups REST API.
@@ -71,6 +63,11 @@ public class GroupsResource {
 	 */
 	@RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.GET)
 	@RolesAllowed({ "PERM_GOD", "PERM_GROUP_LIST" })
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="50", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
 	public ResponseEntity<GroupPage> listGroupsByClientID(
 			@PageableDefault(size = 50) Pageable pageable,
 			@SortDefault(sort = "id") Sort sort,
