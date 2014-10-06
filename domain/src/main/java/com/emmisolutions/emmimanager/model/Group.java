@@ -1,31 +1,19 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.envers.Audited;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Group and its containing tags
@@ -59,6 +47,10 @@ public class Group extends AbstractAuditingEntity implements Serializable {
 	@XmlElementWrapper(name = "tags")
 	@JsonProperty("tag")
 	private Set<Tag> tags = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "reference_group_type_id")
+    private ReferenceGroupType type;
 
 	public Group() {
 	}
@@ -128,4 +120,12 @@ public class Group extends AbstractAuditingEntity implements Serializable {
 	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
+
+    public ReferenceGroupType getType() {
+        return type;
+    }
+
+    public void setType(ReferenceGroupType type) {
+        this.type = type;
+    }
 }

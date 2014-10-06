@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,7 +33,7 @@ public abstract class PagedResource<T> {
 
     @XmlElement(name = "content")
     @XmlElementWrapper(name = "contents")
-    protected Collection<T> content;
+    protected List<T> content;
 
     /**
      * Populates instance variables (e.g. content, metadata, links, etc) from the
@@ -45,7 +44,7 @@ public abstract class PagedResource<T> {
      */
     public void pageDefaults(PagedResources<T> pagedResources, Page<?> page) {
         if (pagedResources != null) {
-            this.content = pagedResources.getContent();
+            this.content = new ArrayList<>(pagedResources.getContent());
             this.metadata = pagedResources.getMetadata();
             this.links = pagedResources.getLinks();
         }

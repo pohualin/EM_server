@@ -6,6 +6,8 @@ import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.web.rest.model.location.*;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -112,6 +114,11 @@ public class LocationsResource {
     @RequestMapping(value = "/locations",
             method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size",  value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page",  value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort",  value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
     public ResponseEntity<LocationPage> list(
             @PageableDefault(size = 10) Pageable pageable,
             @SortDefault(sort = {"name","state"}) Sort sort,
@@ -135,6 +142,11 @@ public class LocationsResource {
     @RequestMapping(value = "/clients/{clientId}/locations",
             method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="50", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
     public ResponseEntity<LocationPage> clientLocations(
             @PathVariable Long clientId,
             @PageableDefault(size = 50, sort = {"name"} ) Pageable pageable,
