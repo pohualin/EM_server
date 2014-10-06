@@ -7,6 +7,8 @@ import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.TeamTagService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -54,6 +56,11 @@ public class TeamTagsResource {
      */
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
     public ResponseEntity<TeamTagPage> list(
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10) Pageable pageable,
