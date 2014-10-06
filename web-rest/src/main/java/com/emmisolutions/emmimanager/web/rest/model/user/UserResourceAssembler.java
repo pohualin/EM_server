@@ -9,7 +9,6 @@ import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 import org.springframework.hateoas.Link;
@@ -55,7 +54,6 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(ClientPage.createReferenceDataLink());
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
-        ret.add(createGroupByClientIdLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
         ret.add(TeamPage.createFullSearchLink());
         ret.add(createTeamByClientIdLink());
@@ -76,21 +74,7 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         }
         return null;
     }
-    
-    
-    public Link createGroupByClientIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(GroupsResource.class).listGroupsByClientID(null, null, null, 1l);
-        Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("groupsByClientID");
-        String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(GroupsResource.class));
-        if (idx != -1) {
-            return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(GroupsResource.class, method),
-                    link.getRel());
-        }
-        return null;
-    }
+
     
     public Link createTeamByClientIdLink() {
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).createTeam(1l,null);
