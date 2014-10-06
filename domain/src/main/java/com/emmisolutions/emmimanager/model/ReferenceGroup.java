@@ -1,29 +1,16 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A Reference Group and its containing tags
@@ -49,6 +36,11 @@ public class ReferenceGroup extends AbstractAuditingEntity implements Serializab
 	@XmlElementWrapper(name = "tags")
 	@JsonProperty("tag")
 	private Set<ReferenceTag> tags = new HashSet<>();
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name ="reference_group_type_id", nullable = false)
+    private ReferenceGroupType type;
 
 	public Long getId() {
 		return id;

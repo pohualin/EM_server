@@ -22,4 +22,16 @@
 		<addUniqueConstraint tableName="client_team" columnNames="client_id,normalized_team_name" constraintName="uk_client_team_client_id_normalized_team_name"/>                                                
 	</changeSet>
 	
+	<changeSet id="modify_msg_for_key_path" author="Amrita">
+		<update tableName="strings">
+			<column name="message">This team name already exists within</column>
+			<where>key_path = 'team_edit_page.unique_popup_dialog.message'</where>
+		</update>
+		<update tableName="strings">
+			<column name="message">Save</column>
+			<where>key_path = 'team_edit_page.continue_button'</where>
+		</update>
+	</changeSet>
+	
+
 </databaseChangeLog>

@@ -1,35 +1,24 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import javax.annotation.Resource;
-
-import org.joda.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSaveRequest;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Tag;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
+import org.joda.time.LocalDate;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Group Service Integration Test
@@ -171,15 +160,15 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		groupSaveRequests.add(groupSaveReqTwo);
 		groupSaveRequests.add(groupSaveReqThree);
 				
-		List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests,clientOne.getId());
+		Set<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests,clientOne.getId());
 		assertThat("groups were saved with tags", groups.size(), is(3));
-		assertThat("groups were saved with tags", groups.get(0).getTags().iterator().next().getGroup(), is(notNullValue()));
+		assertThat("groups were saved with tags", groups.iterator().next().getTags().iterator().next().getGroup(), is(notNullValue()));
 
 		Tag tag = new Tag();
-		tag.setId(groups.get(0).getTags().iterator().next().getId());;
+		tag.setId(groups.iterator().next().getTags().iterator().next().getId());;
 		Tag savedTag = tagService.reload(tag);
 		
-		assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.get(0).getId()));
+		assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.iterator().next().getId()));
 
 	}
 	
@@ -241,26 +230,22 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		groupSaveRequestsTwo.add(groupSaveReqTwo);
 		groupSaveRequestsTwo.add(groupSaveReqThree);
 				
-		List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequestsOne,clientOne.getId());
+		Set<Group> groups = groupService.saveGroupsAndTags(groupSaveRequestsOne,clientOne.getId());
 		assertThat("group is saved", groups.size(), is(1));
-		assertThat("groups is saved with tags", groups.get(0).getTags().iterator().next().getGroup(), is(notNullValue()));
+		assertThat("groups is saved with tags", groups.iterator().next().getTags().iterator().next().getGroup(), is(notNullValue()));
 		
 		Page<Group> groupPage = groupService.list(null, new GroupSearchFilter(clientOne.getId()));
 		assertThat("Total number of groups for the client before update is: ", groupPage.getTotalElements(), is(1l));
 		
 		Tag tag = new Tag();
-		tag.setId(groups.get(0).getTags().iterator().next().getId());;
+		tag.setId(groups.iterator().next().getTags().iterator().next().getId());
 		Tag savedTag = tagService.reload(tag);
 		
-		assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.get(0).getId()));
+		assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.iterator().next().getId()));
 		
-		if (groupPage.hasContent() && !groupPage.getContent().isEmpty()) {
-			groupService.removeAll(groupPage.getContent());
-		}		
-		
-		List<Group> newGroups = groupService.saveGroupsAndTags(groupSaveRequestsTwo, clientOne.getId() );
+		Set<Group> newGroups = groupService.saveGroupsAndTags(groupSaveRequestsTwo, clientOne.getId() );
 		Page<Group> newGroupPage = groupService.list(null, new GroupSearchFilter(clientOne.getId()));
-		assertThat("Total number of groups for the client after update is: ", newGroupPage.getTotalElements(), is(Long.valueOf(newGroups.size())));
+		assertThat("Total number of groups for the client after update is: ", newGroupPage.getTotalElements(), is((long)newGroups.size()));
 		
 		
 	}
@@ -282,14 +267,14 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 		groupSaveReqOne.setGroup(groupOne);
 		
 		groupSaveRequests.add(groupSaveReqOne);
-		List<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientOne.getId());
+		Set<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientOne.getId());
 		assertThat("groups are saved with tags", groups.size(), is(3));
 
 		Tag tag = new Tag();
-		tag.setId(groups.get(1).getTags().iterator().next().getId());;
+		tag.setId(groups.iterator().next().getTags().iterator().next().getId());
 		Tag savedTag = tagService.reload(tag);
 		
-		assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.get(1).getId()));
+		assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.iterator().next().getId()));
 
 	}
 }
