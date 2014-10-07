@@ -59,16 +59,20 @@ public class Tag extends AbstractAuditingEntity implements Serializable{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Tag tag = (Tag) o;
-
-        if (id != null ? !id.equals(tag.id) : tag.id != null) return false;
-
-        return true;
+        return !(id != null ? !id.equals(tag.id) : tag.id != null);
     }
 
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
