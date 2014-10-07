@@ -67,6 +67,9 @@ public class GroupPersistenceImpl implements GroupPersistence {
 
 	@Override
 	public Group reload(Long id) {
+        if (id == null) {
+            return null;
+        }
 		return groupRepository.findOne(id);
 	}
 
