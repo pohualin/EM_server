@@ -98,7 +98,7 @@ public class GroupsResource {
                                               @PathVariable("clientId") Long clientId) {
         Set<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
         if (groups == null || groups.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(groups, HttpStatus.OK);
         }
