@@ -28,4 +28,11 @@ public class GroupSaveRequest {
 		this.tags = tags;
 	}
 
+    @Override
+    public String toString() {
+        return "GroupSaveRequest{" +
+                "group=" + group +
+                ", tags=" + tags +
+                '}';
+    }
 }

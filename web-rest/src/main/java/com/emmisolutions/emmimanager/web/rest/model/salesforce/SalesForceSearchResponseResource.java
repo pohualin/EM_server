@@ -19,7 +19,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class SalesForceSearchResponseResource extends ResourceSupport {
 
     private String query;
-
     private SalesForceSearchResponse entity;
 
     public SalesForceSearchResponseResource() {
@@ -31,14 +30,18 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
      * @param entity the wrapped entity
      * @param query  the query that caused the response
      */
-    public SalesForceSearchResponseResource(SalesForceSearchResponse entity, String query) {
+    public SalesForceSearchResponseResource(SalesForceSearchResponse entity, String query, boolean teamSearch) {
         this.query = query;
         this.entity = entity;
-        add(linkTo(methodOn(SalesForceResource.class).find(query)).withSelfRel());
+        if (!teamSearch) {
+            add(linkTo(methodOn(SalesForceResource.class).find(query)).withSelfRel());
+        } else {
+            add(linkTo(methodOn(SalesForceResource.class).findForTeam(query)).withSelfRel());
+        }
     }
 
     /**
-     * The link to find all sf accounts
+     * The link to find all sf accounts from client
      * @return the link
      */
     public static Link createFindLink() {
@@ -49,6 +52,18 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
         return new Link(uriTemplate, link.getRel());
     }
 
+    /**
+     * The link to find all sf accounts from team
+     * @return the link
+     */
+    public static Link createFindTeamLink() {
+        Link link = linkTo(methodOn(SalesForceResource.class).findForTeam(null)).withRel("findTeamSalesForceAccount");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("q", TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(uriTemplate, link.getRel());
+    }
+    
     /**
      * Override to change the link property name for serialization
      *

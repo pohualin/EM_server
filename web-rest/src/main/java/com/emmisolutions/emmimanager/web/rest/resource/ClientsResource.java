@@ -10,6 +10,8 @@ import com.emmisolutions.emmimanager.web.rest.model.client.ClientResourceAssembl
 import com.emmisolutions.emmimanager.web.rest.model.client.ReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceForAssociationsAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -78,15 +80,20 @@ public class ClientsResource {
     @RequestMapping(value = "/clients",
             method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LIST"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
     public ResponseEntity<ClientPage> list(
-            @PageableDefault(size = 10) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
-            @RequestParam(value = "status", required = false) String status,
+            @PageableDefault(size = 10, sort = "name") Pageable pageable,
+            @SortDefault(sort = "name") Sort sort,
             PagedResourcesAssembler<Client> assembler,
-            @RequestParam(value = "name", required = false) String names) {
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "name", required = false) String name) {
 
         // create the search filter
-        ClientSearchFilter clientSearchFilter = new ClientSearchFilter(fromStringOrActive(status), names);
+        ClientSearchFilter clientSearchFilter = new ClientSearchFilter(fromStringOrActive(status), name);
 
         // find the page of clients
         Page<Client> clientPage = clientService.list(pageable, clientSearchFilter);
@@ -123,6 +130,11 @@ public class ClientsResource {
      */
     @RequestMapping(value = "/clients/ref/potentialOwners", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size",  value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page",  value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort",  value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
     public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 100, sort="firstName") Pageable pageable,
                                                            @SortDefault(sort = "id") Sort sort,
                                                            PagedResourcesAssembler<User> assembler) {

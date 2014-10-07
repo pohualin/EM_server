@@ -31,7 +31,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.getEnvironment().setDefaultProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_H2);
         rootContext.setServletContext(servletContext);
-        rootContext.register(RestConfiguration.class, SecurityConfiguration.class, HateoasConfiguration.class);
+        rootContext.register(RestConfiguration.class, SecurityConfiguration.class, HateoasConfiguration.class, SwaggerConfiguration.class);
 
         // Manage the lifecycle of the root application context
         servletContext.addListener(new ContextLoaderListener(rootContext));

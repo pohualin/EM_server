@@ -145,6 +145,7 @@ public class Lookup implements SalesForceLookup {
         sf.setCountry(account.getBillingCountry());
         sf.setPostalCode(account.getBillingPostalCode());
         sf.setPhoneNumber(account.getPhone());
+        sf.setFax(account.getFax());
         return sf;
     }
 

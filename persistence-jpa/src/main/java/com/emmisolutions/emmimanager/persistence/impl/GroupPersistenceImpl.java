@@ -1,9 +1,16 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications.byClientId;
-import static org.springframework.data.jpa.domain.Specifications.where;
-
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.Group_;
+import com.emmisolutions.emmimanager.persistence.GroupPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
+import org.hibernate.annotations.QueryHints;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityGraph;
@@ -13,18 +20,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.annotations.QueryHints;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
-
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.Group_;
-import com.emmisolutions.emmimanager.persistence.GroupPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
+import static com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications.byClientId;
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
  * Group Persistence Implementation
@@ -70,11 +67,20 @@ public class GroupPersistenceImpl implements GroupPersistence {
 
 	@Override
 	public Group reload(Long id) {
+        if (id == null) {
+            return null;
+        }
 		return groupRepository.findOne(id);
 	}
-	
-	@Override
-	public void removeAll(List<Group> removeGroupsList) {
-		groupRepository.delete(removeGroupsList);
-	}
+
+    @Override
+    public Long removeAll(Long clientId) {
+        if (clientId != null){
+            Long ret = groupRepository.removeByClientIdEquals(clientId);
+            // need to commit deletes immediately
+            groupRepository.flush();
+            return ret;
+        }
+        return 0l;
+    }
 }

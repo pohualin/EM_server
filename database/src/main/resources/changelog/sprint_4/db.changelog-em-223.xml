@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="teams_salesforce_team" author="Claudio">
+    	<!-- kill all saved teams as they are invalid due to no SF account -->
+        <delete tableName="client_team"/>
+        <delete tableName="client_team_audit"/>
+    
+        <addColumn tableName="client_team">
+            <column name="salesforce_account_id" type="BIGINT"></column>
+        </addColumn>
+        <addColumn tableName="client_team_audit">
+            <column name="salesforce_account_id" type="BIGINT"></column>
+        </addColumn>        
+	</changeSet>
+	
+    <changeSet id="create_salesforce_team" author="Claudio">
+        <createTable tableName="salesforce_team">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_salesforce_team"/>
+            </column>
+            <column name="account_number" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="nvarchar(255)"/>
+            <column name="name" type="nvarchar(255)"/>
+            <column name="phone_number" type="nvarchar(255)"/>
+            <column name="city" type="nvarchar(255)"/>
+            <column name="fax_number" type="nvarchar(255)"/>
+            <column name="postal_code" type="nvarchar(255)"/>
+            <column name="state" type="nvarchar(255)"/>
+            <column name="street" type="nvarchar(255)"/>
+            <column name="version" type="INT"/>
+        
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_salesforce_team_audit" author="Claudio">
+        <createTable tableName="salesforce_team_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="account_number" type="nvarchar(255)"/>
+            <column name="country" type="varchar(255)"/>
+            <column name="city" type="nvarchar(255)"/>
+            <column name="name" type="nvarchar(255)"/>
+            <column name="phone_number" type="nvarchar(255)"/>
+            <column name="fax_number" type="nvarchar(255)"/>
+            <column name="postal_code" type="nvarchar(255)"/>
+            <column name="state" type="nvarchar(255)"/>
+            <column name="street" type="nvarchar(255)"/>
+        </createTable>
+        <addPrimaryKey tableName="salesforce_team_audit" constraintName="pk_salesforce_team_audit" columnNames="id, revision"/>
+    </changeSet>
+    
+    <changeSet id="add_keys_and_indexes" author="Claudio">
+
+		<addNotNullConstraint tableName="client_team" columnName="salesforce_account_id" columnDataType="BIGINT"/>
+		<addNotNullConstraint tableName="client_team_audit" columnName="salesforce_account_id" columnDataType="BIGINT"/>
+		
+        <addForeignKeyConstraint baseTableName="client_team"
+                                 baseColumnNames="salesforce_account_id"
+                                 constraintName="fk_salesforce_team_account_id"
+                                 referencedTableName="salesforce_team"
+                                 referencedColumnNames="id"/>		
+         <addForeignKeyConstraint baseTableName="client_team_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_team_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="drop extraneous phone and fax" author="Matt">
+        <dropColumn tableName="client_team" columnName="phone"/>
+        <dropColumn tableName="client_team" columnName="fax"/>
+        <dropColumn tableName="client_team_audit" columnName="phone"/>
+        <dropColumn tableName="client_team_audit" columnName="fax"/>
+    </changeSet>
+
+</databaseChangeLog>    

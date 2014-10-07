@@ -1,11 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSearchFilter;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.web.rest.model.team.ReferenceData;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,23 +19,14 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.TeamService;
-import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
-import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 
 import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 /**
  * Teams REST API
  */
@@ -55,9 +51,9 @@ public class TeamsResource {
 	 * @param id to load
 	 * @return ClientResource or NO_CONTENT
 	 */
-	 @RequestMapping(value = "/teams/{id}", method = RequestMethod.GET)
+	 @RequestMapping(value = "/clients/{clientId}/teams/{id}", method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_VIEW"})
-	 public ResponseEntity<TeamResource> getTeam(@PathVariable("id") Long id) {
+	 public ResponseEntity<TeamResource> getTeam(@PathVariable Long clientId, @PathVariable("id") Long id) {
 	     Team toFind = new Team();
 	     toFind.setId(id);
 	     toFind = teamService.reload(toFind);
@@ -67,6 +63,18 @@ public class TeamsResource {
 	         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	     }
 	 }
+
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}", method = RequestMethod.PUT,
+            consumes = {APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_EDIT"})
+    public ResponseEntity<TeamResource> updateTeam(@PathVariable Long clientId, @PathVariable Long teamId, @RequestBody Team team) {
+        Team updated = teamService.update(team);
+        if (updated != null) {
+            return new ResponseEntity<>(teamResourceAssembler.toResource(updated), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 	 
 	 /**
 	  * GET to search for teams
@@ -81,6 +89,11 @@ public class TeamsResource {
 	 @RequestMapping(value = "/teams",
 	            method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_LIST"})
+     @ApiImplicitParams(value = {
+             @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+     })
 	 public ResponseEntity<TeamPage> list(
 	         @PageableDefault(size = 10) Pageable pageable,
 	         @SortDefault(sort = "id") Sort sort,
@@ -103,6 +116,11 @@ public class TeamsResource {
 	     */
 	 @RequestMapping(value = "/clients/{clientId}/teams", method = RequestMethod.GET)
 	 @RolesAllowed({"PERM_GOD", "PERM_TEAM_LIST"})
+     @ApiImplicitParams(value = {
+             @ApiImplicitParam(name="size", defaultValue="50", value = "number of items on a page", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+             @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+     })
 	 public ResponseEntity<TeamPage> clientTeams( @PathVariable Long clientId,
 	         @PageableDefault(size = 50) Pageable pageable,
 	         @SortDefault(sort = "id") Sort sort,
@@ -136,6 +154,17 @@ public class TeamsResource {
 	         return new ResponseEntity<>(teamResourceAssembler.toResource(team), HttpStatus.CREATED);
 	     }
 	 }
+
+    /**
+     * GET to Retrieve reference data about teams.
+     *
+     * @return ReferenceData
+     */
+    @RequestMapping(value = "/teams/ref", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE", "PERM_TEAM_EDIT"})
+    public ReferenceData getReferenceData() {
+        return new ReferenceData();
+    }
 	 	 
 	 private ResponseEntity<TeamPage> findTeams(Pageable pageable, PagedResourcesAssembler<Team> assembler,Long clientId, String status, String... names) {
 	 	 // create the search filter
@@ -155,4 +184,24 @@ public class TeamsResource {
 	    	 	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	     }
 	 }
+
+	@RequestMapping(value = "/clients/{clientId}/teams/findNormalizedName", method = RequestMethod.GET)
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="1", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+	public ResponseEntity<TeamResource> findByNormalizedNameForClient(
+			@RequestParam(value = "normalizedName",  required = false) String normalizedName,
+			@PageableDefault(size = 1) Pageable pageable,
+			@PathVariable("clientId") Long clientId) {
+
+		Team toFind = teamService.findByNormalizedNameAndClientId(normalizedName, clientId);
+		if (toFind != null) {
+			return new ResponseEntity<>(
+					teamResourceAssembler.toResource(toFind), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
 }

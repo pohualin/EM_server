@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="normalizedName_for_team" author="Amrita">
+        <addColumn tableName="client_team">
+            <column name="normalized_team_name" type="varchar(255)"></column>
+        </addColumn>
+	</changeSet>
+	
+    <changeSet id="Add Edit Tag Strings" author="Amrita">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_4/data/em-183.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
+    
+    <changeSet author="Amrita" id="recreate_unique_constraints_for_teams">
+		<dropUniqueConstraint tableName="client_team" constraintName="uk_client_team_client_id_name"/>
+		<addUniqueConstraint tableName="client_team" columnNames="client_id,normalized_team_name" constraintName="uk_client_team_client_id_normalized_team_name"/>                                                
+	</changeSet>
+	
+	<changeSet id="modify_msg_for_key_path" author="Amrita">
+		<update tableName="strings">
+			<column name="message">This team name already exists within</column>
+			<where>key_path = 'team_edit_page.unique_popup_dialog.message'</where>
+		</update>
+		<update tableName="strings">
+			<column name="message">Save</column>
+			<where>key_path = 'team_edit_page.continue_button'</where>
+		</update>
+	</changeSet>
+	
+
+</databaseChangeLog>
