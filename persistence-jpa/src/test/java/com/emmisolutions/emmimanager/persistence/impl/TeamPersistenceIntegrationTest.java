@@ -120,7 +120,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setActive(false);
         client.setName("Test Client");
         client.setType(clientType);
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setTier(ClientTier.THREE);
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());

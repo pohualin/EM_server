@@ -66,4 +66,12 @@ public class ClientType {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "ClientType{" +
+                "id=" + id +
+                ", typeKey='" + typeKey + '\'' +
+                '}';
+    }
 }

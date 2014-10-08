@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -81,6 +78,11 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Collection<ClientType> getAllClientTypes() {
         return clientPersistence.getAllClientTypes();
+    }
+
+    @Override
+    public Collection<ClientRegion> getAllClientRegions() {
+        return clientPersistence.getAllRegionTypes();
     }
 }
 

@@ -46,8 +46,8 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "client_type_id", nullable = false)
     private ClientType type;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @ManyToOne
+    @JoinColumn(name = "client_region_id")
     private ClientRegion region;
 
     @Enumerated(EnumType.STRING)

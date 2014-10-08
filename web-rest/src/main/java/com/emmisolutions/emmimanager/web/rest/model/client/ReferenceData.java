@@ -15,7 +15,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Reference data for client editing
@@ -25,11 +27,11 @@ public class ReferenceData extends ResourceSupport {
 
     @XmlElement(name = "clientType")
     @XmlElementWrapper(name = "clientTypes")
-    private Collection<ClientType> clientTypes;
+    private Set<ClientType> clientTypes;
 
     @XmlElement(name = "clientRegion")
     @XmlElementWrapper(name = "clientRegions")
-    private ClientRegion[] clientRegions = ClientRegion.values();
+    private Set<ClientRegion> clientRegions;
 
     @XmlElement(name = "clientTier")
     @XmlElementWrapper(name = "clientTiers")
@@ -42,8 +44,9 @@ public class ReferenceData extends ResourceSupport {
     /**
      * create common links for reference data
      */
-    public ReferenceData(Collection<ClientType> clientTypes) {
-        this.clientTypes = clientTypes;
+    public ReferenceData(Collection<ClientType> clientTypes, Collection<ClientRegion> clientRegions) {
+        this.clientTypes = new HashSet<>(clientTypes);
+        this.clientRegions = new HashSet<>(clientRegions);
         add(UserPage.createPotentialOwnersFullSearchLink());
         add(SalesForceSearchResponseResource.createFindLink());
         add(ClientResource.createFindNormalizedNameLink());

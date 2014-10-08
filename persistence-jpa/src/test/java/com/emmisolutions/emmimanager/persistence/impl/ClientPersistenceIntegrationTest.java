@@ -53,7 +53,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setName("Test Client");
         client.setType(clientType);
         client.setActive(false);
@@ -73,7 +73,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setName("$ % ^ * \\");
         client.setType(clientType);
         client.setActive(false);
@@ -91,7 +91,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setName("Aa1= ' _ ; : ` @ # & , . ! ( ) /");
         client.setType(clientType);
         client.setActive(false);
@@ -159,7 +159,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setActive(true);
 	   client.setName("Demo hospital client 1" );
 	   client.setType(clientType);
-	   client.setRegion(ClientRegion.NORTHEAST);
+	   client.setRegion(new ClientRegion(1l));
 	   client.setTier(ClientTier.THREE);
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
@@ -190,7 +190,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setActive(true);
         client.setName("Dr. Quinn, Medicine Woman" );
         client.setType(clientType);
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setTier(ClientTier.THREE);
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
@@ -215,7 +215,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setActive(true);
 	   client.setName("Demo-hospital-'=_;:`@#&,.!()client 1" );
 	   client.setType(clientType);
-	   client.setRegion(ClientRegion.NORTHEAST);
+	   client.setRegion(new ClientRegion(1l));
 	   client.setTier(ClientTier.THREE);
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
@@ -231,7 +231,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
  	   client.setActive(true);
  	   client.setName("Demo hospital '=_;:`@#&,.!()client 2" );
  	   client.setType(clientType);
- 	   client.setRegion(ClientRegion.NORTHEAST);
+ 	   client.setRegion(new ClientRegion(1l));
  	   client.setTier(ClientTier.THREE);
  	   client.setContractOwner(superAdmin);
  	   client.setContractStart(LocalDate.now());
@@ -247,7 +247,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
    	   client.setActive(true);
    	   client.setName("test client123" );
    	   client.setType(clientType);
-   	   client.setRegion(ClientRegion.NORTHEAST);
+   	   client.setRegion(new ClientRegion(1l));
    	   client.setTier(ClientTier.THREE);
    	   client.setContractOwner(superAdmin);
    	   client.setContractStart(LocalDate.now());
@@ -300,7 +300,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setActive(i % 2 == 0);
         client.setName("Demo hospital client " + i);
         client.setType(clientType);
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setTier(ClientTier.THREE);
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());

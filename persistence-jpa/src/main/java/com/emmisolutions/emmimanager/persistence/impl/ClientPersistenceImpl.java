@@ -1,9 +1,11 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ClientRegionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
@@ -34,6 +36,9 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Resource
     ClientTypeRepository clientTypeRepository;
+
+    @Resource
+    ClientRegionRepository clientRegionRepository;
 
     @Resource
     UserRepository userRepository;
@@ -72,6 +77,11 @@ public class ClientPersistenceImpl implements ClientPersistence {
     @Override
     public Collection<ClientType> getAllClientTypes() {
         return clientTypeRepository.findAll();
+    }
+
+    @Override
+    public Collection<ClientRegion> getAllRegionTypes() {
+        return clientRegionRepository.findAll();
     }
 
     /**

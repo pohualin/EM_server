@@ -74,7 +74,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
         client.setTier(ClientTier.THREE);
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setName("Test Client " + id);
         client.setType(new ClientType(1l));
         client.setActive(false);

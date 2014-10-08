@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientType;
 import org.springframework.data.domain.Page;
@@ -39,10 +40,10 @@ public interface ClientPersistence {
     Client reload(Long id);
 
     /**
-     * This method will normalize the passed value (toCheck) given the same rules 
+     * This method will normalize the passed value (toCheck) given the same rules
      * for the unique client name then do a  simple equality query on the db.. if
      * a match is found, returns the client otherwise null
-     * 
+     *
      * @param normalizedName
      * @return
      */
@@ -50,7 +51,15 @@ public interface ClientPersistence {
 
     /**
      * Loads all possible client types
+     *
      * @return collection of ClientType objects
      */
     Collection<ClientType> getAllClientTypes();
+
+    /**
+     * Loads all possible client regions
+     *
+     * @return collection of ClientRegion objects
+     */
+    Collection<ClientRegion> getAllRegionTypes();
 }
