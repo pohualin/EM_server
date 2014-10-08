@@ -84,5 +84,10 @@ public class ClientServiceImpl implements ClientService {
     public Collection<ClientRegion> getAllClientRegions() {
         return clientPersistence.getAllRegionTypes();
     }
+
+    @Override
+    public Collection<ClientTier> getAllClientTiers() {
+        return clientPersistence.getAllClientTiers();
+    }
 }
 

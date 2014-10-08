@@ -50,7 +50,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void save() {
         Client client = new Client();
-        client.setTier(ClientTier.THREE);
+        client.setTier(new ClientTier(3l));
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
@@ -70,7 +70,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test(expected = ConstraintViolationException.class)
     public void em_68_BadChars() {
         Client client = new Client();
-        client.setTier(ClientTier.THREE);
+        client.setTier(new ClientTier(3l));
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
@@ -88,7 +88,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void em_68_AllValidChars() {
         Client client = new Client();
-        client.setTier(ClientTier.THREE);
+        client.setTier(new ClientTier(3l));
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
@@ -160,7 +160,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setName("Demo hospital client 1" );
 	   client.setType(clientType);
 	   client.setRegion(new ClientRegion(1l));
-	   client.setTier(ClientTier.THREE);
+	   client.setTier(new ClientTier(3l));
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
 	   client.setContractEnd(LocalDate.now().plusYears(2));
@@ -191,7 +191,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setName("Dr. Quinn, Medicine Woman" );
         client.setType(clientType);
         client.setRegion(new ClientRegion(1l));
-        client.setTier(ClientTier.THREE);
+        client.setTier(new ClientTier(3l));
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
@@ -216,7 +216,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setName("Demo-hospital-'=_;:`@#&,.!()client 1" );
 	   client.setType(clientType);
 	   client.setRegion(new ClientRegion(1l));
-	   client.setTier(ClientTier.THREE);
+	   client.setTier(new ClientTier(3l));
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
 	   client.setContractEnd(LocalDate.now().plusYears(2));
@@ -232,7 +232,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
  	   client.setName("Demo hospital '=_;:`@#&,.!()client 2" );
  	   client.setType(clientType);
  	   client.setRegion(new ClientRegion(1l));
- 	   client.setTier(ClientTier.THREE);
+ 	   client.setTier(new ClientTier(3l));
  	   client.setContractOwner(superAdmin);
  	   client.setContractStart(LocalDate.now());
  	   client.setContractEnd(LocalDate.now().plusYears(2));
@@ -248,7 +248,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
    	   client.setName("test client123" );
    	   client.setType(clientType);
    	   client.setRegion(new ClientRegion(1l));
-   	   client.setTier(ClientTier.THREE);
+   	   client.setTier(new ClientTier(3l));
    	   client.setContractOwner(superAdmin);
    	   client.setContractStart(LocalDate.now());
    	   client.setContractEnd(LocalDate.now().plusYears(2));
@@ -301,7 +301,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setName("Demo hospital client " + i);
         client.setType(clientType);
         client.setRegion(new ClientRegion(1l));
-        client.setTier(ClientTier.THREE);
+        client.setTier(new ClientTier(3l));
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));

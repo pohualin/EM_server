@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -62,4 +59,13 @@ public interface ClientPersistence {
      * @return collection of ClientRegion objects
      */
     Collection<ClientRegion> getAllRegionTypes();
+
+
+    /**
+     * Loads all possible client tiers
+     *
+     * @return collection of ClientTier objects
+     */
+    Collection<ClientTier> getAllClientTiers();
+
 }

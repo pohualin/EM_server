@@ -55,7 +55,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	
 	private Client makeClient(){
 	    Client client = new Client();
-	    client.setTier(ClientTier.THREE);
+	    client.setTier(new ClientTier(3l));
 	    client.setContractEnd(LocalDate.now().plusYears(1));
 	    client.setContractStart(LocalDate.now());
 	    client.setRegion(new ClientRegion(1l));

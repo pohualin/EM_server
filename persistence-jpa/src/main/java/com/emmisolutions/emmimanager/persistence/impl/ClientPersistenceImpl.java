@@ -1,14 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ClientRegionRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.repo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +33,9 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Resource
     ClientRegionRepository clientRegionRepository;
+
+    @Resource
+    ClientTierRepository clientTierRepository;
 
     @Resource
     UserRepository userRepository;
@@ -82,6 +79,11 @@ public class ClientPersistenceImpl implements ClientPersistence {
     @Override
     public Collection<ClientRegion> getAllRegionTypes() {
         return clientRegionRepository.findAll();
+    }
+
+    @Override
+    public Collection<ClientTier> getAllClientTiers() {
+        return clientTierRepository.findAll();
     }
 
     /**

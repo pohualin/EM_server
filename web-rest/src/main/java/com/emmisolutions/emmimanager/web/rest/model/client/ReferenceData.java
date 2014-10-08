@@ -35,7 +35,7 @@ public class ReferenceData extends ResourceSupport {
 
     @XmlElement(name = "clientTier")
     @XmlElementWrapper(name = "clientTiers")
-    private ClientTier[] clientTiers = ClientTier.values();
+    private Set<ClientTier> clientTiers;
 
     @XmlElement(name = "statusFilter")
     @XmlElementWrapper(name = "statusFilters")
@@ -44,9 +44,10 @@ public class ReferenceData extends ResourceSupport {
     /**
      * create common links for reference data
      */
-    public ReferenceData(Collection<ClientType> clientTypes, Collection<ClientRegion> clientRegions) {
+    public ReferenceData(Collection<ClientType> clientTypes, Collection<ClientRegion> clientRegions, Collection<ClientTier> clientTiers) {
         this.clientTypes = new HashSet<>(clientTypes);
         this.clientRegions = new HashSet<>(clientRegions);
+        this.clientTiers = new HashSet<>(clientTiers);
         add(UserPage.createPotentialOwnersFullSearchLink());
         add(SalesForceSearchResponseResource.createFindLink());
         add(ClientResource.createFindNormalizedNameLink());
