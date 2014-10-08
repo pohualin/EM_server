@@ -1,21 +1,12 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -23,13 +14,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.io.Serializable;
 
 /**
  * A client.
@@ -57,16 +42,16 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     private String name;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50, nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "client_type_id", nullable = false)
     private ClientType type;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @ManyToOne
+    @JoinColumn(name = "client_region_id")
     private ClientRegion region;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 10)
+    @ManyToOne
+    @JoinColumn(name = "client_tier_id")
     private ClientTier tier;
 
     @NotNull
