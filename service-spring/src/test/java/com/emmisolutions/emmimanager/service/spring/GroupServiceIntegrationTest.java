@@ -76,7 +76,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
         client.setName("Test Client " + id);
-        client.setType(ClientType.PROVIDER);
+        client.setType(new ClientType(1l));
         client.setActive(false);
         client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));

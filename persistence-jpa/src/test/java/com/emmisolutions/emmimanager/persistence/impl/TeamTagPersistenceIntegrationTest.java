@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.*;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,12 +34,17 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamPersistence teamPersistence;
 
-    private User superAdmin;
+    User superAdmin;
 
+    @Resource
+    ClientTypeRepository clientTypeRepository;
+
+    ClientType clientType;
 
     @Before
     public void init() {
         superAdmin = userPersistence.reload("super_admin");
+        clientType = clientTypeRepository.getOne(1l);
     }
 
     /**
@@ -309,7 +315,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
         client.setName("Test Client "+uniqueId);
-        client.setType(ClientType.PROVIDER);
+        client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));

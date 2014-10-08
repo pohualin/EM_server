@@ -2,8 +2,10 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.hasNames;
@@ -28,6 +31,9 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Resource
     ClientRepository clientRepository;
+
+    @Resource
+    ClientTypeRepository clientTypeRepository;
 
     @Resource
     UserRepository userRepository;
@@ -61,6 +67,11 @@ public class ClientPersistenceImpl implements ClientPersistence {
             ret = clientRepository.findByNormalizedName(toSearch);
         }
         return ret;
+    }
+
+    @Override
+    public Collection<ClientType> getAllClientTypes() {
+        return clientTypeRepository.findAll();
     }
 
     /**

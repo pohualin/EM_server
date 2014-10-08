@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -30,14 +31,17 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
-    private User superAdmin;
+    User superAdmin;
 
-    /**
-     * Before each test
-     */
+    @Resource
+    ClientTypeRepository clientTypeRepository;
+
+    ClientType clientType;
+
     @Before
     public void init() {
         superAdmin = userPersistence.reload("super_admin");
+        clientType = clientTypeRepository.getOne(1l);
     }
 
     /**
@@ -51,7 +55,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
         client.setName("Test Client");
-        client.setType(ClientType.PROVIDER);
+        client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
@@ -71,7 +75,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
         client.setName("$ % ^ * \\");
-        client.setType(ClientType.PROVIDER);
+        client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
@@ -89,7 +93,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setRegion(ClientRegion.NORTHEAST);
         client.setName("Aa1= ' _ ; : ` @ # & , . ! ( ) /");
-        client.setType(ClientType.PROVIDER);
+        client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
@@ -154,7 +158,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   Client client = new Client();
 	   client.setActive(true);
 	   client.setName("Demo hospital client 1" );
-	   client.setType(ClientType.PROVIDER);
+	   client.setType(clientType);
 	   client.setRegion(ClientRegion.NORTHEAST);
 	   client.setTier(ClientTier.THREE);
 	   client.setContractOwner(superAdmin);
@@ -185,7 +189,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = new Client();
         client.setActive(true);
         client.setName("Dr. Quinn, Medicine Woman" );
-        client.setType(ClientType.PROVIDER);
+        client.setType(clientType);
         client.setRegion(ClientRegion.NORTHEAST);
         client.setTier(ClientTier.THREE);
         client.setContractOwner(superAdmin);
@@ -210,7 +214,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   Client client = new Client();
 	   client.setActive(true);
 	   client.setName("Demo-hospital-'=_;:`@#&,.!()client 1" );
-	   client.setType(ClientType.PROVIDER);
+	   client.setType(clientType);
 	   client.setRegion(ClientRegion.NORTHEAST);
 	   client.setTier(ClientTier.THREE);
 	   client.setContractOwner(superAdmin);
@@ -226,7 +230,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
  	   client = new Client();
  	   client.setActive(true);
  	   client.setName("Demo hospital '=_;:`@#&,.!()client 2" );
- 	   client.setType(ClientType.PROVIDER);
+ 	   client.setType(clientType);
  	   client.setRegion(ClientRegion.NORTHEAST);
  	   client.setTier(ClientTier.THREE);
  	   client.setContractOwner(superAdmin);
@@ -242,7 +246,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
    	   client = new Client();
    	   client.setActive(true);
    	   client.setName("test client123" );
-   	   client.setType(ClientType.PROVIDER);
+   	   client.setType(clientType);
    	   client.setRegion(ClientRegion.NORTHEAST);
    	   client.setTier(ClientTier.THREE);
    	   client.setContractOwner(superAdmin);
@@ -295,7 +299,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = new Client();
         client.setActive(i % 2 == 0);
         client.setName("Demo hospital client " + i);
-        client.setType(ClientType.PROVIDER);
+        client.setType(clientType);
         client.setRegion(ClientRegion.NORTHEAST);
         client.setTier(ClientTier.THREE);
         client.setContractOwner(superAdmin);

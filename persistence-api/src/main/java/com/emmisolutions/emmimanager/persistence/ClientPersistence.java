@@ -2,8 +2,11 @@ package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.ClientType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Collection;
 
 /**
  * Client persistence class
@@ -45,4 +48,9 @@ public interface ClientPersistence {
      */
     Client findByNormalizedName(String normalizedName);
 
+    /**
+     * Loads all possible client types
+     * @return collection of ClientType objects
+     */
+    Collection<ClientType> getAllClientTypes();
 }

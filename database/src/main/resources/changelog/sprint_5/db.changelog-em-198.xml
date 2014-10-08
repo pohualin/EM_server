@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="Client Type Enum Conversion" author="Matt">
+        <!-- Add the column to client -->
+        <addColumn tableName="client">
+            <column name="client_type_id" type="BIGINT"/>
+        </addColumn>
+        <addColumn tableName="client_audit">
+            <column name="client_type_id" type="BIGINT"/>
+        </addColumn>
+
+        <!-- create the new tables -->
+        <createTable tableName="client_type">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_client_type"/>
+            </column>
+            <column name="key_path" type="NVARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="client_type" columnNames="key_path" constraintName="uk_client_type_key_path"/>
+        <createTable tableName="client_type_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="key_path" type="NVARCHAR(1024)"/>
+        </createTable>
+        <addPrimaryKey tableName="client_type_audit" columnNames="id, revision"/>
+
+        <!-- load in the types -->
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_5/data/em-198-client-types.csv"
+                  separator=";"
+                  tableName="client_type"/>
+
+        <!-- update existing data to use new type -->
+        <update tableName="client">
+            <column name="client_type_id" valueNumeric="1"/>
+            <where>type = 'PROVIDER'</where>
+        </update>
+        <update tableName="client">
+            <column name="client_type_id" valueNumeric="2"/>
+            <where>type = 'PHYSICIAN_PRACTICE'</where>
+        </update>
+        <update tableName="client">
+            <column name="client_type_id" valueNumeric="3"/>
+            <where>type = 'PAYER'</where>
+        </update>
+        <update tableName="client">
+            <column name="client_type_id" valueNumeric="4"/>
+            <where>type = 'PHARMA'</where>
+        </update>
+        <update tableName="client">
+            <column name="client_type_id" valueNumeric="5"/>
+            <where>type = 'OTHER'</where>
+        </update>
+
+        <!-- drop old column -->
+        <dropColumn tableName="client" columnName="type"/>
+
+        <!-- add constraints -->
+        <addNotNullConstraint tableName="client" columnName="client_type_id" columnDataType="BIGINT"/>
+        <addForeignKeyConstraint baseTableName="client" baseColumnNames="client_type_id"
+                                 constraintName="fk_client_client_type"
+                                 referencedTableName="client_type" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_type_audit" baseColumnNames="revision"
+                                 constraintName="fk_client_type_audit_revision_info"
+                                 referencedTableName="revision_info" referencedColumnNames="revision"/>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -80,7 +80,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Collection<ClientType> getAllClientTypes() {
-        return null;
+        return clientPersistence.getAllClientTypes();
     }
 }
 

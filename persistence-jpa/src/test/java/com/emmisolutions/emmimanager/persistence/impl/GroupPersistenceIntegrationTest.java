@@ -1,29 +1,22 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-
-import org.joda.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
+import org.joda.time.LocalDate;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 
 /**
@@ -46,12 +39,18 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
 	ClientRepository clientRepository;
-	
-	private User superAdmin;
+
+    @Resource
+    ClientTypeRepository clientTypeRepository;
+
+	User superAdmin;
+
+    ClientType clientType;
 
 	@Before
 	public void init() {
 	    superAdmin = userPersistence.reload("super_admin");
+        clientType = clientTypeRepository.getOne(1l);
 	}
 	
 	private Client makeClient(){
@@ -61,7 +60,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	    client.setContractStart(LocalDate.now());
 	    client.setRegion(ClientRegion.NORTHEAST);
 	    client.setName("Test Client");
-	    client.setType(ClientType.PROVIDER);
+	    client.setType(clientType);
 	    client.setActive(false);
 	    client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
