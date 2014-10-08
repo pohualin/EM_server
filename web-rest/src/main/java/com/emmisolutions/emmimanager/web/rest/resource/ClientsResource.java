@@ -117,7 +117,9 @@ public class ClientsResource {
     @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
-        return new ReferenceData();
+        return new ReferenceData(clientService.getAllClientTypes(),
+                clientService.getAllClientRegions(),
+                clientService.getAllClientTiers());
     }
 
     /**

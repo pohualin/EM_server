@@ -65,7 +65,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
 
     private Client makeClient(String clientName, String username, String accountNumber){
         Client client = new Client();
-        client.setType(ClientType.PROVIDER);
+        client.setType(new ClientType(2l));
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);

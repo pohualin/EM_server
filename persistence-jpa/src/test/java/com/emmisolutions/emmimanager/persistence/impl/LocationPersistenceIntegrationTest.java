@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,14 +31,17 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
-    private User superAdmin;
+    User superAdmin;
 
-    /**
-     * before each test
-     */
+    @Resource
+    ClientTypeRepository clientTypeRepository;
+
+    ClientType clientType;
+
     @Before
     public void init() {
         superAdmin = userPersistence.reload("super_admin");
+        clientType = clientTypeRepository.getOne(1l);
     }
 
 
@@ -136,12 +140,12 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private Client makeClient() {
         Client client = new Client();
-        client.setTier(ClientTier.THREE);
+        client.setTier(new ClientTier(3l));
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setName("client" + System.currentTimeMillis());
-        client.setType(ClientType.PROVIDER);
+        client.setType(clientType);
         client.setActive(true);
         client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));

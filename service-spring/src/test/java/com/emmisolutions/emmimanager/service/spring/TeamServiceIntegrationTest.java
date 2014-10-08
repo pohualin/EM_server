@@ -77,7 +77,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     
     protected Client makeClient(String clientName, String username){
         Client client = new Client();
-        client.setType(ClientType.PROVIDER);
+        client.setType(new ClientType(4l));
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
