@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+  	<changeSet id="create_provider" author="Amrita">
+        <createTable tableName="provider">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_provider"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="gender" type="varchar(50)"/>
+            <column name="version" type="INT"/>
+            <column name="created_by" type="varchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="provider_audit">
+            <column name="id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="first_name" type="varchar(255)"/>
+            <column name="middle_name" type="varchar(255)"/>
+            <column name="last_name" type="varchar(255)"/>
+            <column name="email" type="varchar(255)"/>
+            <column name="gender" type="varchar(50)"/>
+            <column name="active" type="boolean"/>
+        </createTable>
+        <addPrimaryKey tableName="provider_audit" constraintName="pk_provider_audit" columnNames="id, revision"/>
+        
+        <addForeignKeyConstraint baseTableName="provider_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_provider_audit"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>    
+    </changeSet>
+</databaseChangeLog>    

@@ -49,4 +49,8 @@ public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence 
 		}
 		return groups;
 	}
+	
+	public ReferenceGroup findByName(String name){
+		return referenceGroupRepository.findByName(name);
+	}
 }

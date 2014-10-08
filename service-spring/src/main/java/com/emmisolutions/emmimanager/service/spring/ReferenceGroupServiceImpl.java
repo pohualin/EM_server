@@ -28,4 +28,11 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 		return referenceGroupPersistence.loadReferenceGroups(page);
 
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public ReferenceGroup findByName(String name){
+		return referenceGroupPersistence.findByName(name);
+	}
+
 }

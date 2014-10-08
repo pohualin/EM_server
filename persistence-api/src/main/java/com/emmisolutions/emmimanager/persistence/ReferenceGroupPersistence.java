@@ -17,4 +17,11 @@ public interface ReferenceGroupPersistence {
 	 */
 	Page<ReferenceGroup> loadReferenceGroups(Pageable page);
 	
+	/**
+	 * find ReferenceGroup by name
+	 * @param String name
+	 * @return ReferenceGroup
+	 */
+	ReferenceGroup findByName(String name);
+
 }

@@ -18,4 +18,5 @@ public interface ReferenceGroupService {
 	 */
 	Page<ReferenceGroup> loadReferenceGroups(Pageable page);
 
+	ReferenceGroup findByName(String name);
 }

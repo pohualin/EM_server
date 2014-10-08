@@ -7,4 +7,5 @@ import com.emmisolutions.emmimanager.model.ReferenceGroup;
 
 public interface ReferenceGroupRepository extends JpaRepository<ReferenceGroup, Long>, JpaSpecificationExecutor<ReferenceGroup> {
 
+	ReferenceGroup findByName(String name);
 }
