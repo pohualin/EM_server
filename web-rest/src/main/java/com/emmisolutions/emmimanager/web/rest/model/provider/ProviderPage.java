@@ -42,23 +42,6 @@ public class ProviderPage extends PagedResource<ProviderResource> {
     public ProviderPage(PagedResources<ProviderResource> providerResources, Page<Provider> providerPage) {
         pageDefaults(providerResources, providerPage);
     }
-
-    /**
-     * Creates link used to find providers.
-     *
-     * @return a <link rel="provider" href="http://thelink"/>
-     */
-    public static Link createsearchProvidersLink() {
-        Link link = linkTo(methodOn(ProvidersResource.class).findProviders(null, null, null, null, (String[]) null)).withRel("provider");
-        UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables( 
-                		new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
-        return new Link(uriTemplate, link.getRel());
-    }
     
     /**
      * Link for ref data (Specialty types) for providers
@@ -86,7 +69,7 @@ public class ProviderPage extends PagedResource<ProviderResource> {
     public static Link createProviderLink(Long clientId, Long teamId) {
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ProvidersResource.class).create(null, 1L, 1L);
         Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("providerzz");
+        Link link = linkTo(invocations).withRel("provider");
         String href = link.getHref();
         int idx = href.indexOf(discoverer.getMapping(ProvidersResource.class));
         if (idx != -1) {

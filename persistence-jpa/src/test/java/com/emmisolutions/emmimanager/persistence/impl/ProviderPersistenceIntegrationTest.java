@@ -109,7 +109,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setMiddleName("Broadway");
 		provider.setLastName("Poppins");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
-		provider.setGender(Gender.FEMALE);
 		provider.setActive(true);
 		provider.setSpecialty(getSpecialty());
 		
@@ -129,7 +128,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setFirstName("Mary");
 		provider.setMiddleName("Poppins");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
-		provider.setGender(Gender.FEMALE);
 		provider.setActive(false);		
 		provider.setSpecialty(getSpecialty());
 		provider = providerPersistence.save(provider);
@@ -142,7 +140,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setLastName("Poppins<3");
 		provider.setMiddleName("middle name");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
-		provider.setGender(Gender.FEMALE);
 		provider.setActive(false);
 		provider.setSpecialty(getSpecialty());
 		provider = providerPersistence.save(provider);
@@ -179,7 +176,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setMiddleName("Broadway");
 		provider.setLastName("Poppins");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
-		provider.setGender(Gender.FEMALE);
 		provider.setActive(true);
 		provider.setSpecialty(getSpecialty());
 		
@@ -205,7 +201,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setMiddleName("Broadway");
 		provider.setLastName("Poppins");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
-		provider.setGender(Gender.FEMALE);
 		provider.setActive(true);
 		provider.setSpecialty(getSpecialty());
 		
@@ -222,7 +217,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setMiddleName("Broadway");
 		provider.setLastName("Poppins");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
-		provider.setGender(Gender.FEMALE);
 		provider.setActive(true);
 		provider.setSpecialty(getSpecialty());
 		Team team1 = makeNewTeam(1);

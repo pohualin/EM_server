@@ -9,7 +9,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.junit.Test;
 
-import com.emmisolutions.emmimanager.model.Gender;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ProviderService;
@@ -32,7 +31,6 @@ public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
 		provider.setMiddleName("Broadway");
 		provider.setLastName("Poppins");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
-		provider.setGender(Gender.FEMALE);
 		provider.setActive(true);
 		provider = providerService.create(provider);
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));

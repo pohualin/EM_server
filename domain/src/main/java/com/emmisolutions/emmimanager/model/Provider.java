@@ -5,8 +5,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -62,21 +60,9 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@Column(length = 100, nullable = false)
 	private String email;
 
-	@Column(length = 15)
-	@Enumerated(EnumType.STRING)
-	private Gender gender;
-
 	@ManyToMany
 	@JoinTable(name = "provider_team", joinColumns = { @JoinColumn(name = "provider_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "teams_id", referencedColumnName = "id") })
 	private Set<Team> teams;
-	/*
-	 * @ManyToMany
-	 * 
-	 * @JoinTable (name="provider_reference_tag",
-	 * joinColumns={@JoinColumn(name="provider_id", referencedColumnName="id")},
-	 * inverseJoinColumns = {@JoinColumn(name="reference_tags_id",
-	 * referencedColumnName="id")}) private Set<ReferenceTag> specialties;
-	 */
 
 	@ManyToOne
 	@JoinColumn(name = "reference_tag_specialty")
@@ -138,14 +124,6 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 		this.version = version;
 	}
 
-	public Gender getGender() {
-		return gender;
-	}
-
-	public void setGender(Gender gender) {
-		this.gender = gender;
-	}
-
 	public boolean isActive() {
 		return active;
 	}
@@ -153,13 +131,6 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-
-	/*
-	 * public Set<ReferenceTag> getSpecialties() { return specialties; }
-	 * 
-	 * public void setSpecialties(Set<ReferenceTag> specialties) {
-	 * this.specialties = specialties; }
-	 */
 
 	public ReferenceTag getSpecialty() {
 		return specialty;

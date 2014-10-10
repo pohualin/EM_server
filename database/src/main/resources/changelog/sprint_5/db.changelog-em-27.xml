@@ -23,7 +23,6 @@
             <column name="email" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="gender" type="varchar(50)"/>
             <column name="version" type="INT"/>
             <column name="created_by" type="varchar(50)" defaultValue="system">
                 <constraints nullable="false"/>
@@ -49,7 +48,6 @@
             <column name="middle_name" type="varchar(255)"/>
             <column name="last_name" type="varchar(255)"/>
             <column name="email" type="varchar(255)"/>
-            <column name="gender" type="varchar(50)"/>
             <column name="active" type="boolean"/>
             <column name="reference_tag_specialty" type="BIGINT"></column>
             

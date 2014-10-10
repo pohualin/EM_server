@@ -17,19 +17,22 @@ import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
  */
 @Repository
 public class ProviderPersistenceImpl implements ProviderPersistence {
-	
+
 	@Resource
 	ProviderRepository providerRepository;
-	
-	public Provider save(Provider provider){
+
+	@Override
+	public Provider save(Provider provider) {
 		return providerRepository.save(provider);
 	}
-	
-	public Provider reload(Long id){
-		return providerRepository.findOne(id);		
+
+	@Override
+	public Provider reload(Long id) {
+		return providerRepository.findOne(id);
 	}
 
-	public Page<Provider> findAllProvidersByTeam(Pageable pageble, Team team){
+	@Override
+	public Page<Provider> findAllProvidersByTeam(Pageable pageble, Team team) {
 		return providerRepository.findByTeams(pageble, team);
 	}
 
