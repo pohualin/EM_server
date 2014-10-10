@@ -26,12 +26,12 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Resource
 	ReferenceTagService referenceTagService;
-	
+
 	@Resource
 	ReferenceGroupService referenceGroupService;
-	
+
 	public static final String SPECIALTY = "Specialty";
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public Provider reload(Provider provider) {
@@ -63,25 +63,23 @@ public class ProviderServiceImpl implements ProviderService {
 		return providerPersistence.save(provider);
 	}
 
-/*	@Override
-	@Transactional
-	public Provider addTeam(Long providerId, Team team) {
-		Provider provider = providerPersistence.reload(providerId);
-		provider.getTeams().add(team);
-		return update(provider);
-	}*/
-
 	@Override
 	@Transactional
-	public Page<ReferenceTag> findAllSpecialties(Pageable page){
+	public Page<ReferenceTag> findAllSpecialties(Pageable page) {
 		ReferenceGroup group = new ReferenceGroup();
 		group = referenceGroupService.findByName(SPECIALTY);
-		
+
 		if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
-        }
-		
+			// default pagination request if none
+			page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+		}
+
 		return referenceTagService.findAllByGroupIdEquals(group.getId(), page);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<Provider> findAllProviders(Pageable pageble, Team team) {
+		return providerPersistence.findAllProvidersByTeam(pageble, team);
 	}
 }

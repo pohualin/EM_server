@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
@@ -50,9 +51,8 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@Pattern(regexp = "[A-Za-z '-]*", message = "Name can only contain letters, spaces, and the following characters: - '")
 	private String lastName;
 
-	@NotNull
 	@Size(max = 255)
-	@Column(name = "middle_name", nullable = false)
+	@Column(name = "middle_name")
 	@Pattern(regexp = "[A-Za-z '-]*", message = "Name can only contain letters, spaces, and the following characters: - '")
 	private String middleName;
 
@@ -62,19 +62,25 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@Column(length = 100, nullable = false)
 	private String email;
 
-	@Column(length = 15, nullable = false)
+	@Column(length = 15)
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
-/*	
-	@Column(length = 15, nullable = false)
-	@Enumerated(EnumType.STRING)
-	private Gender gender;*/
 
 	@ManyToMany
-	@JoinTable (name="provider_team",
-	joinColumns={@JoinColumn(name="provider_id", referencedColumnName="id")},
-	inverseJoinColumns = {@JoinColumn(name="teams_id", referencedColumnName="id")})
+	@JoinTable(name = "provider_team", joinColumns = { @JoinColumn(name = "provider_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "teams_id", referencedColumnName = "id") })
 	private Set<Team> teams;
+	/*
+	 * @ManyToMany
+	 * 
+	 * @JoinTable (name="provider_reference_tag",
+	 * joinColumns={@JoinColumn(name="provider_id", referencedColumnName="id")},
+	 * inverseJoinColumns = {@JoinColumn(name="reference_tags_id",
+	 * referencedColumnName="id")}) private Set<ReferenceTag> specialties;
+	 */
+
+	@ManyToOne
+	@JoinColumn(name = "reference_tag_specialty")
+	private ReferenceTag specialty;
 
 	public Set<Team> getTeams() {
 		return teams;
@@ -146,6 +152,21 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	/*
+	 * public Set<ReferenceTag> getSpecialties() { return specialties; }
+	 * 
+	 * public void setSpecialties(Set<ReferenceTag> specialties) {
+	 * this.specialties = specialties; }
+	 */
+
+	public ReferenceTag getSpecialty() {
+		return specialty;
+	}
+
+	public void setSpecialty(ReferenceTag specialty) {
+		this.specialty = specialty;
 	}
 
 	@Override

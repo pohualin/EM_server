@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 
+
 public interface ReferenceTagRepository extends
 		JpaRepository<ReferenceTag, Long>,
 		JpaSpecificationExecutor<ReferenceTag> {

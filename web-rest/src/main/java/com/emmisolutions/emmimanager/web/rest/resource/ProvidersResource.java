@@ -3,6 +3,9 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
@@ -14,6 +17,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,8 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.ReferenceTagService;
+import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
@@ -44,6 +50,9 @@ public class ProvidersResource {
 	ProviderService providerService;
 	
 	@Resource
+	TeamService teamService;
+	
+	@Resource
 	ReferenceTagService referenceTagService;
 	
 	@Resource
@@ -58,12 +67,38 @@ public class ProvidersResource {
      * @return ProviderResource
      *
      */
-	@RequestMapping(value = "/provider", method = RequestMethod.POST)
+/*	@RequestMapping(value = "/provider", method = RequestMethod.POST)
 	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_CREATE" })
 	public ResponseEntity<ProviderResource> create(
 			@RequestBody Provider provider) {
 
 		provider = providerService.create(provider);
+		if (provider == null) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(
+					providerResourceAssembler.toResource(provider),
+					HttpStatus.CREATED);
+		}
+
+	}*/
+	@RequestMapping(value = "/clients/{clientId}/teams/{teamId}/provider", method = RequestMethod.POST)
+	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_CREATE" })
+	public ResponseEntity<ProviderResource> create(
+			@RequestBody Provider provider,
+			@PathVariable("teamId")Long teamId,
+			@PathVariable("clientId") Long clientId) {
+
+		Team toFind = new Team();
+		toFind.setId(teamId);
+		toFind = teamService.reload(toFind);
+		
+		Set<Team> teams = new HashSet<Team>();
+		teams.add(toFind);
+		provider.setTeams(teams);
+		
+		provider = providerService.create(provider);
+		
 		if (provider == null) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
@@ -119,4 +154,37 @@ public class ProvidersResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+    
+	 /**
+     * GET for searching for providers
+     * 
+     * @param pageable  paged request
+     * @param sort      sorting request
+     * @param assembler used to create the PagedResources
+     * @param name
+     * @param status
+     * @return ProviderResource
+     */
+	@RequestMapping(value = "/clients/{clientId}/teams/{teamId}/provider", method = RequestMethod.GET)
+	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_LIST" })
+	public ResponseEntity<ProviderPage> findAllProvidersByTeam(
+			@PageableDefault(size = 50) Pageable pageable,
+			@SortDefault(sort = "id") Sort sort,
+			@RequestParam(value = "status", required = false) String status,
+			PagedResourcesAssembler<Provider> assembler,
+			@PathVariable("teamId")Long teamId,
+			@PathVariable("clientId") Long clientId) {
+		
+		Team team = new Team();
+		team.setId(teamId);
+		team = teamService.reload(team);
+		
+		Page<Provider> providerPage = providerService.findAllProviders(pageable, team);
+
+		if (providerPage.hasContent()) {
+		    return new ResponseEntity<>(new ProviderPage(assembler.toResource(providerPage, providerResourceAssembler), providerPage), HttpStatus.OK);
+		} else {
+		    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
 }

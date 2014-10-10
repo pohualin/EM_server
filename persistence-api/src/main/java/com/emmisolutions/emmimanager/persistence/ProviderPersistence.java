@@ -1,6 +1,10 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.Team;
 
 /**
  * Provider persistence class
@@ -15,5 +19,7 @@ public interface ProviderPersistence {
 	Provider save(Provider provider);
 	
 	Provider reload(Long id);
+	
+	Page<Provider> findAllProvidersByTeam(Pageable pageble, Team team);
 
 }

@@ -15,7 +15,7 @@ public interface ProviderService {
 
 	Provider update(Provider provider);
 
-//	Provider addTeam(Long providerId, Team team);
+	Page<Provider> findAllProviders(Pageable pageble, Team team);
 	
 	Page<ReferenceTag> findAllSpecialties(Pageable pageble);
 

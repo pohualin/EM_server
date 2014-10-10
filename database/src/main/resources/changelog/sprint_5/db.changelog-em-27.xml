@@ -16,7 +16,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="middle_name" type="varchar(255)">
-                <constraints nullable="false"/>
             </column>
             <column name="last_name" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -37,6 +36,9 @@
             <column name="active" type="boolean">
                 <constraints nullable="false"/>
             </column>
+      		<column name="reference_tag_specialty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>            
         </createTable>
 
         <createTable tableName="provider_audit">
@@ -49,6 +51,8 @@
             <column name="email" type="varchar(255)"/>
             <column name="gender" type="varchar(50)"/>
             <column name="active" type="boolean"/>
+            <column name="reference_tag_specialty" type="BIGINT"></column>
+            
         </createTable>
         <addPrimaryKey tableName="provider_audit" constraintName="pk_provider_audit" columnNames="id, revision"/>
         
@@ -57,5 +61,46 @@
                                  constraintName="fk_provider_audit"
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>    
+                                 
+        <addForeignKeyConstraint baseTableName="provider"
+                                 baseColumnNames="reference_tag_specialty"
+                                 constraintName="fk_provider_reference_tag_specialty"
+                                 referencedTableName="reference_tag"
+                                 referencedColumnNames="id"/>  
+                                 
+                                 
+        <createTable tableName="provider_team">
+            <column name="provider_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="teams_id" type="bigint"><constraints nullable="false"/></column>
+        </createTable>
+        <addPrimaryKey tableName="provider_team" constraintName="pk_provider_team" columnNames="provider_id, teams_id"/>
+
+        <createTable tableName="provider_team_audit">
+            <column name="revision" type="bigint"><constraints nullable="false"/></column>
+            <column name="provider_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="teams_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+        </createTable>
+        
+        <addPrimaryKey tableName="provider_team_audit" constraintName="pk_provider_team_audit" columnNames="revision, provider_id, teams_id"/>
+                                                     
+		<addForeignKeyConstraint baseTableName="provider_team"
+                                 baseColumnNames="teams_id"
+                                 constraintName="fk_provider_team_team_id"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>    
+                                 
+        <addForeignKeyConstraint baseTableName="provider_team"
+                                 baseColumnNames="provider_id"
+                                 constraintName="fk_provider_team_provider_id"
+                                 referencedTableName="provider"
+                                 referencedColumnNames="id"/>                
+                                      
+        <addForeignKeyConstraint baseTableName="provider_team_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_provider_team_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+                                                                    
     </changeSet>
 </databaseChangeLog>    
