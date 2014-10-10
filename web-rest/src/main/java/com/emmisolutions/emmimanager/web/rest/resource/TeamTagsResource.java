@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.TeamTagService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +79,9 @@ public class TeamTagsResource {
 
         if (teamTagPage.hasContent()) {
             // create a TeamTagPage containing the response
-            return new ResponseEntity<>(new TeamTagPage(assembler.toResource(teamTagPage,teamTagResourceAssembler),teamTagPage),HttpStatus.OK);
+            PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
+            TeamTagPage teamTagPage1 = new TeamTagPage(teamTagResourceSupports, teamTagPage);
+            return new ResponseEntity<>(teamTagPage1,HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

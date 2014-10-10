@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
 import com.emmisolutions.emmimanager.service.TeamTagService;
@@ -22,6 +23,9 @@ public class TeamTagServiceImpl implements TeamTagService {
     @Resource
     TeamPersistence teamPersistence;
 
+    @Resource
+    TagPersistence tagPersistence;
+
     @Override
     public Page<TeamTag> findAllTeamTagsWithTeam(Pageable pageable, Team team) {
         return teamTagPersistence.getAllTeamTagsForTeam(pageable, team);
@@ -29,15 +33,15 @@ public class TeamTagServiceImpl implements TeamTagService {
 
     @Override
     public void save(Team team, Set<Tag> tagSet) {
-        if(tagSet==null||tagSet.isEmpty()){
-            return;
-        }
         Team teamToFind = teamPersistence.reload(team);
-        teamTagPersistence.deleteTeamTagsWithTeam(teamToFind);
-
-        for(Tag tag: tagSet){
-            TeamTag teamTag = new TeamTag(team, tag);
-            teamTagPersistence.saveTeamTag(teamTag);
+        if(teamToFind != null) {
+            teamTagPersistence.deleteTeamTagsWithTeam(teamToFind);
+            if (tagSet != null) {
+                for (Tag tag : tagSet) {
+                    TeamTag teamTag = new TeamTag(teamToFind, tag);
+                    teamTagPersistence.saveTeamTag(teamTag);
+                }
+            }
         }
     }
 }
