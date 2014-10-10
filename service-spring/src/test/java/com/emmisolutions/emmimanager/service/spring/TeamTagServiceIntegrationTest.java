@@ -40,12 +40,12 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         User user = userService.save(new User("login " + System.currentTimeMillis(), "pw"));
 
         Client client = new Client();
-        client.setTier(ClientTier.THREE);
+        client.setTier(new ClientTier(3l));
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
-        client.setRegion(ClientRegion.NORTHEAST);
+        client.setRegion(new ClientRegion(1l));
         client.setName("Test Client " + System.currentTimeMillis());
-        client.setType(ClientType.PROVIDER);
+        client.setType(new ClientType(1l));
         client.setContractOwner(user);
         client.setActive(false);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
