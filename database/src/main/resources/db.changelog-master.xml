@@ -48,4 +48,6 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_5/db.changelog-em-238.xml"/>
 
+    <include relativeToChangelogFile="true" file="changelog/sprint_5/db.changelog-em-9.xml"/>
+
 </databaseChangeLog>
