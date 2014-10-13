@@ -3,9 +3,11 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.TeamTagService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,12 +75,15 @@ public class TeamTagsResource {
         Team toFind = new Team();
         toFind.setId(teamId);
         toFind = teamService.reload(toFind);
+        TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter(teamId);
         // find the page of clients
         Page<TeamTag> teamTagPage = teamTagService.findAllTeamTagsWithTeam(pageable,toFind);
 
         if (teamTagPage.hasContent()) {
             // create a TeamTagPage containing the response
-            return new ResponseEntity<>(new TeamTagPage(assembler.toResource(teamTagPage,teamTagResourceAssembler),teamTagPage),HttpStatus.OK);
+            PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
+            TeamTagPage teamTagPage1 = new TeamTagPage(teamTagResourceSupports, teamTagPage, teamTagSearchFilter);
+            return new ResponseEntity<>(teamTagPage1,HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -99,5 +105,26 @@ public class TeamTagsResource {
         toFind.setId(teamId);
 
         teamTagService.save(toFind,tagSet);
+    }
+
+    /**
+     * GET to get a teamTag
+     *
+     * @param teamId to get
+     * @param teamTagId to get
+     * @return TeamTagResource or NO_CONTENT
+     */
+    @RequestMapping(value = "/teams/{teamId}/tags/{teamTagId}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
+    public ResponseEntity<TeamTagResource> getTeamTag(@PathVariable("teamId") Long teamId,@PathVariable("teamTagId") Long teamTagId) {
+        TeamTag toFind = new TeamTag();
+        toFind.setId(teamId);
+
+        toFind = teamTagService.reload(toFind);
+        if (toFind != null) {
+            return new ResponseEntity<>(teamTagResourceAssembler.toResource(toFind), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 }

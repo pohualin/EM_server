@@ -26,6 +26,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
          ret.add(linkTo(methodOn(TeamTagsResource.class).list(1l, null, null, null, null, null)).withRel("tags"));
          ret.add(ProviderPage.createProviderReferenceDataLink().withRel("providerReferenceData"));
          ret.add(ProviderPage.createProviderLink(entity.getClient().getId(), entity.getId()).withRel("provider"));
+         ret.add(linkTo(methodOn(TeamTagsResource.class).list(entity.getId(), null, null, null, null, null)).withRel("tags"));
 	     ret.setEntity(entity);
 	     return ret; 
 	 }

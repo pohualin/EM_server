@@ -23,4 +23,9 @@ public interface TeamTagService {
      * saves an association of a team with a set of tags
      */
     void save(Team team, Set<Tag> tagSet);
+
+    /**
+     * reload a teamtag
+     */
+    TeamTag reload(TeamTag teamTag);
 }
