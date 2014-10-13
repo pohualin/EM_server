@@ -17,8 +17,7 @@ public class TeamTagResourceAssembler implements ResourceAssembler<TeamTag, Team
     @Override
     public TeamTagResource toResource(TeamTag entity) {
         TeamTagResource ret = new TeamTagResource();
-
-        ret.add(linkTo(methodOn(TeamTagsResource.class).list(entity.getId(),null,null,null,null,null)).withSelfRel());
+        ret.add(linkTo(methodOn(TeamTagsResource.class).getTeamTag(entity.getTeam().getId(), entity.getId())).withSelfRel());
         ret.setEntity(entity);
         return ret;
     }

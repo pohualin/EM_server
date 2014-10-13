@@ -44,4 +44,9 @@ public class TeamTagServiceImpl implements TeamTagService {
             }
         }
     }
+
+    @Override
+    public TeamTag reload(TeamTag teamTag){
+        return teamTagPersistence.reload(teamTag);
+    }
 }
