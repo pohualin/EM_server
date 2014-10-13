@@ -18,8 +18,19 @@ public interface ProviderPersistence {
      */
 	Provider save(Provider provider);
 	
+    /**
+     * Reloads a provider
+     * @param Long id - of the provider to load
+     * @return Provider provider
+     */
 	Provider reload(Long id);
 	
+    /**
+     * Finds all providers for a given team
+     * @param Pageable
+     * @param Team
+     * @return Page<Provider>
+     */
 	Page<Provider> findAllProvidersByTeam(Pageable pageble, Team team);
 
 }

@@ -8,7 +8,11 @@ import com.emmisolutions.emmimanager.model.ReferenceGroupType;
  * Spring Data Repo for Reference Group Type
  */
 public interface ReferenceGroupTypeRepository extends JpaRepository<ReferenceGroupType, Long>, JpaSpecificationExecutor<ReferenceGroupType> {
-
+	 /**
+     * Find ReferenceGroupType for given name
+     * @param String name of the refGroupType
+     * @return ReferenceGroupType
+     */
 	ReferenceGroupType findByName(String name);
 
 }

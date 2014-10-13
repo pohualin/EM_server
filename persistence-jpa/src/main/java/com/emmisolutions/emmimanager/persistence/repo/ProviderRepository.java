@@ -12,7 +12,12 @@ import com.emmisolutions.emmimanager.model.Team;
  * Spring Data Repo for Provider
  */
 public interface ProviderRepository extends JpaRepository<Provider, Long>, JpaSpecificationExecutor<Provider> {
-
+	 /**
+     * Find providers for given team
+     * @param Pageable 
+     * @param Team team for which providers to load
+     * @return Page<Provider> provider page
+     */
 	Page<Provider> findByTeams(Pageable pageable, Team team);
 
 }
