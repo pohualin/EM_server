@@ -109,6 +109,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		return specialty;
 	}
 	 
+	/**
+	 * Testing a provider save
+	 */
 	@Test
 	public void testProviderSave() {
 		Provider provider = new Provider();
@@ -129,6 +132,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider is part of the team:", provider.getTeams().iterator().next().getId(), is(notNullValue()));
 	}
 
+	/**
+	 * Testing a provider save without the required fielf "last name"
+	 */
 	@Test(expected = ConstraintViolationException.class)
 	public void testProviderSaveWithoutLastName() {
 		Provider provider = new Provider();
@@ -140,6 +146,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider = providerPersistence.save(provider);
 	}
 	
+	/**
+	 * Testing a provider save with invalid character inside name fields, should fail
+	 */
 	@Test(expected = ConstraintViolationException.class)
 	public void testProviderSaveWithInvalidCharactersForName() {
 		Provider provider = new Provider();
@@ -176,6 +185,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		 return team;
 	 }
 	 
+	 /**
+	 * Testing a provider save with team associated with it
+	 */
  	@Test
 	public void saveProviderWithTeam() {
 		Provider provider = new Provider();
@@ -200,7 +212,10 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.getTeams().add(team2);
 		assertThat("Provider is a part of two teams", provider.getTeams().size(), is(2));
 	}
-	 	
+ 	
+ 	/**
+	 * Testing a provider save without a team associated with it
+	 */	 	
 	@Test
 	public void testProviderSaveWithoutATeam() {
 		Provider provider = new Provider();
@@ -217,6 +232,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 				is("system"));
 	}
  	
+	/**
+	 * Test find all providers for a given team
+	 */
  	@Test
  	public void testGetProviderByTeam(){
  		Provider provider = new Provider();

@@ -21,7 +21,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
-
+/**
+ * A Provider and its specialty and teams
+ */
 @Audited
 @Table(name = "provider")
 @XmlRootElement(name = "provider")

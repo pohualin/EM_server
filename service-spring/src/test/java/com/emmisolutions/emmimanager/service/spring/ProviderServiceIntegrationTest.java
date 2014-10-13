@@ -52,6 +52,9 @@ public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
 	@Resource
     ReferenceGroupTypeRepository referenceGroupTypeRepository;
 
+	/**
+	 * Testing a provider save without the required fields
+	 */
 	@Test(expected = ConstraintViolationException.class)
 	public void createProviderWithoutRequired() {
 		Provider provider = new Provider();
@@ -59,6 +62,9 @@ public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
 		providerService.create(provider, team);
 	}
 
+	/**
+	 * Testing a provider save
+	 */
 	@Test
 	public void testProviderSave() {
 
