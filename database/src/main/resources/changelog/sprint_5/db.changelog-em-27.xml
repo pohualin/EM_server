@@ -99,6 +99,12 @@
                                  constraintName="fk_provider_team_audit_revision"
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>
-                                                                    
+
     </changeSet>
+    <changeSet id="providers_permissions" author="Amrita">
+	    <loadData encoding="UTF-8"
+	                  file="changelog/sprint_5/data/provider_permissions.csv"
+	                  separator=";"
+	                  tableName="permission"/>
+	</changeSet>
 </databaseChangeLog>    
