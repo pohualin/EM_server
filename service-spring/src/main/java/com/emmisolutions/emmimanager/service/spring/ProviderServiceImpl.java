@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.Resource;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamService;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -22,6 +26,9 @@ public class ProviderServiceImpl implements ProviderService {
 	@Resource
 	ProviderPersistence providerPersistence;
 
+	@Resource
+	TeamService teamService;
+	
 	@Resource
 	ReferenceTagRepository referenceTagRepository;
 
@@ -38,14 +45,21 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Override
 	@Transactional
-	public Provider create(Provider provider) {
-		if (provider == null) {
-			throw new IllegalArgumentException("provider cannot be null");
+	public Provider create(Provider provider, Team team) {
+		if (provider == null || team == null) {
+			throw new IllegalArgumentException("provider and team cannot be null");
 		}
 		provider.setId(null);
 		provider.setVersion(null);
+		
+		Team toFind = teamService.reload(team);
+		Set<Team> teams = new HashSet<Team>();
+		teams.add(toFind);
+		provider.setTeams(teams);
 		return providerPersistence.save(provider);
 	}
+	
+	
 
 	@Override
 	@Transactional
@@ -73,6 +87,10 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<Provider> findAllProviders(Pageable pageble, Team team) {
+		if (team == null) {
+			return null;
+		}
+		team = teamService.reload(team);
 		return providerPersistence.findAllProvidersByTeam(pageble, team);
 	}
 }

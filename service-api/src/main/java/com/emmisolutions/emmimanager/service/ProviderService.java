@@ -19,7 +19,7 @@ public interface ProviderService {
      * @param Provider provider to reload
      * @return Provider
      */
-	Provider create(Provider provider);
+	Provider create(Provider provider, Team team);
 	 /**
      * Updates a given provider
      * @param Provider provider to reload

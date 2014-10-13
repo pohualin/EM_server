@@ -3,9 +3,6 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
@@ -28,7 +25,6 @@ import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
@@ -47,9 +43,6 @@ public class ProvidersResource {
 
 	@Resource
 	ProviderService providerService;
-	
-	@Resource
-	TeamService teamService;
 
 	@Resource
 	ProviderResourceAssembler providerResourceAssembler;
@@ -57,7 +50,7 @@ public class ProvidersResource {
     @Resource
     ReferenceTagResourceAssembler referenceTagResourceAssembler;
 
-    /**
+	 /**
      * POST for creating a Provider
      * @param Provider
      * @return ProviderResource
@@ -70,15 +63,9 @@ public class ProvidersResource {
 			@PathVariable("teamId")Long teamId,
 			@PathVariable("clientId") Long clientId) {
 
-		Team toFind = new Team();
-		toFind.setId(teamId);
-		toFind = teamService.reload(toFind);
-		
-		Set<Team> teams = new HashSet<Team>();
-		teams.add(toFind);
-		provider.setTeams(teams);
-		
-		provider = providerService.create(provider);
+		Team team = new Team();
+		team.setId(teamId);
+		provider = providerService.create(provider, team);
 		
 		if (provider == null) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -89,6 +76,7 @@ public class ProvidersResource {
 		}
 
 	}
+    
     
 	 /**
      * GET for searching for providers
@@ -112,8 +100,6 @@ public class ProvidersResource {
 		
 		Team team = new Team();
 		team.setId(teamId);
-		team = teamService.reload(team);
-		
 		Page<Provider> providerPage = providerService.findAllProviders(pageable, team);
 
 		if (providerPage.hasContent()) {
@@ -145,4 +131,25 @@ public class ProvidersResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+    
+ /**
+     * GET To get provider by id
+     *
+     * @param id to load
+     * @return GroupResource or NO_CONTENT on fail
+     */
+	@RequestMapping(value = "/provider/{id}", method = RequestMethod.GET)
+	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_VIEW" })
+	public ResponseEntity<ProviderResource> getById(@PathVariable("id") Long id) {
+		Provider provider = new Provider();
+		provider.setId(id);
+		provider = providerService.reload(provider);
+		if (provider == null) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(
+					providerResourceAssembler.toResource(provider),
+					HttpStatus.CREATED);
+		}
+	}
 }
