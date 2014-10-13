@@ -56,9 +56,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 	ReferenceGroupRepository referenceGroupRepository;
 	
 	@Resource
-	ReferenceGroupTypeRepository referenceGroupTypeRepository;
-	
-	@Resource
 	ClientPersistence clientPersistence;
 	
 	@Resource
@@ -69,6 +66,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientTypeRepository clientTypeRepository;
+    
+    @Resource
+    ReferenceGroupTypeRepository referenceGroupTypeRepository;
 
 	private User superAdmin;
 
