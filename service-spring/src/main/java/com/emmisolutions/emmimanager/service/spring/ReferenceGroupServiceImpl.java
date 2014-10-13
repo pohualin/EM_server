@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
 
@@ -24,15 +25,13 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<ReferenceGroup> loadReferenceGroups(Pageable page) {
-		
 		return referenceGroupPersistence.loadReferenceGroups(page);
-
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public ReferenceGroup findByName(String name){
-		return referenceGroupPersistence.findByName(name);
+	public ReferenceGroup findByType(ReferenceGroupType type) {
+		return referenceGroupPersistence.findByType(type);
 	}
 
 }

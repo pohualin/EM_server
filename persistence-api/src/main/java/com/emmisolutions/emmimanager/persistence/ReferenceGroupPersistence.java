@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 
 /**
  * Reference Group Persistence
@@ -18,10 +19,10 @@ public interface ReferenceGroupPersistence {
 	Page<ReferenceGroup> loadReferenceGroups(Pageable page);
 	
 	/**
-	 * find ReferenceGroup by name
+	 * find ReferenceGroup by type
 	 * @param String name
 	 * @return ReferenceGroup
 	 */
-	ReferenceGroup findByName(String name);
+	ReferenceGroup findByType(ReferenceGroupType type);
 
 }

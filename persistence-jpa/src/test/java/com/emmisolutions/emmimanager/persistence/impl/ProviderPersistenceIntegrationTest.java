@@ -22,7 +22,6 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Gender;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceGroupType;
@@ -36,6 +35,7 @@ import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
@@ -66,8 +66,14 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
  
 	@Resource
 	TeamPersistence teamPersistence;
- 
+
+    @Resource
+    ClientTypeRepository clientTypeRepository;
+
 	private User superAdmin;
+
+	ClientType clientType;
+
  
 	/**
 	 * Before each test
@@ -75,6 +81,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 	@Before
 	public void init() {
 		superAdmin = userPersistence.reload("super_admin");
+        clientType = clientTypeRepository.getOne(1l);
 	}
 
 	private Team makeNewTeam(int i){
@@ -149,9 +156,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		 Client client = new Client();
 	     client.setActive(false);
 	     client.setName(name);
-	     client.setType(ClientType.PROVIDER);
-	     client.setRegion(ClientRegion.NORTHEAST);
-	     client.setTier(ClientTier.THREE);
+	     client.setType(clientType);
+	     client.setRegion(new ClientRegion(1l));
+	        client.setTier(new ClientTier(3l));
 	     client.setContractOwner(superAdmin);
 	     client.setContractStart(LocalDate.now());
 	     client.setContractEnd(LocalDate.now().plusYears(2));

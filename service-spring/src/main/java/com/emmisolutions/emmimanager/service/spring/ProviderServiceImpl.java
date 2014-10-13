@@ -16,6 +16,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
+import com.emmisolutions.emmimanager.service.ReferenceGroupTypeService;
 import com.emmisolutions.emmimanager.service.ReferenceTagService;
 
 @Service
@@ -29,8 +30,11 @@ public class ProviderServiceImpl implements ProviderService {
 
 	@Resource
 	ReferenceGroupService referenceGroupService;
+	
+	@Resource
+	ReferenceGroupTypeService referenceGroupTypeService;
 
-	public static final String SPECIALTY = "Specialty";
+	public static final String SPECIALTY = "SPECIALTY";
 
 	@Override
 	@Transactional(readOnly = true)
@@ -66,8 +70,8 @@ public class ProviderServiceImpl implements ProviderService {
 	@Override
 	@Transactional
 	public Page<ReferenceTag> findAllSpecialties(Pageable page) {
-		ReferenceGroup group = new ReferenceGroup();
-		group = referenceGroupService.findByName(SPECIALTY);
+
+		ReferenceGroup group = referenceGroupService.findByType(referenceGroupTypeService.findByName(SPECIALTY));
 
 		if (page == null) {
 			// default pagination request if none

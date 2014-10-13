@@ -9,4 +9,6 @@ import com.emmisolutions.emmimanager.model.ReferenceGroupType;
  */
 public interface ReferenceGroupTypeRepository extends JpaRepository<ReferenceGroupType, Long>, JpaSpecificationExecutor<ReferenceGroupType> {
 
+	ReferenceGroupType findByName(String name);
+
 }

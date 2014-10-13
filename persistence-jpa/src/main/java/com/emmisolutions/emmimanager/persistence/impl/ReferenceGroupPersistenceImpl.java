@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceGroup_;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
@@ -50,7 +51,7 @@ public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence 
 		return groups;
 	}
 	
-	public ReferenceGroup findByName(String name){
-		return referenceGroupRepository.findByName(name);
+	public ReferenceGroup findByType(ReferenceGroupType type){
+		return referenceGroupRepository.findByType(type);
 	}
 }

@@ -104,7 +104,7 @@ public class ProvidersResource {
 	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_LIST" })
 	public ResponseEntity<ProviderPage> findAllProvidersByTeam(
 			@PageableDefault(size = 50) Pageable pageable,
-			@SortDefault(sort = "id") Sort sort,
+			@SortDefault(sort = "createdDate") Sort sort,
 			@RequestParam(value = "status", required = false) String status,
 			PagedResourcesAssembler<Provider> assembler,
 			@PathVariable("teamId")Long teamId,
