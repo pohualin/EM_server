@@ -136,7 +136,7 @@ public class ProvidersResource {
      * GET To get provider by id
      *
      * @param id to load
-     * @return GroupResource or NO_CONTENT on fail
+     * @return ProviderResource or NO_CONTENT on fail
      */
 	@RequestMapping(value = "/provider/{id}", method = RequestMethod.GET)
 	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_VIEW" })
@@ -145,11 +145,11 @@ public class ProvidersResource {
 		provider.setId(id);
 		provider = providerService.reload(provider);
 		if (provider == null) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} else {
 			return new ResponseEntity<>(
 					providerResourceAssembler.toResource(provider),
-					HttpStatus.CREATED);
+					HttpStatus.OK);
 		}
 	}
 }
