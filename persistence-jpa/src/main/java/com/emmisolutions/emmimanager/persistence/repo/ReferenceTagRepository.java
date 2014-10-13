@@ -12,6 +12,11 @@ import com.emmisolutions.emmimanager.model.ReferenceTag;
 public interface ReferenceTagRepository extends
 		JpaRepository<ReferenceTag, Long>,
 		JpaSpecificationExecutor<ReferenceTag> {
-
+	 /**
+     * Find ReferenceGroupType for given name
+     * @param Long id of the group
+     * @param Pageable pageable
+     * @return Page<ReferenceTag>
+     */
 	Page<ReferenceTag> findAllByGroupIdEquals(Long groupId, Pageable pageable);
 }
