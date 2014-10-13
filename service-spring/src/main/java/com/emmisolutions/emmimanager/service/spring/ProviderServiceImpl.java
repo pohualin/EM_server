@@ -10,14 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.ReferenceGroupService;
-import com.emmisolutions.emmimanager.service.ReferenceGroupTypeService;
-import com.emmisolutions.emmimanager.service.ReferenceTagService;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -26,13 +23,7 @@ public class ProviderServiceImpl implements ProviderService {
 	ProviderPersistence providerPersistence;
 
 	@Resource
-	ReferenceTagService referenceTagService;
-
-	@Resource
-	ReferenceGroupService referenceGroupService;
-	
-	@Resource
-	ReferenceGroupTypeService referenceGroupTypeService;
+	ReferenceTagRepository referenceTagRepository;
 
 	public static final String SPECIALTY = "SPECIALTY";
 
@@ -71,14 +62,12 @@ public class ProviderServiceImpl implements ProviderService {
 	@Transactional
 	public Page<ReferenceTag> findAllSpecialties(Pageable page) {
 
-		ReferenceGroup group = referenceGroupService.findByType(referenceGroupTypeService.findByName(SPECIALTY));
-
 		if (page == null) {
 			// default pagination request if none
 			page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
 		}
 
-		return referenceTagService.findAllByGroupIdEquals(group.getId(), page);
+		return referenceTagRepository.findAllByGroupTypeName(SPECIALTY, page);
 	}
 
 	@Override

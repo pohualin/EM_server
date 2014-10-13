@@ -13,10 +13,10 @@ public interface ReferenceTagRepository extends
 		JpaRepository<ReferenceTag, Long>,
 		JpaSpecificationExecutor<ReferenceTag> {
 	 /**
-     * Find a page of ReferenceTags for given group
-     * @param Long id of the group
+     * Find a page of ReferenceTags for given group type
+     * @param String name of the group type
      * @param Pageable pageable
      * @return Page<ReferenceTag>
      */
-	Page<ReferenceTag> findAllByGroupIdEquals(Long groupId, Pageable pageable);
+	Page<ReferenceTag> findAllByGroupTypeName(String name, Pageable pageable);
 }
