@@ -103,7 +103,7 @@ public class ProvidersResource {
 	@RequestMapping(value = "/clients/{clientId}/teams/{teamId}/provider", method = RequestMethod.GET)
 	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_LIST" })
 	public ResponseEntity<ProviderPage> findAllProvidersByTeam(
-			@PageableDefault(size = 50) Pageable pageable,
+			@PageableDefault(size = 10) Pageable pageable,
 			@SortDefault(sort = "createdDate") Sort sort,
 			@RequestParam(value = "status", required = false) String status,
 			PagedResourcesAssembler<Provider> assembler,
@@ -133,7 +133,7 @@ public class ProvidersResource {
      */
     @RequestMapping(value = "/referenceDataSpecialties", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_PROVIDER_VIEW"})
-    public ResponseEntity<ReferenceTagPage> getRefData(@PageableDefault(size = 50) Pageable pageable,
+    public ResponseEntity<ReferenceTagPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
                                                            @SortDefault(sort = "id") Sort sort,
                                                            PagedResourcesAssembler<ReferenceTag> assembler) {
 
