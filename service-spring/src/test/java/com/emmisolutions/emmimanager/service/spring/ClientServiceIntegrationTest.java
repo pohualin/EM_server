@@ -78,7 +78,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
 
     private Client makeClient(String clientName, String username){
         Client client = new Client();
-        client.setType(ClientType.PROVIDER);
+        client.setType(new ClientType(1l));
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);

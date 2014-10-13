@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 
 /**
  * Implementation of the ClientService
@@ -75,5 +74,20 @@ public class ClientServiceImpl implements ClientService {
 	public Client findByNormalizedName(String normalizedName) {
 		return clientPersistence.findByNormalizedName(normalizedName);
 	}
+
+    @Override
+    public Collection<ClientType> getAllClientTypes() {
+        return clientPersistence.getAllClientTypes();
+    }
+
+    @Override
+    public Collection<ClientRegion> getAllClientRegions() {
+        return clientPersistence.getAllRegionTypes();
+    }
+
+    @Override
+    public Collection<ClientTier> getAllClientTiers() {
+        return clientPersistence.getAllClientTiers();
+    }
 }
 

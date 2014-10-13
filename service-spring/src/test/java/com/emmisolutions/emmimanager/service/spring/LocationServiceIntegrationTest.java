@@ -236,7 +236,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
 
     private Client makeClient() {
         Client client = new Client();
-        client.setType(ClientType.PROVIDER);
+        client.setType(new ClientType(2l));
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName("whatever" + System.currentTimeMillis());

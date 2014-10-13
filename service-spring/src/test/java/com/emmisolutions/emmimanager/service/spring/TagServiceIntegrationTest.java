@@ -1,32 +1,22 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.joda.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Tag;
-import com.emmisolutions.emmimanager.model.TagSearchFilter;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
+import org.joda.time.LocalDate;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 /**
  * Tag service integration Test
  */
@@ -53,12 +43,12 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 
 	private Group createGroup() {
 		Client client = new Client();
-		client.setTier(ClientTier.THREE);
+		client.setTier(new ClientTier(3l));
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setContractStart(LocalDate.now());
-		client.setRegion(ClientRegion.NORTHEAST);
+		client.setRegion(new ClientRegion(1l));
 		client.setName("Test Client" + System.currentTimeMillis());
-		client.setType(ClientType.PROVIDER);
+		client.setType(new ClientType(3l));
 		client.setActive(false);
 		client.setContractOwner(superAdmin);
 		client.setSalesForceAccount(new SalesForce("xxxWW"
