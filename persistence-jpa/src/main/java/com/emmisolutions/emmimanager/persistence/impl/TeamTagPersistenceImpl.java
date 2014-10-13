@@ -38,7 +38,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
         if (team == null || tag == null) {
             throw new IllegalArgumentException("Team or Tag is not in the database");
         }
-        if (!teamTag.getTag().getGroup().getClient().equals(teamTag.getTeam().getClient())) {
+        if (!tag.getGroup().getClient().equals(team.getClient())) {
             throw new IllegalArgumentException("Tag and Team must share the same client");
         }
         return teamTagRepository.save(teamTag);
@@ -72,6 +72,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
             throw new IllegalArgumentException("team tag is null");
         }
         teamTagRepository.deleteByTeam(team);
+        teamTagRepository.flush();
     }
 
     private void checkTeamTagNull(TeamTag teamTag) {
