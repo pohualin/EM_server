@@ -23,6 +23,7 @@
 		<class>com.emmisolutions.emmimanager.model.ReferenceTag</class>
         <class>com.emmisolutions.emmimanager.model.Strings</class>
         <class>com.emmisolutions.emmimanager.model.Language</class>
+        <class>com.emmisolutions.emmimanager.model.Provider</class>
         <class>com.emmisolutions.emmimanager.model.ClientType</class>
         <class>com.emmisolutions.emmimanager.model.ClientRegion</class>
         <class>com.emmisolutions.emmimanager.model.ClientTier</class>
