@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 
-
 /**
  * Reference Group Service
  *
@@ -13,9 +12,9 @@ import com.emmisolutions.emmimanager.model.ReferenceGroup;
 public interface ReferenceGroupService {
 	/**
 	 * loads reference groups
+	 * 
 	 * @param Pageable
-	 * @return Page<ReferenceGroup> 
+	 * @return Page<ReferenceGroup>
 	 */
 	Page<ReferenceGroup> loadReferenceGroups(Pageable page);
-
 }

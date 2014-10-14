@@ -1,16 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.Group_;
-import com.emmisolutions.emmimanager.persistence.GroupPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
-import org.hibernate.annotations.QueryHints;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
+import static com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications.byClientId;
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityGraph;
@@ -20,8 +11,18 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications.byClientId;
-import static org.springframework.data.jpa.domain.Specifications.where;
+import org.hibernate.annotations.QueryHints;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
+
+import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.Group_;
+import com.emmisolutions.emmimanager.persistence.GroupPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
 
 /**
  * Group Persistence Implementation
