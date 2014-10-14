@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -24,13 +23,11 @@ public class TeamTag extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
-    @JsonBackReference
     private Team team;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "tag_id", nullable = false)
-    @JsonBackReference
     private Tag tag;
 
     public TeamTag(){}
