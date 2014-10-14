@@ -1,33 +1,18 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
-import org.joda.time.LocalDate;
-import org.junit.Test;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSalesForce;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
-import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.*;
+import org.joda.time.LocalDate;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -53,10 +38,10 @@ public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
     ReferenceGroupTypeRepository referenceGroupTypeRepository;
 
 	/**
-	 * Testing a provider save without the required fields
+	 * Testing a provider save without a persistent team.
 	 */
-	@Test(expected = ConstraintViolationException.class)
-	public void createProviderWithoutRequired() {
+	@Test(expected = IllegalArgumentException.class)
+	public void createProviderWithUnsavedTeam() {
 		Provider provider = new Provider();
 		Team team = new Team();
 		providerService.create(provider, team);
