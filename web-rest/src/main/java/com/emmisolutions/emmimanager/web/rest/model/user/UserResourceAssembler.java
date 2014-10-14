@@ -1,16 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
-import com.emmisolutions.emmimanager.model.Permission;
-import com.emmisolutions.emmimanager.model.PermissionName;
-import com.emmisolutions.emmimanager.model.Role;
-import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
-import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
@@ -19,12 +15,18 @@ import org.springframework.hateoas.core.MappingDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import com.emmisolutions.emmimanager.model.Permission;
+import com.emmisolutions.emmimanager.model.PermissionName;
+import com.emmisolutions.emmimanager.model.Role;
+import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 
 /**
  * Creates a UserResource from a User

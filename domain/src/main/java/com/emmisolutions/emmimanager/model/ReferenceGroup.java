@@ -66,6 +66,14 @@ public class ReferenceGroup extends AbstractAuditingEntity implements Serializab
 		this.tags = tags;
 	}
 
+	public ReferenceGroupType getType() {
+		return type;
+	}
+
+	public void setType(ReferenceGroupType type) {
+		this.type = type;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)

@@ -24,8 +24,6 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<ReferenceGroup> loadReferenceGroups(Pageable page) {
-		
 		return referenceGroupPersistence.loadReferenceGroups(page);
-
 	}
 }
