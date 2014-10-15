@@ -104,7 +104,6 @@ public class ProvidersResource {
 		Team team = new Team();
 		team.setId(teamId);
 		Page<Provider> providerPage = providerService.findAllProviders(pageable, team);
-//		ProviderSearchFilter filter = new ProviderSearchFilter(fromStringOrActive(status),null);
 		
 		if (providerPage.hasContent()) {
 		    return new ResponseEntity<>(new ProviderPage(assembler.toResource(providerPage, providerResourceAssembler), providerPage, null), HttpStatus.OK);
@@ -187,6 +186,11 @@ public class ProvidersResource {
 		}
 	}
 	
+	 /**
+     * GET for provider reference data
+     * 
+     * @return reference data for providers (status)
+     */
 	@RequestMapping(value="/providersReferenceData", method=RequestMethod.GET)
 	@RolesAllowed({"PERM_GOD", "PERM_PROVIDER_VIEW"})
 	public ReferenceData getReferenceData(){
