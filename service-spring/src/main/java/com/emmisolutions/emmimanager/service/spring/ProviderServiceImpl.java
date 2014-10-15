@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
@@ -92,5 +93,11 @@ public class ProviderServiceImpl implements ProviderService {
 		}
 		team = teamService.reload(team);
 		return providerPersistence.findAllProvidersByTeam(pageble, team);
+	}
+	
+	@Override
+    @Transactional(readOnly = true)
+	public Page<Provider> list(Pageable page, ProviderSearchFilter filter) {
+	        return providerPersistence.list(page, filter);
 	}
 }

@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
+import static com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.ProviderService;
@@ -30,6 +32,7 @@ import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceA
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResource;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ReferenceData;
 
 /**
  * Providers REST API
@@ -101,9 +104,10 @@ public class ProvidersResource {
 		Team team = new Team();
 		team.setId(teamId);
 		Page<Provider> providerPage = providerService.findAllProviders(pageable, team);
-
+//		ProviderSearchFilter filter = new ProviderSearchFilter(fromStringOrActive(status),null);
+		
 		if (providerPage.hasContent()) {
-		    return new ResponseEntity<>(new ProviderPage(assembler.toResource(providerPage, providerResourceAssembler), providerPage), HttpStatus.OK);
+		    return new ResponseEntity<>(new ProviderPage(assembler.toResource(providerPage, providerResourceAssembler), providerPage, null), HttpStatus.OK);
 		} else {
 		    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -151,5 +155,41 @@ public class ProvidersResource {
 					providerResourceAssembler.toResource(provider),
 					HttpStatus.OK);
 		}
+	}
+	
+	 /**
+     * GET for searching for providers
+     * 
+     * @param page  paged request
+     * @param sort      sorting request
+     * @param assembler used to create the PagedResources
+     * @param name
+     * @param status
+     * @return ProviderResource
+     */
+	@RequestMapping(value = "/providers", method = RequestMethod.GET)
+	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_LIST" })
+	public ResponseEntity<ProviderPage> list(
+			@PageableDefault(size = 10) Pageable page,
+			@SortDefault(sort = "id") Sort sort,
+			@RequestParam(value = "status", required = false) String status,
+			PagedResourcesAssembler<Provider> assembler,
+			@RequestParam(value = "name", required = false) String name) {
+
+		ProviderSearchFilter filter = new ProviderSearchFilter(fromStringOrActive(status), name);
+		
+		Page<Provider> providerPage = providerService.list(page, filter);
+
+		if (providerPage.hasContent()) {
+		    return new ResponseEntity<>(new ProviderPage(assembler.toResource(providerPage, providerResourceAssembler), providerPage, filter), HttpStatus.OK);
+		} else {
+		    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
+	
+	@RequestMapping(value="/providersReferenceData", method=RequestMethod.GET)
+	@RolesAllowed({"PERM_GOD", "PERM_PROVIDER_VIEW"})
+	public ReferenceData getReferenceData(){
+		return new ReferenceData();		
 	}
 }

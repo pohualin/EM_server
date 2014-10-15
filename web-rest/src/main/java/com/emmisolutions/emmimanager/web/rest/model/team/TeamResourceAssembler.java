@@ -1,15 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamTagsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamTagsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
 
 /**
  * 
