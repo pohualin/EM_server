@@ -15,9 +15,11 @@ import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 
 /**
  * Provider Persistence Implementation
@@ -28,6 +30,9 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
 
 	@Resource
 	ProviderRepository providerRepository;
+
+    @Resource
+    ReferenceTagRepository referenceTagRepository;
 
 	@Override
 	public Provider save(Provider provider) {
@@ -41,8 +46,12 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
 	}
 
 	@Override
-	public Page<Provider> findAllProvidersByTeam(Pageable pageble, Team team) {
-		return providerRepository.findByTeams(pageble, team);
+	public Page<Provider> findAllProvidersByTeam(Pageable page, Team team) {
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "name");
+        }
+		return providerRepository.findByTeams(page, team);
 	}
 	
 	@Override
@@ -76,4 +85,13 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
       return normalizeName((provider.getFirstName() != null && provider.getLastName() != null) ? provider.getFirstName() + provider.getLastName() 
     		  : provider.getFirstName() == null ? provider.getLastName() == null ? "" : provider.getLastName() : provider.getFirstName());
     }
+    @Override
+    public Page<ReferenceTag> findAllByGroupTypeName(Pageable page) {
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "name");
+        }
+        return referenceTagRepository.findAllByGroupTypeName(SPECIALTY, page);
+    }
+
 }

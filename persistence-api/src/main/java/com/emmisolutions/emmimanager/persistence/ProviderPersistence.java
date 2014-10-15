@@ -1,11 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Provider persistence class
@@ -28,12 +28,12 @@ public interface ProviderPersistence {
 	
     /**
      * Finds all providers for a given team
-     * @param Pageable
-     * @param Team
-     * @return Page<Provider>
+     * @param page specifications
+     * @param team to find providers for
+     * @return a Page<Provider>
      */
-	Page<Provider> findAllProvidersByTeam(Pageable pageble, Team team);
-	
+	Page<Provider> findAllProvidersByTeam(Pageable page, Team team);
+
 	
 	 /**
     * Fetches a page of Provider objects
@@ -44,4 +44,15 @@ public interface ProviderPersistence {
     */
    Page<Provider> list(Pageable page, ProviderSearchFilter searchFilter);
 
+    /**
+     * Finds a page of specialty tags
+     * @param page to fetch
+     * @return a page of ReferenceTag objects
+     */
+    Page<ReferenceTag> findAllByGroupTypeName(Pageable page);
+
+    /**
+     * Name of specialty Type in database
+     */
+    String SPECIALTY = "SPECIALTY";
 }

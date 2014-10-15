@@ -15,17 +15,23 @@ import java.util.Set;
 @Service
 public interface TeamTagService {
     /**
-     * Returns a Page of TeamTags that have the given team
+     * @param pageable pagable object
+     * @param team team to find
+     * @return Page of TeamTags that have the given team
      */
     Page<TeamTag> findAllTeamTagsWithTeam(Pageable pageable, Team team);
 
     /**
      * saves an association of a team with a set of tags
+     * @param team to save
+     * @param tagSet to save
      */
     void save(Team team, Set<Tag> tagSet);
 
     /**
-     * reload a teamtag
+     *
+     * @param teamTag to reload
+     * @return teamTag that was reloaded
      */
     TeamTag reload(TeamTag teamTag);
 }
