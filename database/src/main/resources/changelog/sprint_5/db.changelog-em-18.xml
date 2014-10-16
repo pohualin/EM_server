@@ -14,5 +14,11 @@
         <addColumn tableName="provider_audit">
             <column name="normalized_name" type="varchar(255)"/>
         </addColumn>
-	</changeSet>
+	
+		<sql><![CDATA[	
+			update provider
+			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(first_name||last_name,'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/','') )))
+			where normalized_name is null
+        ]]></sql> 
+    </changeSet>
 </databaseChangeLog>    
