@@ -20,6 +20,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
 /**
  * A Provider and its specialty and teams
@@ -69,6 +70,21 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "reference_tag_specialty")
 	private ReferenceTag specialty;
+	
+	@NotNull
+    @Size(max = 255)
+    @Column(name="normalized_name", length = 255, nullable = false)
+    @NotAudited
+    @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
+    private String normalizedName;    
+
+	public String getNormalizedName() {
+		return normalizedName;
+	}
+
+	public void setNormalizedName(String normalizedName) {
+		this.normalizedName = normalizedName;
+	}
 
 	public Set<Team> getTeams() {
 		return teams;

@@ -14,6 +14,9 @@ import java.io.Serializable;
 @Table(name="client_team_tag")
 @XmlRootElement(name="client_team_tag")
 @XmlAccessorType(XmlAccessType.FIELD)
+/**
+ * TeamTag Model
+ */
 public class TeamTag extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -31,6 +34,12 @@ public class TeamTag extends AbstractAuditingEntity implements Serializable {
     private Tag tag;
 
     public TeamTag(){}
+
+    /**
+     *
+     * @param team to associate with
+     * @param tag to associate with
+     */
     public TeamTag(Team team, Tag tag){
         setTeam(team);
         setTag(tag);
