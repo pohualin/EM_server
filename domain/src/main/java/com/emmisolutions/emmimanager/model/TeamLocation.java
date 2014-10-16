@@ -46,7 +46,6 @@ public class TeamLocation extends AbstractAuditingEntity {
 	}
 
 	public TeamLocation() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -64,7 +63,7 @@ public class TeamLocation extends AbstractAuditingEntity {
 
     @Override
     public String toString() {
-        return "Location{" +
+        return "TeamLocation{" +
                 "id=" + id +
                 '}';
     }

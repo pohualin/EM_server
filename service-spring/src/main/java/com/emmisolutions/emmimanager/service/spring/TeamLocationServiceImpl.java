@@ -13,10 +13,9 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.service.TeamLocationService;
 
 @Service
-public class TeamLocationServiceImpl implements TeamLocationService {
+public class TeamLocationServiceImpl implements TeamLocationSelocationSetrvice {
 
     @Resource
     TeamLocationPersistence teamLocationPersistence;
@@ -30,13 +29,11 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     }
 
     @Override
-    public void save(Team team, Set<Location> tagSet) {
+    public void save(Team team, Set<Location> locationSet) {
         Team teamToFind = teamPersistence.reload(team);
         if(teamToFind != null) {
-        	//TODO is necessary to delete all previous locations ?
-        	//teamLocationPersistence.deleteTeamLocationsWithTeam(teamToFind);
-            if (tagSet != null) {
-                for (Location location : tagSet) {
+            if (locationSet != null) {
+                for (Location location : locationSet) {
                     TeamLocation teamLocation = new TeamLocation(location, teamToFind);
                     teamLocationPersistence.saveTeamLocation(teamLocation);
                 }
@@ -48,4 +45,16 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     public TeamLocation reload(TeamLocation teamLocation){
         return teamLocationPersistence.reload(teamLocation);
     }
+
+	@Override
+	public TeamLocation add(Team team, Location locationToAddToTeam) {
+		Team teamToFind = teamPersistence.reload(team);
+        if(teamToFind != null) {
+            if (locationToAddToTeam != null) {
+                    TeamLocation teamLocation = new TeamLocation(locationToAddToTeam, teamToFind);
+                    teamLocationPersistence.saveTeamLocation(teamLocation);
+            }
+        }
+        return teamLocation;
+	}
 }

@@ -81,16 +81,16 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
     }
 
     /*
-     * try to save a null team tag
+     * try to save a null team location
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void saveNullTeamTag() {
+    public void saveNullTeamLocation() {
     	teamLocationPersistence.saveTeamLocation(null);
     }
 
 
     /**
-     * Test getting all the TeamTags for a given team
+     * Test getting all the TeamLocations for a given team
      */
     @Test
     public void getAllTeamLocationForTeam() {
