@@ -25,6 +25,7 @@ import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.ProvidersResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 
@@ -60,6 +61,9 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(TeamPage.createFullSearchLink());
         ret.add(createTeamByClientIdLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
+        ret.add(ProviderPage.createProviderFullSearchLink());
+        ret.add(linkTo(methodOn(ProvidersResource.class).getReferenceData()).withRel("providersReferenceData"));
+
         return ret;
     }
 

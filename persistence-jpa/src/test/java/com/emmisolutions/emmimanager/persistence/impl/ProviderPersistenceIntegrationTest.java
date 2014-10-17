@@ -23,6 +23,8 @@ import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
@@ -258,4 +260,56 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		assertThat("One provider was found for this team: ", providersForTeam.getContent().size(), is(1));
  	}
 		
+ 	/**
+	 * Test to list providers by ProviderSearchFilter
+	 */
+ 	@Test
+ 	public void searchForProvider(){
+ 		Provider provider = new Provider();
+		provider.setFirstName("Velma");
+		provider.setLastName("Kelly");
+		provider.setEmail("velmakelly@fourtysecondstreet.com");
+		provider.setActive(false);		
+		provider.setSpecialty(getSpecialty());
+		provider = providerPersistence.save(provider);
+		
+		assertThat("Provider one was saved", provider.getId(), is(notNullValue()));
+		
+		Provider providerTwo = new Provider();
+		providerTwo.setFirstName("Roxie");
+		providerTwo.setLastName("Hart");
+		providerTwo.setEmail("roxyhart@fourtysecondstreet.com");
+		providerTwo.setActive(false);		
+		providerTwo.setSpecialty(getSpecialty());
+		providerTwo = providerPersistence.save(providerTwo);
+		
+		assertThat("Provider two was saved", providerTwo.getId(), is(notNullValue()));
+
+		Pageable page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+
+		ProviderSearchFilter searchFilter = new ProviderSearchFilter("velma");
+		Page<Provider> providerPage = providerPersistence.list(page, searchFilter);
+		assertThat("Provider was found", providerPage.getContent().size(), is(1));
+		assertThat("Provider was found", providerPage.getContent().iterator().next().getFirstName(), is("Velma"));
+		
+		ProviderSearchFilter searchFilterTwo = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "kel");
+		Page<Provider> providerPageTwo = providerPersistence.list(page, searchFilterTwo);
+		assertThat("Provider was found", providerPageTwo.getContent().size(), is(0));
+
+		ProviderSearchFilter searchFilterThree = new ProviderSearchFilter(StatusFilter.INACTIVE_ONLY, "kel");
+		Page<Provider> providerPageThree = providerPersistence.list(page, searchFilterThree);
+		assertThat("Provider was found", providerPageThree.getContent().size(), is(1));
+		assertThat("Provider was found", providerPageThree.getContent().iterator().next().getLastName(), is("Kelly"));
+		
+		ProviderSearchFilter searchFilterFour = new ProviderSearchFilter(StatusFilter.ALL, "VElma Kelly");
+		Page<Provider> providerPageFour = providerPersistence.list(page, searchFilterFour);
+		assertThat("Provider was found", providerPageFour.getContent().size(), is(1));
+		assertThat("Provider was found", providerPageFour.getContent().iterator().next().getLastName(), is("Kelly"));
+		
+
+		ProviderSearchFilter searchFilterFive = new ProviderSearchFilter(StatusFilter.ALL, "roXi$e");
+		Page<Provider> providerPageFive = providerPersistence.list(page, searchFilterFive);
+		assertThat("Provider was found", providerPageFive.getContent().size(), is(1));
+		assertThat("Provider was found", providerPageFive.getContent().iterator().next().getLastName(), is("Hart"));
+ 	}
 }
