@@ -14,6 +14,9 @@ import javax.annotation.Resource;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Tests TeamTagPersistence
+ */
 public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
@@ -41,6 +44,9 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
     ClientType clientType;
 
+    /**
+     * this sets up the test
+     */
     @Before
     public void init() {
         superAdmin = userPersistence.reload("super_admin");
@@ -69,7 +75,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
     }
 
-    /*
+    /**
      * try to save a null team tag
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -77,7 +83,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTagPersistence.saveTeamTag(null);
     }
 
-    /*
+    /**
      * try to save a null team tag
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -85,7 +91,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTagPersistence.saveTeamTag(null);
     }
 
-    /*
+    /**
      * try to save a team tag with invalid team
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -109,7 +115,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("afterSaveTeamTag was null", afterSaveTeamTag, is(nullValue()));
     }
 
-    /*
+    /**
      * try to save a team tag with invalid team
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -131,7 +137,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("afterSaveTeamTag was null", afterSaveTeamTag, is(nullValue()));
     }
 
-     /*
+     /**
      * try to save a team tag with a team that has a different client than the tag
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -152,7 +158,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTagPersistence.saveTeamTag(teamTag);
     }
 
-    /*
+    /**
      * try to save a team tag with a tag that has a different client than the team
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -235,7 +241,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("2 teams were correctly returned", associatedTeamTagsPage.getTotalElements(), is(2L));
     }
 
-    /*
+    /**
     * delete all teamTags with a given team
     */
     @Test
@@ -272,7 +278,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
     }
 
- /*
+    /**
     * try to save a team tag with a tag that has a different client than the team
     */
     @Test(expected = InvalidDataAccessApiUsageException.class)

@@ -55,6 +55,7 @@ public class TeamTagsResource {
      * @param status    to filter by
      * @param assembler used to create the PagedResources
      * @param names     to filter by
+     * @param teamId     current teamId
      * @return ClientPage or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.GET)

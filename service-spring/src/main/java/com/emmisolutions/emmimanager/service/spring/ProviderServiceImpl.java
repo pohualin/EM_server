@@ -1,11 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
+import java.util.HashSet;
+
+import javax.annotation.Resource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,8 +11,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.HashSet;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamService;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -79,4 +82,10 @@ public class ProviderServiceImpl implements ProviderService {
         }
         return providerPersistence.findAllProvidersByTeam(page, fromDb);
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+	public Page<Provider> list(Pageable page, ProviderSearchFilter filter) {
+	        return providerPersistence.list(page, filter);
+ 	}
 }
