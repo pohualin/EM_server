@@ -30,11 +30,4 @@ public interface TeamLocationService {
      */
     TeamLocation reload(TeamLocation teamLocation);
     
-    /**
-    * Adds a location to the passed team
-    * @param team to be added to
-    * @param locationToAddToTeam to be added to team 
-    * @return the saved TeamLocation 
-    */
-    TeamLocation add(Team team, Location locationToAddToTeam);
 }

@@ -47,14 +47,4 @@ public class TeamLocationServiceImpl implements TeamLocationService {
         return teamLocationPersistence.reload(teamLocation);
     }
 
-	@Override
-	public TeamLocation add(Team team, Location locationToAddToTeam) {
-		Team teamToFind = teamPersistence.reload(team);
-		TeamLocation teamLocation = new TeamLocation();
-        if(teamToFind != null && locationToAddToTeam != null) {
-            teamLocation = new TeamLocation(locationToAddToTeam, teamToFind);
-            teamLocationPersistence.saveTeamLocation(teamLocation);
-        }
-        return teamLocation;
-	}
 }
