@@ -32,12 +32,10 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     @Override
     public void save(Team team, Set<Location> locationSet) {
         Team teamToFind = teamPersistence.reload(team);
-        if(teamToFind != null) {
-            if (locationSet != null) {
-                for (Location location : locationSet) {
-                    TeamLocation teamLocation = new TeamLocation(location, teamToFind);
-                    teamLocationPersistence.saveTeamLocation(teamLocation);
-                }
+        if(teamToFind != null && locationSet != null) {
+            for (Location location : locationSet) {
+                TeamLocation teamLocation = new TeamLocation(location, teamToFind);
+                teamLocationPersistence.saveTeamLocation(teamLocation);
             }
         }
     }
