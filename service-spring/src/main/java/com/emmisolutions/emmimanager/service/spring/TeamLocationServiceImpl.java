@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -30,10 +30,10 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     }
 
     @Override
-    public void save(Team team, Set<Location> locationSet) {
+    public void save(Team team, List<Location> locationList) {
         Team teamToFind = teamPersistence.reload(team);
-        if(teamToFind != null && locationSet != null) {
-            for (Location location : locationSet) {
+        if(teamToFind != null && locationList != null) {
+            for (Location location : locationList) {
                 TeamLocation teamLocation = new TeamLocation(location, teamToFind);
                 teamLocationPersistence.saveTeamLocation(teamLocation);
             }

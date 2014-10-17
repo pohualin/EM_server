@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
@@ -106,7 +106,7 @@ public class TeamLocationsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
-    public void create(@PathVariable("teamId") Long teamId,@RequestBody Set<Location> locationSet) {
+    public void create(@PathVariable("teamId") Long teamId,@RequestBody List<Location> locationSet) {
         Team toFind = new Team();
         toFind.setId(teamId);
         teamLocationService.save(toFind,locationSet);
