@@ -5,8 +5,15 @@ import static com.emmisolutions.emmimanager.persistence.impl.specification.Provi
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityGraph;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.QueryHints;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +22,7 @@ import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.Provider_;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
@@ -33,8 +41,11 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
 
     @Resource
     ReferenceTagRepository referenceTagRepository;
-
-	@Override
+    
+    @PersistenceContext
+    EntityManager entityManager;
+	
+    @Override
 	public Provider save(Provider provider) {
 		provider.setNormalizedName(normalizeName(provider));
 		return providerRepository.save(provider);
@@ -62,7 +73,17 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
         }
 
         Page<Provider> ret = providerRepository.findAll(where(hasNames(filter)).and(isInStatus(filter)), page);
-
+        
+        if (ret.hasContent()) {
+      		 CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+      		 EntityGraph<Provider> graph = entityManager.createEntityGraph(Provider.class);
+      		 graph.addAttributeNodes(Provider_.teams);
+      		 CriteriaQuery<Provider> cq = cb.createQuery(Provider.class);
+      		 Root<Provider> root = cq.from(Provider.class);
+      		 cq.select(root).where(root.in(ret.getContent()));
+      		 entityManager.createQuery(cq).setHint(QueryHints.LOADGRAPH, graph).getResultList();
+        }
+        
         return ret;
 	}
 
