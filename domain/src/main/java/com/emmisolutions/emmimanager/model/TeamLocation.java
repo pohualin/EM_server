@@ -39,6 +39,11 @@ public class TeamLocation extends AbstractAuditingEntity {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
+    /**
+     * create a TeamLocation based on a Location and a Team
+     * @param location The Location associated to the TeamLocation
+     * @param team The Team associated to the TeamLocation
+     */
     public TeamLocation(Location location, Team team) {
 		super();
 		this.location = location;

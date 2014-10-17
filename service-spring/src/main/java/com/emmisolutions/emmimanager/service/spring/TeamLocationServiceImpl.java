@@ -13,9 +13,10 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
 
 @Service
-public class TeamLocationServiceImpl implements TeamLocationSelocationSetrvice {
+public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Resource
     TeamLocationPersistence teamLocationPersistence;
@@ -49,11 +50,10 @@ public class TeamLocationServiceImpl implements TeamLocationSelocationSetrvice {
 	@Override
 	public TeamLocation add(Team team, Location locationToAddToTeam) {
 		Team teamToFind = teamPersistence.reload(team);
-        if(teamToFind != null) {
-            if (locationToAddToTeam != null) {
-                    TeamLocation teamLocation = new TeamLocation(locationToAddToTeam, teamToFind);
-                    teamLocationPersistence.saveTeamLocation(teamLocation);
-            }
+		TeamLocation teamLocation = new TeamLocation();
+        if(teamToFind != null && locationToAddToTeam != null) {
+            teamLocation = new TeamLocation(locationToAddToTeam, teamToFind);
+            teamLocationPersistence.saveTeamLocation(teamLocation);
         }
         return teamLocation;
 	}
