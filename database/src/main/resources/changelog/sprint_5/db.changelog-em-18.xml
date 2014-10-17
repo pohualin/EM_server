@@ -14,7 +14,9 @@
         <addColumn tableName="provider_audit">
             <column name="normalized_name" type="varchar(255)"/>
         </addColumn>
-	
+    </changeSet> 
+       
+    <changeSet id="create_normalized_name_for_existing_providers_postgres" author="Amrita" dbms="h2,postgresql">
 		<sql><![CDATA[	
 			update provider
 			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(first_name||last_name,'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/','') )))
