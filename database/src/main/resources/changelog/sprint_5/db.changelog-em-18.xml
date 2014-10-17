@@ -21,4 +21,13 @@
 			where normalized_name is null
         ]]></sql> 
     </changeSet>
+        
+    <changeSet id="create_normalized_name_for_existing_providers_sql" author="Amrita" dbms="mssql,mysql">
+		<sql><![CDATA[	
+			update provider
+			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(concat(first_name,last_name),'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/','') )))
+			where normalized_name is null
+        ]]></sql> 
+    </changeSet>
+
 </databaseChangeLog>    
