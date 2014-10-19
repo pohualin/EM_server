@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -37,16 +38,24 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     @Override
     public void save(Team team, List<Location> locationList) {
         Team teamToFind = teamPersistence.reload(team);
+        List<Location> locationToAdd = new ArrayList<Location>();
         if(teamToFind != null && locationList != null) {
             for (Location location : locationList) {
                 TeamLocation teamLocation = new TeamLocation(location, teamToFind);
                 teamLocationPersistence.saveTeamLocation(teamLocation);
+                if (locationService.reloadLocationUsedByClient(teamToFind.getClient(), location) == null) { //check if the location is used by the client
+                	//if not used, add to the client
+                	Location loca = locationService.reload(location);
+                	locationToAdd.add(loca);
+                }
             }
         }
-        //after save the locations team, need to add those locations to the client
-        ClientLocationModificationRequest modificationRequest = new ClientLocationModificationRequest();
-        modificationRequest.setAdded(locationList);
-        locationService.updateClientLocations(team.getClient(), modificationRequest);
+        if (locationToAdd.size() > 0) {
+	        //after save the locations team, need to add those locations to the client
+	        ClientLocationModificationRequest modificationRequest = new ClientLocationModificationRequest();
+	        modificationRequest.setAdded(locationToAdd);
+	        locationService.updateClientLocations(teamToFind.getClient(), modificationRequest);
+        }
     }
 
     @Override
