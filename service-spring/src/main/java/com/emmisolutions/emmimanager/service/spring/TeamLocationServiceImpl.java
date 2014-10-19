@@ -1,12 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-<<<<<<< HEAD
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-=======
-import java.util.List;
->>>>>>> master
 
 import javax.annotation.Resource;
 
