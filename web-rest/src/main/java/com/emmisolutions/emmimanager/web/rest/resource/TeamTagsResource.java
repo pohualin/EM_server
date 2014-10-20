@@ -67,7 +67,7 @@ public class TeamTagsResource {
     })
     public ResponseEntity<TeamTagPage> list(
             @PathVariable("teamId") Long teamId,
-            @PageableDefault(size = 100) Pageable pageable,
+            @PageableDefault(size = 10) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<TeamTag> assembler,
