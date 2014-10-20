@@ -95,7 +95,7 @@ public class TeamsResource {
              @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
      })
 	 public ResponseEntity<TeamPage> list(
-	         @PageableDefault(size = 10) Pageable pageable,
+	         @PageableDefault(size = 10, sort = "name") Pageable pageable,
 	         @SortDefault(sort = "id") Sort sort,
 	         @RequestParam(value = "status", required = false) String status,
 	         PagedResourcesAssembler<Team> assembler,
