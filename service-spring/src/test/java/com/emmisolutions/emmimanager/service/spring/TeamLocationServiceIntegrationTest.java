@@ -11,12 +11,10 @@ import javax.annotation.Resource;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.State;
 import com.emmisolutions.emmimanager.model.Team;
@@ -54,7 +52,7 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void save() {
-    	Client client = makeClient("clientTeam", "teamUser");
+    	Client client = makeClient("TEST-CLIENT", "TEST-USER");
     	clientService.create(client);
     	
     	Team team = makeTeamForClient(client, "1");
