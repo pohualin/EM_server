@@ -12,9 +12,9 @@ public interface ReferenceGroupPersistence {
 
 	/**
 	 * loads reference groups
+	 * 
 	 * @param Pageable
-	 * @return Page<ReferenceGroup> 
+	 * @return Page<ReferenceGroup>
 	 */
 	Page<ReferenceGroup> loadReferenceGroups(Pageable page);
-	
 }

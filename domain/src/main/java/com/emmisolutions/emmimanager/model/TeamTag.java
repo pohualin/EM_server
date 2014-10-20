@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -15,6 +14,9 @@ import java.io.Serializable;
 @Table(name="client_team_tag")
 @XmlRootElement(name="client_team_tag")
 @XmlAccessorType(XmlAccessType.FIELD)
+/**
+ * TeamTag Model
+ */
 public class TeamTag extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -24,16 +26,20 @@ public class TeamTag extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
-    @JsonBackReference
     private Team team;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "tag_id", nullable = false)
-    @JsonBackReference
     private Tag tag;
 
     public TeamTag(){}
+
+    /**
+     *
+     * @param team to associate with
+     * @param tag to associate with
+     */
     public TeamTag(Team team, Tag tag){
         setTeam(team);
         setTag(tag);
