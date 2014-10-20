@@ -1,0 +1,4 @@
+language_id;key_path;message
+1;team_locations_search_page.search_dialog.search_label;Search Locations:
+1;team_locations_search_page.search_dialog.go_label;Go
+1;team_locations_search_page.dropdown_locations.search_label;Choose from client locations:
