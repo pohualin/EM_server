@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,16 @@ public interface ProviderPersistence {
      * @return a Page<Provider>
      */
 	Page<Provider> findAllProvidersByTeam(Pageable page, Team team);
+
+	
+	 /**
+    * Fetches a page of Provider objects
+    *
+    * @param page         defines which page or null for the first page
+    * @param searchFilter to filter
+    * @return a page of provider objects
+    */
+   Page<Provider> list(Pageable page, ProviderSearchFilter searchFilter);
 
     /**
      * Finds a page of specialty tags

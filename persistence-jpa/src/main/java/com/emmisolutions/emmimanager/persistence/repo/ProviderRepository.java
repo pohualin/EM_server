@@ -19,5 +19,4 @@ public interface ProviderRepository extends JpaRepository<Provider, Long>, JpaSp
      * @return Page<Provider> provider page
      */
 	Page<Provider> findByTeams(Pageable pageable, Team team);
-
 }

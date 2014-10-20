@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create_client_team_location_table" author="Claudio">
+        <createTable tableName="client_team_location">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_client_team_location"/>
+            </column>        
+            <column name="location_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="team_id" type="bigint"><constraints nullable="false"/></column>
+			<column name="created_by" type="nvarchar(50)" defaultValue="system">
+				<constraints nullable="false"/>
+			</column>
+			<column name="created_date" type="timestamp" defaultValueDate="${now}">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_modified_by" type="nvarchar(50)"/>
+			<column name="last_modified_date" type="timestamp"/>          
+        </createTable>
+        
+        <createTable tableName="client_team_location_audit">
+        	<column name="id" type="bigint"><constraints nullable="false"/></column>
+            <column name="revision" type="bigint"><constraints nullable="false"/></column>
+            <column name="location_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="team_id" type="bigint"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+        </createTable>
+        <addPrimaryKey tableName="client_team_location_audit" constraintName="pk_client_team_location_audit" columnNames="id, revision"/>
+
+        <addForeignKeyConstraint baseTableName="client_team_location"
+                                 baseColumnNames="team_id"
+                                 constraintName="fk_client_team_location_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_team_location"
+                                 baseColumnNames="location_id"
+                                 constraintName="fk_client_team_location_location"
+                                 referencedTableName="location"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_team_location_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_team_location_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+    </changeSet>
+</databaseChangeLog>
