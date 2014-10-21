@@ -107,4 +107,17 @@
 	                  separator=";"
 	                  tableName="permission"/>
 	</changeSet>
+	<changeSet id="specialty_changes_em_377" author="Amrita">
+		<update tableName="provider">
+	        <column name="reference_tag_specialty" value="41"></column>
+	        <where>reference_tag_specialty in (9,10)</where>
+        </update>
+		<delete tableName="reference_tag">
+            <where>id in (9,10)</where>
+        </delete>
+        <update tableName="reference_tag">
+            <column name="name" value="Opthalmology"/>
+        	<where>name = 'Eye (Ophthalmology)'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>    
