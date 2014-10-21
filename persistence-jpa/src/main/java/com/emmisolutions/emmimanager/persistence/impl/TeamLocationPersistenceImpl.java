@@ -57,7 +57,7 @@ public class TeamLocationPersistenceImpl implements TeamLocationPersistence {
 
     @Override
     public Page<TeamLocation> getAllTeamLocationsForTeam(Pageable pageable, Team team) {
-        if (team == null) {
+        if (pageable == null) {
             // default pagination request if none
             pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
@@ -68,7 +68,7 @@ public class TeamLocationPersistenceImpl implements TeamLocationPersistence {
     @Transactional
     public void deleteTeamLocationsWithTeam(Team team) {
         if (team == null) {
-            throw new IllegalArgumentException("team tag is null");
+            throw new IllegalArgumentException("team location is null");
         }
         teamLocationRepository.deleteByTeam(team);
         teamLocationRepository.flush();
