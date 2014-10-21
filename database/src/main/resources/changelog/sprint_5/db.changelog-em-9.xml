@@ -11,11 +11,11 @@
                   tableName="strings"/>
     </changeSet>
 
-    <changeSet id="Add correct String for Cancel Popover" author="Kevin">
-        <loadData encoding="UTF-8"
-                  file="changelog/sprint_5/data/em-9-1.csv"
-                  separator=";"
-                  tableName="strings"/>
+    <changeSet id="update_team_edit_page.cancel_dialog.content_value" author="Kevin">
+        <update tableName="strings">
+            <column name="message" value="Are you sure, any unsaved changes will not be saved"></column>
+            <where>key_path = 'team_edit_page.cancel_dialog.content'</where>
+        </update>
     </changeSet>
 
 </databaseChangeLog>
