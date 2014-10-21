@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +23,7 @@ public interface TeamLocationService {
     /**
      * saves an association of a team with a set of locations
      */
-    void save(Team team, List<Location> locationList);
+    void save(Team team, Set<Location> locationSet);
 
     /**
      * reload a team location

@@ -4,16 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="Add English Strings for Cancel Popover" author="Kevin">
+    <changeSet id="Add English Strings for Search locations popup" author="Claudio">
         <loadData encoding="UTF-8"
-                  file="changelog/sprint_5/data/em-9.csv"
-                  separator=";"
-                  tableName="strings"/>
-    </changeSet>
-
-    <changeSet id="Add correct String for Cancel Popover" author="Kevin">
-        <loadData encoding="UTF-8"
-                  file="changelog/sprint_5/data/em-9-1.csv"
+                  file="changelog/sprint_5/data/em-251.csv"
                   separator=";"
                   tableName="strings"/>
     </changeSet>
