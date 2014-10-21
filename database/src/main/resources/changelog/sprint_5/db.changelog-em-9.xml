@@ -11,4 +11,11 @@
                   tableName="strings"/>
     </changeSet>
 
+    <changeSet id="Add correct String for Cancel Popover" author="Kevin">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_5/data/em-9-1.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
+
 </databaseChangeLog>
