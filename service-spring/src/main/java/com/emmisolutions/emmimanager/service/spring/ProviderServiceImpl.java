@@ -15,7 +15,9 @@ import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.TeamService;
 
@@ -27,6 +29,9 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Resource
     TeamService teamService;
+    
+	@Resource
+	TeamProviderPersistence teamProviderPersistence;
 
     @Override
     @Transactional(readOnly = true)
@@ -36,6 +41,21 @@ public class ProviderServiceImpl implements ProviderService {
         }
         return providerPersistence.reload(provider.getId());
     }
+
+/*    @Override
+    @Transactional
+    public Provider create(Provider provider, Team team) {
+        final Team toFind = teamService.reload(team);
+        if (provider == null || toFind == null) {
+            throw new IllegalArgumentException("provider or team cannot be null");
+        }
+        provider.setId(null);
+        provider.setVersion(null);
+        provider.setTeams(new HashSet<Team>(){{
+            add(toFind);
+        }});
+        return providerPersistence.save(provider);
+    }*/
 
     @Override
     @Transactional
@@ -49,9 +69,17 @@ public class ProviderServiceImpl implements ProviderService {
         provider.setTeams(new HashSet<Team>(){{
             add(toFind);
         }});
-        return providerPersistence.save(provider);
-    }
+        
+		Provider savedProvider =  providerPersistence.save(provider);
 
+		TeamProvider teamProvider = new TeamProvider();
+		teamProvider.setTeam(toFind);
+		teamProvider.setProvider(savedProvider);
+		teamProviderPersistence.save(teamProvider);
+			
+		return savedProvider;
+    }
+    
     @Override
     @Transactional
     public Provider update(Provider provider) {
