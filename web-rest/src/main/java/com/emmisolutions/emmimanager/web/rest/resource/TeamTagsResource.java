@@ -101,60 +101,59 @@ public class TeamTagsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
-    public void create(@PathVariable("teamId") Long teamId, @RequestBody Set<Tag> tagSet) {
+    public java.util.List<TeamTag> create(@PathVariable("teamId") Long teamId, @RequestBody Set<Tag> tagSet) {
         Team toFind = new Team();
         toFind.setId(teamId);
 
-        teamTagService.save(toFind, tagSet);
+        return teamTagService.save(toFind, tagSet);
     }
 
-//    /**
-//     * DELETE to delete new Team, Tag association
-//     *
-//     * @param teamId with tag to delete
-//     * @param tag    to delete
-//     */
-//    @RequestMapping(value = "/teams/{teamId}/deleteTag", method = RequestMethod.DELETE,
-//            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
-//    )
-//    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
-//    public ResponseEntity<TeamTagResource> deleteTeamTag(@PathVariable("teamId") Long teamId, @RequestBody Tag tag) {
-//        Team toFind = new Team();
-//        toFind.setId(teamId);
-//        teamTagService.deleteSingleTeamTag(toFind, tag);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
-//
-//    /**
-//     * POST to sa new Team, Tag association
-//     *
-//     * @param teamId to associate tags with
-//     * @param tag    to associate with team
-//     * @return TeamTagResource or INTERNAL_SERVER_ERROR if it could not be saved
-//     */
-//    @RequestMapping(value = "/teams/{teamId}/saveTag", method = RequestMethod.POST,
-//            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
-//    )
-//    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
-//    public ResponseEntity<TeamTagResource> saveTeamTag(@PathVariable("teamId") Long teamId, @RequestBody Tag tag) {
-//        Team toFind = new Team();
-//        toFind.setId(teamId);
-//        teamTagService.saveSingleTeamTag(toFind, tag);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    /**
+     * DELETE to delete new Team, Tag association
+     *
+     * @param teamTagId with tag to delete
+     */
+    @RequestMapping(value = "teamTags/{teamTagId}", method = RequestMethod.DELETE,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
+    public ResponseEntity<TeamTagResource> deleteTeamTag(@PathVariable("teamTagId") Long teamTagId) {
+        TeamTag teamTag = new TeamTag();
+        teamTag.setId(teamTagId);
+
+        teamTagService.deleteSingleTeamTag(teamTag);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * POST to sa new Team, Tag association
+     *
+     * @param teamId to associate tags with
+     * @param tag    to associate with team
+     * @return TeamTagResource or INTERNAL_SERVER_ERROR if it could not be saved
+     */
+    @RequestMapping(value = "/teams/{teamId}/saveTag", method = RequestMethod.POST,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
+    public ResponseEntity<TeamTagResource> saveTeamTag(@PathVariable("teamId") Long teamId, @RequestBody Tag tag) {
+        Team toFind = new Team();
+        toFind.setId(teamId);
+        teamTagService.saveSingleTeamTag(toFind, tag);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
     /**
      * GET to get a teamTag
      *
-     * @param teamId    to get
      * @param teamTagId to get
      * @return TeamTagResource or NO_CONTENT
      */
-    @RequestMapping(value = "/teams/{teamId}/tags/{teamTagId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/teamTags/{teamTagId}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
-    public ResponseEntity<TeamTagResource> getTeamTag(@PathVariable("teamId") Long teamId, @PathVariable("teamTagId") Long teamTagId) {
+    public ResponseEntity<TeamTagResource> getTeamTag(@PathVariable("teamTagId") Long teamTagId) {
         TeamTag toFind = new TeamTag();
-        toFind.setId(teamId);
+        toFind.setId(teamTagId);
 
         toFind = teamTagService.reload(toFind);
         if (toFind != null) {

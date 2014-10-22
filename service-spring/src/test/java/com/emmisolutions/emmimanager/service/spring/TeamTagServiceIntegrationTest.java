@@ -59,9 +59,9 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         return group;
     }
 
-    private Tag createTag(Group group, String uniqueId) {
+    private Tag createTag(Group group) {
         Tag tag = new Tag();
-        tag.setName("Test Tag " + uniqueId);
+        tag.setName("Test Tag " + System.currentTimeMillis());
         tag.setGroup(group);
         return tag;
     }
@@ -102,7 +102,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
     private List<Tag> createTagList(Group group, int numberOfTags) {
         List<Tag> tagList = new ArrayList<>();
         for (int i = 0; i < numberOfTags; i++) {
-            Tag tag = createTag(group, Integer.toString(i));
+            Tag tag = createTag(group);
             tagList.add(tag);
         }
 
@@ -153,5 +153,69 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         }
         assertThat("first set should not be found", savedTags, not(hasItems(tagListFirstHalf.toArray(new Tag[tagListFirstHalf.size()]))));
         assertThat("second set should be found", savedTags, hasItems(tagListSecondHalf.toArray(new Tag[tagListSecondHalf.size()])));
+    }
+
+    /**
+     * Test saveSingleTeamTag
+     */
+    @Test
+    public void testSaveSingleTeamTag() {
+        Client client = clientService.create(createClient());
+        Group group = groupService.save(createGroup(client));
+        List<Tag> tagList = createTagList(group, 1);
+        Tag tag = tagList.get(0);
+        Team team1 = teamService.create(createTeam(client));
+
+        TeamTag teamTag = teamTagService.saveSingleTeamTag(team1, tag);
+        TeamTag newTeamTag = teamTagService.reload(teamTag);
+        assertThat("teamTagPage was saved", newTeamTag.getTag().getId(), is(tag.getId()));
+    }
+
+    /**
+     * Test saveSingleTeamTag with null tag
+     */
+    @Test
+    public void testSaveSingleTeamTagWithNullTag() {
+        Client client = clientService.create(createClient());
+        Tag tag = null;
+        Team team1 = teamService.create(createTeam(client));
+        team1.setId(1l);
+
+        assertThat("null was returned", teamTagService.saveSingleTeamTag(team1, tag), is(nullValue()));
+    }
+
+    /**
+     * Test saveSingleTeamTag with null team
+     */
+    @Test
+    public void testSaveSingleTeamTagWitNullTeam() {
+        Client client = clientService.create(createClient());
+        Group group = groupService.save(createGroup(client));
+        List<Tag> tagList = createTagList(group, 1);
+        Tag tag = tagList.get(0);
+        Team team1 = null;
+
+        teamTagService.saveSingleTeamTag(team1, tag);
+    }
+
+    /**
+     * Test deleteSingleTeamTag
+     */
+    @Test
+    public void testDeleteSingleTeamTag() {
+        long uniqueId = System.currentTimeMillis();
+        Client client = clientService.create(createClient());
+        Group group = groupService.save(createGroup(client));
+        List<Tag> tagList = createTagList(group, 1);
+        Tag tag = tagList.get(0);
+        Team team1 = teamService.create(createTeam(client));
+
+        TeamTag teamTag = teamTagService.saveSingleTeamTag(team1, tag);
+        TeamTag newTeamTag = teamTagService.reload(teamTag);
+        assertThat("teamTagPage was saved", newTeamTag.getTag().getId(), is(tag.getId()));
+
+        teamTagService.deleteSingleTeamTag(newTeamTag);
+        teamTag = teamTagService.reload(newTeamTag);
+        assertThat("teamTag was deleted", teamTag, is(nullValue()));
     }
 }
