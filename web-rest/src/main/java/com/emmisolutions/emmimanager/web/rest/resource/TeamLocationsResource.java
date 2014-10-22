@@ -144,8 +144,6 @@ public class TeamLocationsResource {
 	public ResponseEntity<TeamLocationResource> deleteTeamLocation(@PathVariable("teamId") Long teamId,@PathVariable("teamLocationId") Long teamLocationId) {
         TeamLocation toFind = new TeamLocation();
         toFind.setId(teamLocationId);
-        toFind = teamLocationService.reload(toFind);
-        
 		teamLocationService.delete(toFind);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

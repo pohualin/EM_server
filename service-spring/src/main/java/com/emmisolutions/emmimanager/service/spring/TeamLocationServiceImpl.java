@@ -62,6 +62,7 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     public void delete(TeamLocation teamLocation){
+    	teamLocation = teamLocationPersistence.reload(teamLocation);
     	teamLocationPersistence.deleteTeamLocation(teamLocation);
     }
 }
