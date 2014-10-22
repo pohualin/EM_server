@@ -147,6 +147,6 @@ public class TeamLocationsResource {
         toFind = teamLocationService.reload(toFind);
         
 		teamLocationService.delete(toFind);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

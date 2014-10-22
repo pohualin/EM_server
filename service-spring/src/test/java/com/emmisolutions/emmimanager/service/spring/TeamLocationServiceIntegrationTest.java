@@ -72,7 +72,7 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
     
     @Test
     public void delete() {
-    	Client client = makeClient("TEST-CLIENT2", "TEST-USER2");
+    	Client client = makeClient("OTRO mas TEST-CLIENT2", "TEST-USER2");
     	clientService.create(client);
     	
     	Team team = makeTeamForClient(client, "1");
@@ -89,8 +89,12 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         	teamLocationService.delete(teamLocation);
 		}
         
-        assertThat("team location also asociated to the client's team successfully", locationService.reloadLocationUsedByClient(client, loca), null);
-               
+        assertThat("location was not removed to the client location ", locationService.reloadLocationUsedByClient(client, loca), is(notNullValue()));
+       
+        teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team);
+
+        assertThat("team location was removed successfully", teamLocationPage.getContent().size(), is(0));
+
     }
     
     private Team makeTeamForClient(Client client, String id){
