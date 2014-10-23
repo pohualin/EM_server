@@ -105,7 +105,7 @@ public class TeamLocationsResource {
     @RequestMapping(value = "/teams/{teamId}/locations", method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_CREATE"})
     public void create(@PathVariable("teamId") Long teamId,@RequestBody Set<Location> locationSet) {
         Team toFind = new Team();
         toFind.setId(teamId);
@@ -120,7 +120,7 @@ public class TeamLocationsResource {
      * @return TeamLocationResource or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/locations/{teamLocationId}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_VIEW"})
     public ResponseEntity<TeamLocationResource> getTeamLocation(@PathVariable("teamId") Long teamId,@PathVariable("teamLocationId") Long teamLocationId) {
         TeamLocation toFind = new TeamLocation();
         toFind.setId(teamId);
@@ -131,4 +131,20 @@ public class TeamLocationsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+
+	/**
+	 * delete a team location 
+	 *
+     * @param teamId to get
+     * @param teamLocationId to get
+     *
+     */
+	@RequestMapping(value = "/teams/{teamId}/locations/{teamLocationId}", method = RequestMethod.DELETE)
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_LOCATION_DELETE" })
+	public ResponseEntity<TeamLocationResource> deleteTeamLocation(@PathVariable("teamId") Long teamId,@PathVariable("teamLocationId") Long teamLocationId) {
+        TeamLocation toFind = new TeamLocation();
+        toFind.setId(teamLocationId);
+		teamLocationService.delete(toFind);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 }

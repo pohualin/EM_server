@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientType;
@@ -18,6 +19,7 @@ import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.State;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamSalesForce;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
@@ -66,6 +68,33 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         
         assertThat("team location also asociated to the client's team successfully", locationService.reloadLocationUsedByClient(client, loca), is(notNullValue()));
         
+    }
+    
+    @Test
+    public void delete() {
+    	Client client = makeClient("OTRO mas TEST-CLIENT2", "TEST-USER2");
+    	clientService.create(client);
+    	
+    	Team team = makeTeamForClient(client, "1");
+        Team savedTeam = teamService.create(team);
+        assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
+
+        Set<Location> locationSet = new HashSet<Location>();
+        Location loca = locationService.create( makeLocation("Location ", "1") );
+        locationSet.add(loca);
+        teamLocationService.save(savedTeam, locationSet);
+        
+        Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team);
+        for (TeamLocation teamLocation : teamLocationPage.getContent()) {
+        	teamLocationService.delete(teamLocation);
+		}
+        
+        assertThat("location was not removed to the client location ", locationService.reloadLocationUsedByClient(client, loca), is(notNullValue()));
+       
+        teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team);
+
+        assertThat("team location was removed successfully", teamLocationPage.getContent().size(), is(0));
+
     }
     
     private Team makeTeamForClient(Client client, String id){
