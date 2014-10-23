@@ -1,8 +1,16 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.ProviderSpecifications.hasNames;
-import static com.emmisolutions.emmimanager.persistence.impl.specification.ProviderSpecifications.isInStatus;
-import static org.springframework.data.jpa.domain.Specifications.where;
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.QueryHints;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityGraph;
@@ -12,22 +20,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.QueryHints;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
-
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.Provider_;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import static com.emmisolutions.emmimanager.persistence.impl.specification.ProviderSpecifications.hasNames;
+import static com.emmisolutions.emmimanager.persistence.impl.specification.ProviderSpecifications.isInStatus;
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
  * Provider Persistence Implementation
@@ -66,6 +61,7 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
 	}
 	
 	@Override
+    @SuppressWarnings("unchecked")
 	public Page<Provider> list(Pageable page, ProviderSearchFilter filter) {
 		if (page == null) {
             // default pagination request if none
