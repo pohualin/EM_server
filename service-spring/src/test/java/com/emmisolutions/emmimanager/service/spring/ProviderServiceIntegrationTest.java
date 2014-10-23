@@ -8,6 +8,10 @@ import javax.annotation.Resource;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientType;
@@ -129,6 +133,9 @@ public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
 		return specialty;
 	}
 	
+	/**
+	 * Test deletion of TeamProvider, verify Provider still exists
+	 */
 	@Test(expected = NullPointerException.class)
 	public void createProviderForTeamThenDeleteAssociation(){
 		Client client = makeClient("TeamProviTwo", "teamProUserTestTwo");
@@ -153,15 +160,15 @@ public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
 		
 		//verify that TeamProvider was created
-		TeamProvider teamProvider = teamProviderService.findByProviderAndTeam(provider, savedTeam);
-		assertThat("teamProvider was found", teamProvider.getId(), is(notNullValue()));
+		Pageable page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+		Page<TeamProvider> teamProviderPage = teamProviderService.findTeamProvidersByTeam(page, savedTeam);
+		assertThat("teamProviders were found", teamProviderPage.getContent().size(), is(notNullValue()));
 
-		teamProviderService.deleteProviderFromTeamProvider(provider, savedTeam);
-		TeamProvider teamProvider2 = teamProviderService.findByProviderAndTeam(provider, savedTeam);
-		
+		TeamProvider providerToDelete = teamProviderPage.getContent().iterator().next();;
+		teamProviderService.delete(providerToDelete);
+		Page<TeamProvider> teamProviderPageNew = teamProviderService.findTeamProvidersByTeam(page, savedTeam);
+
 		assertThat("Provider still exists", provider.getId(), is(notNullValue()));
-		assertThat("teamProvider was found", teamProvider2.getId(), is(notNullValue()));
-
-
+		assertThat("teamProvider was deleted", teamProviderPageNew.getContent().size(), is(notNullValue()));
 	}
 }

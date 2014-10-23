@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
@@ -40,9 +39,9 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public TeamProvider findByProviderAndTeam(Provider provider, Team team) {
-		return teamProviderRepository.findByProviderAndTeam(provider, team);
+	@Transactional
+	public void delete(TeamProvider provider) {
+		teamProviderRepository.delete(provider);
 	}
 
 }

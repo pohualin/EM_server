@@ -9,16 +9,13 @@ import com.emmisolutions.emmimanager.model.TeamProvider;
 
 public interface TeamProviderService {
 	 /**
-     * Reloads a given provider
-     * @param Provider provider to reload
-     * @return Provider
+     * Reloads a given teamProvider
+     * @param teamProvider to reload
+     * @return teamProvider
      */
-	TeamProvider reload(TeamProvider provider);
+	TeamProvider reload(TeamProvider teamProvider);
 	
-	void deleteProviderFromTeamProvider(Provider provider, Team team);
-
 	Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team);
 	
-	TeamProvider findByProviderAndTeam(Provider provider, Team team);
-
+	void delete(TeamProvider provider);
 }

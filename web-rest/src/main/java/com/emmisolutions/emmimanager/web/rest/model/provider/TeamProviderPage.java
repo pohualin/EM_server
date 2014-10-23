@@ -12,10 +12,10 @@ import org.springframework.hateoas.UriTemplate;
 
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
-import com.emmisolutions.emmimanager.web.rest.resource.ProvidersResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource;
 
 /**
- * A HATEOAS wrapper for a page of ProviderResource objects.
+ * A HATEOAS wrapper for a page of TeamProviderResource objects.
  */
 @XmlRootElement(name = "team-provider-page")
 public class TeamProviderPage extends PagedResource<TeamProviderResource> {
@@ -26,28 +26,24 @@ public class TeamProviderPage extends PagedResource<TeamProviderResource> {
 	/**
 	 * Wrapped constructor
 	 *
-	 * @param providerResources
-	 *            to be wrapped
-	 * @param providerPage
-	 *            the raw response
+	 * @param providerResources  to be wrapped
+	 * @param providerPage  the raw response
 	 */
-	public TeamProviderPage(PagedResources<TeamProviderResource> providerResources,Page<TeamProvider> providerPage) {
+	public TeamProviderPage(PagedResources<TeamProviderResource> providerResources, Page<TeamProvider> providerPage) {
 		pageDefaults(providerResources, providerPage);
-
 	}
 
 	/**
-	 * Link for Create Provider
+	 * Link to get TeamProvider by id
 	 * 
-	 * @param clientId
-	 * @param teamId
+	 * @param teamProviderId
 	 * 
-	 * @return Link for create provider
+	 * @return Link for get teamProvider by id
 	 */
-/*	public static Link createTeamProviderSelfLink(Long id, Long clientId, Long teamId) {
-		Link link = linkTo(methodOn(ProvidersResource.class).getById(id, teamId, clientId)).withRel("teamProviderResource");
+
+	public static Link createProviderByIdLink(Long teamProviderId) {
+		Link link = linkTo(methodOn(TeamProvidersResource.class).getById(teamProviderId)).withRel("findProviderById");
 		UriTemplate uriTemplate = new UriTemplate(link.getHref());
 		return new Link(uriTemplate, link.getRel());
-	}*/
-
+	}
 }

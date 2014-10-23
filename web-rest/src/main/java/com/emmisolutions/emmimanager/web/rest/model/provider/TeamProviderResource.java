@@ -12,7 +12,7 @@ import org.springframework.hateoas.ResourceSupport;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@XmlRootElement(name = "teamProvider")
+@XmlRootElement(name = "team-provider")
 public class TeamProviderResource extends ResourceSupport {
 
 	private TeamProvider entity;
@@ -25,15 +25,15 @@ public class TeamProviderResource extends ResourceSupport {
 		this.entity = entity;
 	}
 
-    /**
-     * Override to change the link property name for serialization
-     *
-     * @return links
-     */
-    @XmlElement(name = "link")
-    @XmlElementWrapper(name = "links")
-    @JsonProperty("link")
-    public List<Link> getLinks(){
-        return super.getLinks();
-    }
+	/**
+	 * Override to change the link property name for serialization
+	 *
+	 * @return links
+	 */
+	@XmlElement(name = "link")
+	@XmlElementWrapper(name = "links")
+	@JsonProperty("link")
+	public List<Link> getLinks() {
+		return super.getLinks();
+	}
 }
