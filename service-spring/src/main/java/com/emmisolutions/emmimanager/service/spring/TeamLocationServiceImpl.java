@@ -1,16 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import com.emmisolutions.emmimanager.model.ClientLocationModificationRequest;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
@@ -18,6 +7,14 @@ import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class TeamLocationServiceImpl implements TeamLocationService {
@@ -49,9 +46,7 @@ public class TeamLocationServiceImpl implements TeamLocationService {
         }
         if (locationToAdd.size() > 0) {
 	        //after save the locations team, need to add those locations to the client
-	        ClientLocationModificationRequest modificationRequest = new ClientLocationModificationRequest();
-	        modificationRequest.setAdded(locationToAdd);
-	        locationService.updateClientLocations(teamToFind.getClient(), modificationRequest);
+            //@TODO: create a client location here
         }
     }
 

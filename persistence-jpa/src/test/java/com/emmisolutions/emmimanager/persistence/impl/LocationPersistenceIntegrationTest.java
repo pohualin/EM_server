@@ -96,10 +96,10 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Make sure we can add locations to a client and then find them for that specific client again
+     * Make sure locations belonging to a client can be searched for
      */
     @Test
-    public void usingThisLocation() {
+    public void belongsToFilter() {
         Client client = makeClient();
         client = clientPersistence.save(client);
         Location location = new Location();
@@ -107,36 +107,14 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setCity("Chicago");
         location.setPhone("312-555-1212");
         location.setState(State.IL);
-        location.addClientUsingThisLocation(client);
+        location.setBelongsTo(client);
         location = locationPersistence.save(location);
 
         Page<Location> locationPage = locationPersistence.list(null, new LocationSearchFilter(client.getId(), null, (String) null));
         assertThat("location is in the result page", locationPage.getContent(), hasItem(location));
-        assertThat("client is referenced by location", locationPage.getContent().get(0).getUsingThisLocation(), hasItem(client));
 
     }
 
-    /**
-     * Ensure we can remove a location from a client
-     */
-    @Test
-    public void reloadLocationForAClient() {
-        Client client = makeClient();
-        client = clientPersistence.save(client);
-        Location location = new Location();
-        location.setName("Covenant Hospital");
-        location.setCity("Chicago");
-        location.setPhone("312-555-1212");
-        location.setState(State.IL);
-        location.addClientUsingThisLocation(client);
-        location = locationPersistence.save(location);
-
-        Location reloaded = locationPersistence.reloadLocationUsedByClient(null, location.getId());
-        assertThat("should not have found the location, because of no client", reloaded, is(nullValue()));
-
-        reloaded = locationPersistence.reloadLocationUsedByClient(client, location.getId());
-        assertThat("location should be found now", reloaded, is(location));
-    }
 
     private Client makeClient() {
         Client client = new Client();
@@ -163,6 +141,12 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setPhone("555-555-5555");
         location.setState(State.IL);
         locationPersistence.save(location);
+    }
+
+    @Test
+    public void reloadNull(){
+        assertThat("reloading null location should result in null", locationPersistence.reload(null), is(nullValue()));
+        assertThat("reloading location without id should result in null", locationPersistence.reload(new Location()), is(nullValue()));
     }
 
     /**

@@ -75,11 +75,29 @@ public class Client extends AbstractAuditingEntity implements Serializable {
 
     @NotNull
     @Size(max = 255)
-    @Column(name="normalized_name", length = 255, nullable = false)
+    @Column(name = "normalized_name", length = 255, nullable = false)
     @NotAudited
     @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
-    private String normalizedName;    
- 
+    private String normalizedName;
+
+    /**
+     * No Arg Constructor
+     */
+    public Client() {
+
+    }
+
+    /**
+     * JPA ID constructor
+     *
+     * @param id      to use
+     * @param version to use
+     */
+    public Client(Long id, Integer version) {
+        this.id = id;
+        this.version = version;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -197,7 +215,7 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     public void setNormalizedName(String normalizedName) {
         this.normalizedName = normalizedName;
     }
-    
+
     @AssertTrue(message = "Contract End Date must be at least one day after the Contract Start Date")
     private boolean isValid() {
         return contractStart != null && contractEnd != null &&

@@ -1,13 +1,9 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientLocationModificationRequest;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.Set;
 
 /**
  * Location Services
@@ -21,14 +17,6 @@ public interface LocationService {
      * @return the first page of location objects
      */
     Page<Location> list(LocationSearchFilter locationSearchFilter);
-
-    /**
-     * Find all IDs associated to this client
-     *
-     * @param clientId to find for
-     * @return Set of all ids
-     */
-    Set<Long> list(Long clientId);
 
     /**
      * Get a page of location objects.
@@ -48,10 +36,7 @@ public interface LocationService {
     Location reload(Location toFind);
 
     /**
-     * Creates/Persists a location for all attributes on the location with the exception being
-     * the relationship to clients. E.g. a call here will not update which client the location
-     * belongs to nor the clients which use this location. Use the updateClientLocations for
-     * that purpose.
+     * Creates/Persists a location for all attributes on the location
      *
      * @param location to save
      * @return the persistent location
@@ -68,26 +53,5 @@ public interface LocationService {
      */
     Location update(Location location);
 
-    /**
-     * Update the relationships to client for the locations within the modification request
-     *
-     * @param toUpdate            to relate to the passed locations
-     * @param modificationRequest to update the locations
-     */
-    void updateClientLocations(Client toRelateTo, ClientLocationModificationRequest modificationRequest);
 
-    /**
-     * Reloads a location used by client
-     *
-     * @return the reloaded location
-     */
-    Location reloadLocationUsedByClient(Client client, Location toFind);
-
-    /**
-     * Deletes a location from a client
-     *
-     * @param client   to remove the location
-     * @param toRemove the location to remove
-     */
-    void delete(Client client, Location toRemove);
 }
