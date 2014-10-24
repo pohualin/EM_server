@@ -28,13 +28,6 @@ public interface ProviderService {
      */
 	Provider update(Provider provider);
 	 /**
-     * Finds all providers for a given team
-     * @param Pageable pageble
-     * @param Team team for which to find providers
-     * @return Page<Provider>
-     */
-	Page<Provider> findAllProviders(Pageable pageble, Team team);
-	 /**
      * Finds all specialties for provider reference data.
      * @param Pageable pageable
      * @return Page<ReferenceTag>

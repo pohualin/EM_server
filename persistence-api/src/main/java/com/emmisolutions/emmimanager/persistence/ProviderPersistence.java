@@ -1,11 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  * Provider persistence class
@@ -25,15 +25,6 @@ public interface ProviderPersistence {
      * @return Provider provider
      */
 	Provider reload(Long id);
-	
-    /**
-     * Finds all providers for a given team
-     * @param page specifications
-     * @param team to find providers for
-     * @return a Page<Provider>
-     */
-	Page<Provider> findAllProvidersByTeam(Pageable page, Team team);
-
 	
 	 /**
     * Fetches a page of Provider objects

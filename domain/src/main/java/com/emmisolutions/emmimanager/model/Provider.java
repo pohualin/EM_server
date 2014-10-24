@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -63,10 +60,6 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@Column(length = 100, nullable = false)
 	private String email;
 
-	@ManyToMany
-	@JoinTable(name = "provider_team", joinColumns = { @JoinColumn(name = "provider_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "teams_id", referencedColumnName = "id") })
-	private Set<Team> teams;
-
 	@ManyToOne
 	@JoinColumn(name = "reference_tag_specialty")
 	private ReferenceTag specialty;
@@ -84,14 +77,6 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 
 	public void setNormalizedName(String normalizedName) {
 		this.normalizedName = normalizedName;
-	}
-
-	public Set<Team> getTeams() {
-		return teams;
-	}
-
-	public void setTeams(Set<Team> teams) {
-		this.teams = teams;
 	}
 
 	public String getFirstName() {
