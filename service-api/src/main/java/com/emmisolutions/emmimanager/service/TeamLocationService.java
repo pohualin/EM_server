@@ -29,5 +29,12 @@ public interface TeamLocationService {
      * reload a team location
      */
     TeamLocation reload(TeamLocation teamLocation);
+
+    /**
+     * delete a team location
+     * 
+     * @param teamLocation
+     */
+	void delete(TeamLocation teamLocation);
     
 }

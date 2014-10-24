@@ -50,6 +50,7 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
 	}
 	
 	@Override
+    @SuppressWarnings("unchecked")
 	public Page<Provider> list(Pageable page, ProviderSearchFilter filter) {
 		if (page == null) {
             // default pagination request if none

@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
@@ -16,12 +17,15 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
@@ -129,6 +133,26 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
 
     }
 
+    /**
+     * Delete a location team 
+     */
+    @Test
+    public void delete() {
+
+        Client client = createClient("1");
+        Location location = createLocation(client,"1");
+        Team team = createTeam(client, 1);
+        TeamLocation teamLocation = new TeamLocation(location, team);
+
+        TeamLocation afterSaveTeamLocation = teamLocationPersistence.saveTeamLocation(teamLocation);
+        assertThat("TeamLocation was given an id", afterSaveTeamLocation.getId(), is(notNullValue()));
+        assertThat("system is the created by", afterSaveTeamLocation.getCreatedBy(), is("system"));
+
+        teamLocationPersistence.deleteTeamLocation(teamLocation);
+        teamLocation = teamLocationPersistence.reload(teamLocation);
+        assertThat("TeamLocation was deleted", teamLocation, is(nullValue()));
+    }
+    
     private Team createTeam(Client client, int i) {
         Team team = new Team();
         team.setName("Test Team"+i);
