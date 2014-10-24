@@ -1,7 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.HashSet;
-
 import javax.annotation.Resource;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +19,9 @@ import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.TeamService;
 
+/**
+ * Implementation of the ProviderService
+ */
 @Service
 public class ProviderServiceImpl implements ProviderService {
 
@@ -42,21 +43,6 @@ public class ProviderServiceImpl implements ProviderService {
         return providerPersistence.reload(provider.getId());
     }
 
-/*    @Override
-    @Transactional
-    public Provider create(Provider provider, Team team) {
-        final Team toFind = teamService.reload(team);
-        if (provider == null || toFind == null) {
-            throw new IllegalArgumentException("provider or team cannot be null");
-        }
-        provider.setId(null);
-        provider.setVersion(null);
-        provider.setTeams(new HashSet<Team>(){{
-            add(toFind);
-        }});
-        return providerPersistence.save(provider);
-    }*/
-
     @Override
     @Transactional
     public Provider create(Provider provider, Team team) {
@@ -66,10 +52,6 @@ public class ProviderServiceImpl implements ProviderService {
         }
         provider.setId(null);
         provider.setVersion(null);
-        provider.setTeams(new HashSet<Team>(){{
-            add(toFind);
-        }});
-        
 		Provider savedProvider =  providerPersistence.save(provider);
 
 		TeamProvider teamProvider = new TeamProvider();
@@ -99,16 +81,6 @@ public class ProviderServiceImpl implements ProviderService {
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
         return providerPersistence.findAllByGroupTypeName(page);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Provider> findAllProviders(Pageable page, Team team) {
-        Team fromDb = teamService.reload(team);
-        if (fromDb == null) {
-            throw new IllegalArgumentException("Team not found");
-        }
-        return providerPersistence.findAllProvidersByTeam(page, fromDb);
     }
     
     @Override

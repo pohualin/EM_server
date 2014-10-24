@@ -28,7 +28,7 @@ import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResourc
 import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResourceAssembler;
 
 /**
- * Providers REST API
+ * TeamProviders REST API
  *
  */
 
@@ -43,13 +43,14 @@ public class TeamProvidersResource {
 	TeamProviderResourceAssembler teamProviderResourceAssembler;
 
 	/**
-	 * GET for searching for providers
+	 * GET for a list of all teamProviders for a given team
 	 * 
 	 * @param page	paged request
 	 * @param sort  sorting request
 	 * @param assembler    used to create the PagedResources
 	 * @param name
 	 * @param status
+	 * @param teamId
 	 * @return ProviderResource
 	 */
 	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.GET)
@@ -74,11 +75,10 @@ public class TeamProvidersResource {
 	}
 
 	/**
-	 * GET To get provider by id
+	 * GET for teamProvider by id
 	 *
-	 * @param id
-	 *            to load
-	 * @return ProviderResource or NO_CONTENT on fail
+	 * @param id to load
+	 * @return TeamProviderResource or NO_CONTENT on fail
 	 */
 	@RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.GET)
 	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_VIEW" })
@@ -95,7 +95,9 @@ public class TeamProvidersResource {
 	}
 
 	/**
-	 * DELETE for deleting for provider from a team
+	 * DELETE for deletion of a teamProvider from a team
+	 * 
+	 * @return void
 	 */
 	@RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.DELETE)
 	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_REMOVE" })

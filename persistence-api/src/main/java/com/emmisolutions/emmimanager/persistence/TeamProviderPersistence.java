@@ -18,11 +18,27 @@ public interface TeamProviderPersistence {
 	 * @return teamProvider
 	 */
 	TeamProvider reload(Long id);
-
+	/**
+	 * Finds all team-providers for a given team
+	 * 
+	 * @param page
+	 * @param team
+	 * @return page of team-providers
+	 */
 	Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team);
-
+	/**
+	 * Saves a teamProvider
+	 * 
+	 * @param  teamProvider
+	 * @return teamProvider
+	 */
 	TeamProvider save(TeamProvider teamProvider);
-
+	/**
+	 * Deletes a team-provider
+	 * 
+	 * @param  teamProvider
+	 * @return void
+	 */
 	void delete(TeamProvider provider);
 
 }

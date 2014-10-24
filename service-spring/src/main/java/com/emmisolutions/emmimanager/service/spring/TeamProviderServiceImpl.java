@@ -10,22 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
-import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
 import com.emmisolutions.emmimanager.service.TeamService;
-
+/**
+ * Implementation of the TeamProviderService
+ */
 @Service
 public class TeamProviderServiceImpl implements TeamProviderService {
 
 	@Resource
 	TeamProviderPersistence teamProviderPersistence;
-
-	@Resource
-	TeamProviderRepository teamProviderRepository;
-
-	@Resource
-	ProviderService providerService;
 
 	@Resource
 	TeamService teamService;
@@ -43,6 +37,9 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 	@Transactional(readOnly = true)
 	public Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team) {
 		Team toFind = teamService.reload(team);
+		if (toFind == null) {
+            throw new IllegalArgumentException("team cannot be null");
+        }
 		return teamProviderPersistence.findTeamProvidersByTeam(page, toFind);
 	}
 
