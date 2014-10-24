@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create_team_provider" author="Amrita">
+
+		<createTable tableName="team_provider">
+            <column name="id" type="BIGINT" autoIncrement="true"><constraints nullable="false"/></column>
+            <column name="version" type="INT"/>
+            <column name="provider_id" type="BIGINT"/>
+            <column name="team_id" type="BIGINT"/>
+            <column name="created_by" type="varchar(50)" defaultValue="system"><constraints nullable="false"/></column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}"><constraints nullable="false"/></column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>     
+        </createTable>
+
+		<createTable tableName="team_provider_audit">
+            <column name="id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="provider_id" type="BIGINT"/>
+            <column name="team_id" type="BIGINT"/>
+        </createTable>
+        		
+		<addForeignKeyConstraint baseTableName="team_provider"
+                                 baseColumnNames="provider_id"
+                                 constraintName="fk_team_provider_provider"
+                                 referencedTableName="provider"
+                                 referencedColumnNames="id"/>
+                                 
+		<addForeignKeyConstraint baseTableName="team_provider"
+                                 baseColumnNames="team_id"
+                                 constraintName="fk_team_provider_client_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>                                 
+
+		<addForeignKeyConstraint baseTableName="team_provider_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_team_provider_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>   
+                                 
+        <addUniqueConstraint tableName="team_provider" columnNames="provider_id,team_id" constraintName="uk_team_provider_teamid_provid"/>        
+                                 
+	</changeSet>
+	
+</databaseChangeLog>
