@@ -15,11 +15,24 @@
         <dropPrimaryKey tableName="client_location" constraintName="pk_client_location"/>
     </changeSet>
 
+    <changeSet id="add identity column" author="Matt" dbms="postgresql,h2">
+        <addColumn tableName="client_location">
+            <column name="id" autoIncrement="true" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add identity column" author="Matt" dbms="mssql">
+        <sql>
+            <![CDATA[
+                ALTER TABLE client_location ADD ID BIGINT IDENTITY
+            ]]>
+        </sql>
+    </changeSet>
+
     <changeSet id="migrate client location tables" author="Matt">
 
         <!-- add a autoincrement key to client_location -->
         <addColumn tableName="client_location">
-            <column name="id" type="BIGINT"/>
             <column name="created_by" type="nvarchar(50)" defaultValue="system">
                 <constraints nullable="false"/>
             </column>
@@ -29,14 +42,14 @@
             <column name="last_modified_by" type="nvarchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
         </addColumn>
-        <addAutoIncrement tableName="client_location" columnName="id" columnDataType="BIGINT"/>
         <addPrimaryKey tableName="client_location" columnNames="id" constraintName="pk_client_location"/>
         <addUniqueConstraint tableName="client_location" columnNames="client_id, location_id"
                              constraintName="uk_client_location"/>
 
         <!-- audit table reset -->
         <dropPrimaryKey tableName="client_location_audit" constraintName="pk_client_location_audit"/>
-        <dropForeignKeyConstraint baseTableName="client_location_audit" constraintName="fk_client_location_audit_revision"/>
+        <dropForeignKeyConstraint baseTableName="client_location_audit"
+                                  constraintName="fk_client_location_audit_revision"/>
         <dropTable tableName="client_location_audit"/>
         <createTable tableName="client_location_audit">
             <column name="id" type="BIGINT">
@@ -58,5 +71,22 @@
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>
     </changeSet>
+
+    <!--<changeSet id="add constraints to client_location" author="Matt" dbms="mssql, h2">-->
+        <!--<addPrimaryKey tableName="client_location" columnNames="id" constraintName="pk_client_location"/>-->
+        <!--<addUniqueConstraint tableName="client_location" columnNames="client_id, location_id"-->
+                             <!--constraintName="uk_client_location"/>-->
+    <!--</changeSet>-->
+
+    <!--<changeSet id="add constraints to client_location" author="Matt" dbms="postgresql">-->
+        <!--<sql>-->
+            <!--<![CDATA[-->
+                <!--UPDATE client_location-->
+                    <!--SET id = NEXTVAL('client_location_id_seq')-->
+                    <!--WHERE id ;-->
+            <!--]]>-->
+        <!--</sql>-->
+
+    <!--</changeSet>-->
 
 </databaseChangeLog>

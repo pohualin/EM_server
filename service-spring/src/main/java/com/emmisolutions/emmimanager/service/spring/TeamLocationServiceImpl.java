@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.service.LocationService;
@@ -12,8 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -27,6 +26,9 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Resource
     LocationService locationService;
+
+    @Resource
+    ClientLocationPersistence clientLocationPersistence;
     
     @Override
     public Page<TeamLocation> findAllTeamLocationsWithTeam(Pageable pageable, Team team) {
@@ -36,17 +38,13 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     @Override
     public void save(Team team, Set<Location> locationSet) {
         Team teamToFind = teamPersistence.reload(team);
-        List<Location> locationToAdd = new ArrayList<Location>();
         if(teamToFind != null && locationSet != null) {
             for (Location location : locationSet) {
                 TeamLocation teamLocation = new TeamLocation(location, teamToFind);
                 teamLocationPersistence.saveTeamLocation(teamLocation);
-                locationToAdd.add(location);
+                // add to client location as well
+                clientLocationPersistence.create(location.getId(), teamToFind.getClient().getId());
             }
-        }
-        if (locationToAdd.size() > 0) {
-	        //after save the locations team, need to add those locations to the client
-            //@TODO: create a client location here
         }
     }
 

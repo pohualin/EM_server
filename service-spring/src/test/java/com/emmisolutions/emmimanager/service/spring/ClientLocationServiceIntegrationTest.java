@@ -7,12 +7,14 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import java.util.HashSet;
+import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -36,14 +38,52 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
     public void createFindDelete() {
         final Location location = makeLocation();
         Client client = makeClient();
-        Page<ClientLocation> clientLocationPage = clientLocationService.create(client, new HashSet<Location>() {{
+        Set<ClientLocation> savedLocations = clientLocationService.create(client.getId(), new HashSet<Location>() {{
             add(location);
-        }}, null);
-        assertThat("client has one location", clientLocationPage.getTotalElements(), is(1l));
-        assertThat("location is the one we added", clientLocationPage.iterator().next().getLocation(), is(location));
+        }});
+        assertThat("client has one location", savedLocations.size(), is(1));
+        assertThat("location is the one we added", savedLocations.iterator().next().getLocation(), is(location));
 
-        clientLocationService.remove(clientLocationPage.iterator().next());
-        assertThat("client has zero locations after delete", 0l, is(clientLocationService.find(client, null).getTotalElements()));
+        ClientLocation clientLocation = clientLocationService.reload(savedLocations.iterator().next().getId());
+        assertThat("client location was loaded", clientLocation, is(notNullValue()));
+
+        clientLocationService.remove(clientLocation.getId());
+        assertThat("client has zero locations after delete", 0l, is(clientLocationService.find(client.getId(), null).getTotalElements()));
+    }
+
+    /**
+     * Ensure that finding possible locations works.. including making sure
+     * existing locations function properly.
+     */
+    @Test
+    public void findPossibleLocations(){
+        // make a bunch of locations
+        final Location location = makeLocation();
+        for (int i = 0; i < 10; i++) {
+            makeLocation();
+        }
+
+        // associate a client to one of those locations
+        Client client = makeClient();
+        Set<ClientLocation> savedLocations = clientLocationService.create(client.getId(), new HashSet<Location>() {{
+            add(location);
+        }});
+        ClientLocation savedRelationship = savedLocations.iterator().next();
+
+        // find a page of possible ClientLocations using the same name that we used during create
+        Page<ClientLocation> possibleLocations =
+                clientLocationService.findPossibleLocationsToAdd(client.getId(), new LocationSearchFilter("ClientLocationServiceIntegrationTest Location"), null);
+        assertThat("there should be 11 locations found", possibleLocations.getTotalElements(), is(11l));
+        assertThat("one of the ClientLocation objects should be the one we saved", possibleLocations, hasItem(savedRelationship));
+
+    }
+
+    /**
+     * Test invalid api access for create
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void invalidCreate(){
+         clientLocationService.create(null, null);
     }
 
 
@@ -63,7 +103,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
 
     private Location makeLocation() {
         Location location = new Location();
-        location.setName("Valid Name 1");
+        location.setName("ClientLocationServiceIntegrationTest Location");
         location.setCity("Valid City 1");
         location.setPhone("630-222-8900");
         location.setState(State.IL);

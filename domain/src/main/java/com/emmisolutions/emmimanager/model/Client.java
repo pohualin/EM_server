@@ -88,14 +88,12 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     }
 
     /**
-     * JPA ID constructor
+     * ID constructor
      *
      * @param id      to use
-     * @param version to use
      */
-    public Client(Long id, Integer version) {
+    public Client(Long id) {
         this.id = id;
-        this.version = version;
     }
 
     @Override

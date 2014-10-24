@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.service.*;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -27,6 +28,9 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
 	TeamLocationService teamLocationService;
+
+    @Resource
+    ClientLocationPersistence clientLocationPersistence;
 	
 	@Resource
     UserService userService;
@@ -51,8 +55,7 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         locationSet.add(loca);
         teamLocationService.save(savedTeam, locationSet);
 
-        //@TODO: Fix this test to deal with client location
-//        assertThat("location also added to the client location", locationService.reloadLocationUsedByClient(client, loca), is(notNullValue()));
+        assertThat("location also added to the client location", clientLocationPersistence.reload(loca.getId(), client.getId()), is(notNullValue()));
         
     }
     
@@ -75,9 +78,8 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         	teamLocationService.delete(teamLocation);
 		}
 
-        //@TODO: Fix this for client location
-//        assertThat("location was not removed from the client", locationService.reloadLocationUsedByClient(client, loca), is(notNullValue()));
-       
+        assertThat("location was not removed from the client", clientLocationPersistence.reload(loca.getId(), client.getId()), is(notNullValue()));
+
         teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team);
 
         assertThat("team location was removed successfully", teamLocationPage.getContent().size(), is(0));

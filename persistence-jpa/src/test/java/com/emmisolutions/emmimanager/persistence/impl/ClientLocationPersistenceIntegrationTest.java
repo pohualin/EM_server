@@ -37,18 +37,63 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
     public void addLocationToClient() {
         Client client = makeClient();
         Location location = makeLocation();
-        ClientLocation clientLocation =
-                clientLocationPersistence.create(
-                        new Location(location.getId(), location.getVersion()),
-                        new Client(client.getId(), client.getVersion())
-                );
+        ClientLocation clientLocation = clientLocationPersistence.create(location.getId(), client.getId());
         assertThat("client location is not null", clientLocation, is(notNullValue()));
         assertThat("client location has an id", clientLocation.getId(), is(notNullValue()));
 
-        Page<ClientLocation> clientLocationPage = clientLocationPersistence.find(client, null);
+        clientLocation = clientLocationPersistence.reload(clientLocation.getId());
+        assertThat("client location is not null", clientLocation, is(notNullValue()));
+
+        Page<ClientLocation> clientLocationPage = clientLocationPersistence.find(client.getId(), null);
         assertThat("client location is on the page", clientLocationPage, hasItem(clientLocation));
+
+        clientLocationPersistence.remove(clientLocation.getId());
+        assertThat("client location has been removed", clientLocationPersistence.reload(clientLocation.getId()), is(nullValue()));
     }
 
+    /**
+     * Reload of a null id should not error out
+     */
+    @Test
+    public void testReloadOfNull(){
+       assertThat("reload of null should yield null", clientLocationPersistence.reload(null), is(nullValue()));
+    }
+
+    /**
+     * Make sure that potential locations for a client load properly
+     */
+    @Test
+    public void findPotentialLocations(){
+        // create a client
+        Client client = makeClient();
+
+        // create a bunch of locations
+        Location location = makeLocation();
+        for (int i = 0; i < 10; i++) {
+             makeLocation();
+        }
+        // associate the Client to one of the locations
+        ClientLocation clientLocation = clientLocationPersistence.create(location.getId(), client.getId());
+
+        // find a page of Locations using the same name that we used during create
+        Page<Location> savedLocations = locationPersistence.list(null, new LocationSearchFilter("Client Location Association"));
+        assertThat("there should be 11 locations found", savedLocations.getTotalElements(), is(11l));
+
+        // do the actual test
+        assertThat("Load call should contain the persistent ClientLocation", clientLocationPersistence.load(client.getId(), savedLocations), hasItem(clientLocation));
+    }
+
+    /**
+     * Empty load call should not error out
+     */
+    @Test
+    public void emptyLoadCall(){
+       assertThat("Empty list should come back", clientLocationPersistence.load(null, null).isEmpty(), is(true));
+    }
+
+    /**
+     * Call the find method in a way that is not allowed
+     */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
         clientLocationPersistence.find(null, null);
@@ -70,10 +115,10 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
 
     private Location makeLocation() {
         Location location = new Location();
-        location.setName("Valid Name 1");
+        location.setName("Client Location Association");
         location.setCity("Valid City 1");
         location.setPhone("630-222-8900");
-        location.setState(State.IL);
+        location.setState(State.TX);
         return locationPersistence.save(location);
     }
 
