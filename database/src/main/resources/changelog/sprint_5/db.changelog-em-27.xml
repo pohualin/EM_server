@@ -120,4 +120,14 @@
         	<where>name = 'Eye (Ophthalmology)'</where>
         </update>
     </changeSet>
+    <changeSet id="more_specialty_changes_em_377" author="Amrita">
+		<update tableName="reference_tag">
+            <column name="name" value="Cardiology"/>
+        	<where>name = 'Heart (Cardiology)'</where>
+        </update>
+        <update tableName="reference_tag">
+            <column name="name" value="Pediatrics"/>
+        	<where>name = 'General Pediatrics and Adolescent Medicine'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>    
