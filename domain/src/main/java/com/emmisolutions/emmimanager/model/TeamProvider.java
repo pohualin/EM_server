@@ -15,6 +15,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
 
+/**
+ * A TeamProvider.
+ */
 @Audited
 @Table(name = "team_provider")
 @Entity
@@ -31,12 +34,12 @@ public class TeamProvider extends AbstractAuditingEntity implements
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "team")
+	@JoinColumn(name = "team_id")
 	private Team team;
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "provider")
+	@JoinColumn(name = "provider_id")
 	private Provider provider;
 
 	public Long getId() {
