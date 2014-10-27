@@ -100,8 +100,7 @@ public class GroupServiceImpl implements GroupService {
                     for (Tag tag : saveRequest.getTags()) {
                         String normalizedTagName = normalizeName(tag.getName());
                         if (StringUtils.isBlank(normalizedTagName) || !tagsInAGroup.add(normalizedTagName)) {
-                            // comment this in when EM-219/EM-310 is pulled into a sprint
-//                        throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' only contains special characters or is a duplicate within group: " + saveRequest.getGroup().getName());
+                        	throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' only contains special characters or is a duplicate within group: " + saveRequest.getGroup().getName());
                         }
                     }
                 }
