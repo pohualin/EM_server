@@ -356,4 +356,16 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
     		add(groupOneSaveRequest);
     	}}, clientService.create(makeClient(8)).getId());
   }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testBlankGroupName(){
+    	final GroupSaveRequest groupOneSaveRequest = new GroupSaveRequest();
+    	Group groupOne = new Group();
+    	groupOne.setName(" ");
+    	groupOneSaveRequest.setGroup(groupOne);
+	
+    	groupService.saveGroupsAndTags(new ArrayList<GroupSaveRequest>() {{
+    		add(groupOneSaveRequest);
+    	}}, clientService.create(makeClient(9)).getId());
+  }
 }
