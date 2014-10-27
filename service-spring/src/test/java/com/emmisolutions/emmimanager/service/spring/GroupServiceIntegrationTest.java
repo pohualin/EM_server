@@ -310,4 +310,53 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
             add(groupTwoSaveRequest);
         }}, clientService.create(makeClient(6)).getId());
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testDuplicateTags(){
+        final Tag tagThreeA = new Tag();
+        tagThreeA.setName("Tag ThreeA");
+        final Tag tagThreeB = new Tag();
+        tagThreeB.setName("Tag ThreeA");
+        final Tag tagThreeC = new Tag();
+        tagThreeC.setName("");
+        List<Tag> tags = new ArrayList<Tag>(){{
+            add(tagThreeA);
+            add(tagThreeB);
+            add(tagThreeC);
+        }};
+
+        final GroupSaveRequest groupOneSaveRequest = new GroupSaveRequest();
+        Group groupOne = new Group();
+        groupOne.setName("GroupOne");
+        groupOneSaveRequest.setGroup(groupOne);
+        groupOneSaveRequest.setTags(tags);
+
+        groupService.saveGroupsAndTags(new ArrayList<GroupSaveRequest>() {{
+            add(groupOneSaveRequest);
+        }}, clientService.create(makeClient(7)).getId());
+    
+    	
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullTags(){
+    	final Tag tagThreeA = new Tag();
+    	tagThreeA.setName("");
+    	final Tag tagThreeB = new Tag();
+    	tagThreeB.setName("Tag ThreeA");
+    	List<Tag> tags = new ArrayList<Tag>(){{
+    		add(tagThreeA);
+    		add(tagThreeB);
+    	}};
+	
+    	final GroupSaveRequest groupOneSaveRequest = new GroupSaveRequest();
+    	Group groupOne = new Group();
+    	groupOne.setName("GroupOne");
+    	groupOneSaveRequest.setGroup(groupOne);
+    	groupOneSaveRequest.setTags(tags);
+	
+    	groupService.saveGroupsAndTags(new ArrayList<GroupSaveRequest>() {{
+    		add(groupOneSaveRequest);
+    	}}, clientService.create(makeClient(8)).getId());
+  }
 }
