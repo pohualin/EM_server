@@ -1,7 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.HashSet;
-
 import javax.annotation.Resource;
 
 import org.springframework.data.domain.Page;
@@ -15,10 +13,15 @@ import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.TeamService;
 
+/**
+ * Implementation of the ProviderService
+ */
 @Service
 public class ProviderServiceImpl implements ProviderService {
 
@@ -27,6 +30,9 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Resource
     TeamService teamService;
+    
+	@Resource
+	TeamProviderPersistence teamProviderPersistence;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,12 +52,16 @@ public class ProviderServiceImpl implements ProviderService {
         }
         provider.setId(null);
         provider.setVersion(null);
-        provider.setTeams(new HashSet<Team>(){{
-            add(toFind);
-        }});
-        return providerPersistence.save(provider);
-    }
+		Provider savedProvider =  providerPersistence.save(provider);
 
+		TeamProvider teamProvider = new TeamProvider();
+		teamProvider.setTeam(toFind);
+		teamProvider.setProvider(savedProvider);
+		teamProviderPersistence.save(teamProvider);
+			
+		return savedProvider;
+    }
+    
     @Override
     @Transactional
     public Provider update(Provider provider) {
@@ -71,16 +81,6 @@ public class ProviderServiceImpl implements ProviderService {
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
         return providerPersistence.findAllByGroupTypeName(page);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Provider> findAllProviders(Pageable page, Team team) {
-        Team fromDb = teamService.reload(team);
-        if (fromDb == null) {
-            throw new IllegalArgumentException("Team not found");
-        }
-        return providerPersistence.findAllProvidersByTeam(page, fromDb);
     }
     
     @Override
