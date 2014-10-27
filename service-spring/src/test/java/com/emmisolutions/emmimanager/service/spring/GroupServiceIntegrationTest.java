@@ -317,12 +317,9 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
         tagThreeA.setName("Tag ThreeA");
         final Tag tagThreeB = new Tag();
         tagThreeB.setName("Tag ThreeA");
-        final Tag tagThreeC = new Tag();
-        tagThreeC.setName("");
         List<Tag> tags = new ArrayList<Tag>(){{
             add(tagThreeA);
             add(tagThreeB);
-            add(tagThreeC);
         }};
 
         final GroupSaveRequest groupOneSaveRequest = new GroupSaveRequest();
