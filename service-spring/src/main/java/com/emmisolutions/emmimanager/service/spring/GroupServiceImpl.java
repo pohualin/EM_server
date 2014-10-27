@@ -94,7 +94,7 @@ public class GroupServiceImpl implements GroupService {
             if (saveRequest.getGroup() != null) {
                 String normalizedName = normalizeName(saveRequest.getGroup().getName());
                 if (StringUtils.isBlank(normalizedName) || !groupNames.add(normalizedName)) {
-                    throw new IllegalArgumentException("Group name: '" + saveRequest.getGroup().getName() + "' only contains special characters or is a duplicate");
+                    throw new IllegalArgumentException("Group name: '" + saveRequest.getGroup().getName() + "' is null, only contains special characters or is a duplicate");
                 }
                 if (saveRequest.getTags() != null) {
                     for (Tag tag : saveRequest.getTags()) {
