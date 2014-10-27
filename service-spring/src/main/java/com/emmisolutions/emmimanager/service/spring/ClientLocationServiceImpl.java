@@ -30,48 +30,59 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     LocationPersistence locationPersistence;
 
     @Override
-    public Page<ClientLocation> find(Long clientId, Pageable pageable) {
-        return clientLocationPersistence.find(clientId, pageable);
+    public Page<ClientLocation> find(Client client, Pageable pageable) {
+        if (client == null){
+            throw new InvalidDataAccessApiUsageException("Client cannot be null");
+        }
+        return clientLocationPersistence.find(client.getId(), pageable);
     }
 
     @Override
     @Transactional
-    public void remove(Long id) {
-        clientLocationPersistence.remove(id);
+    public void remove(ClientLocation clientLocation) {
+        if (clientLocation == null){
+            throw new InvalidDataAccessApiUsageException("ClientLocation cannot be null");
+        }
+        clientLocationPersistence.remove(clientLocation.getId());
     }
 
     @Override
     @Transactional
-    public Set<ClientLocation> create(Long clientId, Set<Location> locations) {
-        if (clientId == null) {
-            throw new InvalidDataAccessApiUsageException("Client and locations cannot be null");
+    public Set<ClientLocation> create(Client client, Set<Location> locations) {
+        if (client == null) {
+            throw new InvalidDataAccessApiUsageException("Client cannot be null");
         }
         Set<ClientLocation> ret = new HashSet<>();
         if (locations != null) {
             for (Location location : locations) {
-                ret.add(clientLocationPersistence.create(location.getId(), clientId));
+                ret.add(clientLocationPersistence.create(location.getId(), client.getId()));
             }
         }
         return ret;
     }
 
     @Override
-    public ClientLocation reload(Long clientLocationId) {
-        return clientLocationPersistence.reload(clientLocationId);
+    public ClientLocation reload(ClientLocation clientLocation) {
+        if (clientLocation == null){
+            throw new InvalidDataAccessApiUsageException("ClientLocation cannot be null");
+        }
+        return clientLocationPersistence.reload(clientLocation.getId());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ClientLocation> findPossibleLocationsToAdd(Long clientId, LocationSearchFilter locationSearchFilter, Pageable pageable) {
+    public Page<ClientLocation> findPossibleLocationsToAdd(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable) {
+        if (client == null) {
+            throw new InvalidDataAccessApiUsageException("Client cannot be null");
+        }
 
         // find matching locations
         Page<Location> matchedLocations = locationPersistence.list(pageable, locationSearchFilter);
 
         // find ClientLocations for the page of matching locations
         Map<Location, ClientLocation> matchedClientLocationMap = new HashMap<>();
-        Client sparseClient = new Client(clientId);
-        for (ClientLocation matchedClientLocation : clientLocationPersistence.load(clientId, matchedLocations)) {
-            matchedClientLocation.setClient(sparseClient);
+        for (ClientLocation matchedClientLocation : clientLocationPersistence.load(client.getId(), matchedLocations)) {
+            matchedClientLocation.setClient(client);
             matchedClientLocationMap.put(matchedClientLocation.getLocation(), matchedClientLocation);
         }
 

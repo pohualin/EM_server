@@ -48,10 +48,10 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
      * Create the search link
      *
      * @return Link for location searches
-     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientLocationsResource#findPossibleLocationsToAdd(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientLocationsResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
-    public static Link createFullSearchLink(Client client) {
-        Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null, null)).withRel("findLocations");
+    public static Link createAssociationLink(Client client) {
+        Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null, null)).withRel("locations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -59,6 +59,21 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+
+    /**
+     * This is the link to find current locations on a client
+     * @param client on which to find current locations
+     * @return the link
+     */
+    public static Link createCurrentLocationsSearchLink(Client client) {
+        Link link = linkTo(methodOn(ClientLocationsResource.class).current(client.getId(), null, null, null)).withRel("currentLocations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 

@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,8 @@ public interface LocationService {
     Location reload(Location toFind);
 
     /**
-     * Creates/Persists a location for all attributes on the location
+     * Creates/Persists a location for all attributes on the location.
+     * However it will not make the belongsTo relationship.
      *
      * @param location to save
      * @return the persistent location
@@ -44,14 +46,22 @@ public interface LocationService {
     Location create(Location location);
 
     /**
-     * This update is for all attributes on the location but not the relationship to clients.
-     * E.g. it wouldn't update which client the location belongs to nor the clients which
-     * use this location. Use the updateClientLocations for that purpose.
+     * Creates/Persists a location for all attributes on the location,
+     * including belongsTo.
      *
-     * @param location to update the properties
-     * @return the updated location
+     * @param location to save
+     * @return the persistent location
      */
-    Location update(Location location);
+    Location create(Client client, Location location);
+
+    /**
+     * Update the location. The client Id is
+     *
+     * @param clientId requesting the update
+     * @param location the update location request/changes
+     * @return the saved location
+     */
+    Location update(Client client, Location location);
 
 
 }

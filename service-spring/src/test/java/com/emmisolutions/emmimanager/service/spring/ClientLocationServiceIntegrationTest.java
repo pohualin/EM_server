@@ -38,17 +38,17 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
     public void createFindDelete() {
         final Location location = makeLocation();
         Client client = makeClient();
-        Set<ClientLocation> savedLocations = clientLocationService.create(client.getId(), new HashSet<Location>() {{
+        Set<ClientLocation> savedLocations = clientLocationService.create(client, new HashSet<Location>() {{
             add(location);
         }});
         assertThat("client has one location", savedLocations.size(), is(1));
         assertThat("location is the one we added", savedLocations.iterator().next().getLocation(), is(location));
 
-        ClientLocation clientLocation = clientLocationService.reload(savedLocations.iterator().next().getId());
+        ClientLocation clientLocation = clientLocationService.reload(savedLocations.iterator().next());
         assertThat("client location was loaded", clientLocation, is(notNullValue()));
 
-        clientLocationService.remove(clientLocation.getId());
-        assertThat("client has zero locations after delete", 0l, is(clientLocationService.find(client.getId(), null).getTotalElements()));
+        clientLocationService.remove(clientLocation);
+        assertThat("client has zero locations after delete", 0l, is(clientLocationService.find(client, null).getTotalElements()));
     }
 
     /**
@@ -65,17 +65,48 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
 
         // associate a client to one of those locations
         Client client = makeClient();
-        Set<ClientLocation> savedLocations = clientLocationService.create(client.getId(), new HashSet<Location>() {{
+        Set<ClientLocation> savedLocations = clientLocationService.create(client, new HashSet<Location>() {{
             add(location);
         }});
         ClientLocation savedRelationship = savedLocations.iterator().next();
 
         // find a page of possible ClientLocations using the same name that we used during create
         Page<ClientLocation> possibleLocations =
-                clientLocationService.findPossibleLocationsToAdd(client.getId(), new LocationSearchFilter("ClientLocationServiceIntegrationTest Location"), null);
+                clientLocationService.findPossibleLocationsToAdd(client, new LocationSearchFilter("ClientLocationServiceIntegrationTest Location"), null);
         assertThat("there should be 11 locations found", possibleLocations.getTotalElements(), is(11l));
         assertThat("one of the ClientLocation objects should be the one we saved", possibleLocations, hasItem(savedRelationship));
+    }
 
+    /**
+     * Can't find with a null client
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void invalidFindCall(){
+        clientLocationService.find(null, null);
+    }
+
+    /**
+     * Can't delete with a null client location
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void invalidDeleteCall(){
+        clientLocationService.remove(null);
+    }
+
+    /**
+     * Can't reload a null client location
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void invalidReloadCall(){
+        clientLocationService.reload(null);
+    }
+
+    /**
+     * Can't find possible locations for a null client
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void invalidFindPossibleCall(){
+        clientLocationService.findPossibleLocationsToAdd(null, null, null);
     }
 
     /**

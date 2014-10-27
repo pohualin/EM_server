@@ -72,21 +72,11 @@
                                  referencedColumnNames="revision"/>
     </changeSet>
 
-    <!--<changeSet id="add constraints to client_location" author="Matt" dbms="mssql, h2">-->
-        <!--<addPrimaryKey tableName="client_location" columnNames="id" constraintName="pk_client_location"/>-->
-        <!--<addUniqueConstraint tableName="client_location" columnNames="client_id, location_id"-->
-                             <!--constraintName="uk_client_location"/>-->
-    <!--</changeSet>-->
-
-    <!--<changeSet id="add constraints to client_location" author="Matt" dbms="postgresql">-->
-        <!--<sql>-->
-            <!--<![CDATA[-->
-                <!--UPDATE client_location-->
-                    <!--SET id = NEXTVAL('client_location_id_seq')-->
-                    <!--WHERE id ;-->
-            <!--]]>-->
-        <!--</sql>-->
-
-    <!--</changeSet>-->
+    <changeSet id="add client location permissions" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_6/data/em-364.csv"
+                  separator=";"
+                  tableName="permission"/>
+    </changeSet>
 
 </databaseChangeLog>

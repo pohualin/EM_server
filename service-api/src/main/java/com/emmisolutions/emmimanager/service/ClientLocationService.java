@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientLocation;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
@@ -16,18 +17,18 @@ public interface ClientLocationService {
     /**
      * Find a page of client locations for a client
      *
-     * @param clientId   to find client locations
+     * @param client  to find client locations
      * @param pageable which page to fetch
      * @return a page of client location objects
      */
-    Page<ClientLocation> find(Long clientId, Pageable pageable);
+    Page<ClientLocation> find(Client client, Pageable pageable);
 
     /**
      * Removes a ClientLocation
      *
      * @param id the id of the ClientLocation to delete
      */
-    void remove(Long id);
+    void remove(ClientLocation clientLocation);
 
     /**
      * Create locations for the client. Think of this as two separate calls.. the save, then
@@ -39,7 +40,7 @@ public interface ClientLocationService {
      * @return a page of persistent locations
      * @see com.emmisolutions.emmimanager.service.ClientLocationService#find(com.emmisolutions.emmimanager.model.Client, org.springframework.data.domain.Pageable)
      */
-    Set<ClientLocation> create(Long clientId, Set<Location> locations);
+    Set<ClientLocation> create(Client client, Set<Location> locations);
 
     /**
      * Load a single client location by id
@@ -47,7 +48,7 @@ public interface ClientLocationService {
      * @param clientLocationId the id
      * @return the ClientLocation or null
      */
-    ClientLocation reload(Long clientLocationId);
+    ClientLocation reload(ClientLocation clientLocation);
 
     /**
      * Finds a page of ClientLocation objects that are sparsely popuplated on the Client side
@@ -57,5 +58,5 @@ public interface ClientLocationService {
      * @param locationSearchFilter used to find the locations
      * @return a page of ClientLocation objects, the client relationship could be null
      */
-    Page<ClientLocation> findPossibleLocationsToAdd(Long clientId, LocationSearchFilter locationSearchFilter, Pageable pageable);
+    Page<ClientLocation> findPossibleLocationsToAdd(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable);
 }

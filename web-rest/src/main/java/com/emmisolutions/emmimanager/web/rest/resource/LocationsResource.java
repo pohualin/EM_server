@@ -61,10 +61,10 @@ public class LocationsResource {
     }
 
     /**
-     * POST to create new client
+     * POST to create new location
      *
-     * @param client to create
-     * @return ClientResource or INTERNAL_SERVER_ERROR if it could not be created
+     * @param location to create
+     * @return LocationResource or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/locations",
             method = RequestMethod.POST,
@@ -81,10 +81,10 @@ public class LocationsResource {
     }
 
     /**
-     * POST to create new client
+     * PUT to update a location
      *
-     * @param client to create
-     * @return ClientResource or INTERNAL_SERVER_ERROR if it could not be created
+     * @param location to update
+     * @return LocationResource or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/locations",
             method = RequestMethod.PUT,
@@ -92,11 +92,11 @@ public class LocationsResource {
     )
     @RolesAllowed({"PERM_GOD", "PERM_LOCATION_EDIT"})
     public ResponseEntity<LocationResource> update(@RequestBody Location location) {
-        location = locationService.update(location);
+        location = locationService.update(null, location);
         if (location == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            return new ResponseEntity<>(locationResourceAssembler.toResource(location), HttpStatus.CREATED);
+            return new ResponseEntity<>(locationResourceAssembler.toResource(location), HttpStatus.OK);
         }
     }
 

@@ -40,6 +40,10 @@ public class ClientLocation extends AbstractAuditingEntity{
 
     }
 
+    public ClientLocation(Long id){
+        this.id = id;
+    }
+
     /**
      * Create with the composite parts
      * @param client to use
