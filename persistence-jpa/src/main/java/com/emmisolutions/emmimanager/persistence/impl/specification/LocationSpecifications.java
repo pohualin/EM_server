@@ -1,21 +1,19 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.model.Location_;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.CollectionUtils;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.model.Location_;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the specification class that allows for filtering of Location objects.
@@ -70,17 +68,17 @@ public class LocationSpecifications {
     }
 
     /**
-     * Ensures that the client is a member of the usingThisLocation collection
+     * Ensures that the location belongs to a client
      *
-     * @param client to load, if null eager fetches all clients using this location
+     * @param client to use
      * @return the specification
      */
-    public static Specification<Location> usedBy(final Client client) {
+    public static Specification<Location> belongsTo(final Client client) {
         return new Specification<Location>() {
             @Override
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (client != null) {
-                    return cb.isMember(client, root.get(Location_.usingThisLocation));
+                    return cb.equal(root.get(Location_.belongsTo), client);
                 }
                 return null;
             }

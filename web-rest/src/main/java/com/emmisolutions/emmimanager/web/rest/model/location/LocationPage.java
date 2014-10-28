@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.model.location;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
@@ -68,32 +67,6 @@ public class LocationPage extends PagedResource<LocationResource> {
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
-    }
-
-    /**
-     * Create a search link for locations on a client
-     * @param client on which to search for locations
-     * @return the link
-     */
-    public static Link createFullClientLocationsSearchLink(Client client) {
-        Link link = linkTo(methodOn(LocationsResource.class).clientLocations(client.getId(), null, null, null, null, (String[]) null)).withRel("locations");
-        UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
-        return new Link(uriTemplate, link.getRel());
-    }
-
-    /**
-     * Create a link to fetch all location ids currently in use by a client
-     * @param client to find
-     * @return the link
-     */
-    public static Link locationIdsAtClient(Client client){
-        return linkTo(methodOn(LocationsResource.class).allClientLocations(client.getId())).withRel("allLocationIds");
     }
 
     private void addFilterToLinks(LocationSearchFilter filter) {

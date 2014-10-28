@@ -1,12 +1,9 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.Set;
 
 /**
  * Location Persistence API
@@ -38,18 +35,4 @@ public interface LocationPersistence {
      */
     Location reload(Location location);
 
-    /**
-     * Find all location ids for a client
-     * @param clientId to find
-     * @return set of ids
-     */
-    Set<Long> list(Long clientId);
-
-    /**
-     * reload a location at a particular client
-     * @param client to use
-     * @param id location id using client
-     * @return the location at the client
-     */
-    Location reloadLocationUsedByClient(Client client, Long id);
 }

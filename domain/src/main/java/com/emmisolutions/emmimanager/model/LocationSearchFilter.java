@@ -32,6 +32,7 @@ public class LocationSearchFilter {
 
     /**
      * Constructor
+     *
      * @param names to filter
      */
     public LocationSearchFilter(String... names) {
@@ -40,8 +41,9 @@ public class LocationSearchFilter {
 
     /**
      * Constructor
+     *
      * @param status filter
-     * @param names to filter
+     * @param names  to filter
      */
     public LocationSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
@@ -53,6 +55,13 @@ public class LocationSearchFilter {
         }
     }
 
+    /**
+     * Fully qualified filter
+     *
+     * @param clientId that the location belongs to
+     * @param status   filter
+     * @param names    to filter
+     */
     public LocationSearchFilter(Long clientId, StatusFilter status, String... names) {
         this(status, names);
         this.clientId = clientId;
@@ -66,7 +75,9 @@ public class LocationSearchFilter {
         return status;
     }
 
-    public Long getClientId() {return clientId;}
+    public Long getClientId() {
+        return clientId;
+    }
 
     /**
      * Location Statuses
@@ -77,20 +88,9 @@ public class LocationSearchFilter {
         /**
          * Create a StatusFilter from a string
          *
-         * @param status if the string matches or ALL
-         * @return StatusFilter
+         * @param status to convert
+         * @return one of the enums or ACTIVE_ONLY if nothing matches
          */
-        public static StatusFilter fromStringOrAll(String status) {
-            if (StringUtils.isNotBlank(status)) {
-                for (StatusFilter statusFilter : values()) {
-                    if (statusFilter.toString().equals(status.toUpperCase())) {
-                        return statusFilter;
-                    }
-                }
-            }
-            return ALL;
-        }
-
         public static StatusFilter fromStringOrActive(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {

@@ -79,38 +79,6 @@ public class ProvidersResource {
 		}
 
 	}
-    
-    
-	 /**
-     * GET for searching for providers
-     * 
-     * @param pageable  paged request
-     * @param sort      sorting request
-     * @param assembler used to create the PagedResources
-     * @param name
-     * @param status
-     * @return ProviderResource
-     */
-	@RequestMapping(value = "/clients/{clientId}/teams/{teamId}/provider", method = RequestMethod.GET)
-	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_LIST" })
-	public ResponseEntity<ProviderPage> findAllProvidersByTeam(
-			@PageableDefault(size = 10) Pageable pageable,
-			@SortDefault(sort = "createdDate") Sort sort,
-			@RequestParam(value = "status", required = false) String status,
-			PagedResourcesAssembler<Provider> assembler,
-			@PathVariable("teamId")Long teamId,
-			@PathVariable("clientId") Long clientId) {
-		
-		Team team = new Team();
-		team.setId(teamId);
-		Page<Provider> providerPage = providerService.findAllProviders(pageable, team);
-		
-		if (providerPage.hasContent()) {
-		    return new ResponseEntity<>(new ProviderPage(assembler.toResource(providerPage, providerResourceAssembler), providerPage, null), HttpStatus.OK);
-		} else {
-		    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
-	}
 	
     /**
      * GET to retrieve ReferenceData Specialty types for Provider.
