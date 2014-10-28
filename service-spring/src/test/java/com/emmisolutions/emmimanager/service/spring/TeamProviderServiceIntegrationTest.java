@@ -1,11 +1,11 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
+import com.emmisolutions.emmimanager.service.*;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -13,29 +13,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.model.TeamSalesForce;
-import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
-import com.emmisolutions.emmimanager.service.UserService;
+import javax.annotation.Resource;
 
-public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+
+public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
 	ProviderService providerService;
@@ -174,4 +157,20 @@ public class ProviderServiceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider still exists", provider.getId(), is(notNullValue()));
 		assertThat("teamProvider was deleted", teamProviderPageNew.getContent().size(), is(0));
 	}
+
+    /**
+     * Reload of null is null (not an exception)
+     */
+    @Test
+    public void reloadNull(){
+        assertThat("Reload of null returns null", teamProviderService.reload(null), is(nullValue()));
+    }
+
+    /**
+     * Shouldn't be able to find providers for a team that doesn't exist
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void findByTeamBad(){
+        teamProviderService.findTeamProvidersByTeam(null, null);
+    }
 }

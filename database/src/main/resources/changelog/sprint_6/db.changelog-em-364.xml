@@ -79,4 +79,9 @@
                   tableName="permission"/>
     </changeSet>
 
+    <changeSet id="change identity column to lowercase" author="Matt" dbms="mssql">
+        <renameColumn tableName="client_location" oldColumnName="ID" newColumnName="id"
+                      columnDataType="BIGINT"/>
+    </changeSet>
+
 </databaseChangeLog>
