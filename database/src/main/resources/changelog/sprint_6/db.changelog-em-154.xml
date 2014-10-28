@@ -10,5 +10,11 @@
                   separator=";"
                   tableName="strings"/>
     </changeSet>
+    <changeSet id="Add English Strings to Client Tag Modal" author="Kevin">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_6/data/em-154-1.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
 
 </databaseChangeLog>
