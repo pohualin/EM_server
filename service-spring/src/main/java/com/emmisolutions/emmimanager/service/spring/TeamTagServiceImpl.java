@@ -39,7 +39,7 @@ public class TeamTagServiceImpl implements TeamTagService {
         if (teamToFind != null) {
             teamTagPersistence.deleteTeamTagsWithTeam(teamToFind);
             if (tagSet != null) {
-                List<TeamTag> savedTeamTags = new ArrayList();
+                List<TeamTag> savedTeamTags = new ArrayList<>();
                 for (Tag tag : tagSet) {
                     TeamTag teamTag = new TeamTag(teamToFind, tag);
                     TeamTag savedTeamTag = teamTagPersistence.saveTeamTag(teamTag);

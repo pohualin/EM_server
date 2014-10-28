@@ -9,8 +9,6 @@ import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A location.
@@ -35,13 +33,6 @@ public class Location extends AbstractAuditingEntity {
     @JoinColumn(name = "client_id")
     private Client belongsTo;
 
-    @ManyToMany
-    @JoinTable(
-            name = "client_location",
-            joinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "client_id", referencedColumnName = "id")})
-    private Set<Client> usingThisLocation;
-
     @NotNull
     @Length(max = 255)
     @Pattern(regexp = "[0-9A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
@@ -65,6 +56,24 @@ public class Location extends AbstractAuditingEntity {
     @Column(length = 2, nullable = false)
     private State state;
 
+    /**
+     * No Arg Constructor
+     */
+    public Location() {
+
+    }
+
+    /**
+     * JPA Id constructor
+     *
+     * @param id      to use
+     * @param version the version
+     */
+    public Location(Long id, Integer version) {
+        this.id = id;
+        this.version = version;
+    }
+
     public Long getId() {
         return id;
     }
@@ -87,14 +96,6 @@ public class Location extends AbstractAuditingEntity {
 
     public void setBelongsTo(Client belongsTo) {
         this.belongsTo = belongsTo;
-    }
-
-    public Set<Client> getUsingThisLocation() {
-        return usingThisLocation;
-    }
-
-    public void setUsingThisLocation(Set<Client> usingThisLocation) {
-        this.usingThisLocation = usingThisLocation;
     }
 
     public String getName() {
@@ -159,10 +160,4 @@ public class Location extends AbstractAuditingEntity {
         this.active = active;
     }
 
-    public void addClientUsingThisLocation(Client client){
-        if (usingThisLocation == null){
-            usingThisLocation = new HashSet<>();
-        }
-        usingThisLocation.add(client);
-    }
 }

@@ -1,17 +1,16 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import javax.annotation.Resource;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
 import com.emmisolutions.emmimanager.service.TeamService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 /**
  * Implementation of the TeamProviderService
  */
@@ -47,7 +46,9 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 	@Transactional
 	public void delete(TeamProvider provider) {
 		TeamProvider fromDb = reload(provider);
-		teamProviderPersistence.delete(fromDb);
+        if (fromDb != null) {
+            teamProviderPersistence.delete(fromDb);
+        }
 	}
 
 }
