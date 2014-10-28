@@ -51,7 +51,7 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
      * @see com.emmisolutions.emmimanager.web.rest.resource.ClientLocationsResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
     public static Link createAssociationLink(Client client) {
-        Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null, null)).withRel("locations");
+        Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null, null)).withRel("possibleLocations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -68,7 +68,7 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
      * @return the link
      */
     public static Link createCurrentLocationsSearchLink(Client client) {
-        Link link = linkTo(methodOn(ClientLocationsResource.class).current(client.getId(), null, null, null)).withRel("currentLocations");
+        Link link = linkTo(methodOn(ClientLocationsResource.class).current(client.getId(), null, null, null)).withRel("locations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

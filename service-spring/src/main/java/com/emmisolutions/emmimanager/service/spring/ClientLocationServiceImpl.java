@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientLocationService;
+import com.emmisolutions.emmimanager.service.LocationService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +29,9 @@ public class ClientLocationServiceImpl implements ClientLocationService {
 
     @Resource
     LocationPersistence locationPersistence;
+
+    @Resource
+    LocationService locationService;
 
     @Override
     public Page<ClientLocation> find(Client client, Pageable pageable) {
@@ -55,10 +59,17 @@ public class ClientLocationServiceImpl implements ClientLocationService {
         Set<ClientLocation> ret = new HashSet<>();
         if (locations != null) {
             for (Location location : locations) {
-                ret.add(clientLocationPersistence.create(location.getId(), client.getId()));
+                if (location != null) {
+                    ret.add(clientLocationPersistence.create(location.getId(), client.getId()));
+                }
             }
         }
         return ret;
+    }
+
+    @Override
+    public ClientLocation createLocationAndAssociateTo(Client client, Location location) {
+        return clientLocationPersistence.create(locationService.create(client, location).getId(), client.getId());
     }
 
     @Override

@@ -77,6 +77,24 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("one of the ClientLocation objects should be the one we saved", possibleLocations, hasItem(savedRelationship));
     }
 
+    @Test
+    public void createLocationOnClient(){
+        Client client = makeClient();
+        Location location = new Location();
+        location.setName("Brand New Location");
+        location.setCity("Valid City 1");
+        location.setPhone("630-222-8900");
+        location.setState(State.IL);
+        location.setBelongsTo(client);
+
+        ClientLocation clientLocation = clientLocationService.createLocationAndAssociateTo(client, location);
+        assertThat("ClientLocation is not null", clientLocation, is(notNullValue()));
+
+        Page<ClientLocation> clientLocationPage = clientLocationService.find(client, null);
+        assertThat("finding client locations should include the newly created one", clientLocationPage, hasItem(clientLocation));
+        assertThat("Belongs To is correct", clientLocationPage.iterator().next().getLocation().getBelongsTo(), is(client));
+    }
+
     /**
      * Can't find with a null client
      */

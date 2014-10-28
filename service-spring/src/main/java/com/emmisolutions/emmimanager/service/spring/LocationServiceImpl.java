@@ -72,8 +72,10 @@ public class LocationServiceImpl implements LocationService {
             throw new InvalidDataAccessApiUsageException("Attempting to update non-persistent location, needs to have an id");
         }
         if (client == null) {
-            // can't update belongsTo without a client id
-            location.setBelongsTo(dbLocation.getBelongsTo());
+            if (dbLocation.getBelongsTo() != null) {
+                // can't update belongsTo without a client id
+                location.setBelongsTo(dbLocation.getBelongsTo());
+            }
         } else if (dbLocation.getBelongsTo() != null) {
             // belongsTo was already set
             if (!client.equals(dbLocation.getBelongsTo())) {
