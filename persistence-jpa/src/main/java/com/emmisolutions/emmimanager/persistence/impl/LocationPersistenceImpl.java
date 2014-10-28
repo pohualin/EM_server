@@ -15,8 +15,6 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications.*;
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -47,7 +45,7 @@ public class LocationPersistenceImpl implements LocationPersistence {
         if (filter != null && filter.getClientId() != null){
             client = clientPersistence.reload(filter.getClientId());
         }
-        return locationRepository.findAll(where(usedBy(client)).and(hasNames(filter)).and(isInStatus(filter)), page);
+        return locationRepository.findAll(where(belongsTo(client)).and(hasNames(filter)).and(isInStatus(filter)), page);
     }
 
     @Override
@@ -63,16 +61,4 @@ public class LocationPersistenceImpl implements LocationPersistence {
         return locationRepository.findOne(location.getId());
     }
 
-    @Override
-    public Set<Long> list(Long clientId) {
-        return new HashSet<>(locationRepository.findAllIdsByClientId(clientId));
-    }
-
-    @Override
-    public Location reloadLocationUsedByClient(Client client, Long id) {
-        if (client == null || client.getId() == null || id == null){
-            return null;
-        }
-        return locationRepository.loadALocationUsedByClient(client.getId(), id);
-    }
 }

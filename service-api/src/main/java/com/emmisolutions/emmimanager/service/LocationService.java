@@ -1,13 +1,10 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientLocationModificationRequest;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.Set;
 
 /**
  * Location Services
@@ -21,14 +18,6 @@ public interface LocationService {
      * @return the first page of location objects
      */
     Page<Location> list(LocationSearchFilter locationSearchFilter);
-
-    /**
-     * Find all IDs associated to this client
-     *
-     * @param clientId to find for
-     * @return Set of all ids
-     */
-    Set<Long> list(Long clientId);
 
     /**
      * Get a page of location objects.
@@ -48,10 +37,8 @@ public interface LocationService {
     Location reload(Location toFind);
 
     /**
-     * Creates/Persists a location for all attributes on the location with the exception being
-     * the relationship to clients. E.g. a call here will not update which client the location
-     * belongs to nor the clients which use this location. Use the updateClientLocations for
-     * that purpose.
+     * Creates/Persists a location for all attributes on the location.
+     * However it will not make the belongsTo relationship.
      *
      * @param location to save
      * @return the persistent location
@@ -59,35 +46,22 @@ public interface LocationService {
     Location create(Location location);
 
     /**
-     * This update is for all attributes on the location but not the relationship to clients.
-     * E.g. it wouldn't update which client the location belongs to nor the clients which
-     * use this location. Use the updateClientLocations for that purpose.
+     * Creates/Persists a location for all attributes on the location,
+     * including belongsTo.
      *
-     * @param location to update the properties
-     * @return the updated location
+     * @param location to save
+     * @return the persistent location
      */
-    Location update(Location location);
+    Location create(Client client, Location location);
 
     /**
-     * Update the relationships to client for the locations within the modification request
+     * Update the location. The client Id is
      *
-     * @param toUpdate            to relate to the passed locations
-     * @param modificationRequest to update the locations
+     * @param clientId requesting the update
+     * @param location the update location request/changes
+     * @return the saved location
      */
-    void updateClientLocations(Client toRelateTo, ClientLocationModificationRequest modificationRequest);
+    Location update(Client client, Location location);
 
-    /**
-     * Reloads a location used by client
-     *
-     * @return the reloaded location
-     */
-    Location reloadLocationUsedByClient(Client client, Location toFind);
 
-    /**
-     * Deletes a location from a client
-     *
-     * @param client   to remove the location
-     * @param toRemove the location to remove
-     */
-    void delete(Client client, Location toRemove);
 }

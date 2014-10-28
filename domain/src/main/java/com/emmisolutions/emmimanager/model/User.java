@@ -76,6 +76,17 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.password = password;
     }
 
+    /**
+     * Constructor with ID only
+     *
+     * @param id      the id
+     * @param version the version
+     */
+    public User(Long id, Integer version) {
+        this.id = id;
+        this.version = version;
+    }
+
     public Long getId() {
         return id;
     }

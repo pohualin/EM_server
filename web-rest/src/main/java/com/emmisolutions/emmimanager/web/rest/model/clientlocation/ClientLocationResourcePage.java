@@ -1,9 +1,10 @@
-package com.emmisolutions.emmimanager.web.rest.model.location;
+package com.emmisolutions.emmimanager.web.rest.model.clientlocation;
 
-import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientLocation;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
-import com.emmisolutions.emmimanager.web.rest.resource.LocationsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.ClientLocationsResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
 import org.springframework.util.CollectionUtils;
@@ -18,47 +19,39 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * A HATEOAS wrapper for a page of LocationResource objects.
+ * A HATEOAS wrapper for a page of ClientLocationResource objects.
  */
-@XmlRootElement(name = "location-page")
-public class LocationPage extends PagedResource<LocationResource> {
+@XmlRootElement(name = "client-location-page")
+public class ClientLocationResourcePage extends PagedResource<ClientLocationResource> {
 
     @XmlElement(name = "filter")
     private LocationSearchFilter searchFilter;
 
-    public LocationPage() {
+    public ClientLocationResourcePage() {
     }
 
     /**
-     * Creates a page for a location search result
+     * Constructor that sets up paging defaults
      *
-     * @param locationResourceSupports to be wrapped
-     * @param locationPage             true page
-     * @param filter                   which caused the response
+     * @param clientLocationResourceSupports page of ClientLocationResource objects
+     * @param clientLocationPage             page of ClientLocation objects
      */
-    public LocationPage(PagedResources<LocationResource> locationResourceSupports, Page<Location> locationPage, LocationSearchFilter filter) {
-        pageDefaults(locationResourceSupports, locationPage);
-        addFilterToLinks(filter);
-    }
-
-    /**
-     * Create a reference data link
-     *
-     * @return
-     * @see com.emmisolutions.emmimanager.web.rest.resource.LocationsResource#getReferenceData()
-     */
-    public static Link createReferenceDataLink() {
-        return linkTo(methodOn(LocationsResource.class).getReferenceData()).withRel("locationReferenceData");
+    public ClientLocationResourcePage(PagedResources<ClientLocationResource> clientLocationResourceSupports,
+                                      Page<ClientLocation> clientLocationPage, LocationSearchFilter filter) {
+        pageDefaults(clientLocationResourceSupports, clientLocationPage);
+        if (filter != null) {
+            addFilterToLinks(filter);
+        }
     }
 
     /**
      * Create the search link
      *
      * @return Link for location searches
-     * @see com.emmisolutions.emmimanager.web.rest.resource.LocationsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientLocationsResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
-    public static Link createFullSearchLink() {
-        Link link = linkTo(methodOn(LocationsResource.class).list(null, null, null, null, (String[]) null)).withRel("locations");
+    public static Link createAssociationLink(Client client) {
+        Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null, null)).withRel("possibleLocations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -66,6 +59,21 @@ public class LocationPage extends PagedResource<LocationResource> {
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+
+    /**
+     * This is the link to find current locations on a client
+     * @param client on which to find current locations
+     * @return the link
+     */
+    public static Link createCurrentLocationsSearchLink(Client client) {
+        Link link = linkTo(methodOn(ClientLocationsResource.class).current(client.getId(), null, null, null)).withRel("locations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 
