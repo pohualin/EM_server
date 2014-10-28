@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="drop pk" author="Matt" dbms="h2">
+        <dropUniqueConstraint tableName="client_location" constraintName="pk_client_location"/>
+    </changeSet>
+
+    <changeSet id="drop pk" author="Matt" dbms="mssql, postgresql">
+        <dropPrimaryKey tableName="client_location" constraintName="pk_client_location"/>
+    </changeSet>
+
+    <changeSet id="add identity column" author="Matt" dbms="postgresql,h2">
+        <addColumn tableName="client_location">
+            <column name="id" autoIncrement="true" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add identity column" author="Matt" dbms="mssql">
+        <sql>
+            <![CDATA[
+                ALTER TABLE client_location ADD ID BIGINT IDENTITY
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="migrate client location tables" author="Matt">
+
+        <!-- add a autoincrement key to client_location -->
+        <addColumn tableName="client_location">
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </addColumn>
+        <addPrimaryKey tableName="client_location" columnNames="id" constraintName="pk_client_location"/>
+        <addUniqueConstraint tableName="client_location" columnNames="client_id, location_id"
+                             constraintName="uk_client_location"/>
+
+        <!-- audit table reset -->
+        <dropPrimaryKey tableName="client_location_audit" constraintName="pk_client_location_audit"/>
+        <dropForeignKeyConstraint baseTableName="client_location_audit"
+                                  constraintName="fk_client_location_audit_revision"/>
+        <dropTable tableName="client_location_audit"/>
+        <createTable tableName="client_location_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="location_id" type="BIGINT"/>
+            <column name="client_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="client_location_audit"
+                       columnNames="id, revision"
+                       constraintName="pk_client_location_audit"/>
+        <addForeignKeyConstraint baseTableName="client_location_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_location_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="add client location permissions" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_6/data/em-364.csv"
+                  separator=";"
+                  tableName="permission"/>
+    </changeSet>
+
+    <changeSet id="change identity column to lowercase" author="Matt" dbms="mssql">
+        <renameColumn tableName="client_location" oldColumnName="ID" newColumnName="id"
+                      columnDataType="BIGINT"/>
+    </changeSet>
+
+</databaseChangeLog>
