@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -32,21 +34,45 @@ public class TeamTagServiceImpl implements TeamTagService {
     }
 
     @Override
-    public void save(Team team, Set<Tag> tagSet) {
+    public List<TeamTag> save(Team team, Set<Tag> tagSet) {
         Team teamToFind = teamPersistence.reload(team);
-        if(teamToFind != null) {
+        if (teamToFind != null) {
             teamTagPersistence.deleteTeamTagsWithTeam(teamToFind);
             if (tagSet != null) {
+                List<TeamTag> savedTeamTags = new ArrayList<>();
                 for (Tag tag : tagSet) {
                     TeamTag teamTag = new TeamTag(teamToFind, tag);
-                    teamTagPersistence.saveTeamTag(teamTag);
+                    TeamTag savedTeamTag = teamTagPersistence.saveTeamTag(teamTag);
+                    savedTeamTags.add(savedTeamTag);
                 }
+                return savedTeamTags;
             }
         }
+        return null;
     }
 
     @Override
-    public TeamTag reload(TeamTag teamTag){
+    public TeamTag saveSingleTeamTag(Team team, Tag tag) {
+        Team teamToFind = teamPersistence.reload(team);
+        Tag tagToFind = tagPersistence.reload(tag);
+        if (teamToFind != null && tagToFind != null) {
+            TeamTag teamTag = new TeamTag(teamToFind, tag);
+            return teamTagPersistence.saveTeamTag(teamTag);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteSingleTeamTag(TeamTag teamTag) {
+        TeamTag newTeamTag = teamTagPersistence.reload(teamTag);
+        if (newTeamTag != null) {
+            teamTagPersistence.deleteTeamTag(newTeamTag);
+        }
+    }
+
+
+    @Override
+    public TeamTag reload(TeamTag teamTag) {
         return teamTagPersistence.reload(teamTag);
     }
 }

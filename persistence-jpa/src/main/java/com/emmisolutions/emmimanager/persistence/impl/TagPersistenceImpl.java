@@ -19,33 +19,36 @@ import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.TagRepository;
 
 @Repository
-public class TagPersistenceImpl implements TagPersistence{
-	
-	@Resource
-	TagRepository tagRepository;
-	
-	@Override
-	public Page<Tag> listTagsByGroupId(Pageable page, TagSearchFilter searchFilter){
-		if (page == null) {
-			// default pagination request if none
-			page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
-		}
-		return tagRepository.findAll(where(byGroupId(searchFilter)), page);
-	}
+public class TagPersistenceImpl implements TagPersistence {
 
-	@Override
-	public Tag save(Tag tag){
-		return tagRepository.save(tag);
-	}
+    @Resource
+    TagRepository tagRepository;
 
-	@Override
-	public Tag reload(Tag tag){
-		return tagRepository.findOne(tag.getId());
-	}
+    @Override
+    public Page<Tag> listTagsByGroupId(Pageable page, TagSearchFilter searchFilter) {
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        }
+        return tagRepository.findAll(where(byGroupId(searchFilter)), page);
+    }
 
-	@Override
-	public List<Tag> createAll(List<Tag> createTagsList) {
-		return tagRepository.save(createTagsList);
-	}
+    @Override
+    public Tag save(Tag tag) {
+        return tagRepository.save(tag);
+    }
+
+    @Override
+    public Tag reload(Tag tag) {
+        if (tag == null) {
+            return null;
+        }
+        return tagRepository.findOne(tag.getId());
+    }
+
+    @Override
+    public List<Tag> createAll(List<Tag> createTagsList) {
+        return tagRepository.save(createTagsList);
+    }
 
 }

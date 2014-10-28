@@ -14,6 +14,7 @@
         <class>com.emmisolutions.emmimanager.model.SalesForce</class>
         <class>com.emmisolutions.emmimanager.model.TeamSalesForce</class>
         <class>com.emmisolutions.emmimanager.model.Location</class>
+        <class>com.emmisolutions.emmimanager.model.ClientLocation</class>
 		<class>com.emmisolutions.emmimanager.model.Team</class>
         <class>com.emmisolutions.emmimanager.model.Group</class>
 		<class>com.emmisolutions.emmimanager.model.Tag</class>
@@ -27,6 +28,7 @@
         <class>com.emmisolutions.emmimanager.model.ClientType</class>
         <class>com.emmisolutions.emmimanager.model.ClientRegion</class>
         <class>com.emmisolutions.emmimanager.model.ClientTier</class>
+        <class>com.emmisolutions.emmimanager.model.TeamProvider</class>
         <class>com.emmisolutions.emmimanager.model.TeamLocation</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
