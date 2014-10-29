@@ -10,4 +10,15 @@
                   separator=";"
                   tableName="strings"/>
     </changeSet>
+    
+    <changeSet id="Clear Search string" author="Claudio">
+         <sql><![CDATA[	  
+			 delete from strings
+			 where key_path = 'team_locations_search_page.search_dialog.clear_search'
+        ]]></sql>   
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_6/data/em-408.1.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
 </databaseChangeLog>
