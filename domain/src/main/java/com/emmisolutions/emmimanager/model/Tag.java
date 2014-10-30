@@ -8,7 +8,9 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.Set;
 
 @Audited
 @Entity
@@ -30,6 +32,10 @@ public class Tag extends AbstractAuditingEntity implements Serializable{
     @JoinColumn(name = "group_id")
     @JsonBackReference
     private Group group;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy="tag")
+    @XmlTransient
+    private Set<TeamTag> teamTags;
 	
 	public Long getId() {
 		return id;
@@ -74,5 +80,13 @@ public class Tag extends AbstractAuditingEntity implements Serializable{
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public Set<TeamTag> getTeamTags() {
+        return teamTags;
+    }
+
+    public void setTeamTags(Set<TeamTag> teamTags) {
+        this.teamTags = teamTags;
     }
 }
