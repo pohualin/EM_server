@@ -16,22 +16,34 @@ public interface GroupService {
 
     /**
      * Saves a group
+     *
+     * @param group to be saved
+     * @return saved group
      */
     Group save(Group group);
 
     /**
-     * Returns a Page of Groups based on the search filter with default Page
-     * size
+     * Returns a Page of Groups based on the search filter with default Page size
+     *
+     * @param groupSearchFilter to filter by
+     * @return a page of group objects
      */
     Page<Group> list(GroupSearchFilter groupSearchFilter);
 
     /**
      * Returns a Page of Groups based on the search filter
+     *
+     * @param pageable          the pagination specification
+     * @param groupSearchFilter the search filter
+     * @return a page of group objects
      */
     Page<Group> list(Pageable pageable, GroupSearchFilter groupSearchFilter);
 
     /**
      * Find the group by given id
+     *
+     * @param id to reload
+     * @return the saved group
      */
     Group reload(Long id);
 

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,36 +16,44 @@ import java.util.Set;
 @Service
 public interface TeamTagService {
     /**
+     * Find all TeamTags for a team
+     *
      * @param pageable pagable object
-     * @param team team to find
+     * @param team     team to find
      * @return Page of TeamTags that have the given team
      */
     Page<TeamTag> findAllTeamTagsWithTeam(Pageable pageable, Team team);
 
     /**
      * saves an association of a team with a set of tags
-     * @param team to save
+     *
+     * @param team   to save
      * @param tagSet to save
+     * @return list of saved TeamTag
      */
-    java.util.List<TeamTag> save(Team team, Set<Tag> tagSet);
+    List<TeamTag> save(Team team, Set<Tag> tagSet);
 
     /**
      * saves an association of a team with single tag
+     *
      * @param team to associate tag with
-     * @param tag to save
+     * @param tag  to save
      */
     TeamTag saveSingleTeamTag(Team team, Tag tag);
 
     /**
      * deletes a single TeamTag
+     *
      * @param teamTag to delete
      */
     void deleteSingleTeamTag(TeamTag teamTag);
 
     /**
+     * Reloads a TeamTag from the db
      *
      * @param teamTag to reload
-     * @return teamTag that was reloaded
+     * @return the TeamTag that was reloaded
+     * @throws java.lang.IllegalArgumentException if teamTag is not found
      */
     TeamTag reload(TeamTag teamTag);
 }
