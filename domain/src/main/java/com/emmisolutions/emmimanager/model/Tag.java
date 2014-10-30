@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -9,8 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 @Audited
@@ -35,8 +34,8 @@ public class Tag extends AbstractAuditingEntity implements Serializable{
     private Group group;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy="tag")
-    @JsonIgnore
-    private Set<TeamTag> teamTags = new HashSet<>();
+    @XmlTransient
+    private Set<TeamTag> teamTags;
 	
 	public Long getId() {
 		return id;
