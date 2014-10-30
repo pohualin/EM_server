@@ -17,7 +17,7 @@ public interface ClientLocationService {
     /**
      * Find a page of client locations for a client
      *
-     * @param client  to find client locations
+     * @param client   to find client locations
      * @param pageable which page to fetch
      * @return a page of client location objects
      */
@@ -26,14 +26,14 @@ public interface ClientLocationService {
     /**
      * Removes a ClientLocation
      *
-     * @param id the id of the ClientLocation to delete
+     * @param clientLocation the ClientLocation to delete
      */
     void remove(ClientLocation clientLocation);
 
     /**
      * Create locations for the client.
      *
-     * @param clientId    for which to create them
+     * @param client    for which to create them
      * @param locations to associate
      * @return the set of saved locations
      */
@@ -41,25 +41,26 @@ public interface ClientLocationService {
 
     /**
      * Creates a brand new location as well as a new client location
-     * @param client to use
+     *
+     * @param client   to use
      * @param location to create/save and associate to the client
      * @return saved ClientLocation
      */
-    ClientLocation createLocationAndAssociateTo(Client client, Location location );
+    ClientLocation createLocationAndAssociateTo(Client client, Location location);
 
     /**
      * Load a single client location by id
      *
-     * @param clientLocationId the id
+     * @param clientLocation the to reload
      * @return the ClientLocation or null
      */
     ClientLocation reload(ClientLocation clientLocation);
 
     /**
-     * Finds a page of ClientLocation objects that are sparsely popuplated on the Client side
+     * Finds a page of ClientLocation objects that are sparsely populated on the Client side
      * of the relationship.
      *
-     * @param pageable a page
+     * @param pageable             a page
      * @param locationSearchFilter used to find the locations
      * @return a page of ClientLocation objects, the client relationship could be null
      */
