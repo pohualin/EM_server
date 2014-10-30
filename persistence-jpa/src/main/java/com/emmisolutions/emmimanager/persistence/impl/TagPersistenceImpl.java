@@ -1,22 +1,21 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.TagSpecifications.byGroupId;
-import static org.springframework.data.jpa.domain.Specifications.where;
-
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.Tag;
+import com.emmisolutions.emmimanager.model.TagSearchFilter;
+import com.emmisolutions.emmimanager.persistence.TagPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.Tag;
-import com.emmisolutions.emmimanager.model.TagSearchFilter;
-import com.emmisolutions.emmimanager.persistence.TagPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TagRepository;
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Set;
+
+import static com.emmisolutions.emmimanager.persistence.impl.specification.TagSpecifications.byGroupId;
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 @Repository
 public class TagPersistenceImpl implements TagPersistence {
@@ -49,6 +48,14 @@ public class TagPersistenceImpl implements TagPersistence {
     @Override
     public List<Tag> createAll(List<Tag> createTagsList) {
         return tagRepository.save(createTagsList);
+    }
+
+    @Override
+    public long removeTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep) {
+        if (clientId != null) {
+            return tagRepository.deleteByGroupClientIdEqualsAndGroupIdNotIn(clientId, groupIdsToKeep);
+        }
+        return 0;
     }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.util.Set;
 
 /**
  * TeamTag persistence implementation
@@ -58,7 +59,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
 
     @Override
     public Page<TeamTag> getAllTeamTagsForTeam(Pageable pageable, Team team) {
-        if (team == null) {
+        if (pageable == null) {
             // default pagination request if none
             pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
@@ -73,6 +74,14 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
         }
         teamTagRepository.deleteByTeam(team);
         teamTagRepository.flush();
+    }
+
+    @Override
+    public long removeTeamTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep) {
+        if (clientId != null) {
+            return teamTagRepository.deleteByTeamClientIdEqualsAndTagGroupIdNotIn(clientId, groupIdsToKeep);
+        }
+        return 0;
     }
 
     private void checkTeamTagNull(TeamTag teamTag) {

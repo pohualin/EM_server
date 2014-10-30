@@ -2,6 +2,8 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
+import com.emmisolutions.emmimanager.persistence.TagPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
@@ -27,6 +29,12 @@ public class GroupServiceImpl implements GroupService {
 
     @Resource
     TagService tagService;
+
+    @Resource
+    TagPersistence tagPersistence;
+
+    @Resource
+    TeamTagPersistence teamTagPersistence;
 
     @Resource
     ClientService clientService;
@@ -62,29 +70,50 @@ public class GroupServiceImpl implements GroupService {
         Client client = new Client();
         client.setId(clientId);
         client = clientService.reload(client);
-
         if (client != null) {
             // make sure groups (and tags) are not duplicates
             ensureGroupsAndTagsAreValid(groupSaveRequests);
 
-            // remove all groups for a client
-            groupPersistence.removeAll(clientId);
+            // delete tags and groups that will be orphaned by the save request
+            cleanOutOrphans(groupSaveRequests, clientId);
 
             // add the groups back
             for (GroupSaveRequest request : groupSaveRequests) {
                 if (request.getGroup() != null) {
+                    // save the group
                     request.getGroup().setClient(client);
                     Group savedGroup = save(request.getGroup());
+
+                    // save the tags pointing to the group
                     List<Tag> savedTags = tagService.saveAllTagsForGroup(request.getTags(), savedGroup);
                     if (savedTags == null || savedTags.isEmpty()) {
                         throw new IllegalArgumentException("Tags cannot be null");
                     }
-                    savedGroup.setTags(new HashSet<>(savedTags));
+                    // update group tag collection for automatic orphan management
+                    savedGroup.getTags().clear();
+                    savedGroup.getTags().addAll(savedTags);
                     groups.add(savedGroup);
                 }
             }
         }
         return groups;
+    }
+
+    private void cleanOutOrphans(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
+        Set<Long> groupIdsToKeep = new HashSet<>();
+        for (GroupSaveRequest groupSaveRequest : groupSaveRequests) {
+            if (groupSaveRequest.getGroup() != null && groupSaveRequest.getGroup().getId() != null) {
+                groupIdsToKeep.add(groupSaveRequest.getGroup().getId());
+            }
+        }
+        // clear out the orphan team tags, in groups we are not keeping
+        teamTagPersistence.removeTeamTagsThatAreNotAssociatedWith(clientId, groupIdsToKeep);
+
+        // clear out the orphan tags in the groups we aren't keeping
+        tagPersistence.removeTagsThatAreNotAssociatedWith(clientId, groupIdsToKeep);
+
+        // clear out the orphan groups
+        groupPersistence.removeGroupsThatAreNotAssociatedWith(clientId, groupIdsToKeep);
     }
 
     private void ensureGroupsAndTagsAreValid(List<GroupSaveRequest> saveRequests) {
@@ -100,7 +129,7 @@ public class GroupServiceImpl implements GroupService {
                     for (Tag tag : saveRequest.getTags()) {
                         String normalizedTagName = normalizeName(tag.getName());
                         if (StringUtils.isBlank(normalizedTagName) || !tagsInAGroup.add(normalizedTagName)) {
-                        	throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' is null, only contains special characters or is a duplicate within group: " + saveRequest.getGroup().getName());
+                            throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' is null, only contains special characters or is a duplicate within group: " + saveRequest.getGroup().getName());
                         }
                     }
                 }
