@@ -4,21 +4,17 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="Add English Strings for Search locations popup" author="Claudio">  
+    <changeSet id="Add English Strings Client Tag Modal" author="Kevin">
         <loadData encoding="UTF-8"
-                  file="changelog/sprint_6/data/em-408.csv"
+                  file="changelog/sprint_6/data/em-154.csv"
                   separator=";"
                   tableName="strings"/>
     </changeSet>
-    
-    <changeSet id="Clear Search string" author="Claudio">
-         <sql><![CDATA[	  
-			 delete from strings
-			 where key_path = 'team_locations_search_page.search_dialog.clear_search'
-        ]]></sql>   
+    <changeSet id="Add English Strings to Client Tag Modal" author="Kevin">
         <loadData encoding="UTF-8"
-                  file="changelog/sprint_6/data/em-408.1.csv"
+                  file="changelog/sprint_6/data/em-154-1.csv"
                   separator=";"
                   tableName="strings"/>
     </changeSet>
+
 </databaseChangeLog>
