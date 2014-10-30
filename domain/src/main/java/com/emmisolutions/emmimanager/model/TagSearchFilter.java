@@ -4,8 +4,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.joda.time.LocalDate;
-
 /**
  * The search filter for Tag entities
  */
@@ -13,23 +11,28 @@ import org.joda.time.LocalDate;
 @XmlRootElement(name = "filter")
 public class TagSearchFilter {
 
-	private Long groupId;
+    private Long groupId;
 
-	public TagSearchFilter(Long groupId) {
-		this.groupId = groupId;
-	}
+    /**
+     * Filter based upon group id
+     *
+     * @param groupId group id to filter by
+     */
+    public TagSearchFilter(Long groupId) {
+        this.groupId = groupId;
+    }
 
-	public Long getGroupId() {
-		return groupId;
-	}
+    public Long getGroupId() {
+        return groupId;
+    }
 
-	public void setGroupId(Long groupId) {
-		this.groupId = groupId;
-	}
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
 
-	@Override
-	public String toString() {
-		return "TagSearchFilter{" + "groupId=" + groupId + '}';
-	}
-	
+    @Override
+    public String toString() {
+        return "TagSearchFilter{" + "groupId=" + groupId + '}';
+    }
+
 }
