@@ -5,6 +5,8 @@ import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Set;
+
 /**
  * Group Persistence
  */
@@ -36,11 +38,11 @@ public interface GroupPersistence {
     Group reload(Long id);
 
     /**
-     * Removes all groups in a client
+     * Remove tags at the client that are not in the set of group IDs
      *
-     * @param client to remove groups
-     * @return number of deleted groups
+     * @param clientId       to use
+     * @param groupIdsToKeep eliminate tags not using these group ids
+     * @return number deleted
      */
-    Long removeAll(Long clientId);
-
+    long removeGroupsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep);
 }

@@ -4,6 +4,9 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Set;
+
 /**
  * TeamTag persistence class
  */
@@ -40,4 +43,14 @@ public interface TeamTagPersistence {
      * @param team team	to search for
      */
     void deleteTeamTagsWithTeam(Team team);
+
+    /**
+     * Remove team tags for a client that are not in the set of group IDs
+     *
+     * @param clientId       to use
+     * @param groupIdsToKeep eliminate tags not using these group ids
+     * @return number deleted
+     */
+    long removeTeamTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep);
+
 }
