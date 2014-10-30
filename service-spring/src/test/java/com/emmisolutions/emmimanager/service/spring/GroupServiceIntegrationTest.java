@@ -225,21 +225,25 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
         groupSaveReqThree.setTags(listThree);
 
         List<GroupSaveRequest> groupSaveRequestsTwo = new ArrayList<>();
-
         groupSaveRequestsTwo.add(groupSaveReqTwo);
         groupSaveRequestsTwo.add(groupSaveReqThree);
 
         Set<Group> groups = groupService.saveGroupsAndTags(groupSaveRequestsOne, clientOne.getId());
         assertThat("group is saved", groups.size(), is(1));
         assertThat("groups is saved with tags", groups.iterator().next().getTags().iterator().next().getGroup(), is(notNullValue()));
+        assertThat("groups has two tags", groups.iterator().next().getTags().size(), is(2));
 
         Page<Group> groupPage = groupService.list(null, new GroupSearchFilter(clientOne.getId()));
         assertThat("Total number of groups for the client before update is: ", groupPage.getTotalElements(), is(1l));
 
+        // save the groups and tags again as an update
+        groups = groupService.saveGroupsAndTags(groupSaveRequestsOne, clientOne.getId());
+        assertThat("group is saved", groups.size(), is(1));
+        assertThat("groups has two tags (not four)", groups.iterator().next().getTags().size(), is(2));
+
         Tag tag = new Tag();
         tag.setId(groups.iterator().next().getTags().iterator().next().getId());
         Tag savedTag = tagService.reload(tag);
-
         assertThat("Tag is saved with the Group ID entered", savedTag.getGroup().getId(), is(groups.iterator().next().getId()));
 
         Set<Group> newGroups = groupService.saveGroupsAndTags(groupSaveRequestsTwo, clientOne.getId());

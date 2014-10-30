@@ -60,9 +60,11 @@ public class TagServiceImpl implements TagService {
 		List<Tag> tagsList = new ArrayList<>();
 		if (tags != null && !tags.isEmpty()) {
 			for (Tag tag : tags) {
-				if (StringUtils.isNotBlank(tag.getName())) {
+                String trimmedName = StringUtils.trimToEmpty(tag.getName());
+				if (StringUtils.isNotBlank(trimmedName)) {
 					Tag t = new Tag();
-					t.setName(tag.getName());
+                    t.setId(tag.getId());
+					t.setName(trimmedName);
 					t.setGroup(group);
 					tagsList.add(t);
 				}
