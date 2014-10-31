@@ -146,10 +146,17 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
                 tagsOnGroup2a.getTotalElements(), is(1l));
         assertThat("should still have tagTwoA", tagsOnGroup2a, hasItem(tagTwoA));
 
+        // remove at the client level
+        assertThat("should have removed one tag", tagPersistence.removeTagsThatAreNotAssociatedWith(client2.getId(), null), is(1l));
+        tagsOnGroup2a = tagPersistence.listTagsByGroupId(null, new TagSearchFilter(group2a.getId()));
+        assertThat("Tags should now be gone for group2a", tagsOnGroup2a.getTotalElements(), is(0l));
+
         // group 1 should be intact
         Page<Tag> tagsOnGroup1 = tagPersistence.listTagsByGroupId(null, new TagSearchFilter(group1.getId()));
         assertThat("Tags should still be there for group1", tagsOnGroup1.getTotalElements(), is(1l));
         assertThat("should still have tagOne", tagsOnGroup1, hasItem(tagOne));
+
+
 	}
 
     private Client createClient(int id){
