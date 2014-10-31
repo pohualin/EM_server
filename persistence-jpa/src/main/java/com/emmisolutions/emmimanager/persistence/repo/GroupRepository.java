@@ -14,8 +14,17 @@ public interface GroupRepository extends JpaRepository<Group, Long>, JpaSpecific
     /**
      * Remove all Groups by the client id
      *
-     * @param clientId used to locate groups
+     * @param clientId           used to locate groups
+     * @param notInTheseGroupIds where the group is not in this set
      * @return number of groups deleted
      */
     long removeByClientIdEqualsAndIdNotIn(Long forThisClientId, Set<Long> notInTheseGroupIds);
+
+    /**
+     * Remove all Groups by the client id
+     *
+     * @param clientId used to locate groups
+     * @return number of groups deleted
+     */
+    long removeByClientIdEquals(Long forThisClientId);
 }

@@ -75,7 +75,11 @@ public class GroupPersistenceImpl implements GroupPersistence {
     @Override
     public long removeGroupsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep) {
         if (clientId != null) {
-            return groupRepository.removeByClientIdEqualsAndIdNotIn(clientId, groupIdsToKeep);
+            if (groupIdsToKeep == null || groupIdsToKeep.isEmpty()) {
+                return groupRepository.removeByClientIdEquals(clientId);
+            } else {
+                return groupRepository.removeByClientIdEqualsAndIdNotIn(clientId, groupIdsToKeep);
+            }
         }
         return 0;
     }
