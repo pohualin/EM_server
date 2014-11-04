@@ -1,8 +1,11 @@
 package com.emmisolutions.emmimanager.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 /**
@@ -33,4 +36,21 @@ public interface TeamProviderService {
 	 * @return void
 	 */
 	void delete(TeamProvider provider);
+	/**
+	 * Associates a list of existing providers to the team passed in
+	 * 
+	 * @param providers
+	 * @param team
+	 * @return
+	 */
+	List<TeamProvider> associateProvidersToTeam(List<Provider> providers, Team team);
+	
+	/**
+	 * Saves a list of team-providers
+	 * 
+	 * @param teamproviders
+	 * @return
+	 */
+	List<TeamProvider> saveAll(List<TeamProvider> teamProviders);
+
 }
