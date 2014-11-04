@@ -2,12 +2,10 @@ package com.emmisolutions.emmimanager.model;
 
 import org.apache.commons.lang3.StringUtils;
 
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +20,7 @@ public class ProviderSearchFilter {
     private Set<String> names;
 
     private StatusFilter status;
-    
+
     /**
      * Constructor
      */
@@ -34,11 +32,16 @@ public class ProviderSearchFilter {
      * Constructor
      * @param names to filter
      */
-    public ProviderSearchFilter(String names) {
+    public ProviderSearchFilter(String... names) {
         this(StatusFilter.ALL, names);
     }
-    
-    public ProviderSearchFilter(StatusFilter status, String names) {
+
+    /**
+     * Creates a search filter using status and names
+     * @param status the status
+     * @param names the names to filter by
+     */
+    public ProviderSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
             this.names = new HashSet<>();
             Collections.addAll(this.names, names);

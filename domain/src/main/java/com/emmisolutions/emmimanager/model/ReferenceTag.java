@@ -1,24 +1,15 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.envers.Audited;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.io.Serializable;
 
 /**
  * A Reference Tag
@@ -45,6 +36,21 @@ public class ReferenceTag extends AbstractAuditingEntity implements
 	@JsonBackReference
 	@NotNull
 	private ReferenceGroup group;
+
+    /**
+     * No arg constructor
+     */
+    public ReferenceTag() {
+    }
+
+    /**
+     * Id constructor
+     *
+     * @param id to use
+     */
+    public ReferenceTag(long id) {
+        this.id = id;
+    }
 
 	public Long getId() {
 		return id;
