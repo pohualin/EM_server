@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -190,7 +191,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     /**
      * Shouldn't be able to find providers for a team that doesn't exist
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = InvalidDataAccessApiUsageException.class)
     public void findByTeamBad(){
         teamProviderService.findTeamProvidersByTeam(null, null);
     }
@@ -236,5 +237,43 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         providers.add(provider);
         List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, savedTeam2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
+    }
+    
+    /**
+     * Associate existing provider with an invalid team
+     */
+    @Test(expected=InvalidDataAccessApiUsageException.class)
+    public void testAssociateProvidersToAnInvalidTeam(){
+
+    	//create a provider
+    	Client client = makeClient("TeamTestProviderOneOne", "teamProUserTestOneTwentyOne");
+		clientService.create(client);
+		
+    	Provider provider = new Provider();
+		provider.setFirstName("Officer");
+		provider.setMiddleName("Broadway");
+		provider.setLastName("Krupke");
+		provider.setEmail("officerKrupke@fourtysecondstreet.com");
+		provider.setActive(true);
+
+		Team team = new Team();
+		team.setName("Provider Gibber ish");
+		team.setDescription("Test Team description");
+		team.setActive(false);
+		team.setClient(client);
+		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
+				+ System.currentTimeMillis()));
+        Team savedTeam = teamService.create(team);
+        provider.setSpecialty(getSpecialty());
+		provider = providerService.create(provider, savedTeam);
+		assertThat("Provider was saved", provider.getId(), is(notNullValue()));        
+		
+	    //null team to associate to the existing provider
+		Team team2 = new Team();
+        List<Provider> providers = new ArrayList<Provider>();
+        providers.add(provider);
+        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, team2);
+        assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
+        
     }
 }
