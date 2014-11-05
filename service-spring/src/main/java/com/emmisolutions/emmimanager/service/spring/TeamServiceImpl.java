@@ -1,18 +1,17 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSearchFilter;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.service.TeamService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.service.TeamService;
+import javax.annotation.Resource;
 
 /**
  * Implementation of the TeamService
@@ -72,7 +71,7 @@ public class TeamServiceImpl implements TeamService {
         team.setVersion(null);
         return teamPersistence.save(team);
 	}
-	
+
 	@Override
 	public Team findByNormalizedNameAndClientId(String normalizedName, Long clientId){
 		return teamPersistence.findByNormalizedTeamNameAndClientId(normalizedName, clientId);

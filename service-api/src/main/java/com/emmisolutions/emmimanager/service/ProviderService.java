@@ -49,4 +49,13 @@ public interface ProviderService {
      * @return list of providers found
      */
     Page<Provider> list(Pageable page, ProviderSearchFilter filter);
+
+    /**
+     * Create a new provider
+     *
+     * @param provider the provider
+     * @return the saved provider
+     */
+    Provider create(Provider provider);
+
 }

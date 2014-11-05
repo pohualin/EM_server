@@ -1,35 +1,32 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.model.Location_;
+import com.emmisolutions.emmimanager.persistence.impl.helper.MatchingCriteriaBean;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import com.emmisolutions.emmimanager.model.Location_;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.persistence.impl.helper.MatchingCriteriaBean;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the specification class that allows for filtering of Location objects.
  */
 @Component
 public class LocationSpecifications {
-    
+
 	@Resource
 	MatchingCriteriaBean matchCriteria;
-	
+
     public LocationSpecifications() {
     }
 
@@ -47,16 +44,16 @@ public class LocationSpecifications {
                 boolean addedANameFilter = false;
                 List<Predicate> predicates = new ArrayList<>();
                 if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.getNames())) {
-                   
+
                     for (String name : searchFilter.getNames()) {
                         List<String> searchTerms = new ArrayList<>();
-                        
+
                         for (String term: StringUtils.split(matchCriteria.normalizeName(name), " ")) {
                             if (!searchTerms.contains(term)){
                                 searchTerms.add(term);
                             }
                         }
-                        
+
                         for (String searchTerm: searchTerms){
                             if (StringUtils.isNotBlank(searchTerm)) {
                                 addedANameFilter = true;
