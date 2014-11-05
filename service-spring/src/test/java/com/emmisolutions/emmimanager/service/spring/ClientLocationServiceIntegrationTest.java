@@ -73,7 +73,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         // find a page of possible ClientLocations using the same name that we used during create
         Page<ClientLocation> possibleLocations =
                 clientLocationService.findPossibleLocationsToAdd(client, new LocationSearchFilter("ClientLocationServiceIntegrationTest Location"), null);
-        assertThat("there should be 11 locations found", possibleLocations.getTotalElements(), is(11l));
+        assertThat("there should be 12 locations found", possibleLocations.getTotalElements(), is(12l));
         assertThat("one of the ClientLocation objects should be the one we saved", possibleLocations, hasItem(savedRelationship));
     }
 

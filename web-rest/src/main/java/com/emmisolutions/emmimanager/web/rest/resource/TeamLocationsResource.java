@@ -55,14 +55,14 @@ public class TeamLocationsResource {
     TeamService teamService;
 
     /**
-     * GET to search for TeamTags
+     * GET to search for TeamLocations 
      *
      * @param pageable  paged request
      * @param sort      sorting request
      * @param status    to filter by
      * @param assembler used to create the PagedResources
      * @param names     to filter by
-     * @return ClientPage or NO_CONTENT
+     * @return TeamLocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/locations", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_LIST"})
@@ -83,7 +83,7 @@ public class TeamLocationsResource {
         toFind.setId(teamId);
         toFind = teamService.reload(toFind);
         TeamLocationSearchFilter teamLocationSearchFilter = new TeamLocationSearchFilter(teamId);
-        // find the page of clients
+
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(pageable,toFind);
 
         if (teamLocationPage.hasContent()) {
@@ -98,7 +98,7 @@ public class TeamLocationsResource {
     /**
      * POST to create new Team, Location association
      *
-     * @param teamId to associate tags with
+     * @param teamId to associate locations with
      * @param locationSet to associate with team
      * @return TeamLocationResource or INTERNAL_SERVER_ERROR if it could not be saved
      */
