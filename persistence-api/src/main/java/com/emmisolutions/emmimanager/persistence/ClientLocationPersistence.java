@@ -24,7 +24,7 @@ public interface ClientLocationPersistence {
     /**
      * Creates a ClientLocation from a Location and a Client
      *
-     * @param location to use
+     * @param locationId to use
      * @param clientId   to use
      * @return saved ClientLocation
      */
@@ -57,7 +57,7 @@ public interface ClientLocationPersistence {
     /**
      * Loads a ClientLocation from a Location and a Client
      *
-     * @param location to use
+     * @param locationId to use
      * @param clientId   to use
      * @return saved ClientLocation or null
      */

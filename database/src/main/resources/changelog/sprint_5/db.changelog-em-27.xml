@@ -130,4 +130,10 @@
         	<where>name = 'General Pediatrics and Adolescent Medicine'</where>
         </update>
     </changeSet>
+    <changeSet id="team_providers_permissions" author="Amrita">
+	    <loadData encoding="UTF-8"
+	                  file="changelog/sprint_5/data/team_provider_permissions.csv"
+	                  separator=";"
+	                  tableName="permission"/>
+	</changeSet>
 </databaseChangeLog>    

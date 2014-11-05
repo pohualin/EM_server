@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -39,7 +41,7 @@ public class TeamProvidersResource {
 
 	/**
 	 * GET for a list of all teamProviders for a given team
-	 * 
+	 *
 	 * @param page	paged request
 	 * @param sort  sorting request
 	 * @param assembler    used to create the PagedResources
@@ -49,7 +51,7 @@ public class TeamProvidersResource {
 	 * @return ProviderResource
 	 */
 	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.GET)
-	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_LIST" })
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_LIST" })
 	public ResponseEntity<TeamProviderPage> list(
 			@PathVariable("teamId") Long teamId,
 			@PageableDefault(size = 10) Pageable page,
@@ -70,13 +72,41 @@ public class TeamProvidersResource {
 	}
 
 	/**
+	 * POST to associate list of providers to a given team
+	 *
+	 * @param page	paged request
+	 * @param sort  sorting request
+	 * @param assembler    used to create the PagedResources
+	 * @param name
+	 * @param status
+	 * @param teamId
+	 * @return ProviderResource
+	 */
+	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
+	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(
+			@PathVariable("teamId") Long teamId,
+			@RequestBody List<Provider> providers) {
+
+		Team tofind = new Team();
+		tofind.setId(teamId);
+
+		List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
+		if (!teamProviders.isEmpty()) {
+			return new ResponseEntity<>(teamProviders, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
+
+	/**
 	 * GET for teamProvider by id
 	 *
 	 * @param id to load
 	 * @return TeamProviderResource or NO_CONTENT on fail
 	 */
 	@RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.GET)
-	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_VIEW" })
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_VIEW" })
 	public ResponseEntity<TeamProviderResource> getById(
 			@PathVariable("teamProviderId") Long teamProviderId) {
 		TeamProvider teamProvider = new TeamProvider();
@@ -91,11 +121,11 @@ public class TeamProvidersResource {
 
 	/**
 	 * DELETE for deletion of a teamProvider from a team
-	 * 
+	 *
 	 * @return void
 	 */
 	@RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.DELETE)
-	@RolesAllowed({ "PERM_GOD", "PERM_PROVIDER_REMOVE" })
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_REMOVE" })
 	public void deleteProviderFromTeamProvider(@PathVariable Long teamProviderId) {
 		TeamProvider teamProvider = new TeamProvider();
 		teamProvider.setId(teamProviderId);

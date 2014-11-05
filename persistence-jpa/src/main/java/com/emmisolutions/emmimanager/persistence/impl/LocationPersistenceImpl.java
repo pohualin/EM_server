@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.LocationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +17,6 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications.*;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
@@ -24,6 +24,9 @@ import static org.springframework.data.jpa.domain.Specifications.where;
  */
 @Repository
 public class LocationPersistenceImpl implements LocationPersistence {
+
+	@Resource
+	LocationSpecifications locationSpecifications;
 
     @Resource
     LocationRepository locationRepository;
@@ -45,7 +48,7 @@ public class LocationPersistenceImpl implements LocationPersistence {
         if (filter != null && filter.getClientId() != null){
             client = clientPersistence.reload(filter.getClientId());
         }
-        return locationRepository.findAll(where(belongsTo(client)).and(hasNames(filter)).and(isInStatus(filter)), page);
+        return locationRepository.findAll(where(locationSpecifications.belongsTo(client)).and(locationSpecifications.hasNames(filter)).and(locationSpecifications.isInStatus(filter)), page);
     }
 
     @Override

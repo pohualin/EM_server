@@ -2,7 +2,9 @@ package com.emmisolutions.emmimanager.web.rest.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResourcePage;
+import com.emmisolutions.emmimanager.web.rest.model.clientprovider.ClientProviderResourcePage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.GroupPage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
@@ -29,6 +31,9 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(TeamResource.createTeamByTeamIdLink(entity.getId()));
         ret.add(ClientLocationResourcePage.createCurrentLocationsSearchLink(entity));
         ret.add(ClientLocationResourcePage.createAssociationLink(entity));
+        ret.add(ClientProviderResourcePage.createCurrentProvidersSearchLink(entity));
+        ret.add(ClientProviderResourcePage.createAssociationLink(entity));
+        ret.add(ProviderPage.createProviderReferenceDataLink());
         ret.setEntity(entity);
         return ret;
     }

@@ -1,16 +1,16 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * TeamProvider Persistence Implementation
@@ -44,4 +44,9 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
 		teamProviderRepository.delete(provider);
 	}
 
+	@Override
+	@Transactional
+	public List<TeamProvider> saveAll(List<TeamProvider> teamProviders){
+		return teamProviderRepository.save(teamProviders);
+	}
 }
