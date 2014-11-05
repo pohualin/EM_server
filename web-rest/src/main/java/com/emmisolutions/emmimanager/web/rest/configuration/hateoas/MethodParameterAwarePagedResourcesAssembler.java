@@ -180,7 +180,7 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
             Pageable previous = page.previousPageable();
             first = previous.first();
             current = previous.next();
-            foo(resources, first, uri, prefix + Link.REL_FIRST);
+//            foo(resources, first, uri, prefix + Link.REL_FIRST);
             foo(resources, previous, uri, prefix + Link.REL_PREVIOUS);
         }
 
@@ -188,14 +188,14 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
             boolean atLastPage = false;
 
             while (!atLastPage) {
-                foo(resources, first, uri, prefix + first.getPageNumber());
+                foo(resources, first, uri, prefix + (first.getPageNumber() + 1));
                 first = first.next();
                 atLastPage = first.getPageNumber() >= page.getTotalPages();
             }
             if (page.hasNext()) {
                 foo(resources, page.nextPageable(), uri, prefix + Link.REL_NEXT);
             }
-            foo(resources, first.previousOrFirst(), uri, prefix + Link.REL_LAST);
+//            foo(resources, first.previousOrFirst(), uri, prefix + Link.REL_LAST);
         }
 
         if (current != null) {

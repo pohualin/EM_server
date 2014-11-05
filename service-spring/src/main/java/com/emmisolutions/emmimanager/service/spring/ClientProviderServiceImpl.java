@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,9 @@ public class ClientProviderServiceImpl implements ClientProviderService {
 
     @Resource
     ProviderService providerService;
+
+    @Resource
+    ClientService clientService;
 
     @Override
     public Page<ClientProvider> find(Client client, Pageable pageable) {
@@ -68,8 +72,17 @@ public class ClientProviderServiceImpl implements ClientProviderService {
     }
 
     @Override
-    public ClientProvider createProviderAndAssociateTo(Client client, Provider provider) {
-        return clientProviderPersistence.create(providerService.create(provider).getId(), client.getId());
+    @Transactional
+    public ClientProvider create(ClientProvider clientProvider) {
+        if (clientProvider == null) {
+            throw new InvalidDataAccessApiUsageException("ClientProvider cannot be null");
+        }
+        // create a new provider
+        clientProvider.setId(null);
+        clientProvider.setVersion(null);
+        clientProvider.setProvider(providerService.create(clientProvider.getProvider()));
+        clientProvider.setClient(clientService.reload(clientProvider.getClient()));
+        return clientProviderPersistence.save(clientProvider);
     }
 
     @Override
@@ -107,6 +120,7 @@ public class ClientProviderServiceImpl implements ClientProviderService {
     }
 
     @Override
+    @Transactional
     public ClientProvider update(ClientProvider clientProvider) {
         providerService.update(clientProvider.getProvider());
         return clientProviderPersistence.save(clientProvider);

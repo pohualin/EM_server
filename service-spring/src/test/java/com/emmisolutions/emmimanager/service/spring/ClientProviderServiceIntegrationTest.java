@@ -91,7 +91,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         provider.setSpecialty(new ReferenceTag(20));
         provider.setEmail("whatever@whatever.com");
 
-        ClientProvider clientProvider = clientProviderService.createProviderAndAssociateTo(client, provider);
+        ClientProvider clientProvider = clientProviderService.create(new ClientProvider(client, provider));
         assertThat("ClientProvider is not null", clientProvider, is(notNullValue()));
 
         Page<ClientProvider> clientProviderPage = clientProviderService.find(client, null);
@@ -104,6 +104,11 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("provider was updated", updated.getProvider().isActive(), is(true));
         assertThat("client provider was updated", updated.getExternalId(), is(clientProvider.getExternalId()));
         assertThat("client provider version should be different", updated.getVersion(), is(not(clientProvider.getVersion())));
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void invalidCreateCall(){
+        clientProviderService.create(null);
     }
 
     /**

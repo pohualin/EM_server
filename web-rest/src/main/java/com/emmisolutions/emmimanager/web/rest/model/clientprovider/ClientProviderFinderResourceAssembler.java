@@ -28,12 +28,10 @@ public class ClientProviderFinderResourceAssembler implements ResourceAssembler<
 
     @Override
     public ClientProviderResource toResource(ClientProvider entity) {
-        ClientProviderResource ret = new ClientProviderResource();
+        ClientProviderResource ret = new ClientProviderResource(entity, providerResourceAssembler.toResource(entity.getProvider()));
         if (entity.getId() != null) {
             ret.add(linkTo(methodOn(ClientProvidersResource.class).view(entity.getId())).withSelfRel());
         }
-        ret.setClient(null);  // don't need client for relationship class
-        ret.setProvider(providerResourceAssembler.toResource(entity.getProvider()));
         return ret;
     }
 

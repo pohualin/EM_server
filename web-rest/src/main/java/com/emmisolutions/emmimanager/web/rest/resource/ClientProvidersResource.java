@@ -101,8 +101,9 @@ public class ClientProvidersResource {
     )
     @ApiOperation(value = "creates a brand new provider and associates it to an existing client")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_CREATE"})
-    public ResponseEntity<ClientProviderResource> create(@PathVariable Long clientId, @RequestBody Provider provider) {
-        ClientProvider clientProvider = clientProviderService.createProviderAndAssociateTo(new Client(clientId), provider);
+    public ResponseEntity<ClientProviderResource> create(@PathVariable Long clientId, @RequestBody ClientProvider provider) {
+        provider.setClient(new Client(clientId));
+        ClientProvider clientProvider = clientProviderService.create(provider);
         if (clientProvider == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {

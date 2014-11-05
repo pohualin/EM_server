@@ -31,22 +31,21 @@ public interface ClientProviderService {
     void remove(ClientProvider clientProvider);
 
     /**
-     * Create providers for the client.
+     * Add existing providers to the existing client.
      *
      * @param client    for which to create them
-     * @param providers to associate
+     * @param providers existing persistent providers to associate to the client
      * @return the set of saved providers
      */
     Set<ClientProvider> create(Client client, Set<Provider> providers);
 
     /**
-     * Creates a brand new provider as well as a new client provider
+     * Cascades a create of a brand new provider as well as a new client provider
      *
-     * @param client   to use
-     * @param provider to create/save and associate to the client
+     * @param clientProvider to create
      * @return saved ClientProvider
      */
-    ClientProvider createProviderAndAssociateTo(Client client, Provider provider);
+    ClientProvider create(ClientProvider clientProvider);
 
     /**
      * Load a single client provider by id

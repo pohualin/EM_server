@@ -26,10 +26,8 @@ public class ClientProviderResourceAssembler implements ResourceAssembler<Client
 
     @Override
     public ClientProviderResource toResource(ClientProvider entity) {
-        ClientProviderResource ret = new ClientProviderResource();
+        ClientProviderResource ret = new ClientProviderResource(entity, providerResourceAssembler.toResource(entity.getProvider()));
         ret.add(linkTo(methodOn(ClientProvidersResource.class).view(entity.getId())).withSelfRel());
-        ret.setClient(null); // don't need to send up the client
-        ret.setProvider(providerResourceAssembler.toResource(entity.getProvider()));
         return ret;
     }
 
