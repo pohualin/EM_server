@@ -1,17 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
@@ -19,6 +7,17 @@ import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.LocationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
  * Location Persistence API implementation
@@ -28,7 +27,7 @@ public class LocationPersistenceImpl implements LocationPersistence {
 
 	@Resource
 	LocationSpecifications locationSpecifications;
-	
+
     @Resource
     LocationRepository locationRepository;
 

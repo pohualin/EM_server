@@ -1,15 +1,11 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
+import com.emmisolutions.emmimanager.service.*;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -18,33 +14,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.model.TeamSalesForce;
-import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
-import com.emmisolutions.emmimanager.service.UserService;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
 	ProviderService providerService;
-	
+
 	@Resource
 	ClientService clientService;
 
@@ -53,19 +34,19 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
 	UserService userService;
-	
+
 	@Resource
 	ReferenceTagRepository referenceTagRepository;
 
 	@Resource
 	ReferenceGroupRepository referenceGroupRepository;
-	
+
 	@Resource
     ReferenceGroupTypeRepository referenceGroupTypeRepository;
-	
+
 	@Resource
 	TeamProviderRepository teamProviderRepository;
-	
+
 	@Resource
 	TeamProviderService teamProviderService;
 
@@ -109,7 +90,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
 		assertThat("system is the created by", provider.getCreatedBy(),
 				is("system"));
-		
+
 		Page<TeamProvider> providerPage = teamProviderService.findTeamProvidersByTeam(null, savedTeam);
 		assertThat("TeamProvider was created", providerPage.getContent().iterator().next().getId(), is(notNullValue()));
 	}
@@ -125,7 +106,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 				+ System.currentTimeMillis()));
 		return client;
 	}
-	
+
 	private ReferenceTag getSpecialty(){
 		ReferenceTag specialty = new ReferenceTag();
 		ReferenceGroup group = new ReferenceGroup();
@@ -140,7 +121,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		specialty = referenceTagRepository.save(specialty);
 		return specialty;
 	}
-	
+
 	/**
 	 * Test deletion of TeamProvider, verify Provider still exists
 	 */
@@ -157,7 +138,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
 				+ System.currentTimeMillis()));
         Team savedTeam = teamService.create(team);
-        
+
 		Provider provider = new Provider();
 		provider.setFirstName("Morticia");
 		provider.setLastName("Addams");
@@ -166,7 +147,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
-		
+
 		//verify that TeamProvider was created
 		Pageable page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
 		Page<TeamProvider> teamProviderPage = teamProviderService.findTeamProvidersByTeam(page, savedTeam);
@@ -195,7 +176,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     public void findByTeamBad(){
         teamProviderService.findTeamProvidersByTeam(null, null);
     }
-    
+
     /**
      * Associate existing provider with a team
      */
@@ -205,7 +186,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     	//create a provider
     	Client client = makeClient("TeamTestProviderOne", "teamProUserTestOneTwenty");
 		clientService.create(client);
-		
+
     	Provider provider = new Provider();
 		provider.setFirstName("Mary");
 		provider.setMiddleName("Broadway");
@@ -223,8 +204,8 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
-		assertThat("Provider was saved", provider.getId(), is(notNullValue()));        
-		
+		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
+
 	    //new team to associate to the existing provider
 		Team team2 = new Team();
 		team2.setName("Test Team Provider");
@@ -238,7 +219,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, savedTeam2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
     }
-    
+
     /**
      * Associate existing provider with an invalid team
      */
@@ -248,7 +229,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     	//create a provider
     	Client client = makeClient("TeamTestProviderOneOne", "teamProUserTestOneTwentyOne");
 		clientService.create(client);
-		
+
     	Provider provider = new Provider();
 		provider.setFirstName("Officer");
 		provider.setMiddleName("Broadway");
@@ -266,14 +247,14 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
-		assertThat("Provider was saved", provider.getId(), is(notNullValue()));        
-		
+		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
+
 	    //null team to associate to the existing provider
 		Team team2 = new Team();
         List<Provider> providers = new ArrayList<Provider>();
         providers.add(provider);
         List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, team2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
-        
+
     }
 }
