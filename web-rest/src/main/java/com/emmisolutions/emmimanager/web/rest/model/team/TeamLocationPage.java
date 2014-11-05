@@ -13,10 +13,11 @@ import org.springframework.hateoas.TemplateVariable;
 import org.springframework.hateoas.TemplateVariables;
 import org.springframework.hateoas.UriTemplate;
 
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamLocationsResource;
 
 /**
  * A HATEOAS wrapper for a page of TeamLocationsResource objects.
@@ -47,8 +48,8 @@ public class TeamLocationPage extends PagedResource<TeamLocationResource> {
      *
      * @return Link for team locations searches
      */
-    public static Link createFullSearchLink() {
-        Link link = linkTo(methodOn(TeamsResource.class).list(null, null, null, null, (String[]) null)).withRel("teamLocations");
+    public static Link createFullSearchLink(Team team) {
+        Link link = linkTo(methodOn(TeamLocationsResource.class).list(team.getId(), null, null, null, null, null)).withRel("teamLocations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
