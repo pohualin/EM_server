@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import javax.annotation.Resource;
 
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,9 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public Team reload(Team toFind) {
+    	if (toFind == null){
+            throw new InvalidDataAccessApiUsageException("Team cannot be null");
+        }
         return teamPersistence.reload(toFind);
     }
 
