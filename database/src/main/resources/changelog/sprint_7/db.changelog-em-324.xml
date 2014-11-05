@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create client_provider table creation" author="Matt">
+        <createTable tableName="client_provider">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_client_provider"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="external_id" type="nvarchar(255)"/>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="client_provider_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="external_id" type="nvarchar(255)"/>
+            <column name="client_id" type="bigint"/>
+            <column name="provider_id" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="client_provider_audit" columnNames="id, revision"/>
+        <addUniqueConstraint tableName="client_provider" columnNames="client_id, provider_id"
+                             constraintName="uk_client_id_provider_id"/>
+        <addUniqueConstraint tableName="client_provider" columnNames="client_id, external_id"
+                             constraintName="uk_client_id_provider_external_id"/>
+        <addForeignKeyConstraint baseTableName="client_provider" baseColumnNames="client_id"
+                                 constraintName="fk_client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_provider" baseColumnNames="provider_id"
+                                 constraintName="fk_provider_id"
+                                 referencedTableName="provider"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_provider_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_provider_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="update provider normalized name field length" author="Matt">
+        <modifyDataType tableName="provider" columnName="normalized_name" newDataType="nvarchar(512)"/>
+    </changeSet>
+
+    <changeSet id="add client provider permissions" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_7/data/em-324.csv"
+                  separator=";"
+                  tableName="permission"/>
+    </changeSet>
+
+</databaseChangeLog>

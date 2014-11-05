@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
                 columnNames = {"client_id", "location_id"}))
 @XmlRootElement(name = "client_location")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientLocation extends AbstractAuditingEntity{
+public class ClientLocation extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,17 +36,23 @@ public class ClientLocation extends AbstractAuditingEntity{
     /**
      * No arg constructor
      */
-    public ClientLocation(){
+    public ClientLocation() {
 
     }
 
-    public ClientLocation(Long id){
+    /**
+     * Create ClientLocation by id
+     *
+     * @param id to use
+     */
+    public ClientLocation(Long id) {
         this.id = id;
     }
 
     /**
      * Create with the composite parts
-     * @param client to use
+     *
+     * @param client   to use
      * @param location to use
      */
     public ClientLocation(Client client, Location location) {
