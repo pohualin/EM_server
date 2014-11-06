@@ -13,7 +13,18 @@ import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
  */
 public interface TeamProviderTeamLocationPersistence {
 	
-	List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProvider);
-
+	/**
+	 * Saves a list if team provider team locations
+	 * @param list of teamProviderTeamLocations
+	 * @return list of teamProviderTeamLocations
+	 */
+	List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderTeamLocations);
+	
+	/**
+	 * finds a page of TeamProviderTeamLocations for a given TeamProvider
+	 * @param teamProvider
+	 * @param pageable
+	 * @return
+	 */
     Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable pageable);
 }

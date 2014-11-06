@@ -7,8 +7,16 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
-
+/**
+ * TeamProviderTeamLocation repository
+ */
 public interface TeamProviderTeamLocationRepository extends JpaRepository<TeamProviderTeamLocation, Long>, JpaSpecificationExecutor<TeamProviderTeamLocation>{
-
+	
+	/**
+	 * finds a page of TeamProviderTeamLocations for a given TeamProvider
+	 * @param teamProvider
+	 * @param pageable
+	 * @return
+	 */
 	Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page);
 }

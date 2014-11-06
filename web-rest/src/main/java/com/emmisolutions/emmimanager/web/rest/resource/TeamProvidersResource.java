@@ -89,24 +89,6 @@ public class TeamProvidersResource {
 	 * @param teamId
 	 * @return ProviderResource
 	 */
-/*	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
-	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
-	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(
-			@PathVariable("teamId") Long teamId,
-			@RequestBody List<Provider> providers) {
-
-		Team tofind = new Team();
-		tofind.setId(teamId);
-
-		List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
-		if (!teamProviders.isEmpty()) {
-			return new ResponseEntity<>(teamProviders, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
-	}*/
-
-	
 	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
 	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(

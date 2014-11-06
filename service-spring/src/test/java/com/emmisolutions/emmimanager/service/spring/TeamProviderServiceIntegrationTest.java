@@ -257,7 +257,6 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
         request.setProvider(provider);
-//        request.setTeamLocations(null);
         List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
     		add(request);
     	}}, savedTeam2);
