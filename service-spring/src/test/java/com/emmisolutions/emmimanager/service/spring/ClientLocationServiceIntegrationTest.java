@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientLocationService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -72,11 +73,14 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
 
         // find a page of possible ClientLocations using the same name that we used during create
         Page<ClientLocation> possibleLocations =
-                clientLocationService.findPossibleLocationsToAdd(client, new LocationSearchFilter("ClientLocationServiceIntegrationTest Location"), null);
+                clientLocationService.findPossibleLocationsToAdd(client, new LocationSearchFilter("ClientLocationServiceIntegrationTest"), null);
         assertThat("there should be 11 locations found", possibleLocations.getTotalElements(), is(11l));
         assertThat("one of the ClientLocation objects should be the one we saved", possibleLocations, hasItem(savedRelationship));
     }
 
+    /**
+     * Creates a location on a client (the ClientLocation)
+     */
     @Test
     public void createLocationOnClient(){
         Client client = makeClient();
@@ -142,17 +146,17 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
-        client.setName("ClientLocationServiceIntegrationTest " + System.currentTimeMillis());
+        client.setName(RandomStringUtils.randomAlphanumeric(18));
         client.setType(new ClientType(1l));
         client.setActive(true);
         client.setContractOwner(new User(1l, 0));
-        client.setSalesForceAccount(new SalesForce("clsit" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientService.create(client);
     }
 
     private Location makeLocation() {
         Location location = new Location();
-        location.setName("ClientLocationServiceIntegrationTest Location");
+        location.setName("ClientLocationServiceIntegrationTest" + RandomStringUtils.randomAlphanumeric(18));
         location.setCity("Valid City 1");
         location.setPhone("630-222-8900");
         location.setState(State.IL);

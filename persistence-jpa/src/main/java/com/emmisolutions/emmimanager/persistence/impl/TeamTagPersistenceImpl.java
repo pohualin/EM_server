@@ -79,7 +79,11 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     @Override
     public long removeTeamTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep) {
         if (clientId != null) {
-            return teamTagRepository.deleteByTeamClientIdEqualsAndTagGroupIdNotIn(clientId, groupIdsToKeep);
+            if (groupIdsToKeep == null || groupIdsToKeep.isEmpty()){
+                return teamTagRepository.deleteByTeamClientIdEquals(clientId);
+            } else {
+                return teamTagRepository.deleteByTeamClientIdEqualsAndTagGroupIdNotIn(clientId, groupIdsToKeep);
+            }
         }
         return 0;
     }

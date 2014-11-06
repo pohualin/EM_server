@@ -34,6 +34,15 @@ public interface TeamTagRepository extends JpaRepository<TeamTag, Long>, JpaSpec
      *
      * @param forThisClientId    to use
      * @param notInTheseGroupIds not these group ids
+     * @return number of TeamTags removed
      */
     long deleteByTeamClientIdEqualsAndTagGroupIdNotIn(Long forThisClientId, Set<Long> notInTheseGroupIds);
+
+    /**
+     * Remove all TeamTags for a client id
+     *
+     * @param forThisClientId to use
+     * @return number of TeamTags removed
+     */
+    long deleteByTeamClientIdEquals(Long forThisClientId);
 }

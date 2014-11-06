@@ -53,7 +53,11 @@ public class TagPersistenceImpl implements TagPersistence {
     @Override
     public long removeTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep) {
         if (clientId != null) {
-            return tagRepository.deleteByGroupClientIdEqualsAndGroupIdNotIn(clientId, groupIdsToKeep);
+            if (groupIdsToKeep == null || groupIdsToKeep.isEmpty()){
+                return tagRepository.deleteByGroupClientIdEquals(clientId);
+            } else {
+                return tagRepository.deleteByGroupClientIdEqualsAndGroupIdNotIn(clientId, groupIdsToKeep);
+            }
         }
         return 0;
     }

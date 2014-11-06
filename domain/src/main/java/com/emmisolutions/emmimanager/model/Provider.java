@@ -1,24 +1,15 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.validator.constraints.Email;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.hibernate.validator.constraints.Email;
+import java.io.Serializable;
 /**
  * A Provider and its specialty and teams
  */
@@ -61,12 +52,13 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	private String email;
 
 	@ManyToOne
-	@JoinColumn(name = "reference_tag_specialty")
+    @NotNull
+	@JoinColumn(name = "reference_tag_specialty", nullable = false)
 	private ReferenceTag specialty;
 	
 	@NotNull
-    @Size(max = 255)
-    @Column(name="normalized_name", length = 255, nullable = false)
+    @Size(max = 512)
+    @Column(name="normalized_name", length = 512, nullable = false)
     @NotAudited
     @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
     private String normalizedName;    

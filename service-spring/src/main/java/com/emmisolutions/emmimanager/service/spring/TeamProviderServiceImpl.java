@@ -67,7 +67,6 @@ public class TeamProviderServiceImpl implements TeamProviderService {
             teamProviderPersistence.delete(fromDb);
         }
 	}
-		
 	@Override
 	@Transactional
 	public List<TeamProvider> associateProvidersToTeam(
@@ -99,9 +98,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 			}
 		}
 		List<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
-
 		return savedProviders;
-
 	}
 
 	@Override

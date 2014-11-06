@@ -9,9 +9,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 /**
  * Spring Data Repo for Reference Tag
  */
-public interface ReferenceTagRepository extends
-        JpaRepository<ReferenceTag, Long>,
-        JpaSpecificationExecutor<ReferenceTag> {
+public interface ReferenceTagRepository extends JpaRepository<ReferenceTag, Long>, JpaSpecificationExecutor<ReferenceTag> {
+
     /**
      * Find a page of ReferenceTags for given group type
      *

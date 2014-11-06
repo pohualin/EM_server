@@ -1,29 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import java.util.Set;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
@@ -35,6 +11,23 @@ import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+import java.util.Set;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * TeamLocations REST API.
@@ -55,14 +48,14 @@ public class TeamLocationsResource {
     TeamService teamService;
 
     /**
-     * GET to search for TeamTags
+     * GET to search for TeamLocations
      *
      * @param pageable  paged request
      * @param sort      sorting request
      * @param status    to filter by
      * @param assembler used to create the PagedResources
      * @param names     to filter by
-     * @return ClientPage or NO_CONTENT
+     * @return TeamLocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/locations", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_LIST"})
@@ -83,7 +76,7 @@ public class TeamLocationsResource {
         toFind.setId(teamId);
         toFind = teamService.reload(toFind);
         TeamLocationSearchFilter teamLocationSearchFilter = new TeamLocationSearchFilter(teamId);
-        // find the page of clients
+
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(pageable,toFind);
 
         if (teamLocationPage.hasContent()) {
@@ -98,7 +91,7 @@ public class TeamLocationsResource {
     /**
      * POST to create new Team, Location association
      *
-     * @param teamId to associate tags with
+     * @param teamId to associate locations with
      * @param locationSet to associate with team
      * @return TeamLocationResource or INTERNAL_SERVER_ERROR if it could not be saved
      */
@@ -133,7 +126,7 @@ public class TeamLocationsResource {
     }
 
 	/**
-	 * delete a team location 
+	 * delete a team location
 	 *
      * @param teamId to get
      * @param teamLocationId to get

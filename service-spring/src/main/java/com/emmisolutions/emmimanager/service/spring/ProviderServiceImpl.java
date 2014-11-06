@@ -1,7 +1,13 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamService;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,15 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
+import javax.annotation.Resource;
 
 /**
  * Implementation of the ProviderService
@@ -33,6 +31,12 @@ public class ProviderServiceImpl implements ProviderService {
     
 	@Resource
 	TeamProviderPersistence teamProviderPersistence;
+
+    @Resource
+    ClientService clientService;
+
+    @Resource
+    ClientProviderPersistence clientProviderPersistence;
 
     @Override
     @Transactional(readOnly = true)
@@ -54,10 +58,14 @@ public class ProviderServiceImpl implements ProviderService {
         provider.setVersion(null);
 		Provider savedProvider =  providerPersistence.save(provider);
 
+        // create the team provider
 		TeamProvider teamProvider = new TeamProvider();
 		teamProvider.setTeam(toFind);
 		teamProvider.setProvider(savedProvider);
 		teamProviderPersistence.save(teamProvider);
+
+        // create the client provider
+        clientProviderPersistence.create(savedProvider.getId(), toFind.getClient().getId());
 			
 		return savedProvider;
     }
@@ -88,4 +96,15 @@ public class ProviderServiceImpl implements ProviderService {
 	public Page<Provider> list(Pageable page, ProviderSearchFilter filter) {
 	        return providerPersistence.list(page, filter);
  	}
+
+    @Override
+    public Provider create(Provider provider) {
+        if (provider == null) {
+            throw new InvalidDataAccessApiUsageException("provider cannot be null");
+        }
+        provider.setId(null);
+        provider.setVersion(null);
+        provider.setActive(true);
+        return providerPersistence.save(provider);
+    }
 }

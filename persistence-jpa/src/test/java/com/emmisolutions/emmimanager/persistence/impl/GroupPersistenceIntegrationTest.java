@@ -87,6 +87,11 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         groupPage = groupPersistence.list(null, gsf);
         assertThat("found a single group", groupPage.getTotalElements(), is(1l));
         assertThat("group two should be the only one left", groupPage, hasItem(groupTwo));
+
+        // remove for the client
+        assertThat("remove last remaining group at the client level", groupPersistence.removeGroupsThatAreNotAssociatedWith(clientOne.getId(), null), is(1l));
+        groupPage = groupPersistence.list(null, gsf);
+        assertThat("found a single group", groupPage.getTotalElements(), is(0l));
 	}
 
     /**

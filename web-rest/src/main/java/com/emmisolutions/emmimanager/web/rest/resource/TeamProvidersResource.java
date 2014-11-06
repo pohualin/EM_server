@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
@@ -49,7 +48,7 @@ public class TeamProvidersResource {
 
 	/**
 	 * GET for a list of all teamProviders for a given team
-	 * 
+	 *
 	 * @param page	paged request
 	 * @param sort  sorting request
 	 * @param assembler    used to create the PagedResources
@@ -78,10 +77,10 @@ public class TeamProvidersResource {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 	}
-	
+
 	/**
 	 * POST to associate list of providers to a given team
-	 * 
+	 *
 	 * @param page	paged request
 	 * @param sort  sorting request
 	 * @param assembler    used to create the PagedResources
@@ -147,7 +146,7 @@ public class TeamProvidersResource {
 
 	/**
 	 * DELETE for deletion of a teamProvider from a team
-	 * 
+	 *
 	 * @return void
 	 */
 	@RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.DELETE)

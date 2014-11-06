@@ -16,6 +16,15 @@ public interface TagRepository extends JpaRepository<Tag, Long>, JpaSpecificatio
      *
      * @param forThisClientId    to use
      * @param notInTheseGroupIds not these group ids
+     * @return number deleted
      */
     long deleteByGroupClientIdEqualsAndGroupIdNotIn(Long forThisClientId, Set<Long> notInTheseGroupIds);
+
+    /**
+     * Remove all tags for a client id
+     *
+     * @param forThisClientId to use
+     * @return number deleted
+     */
+    long deleteByGroupClientIdEquals(Long forThisClientId);
 }

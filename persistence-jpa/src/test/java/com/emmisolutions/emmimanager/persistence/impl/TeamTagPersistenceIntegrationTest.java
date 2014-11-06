@@ -313,6 +313,11 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Page<TeamTag> teamTagPage = teamTagPersistence.getAllTeamTagsForTeam(null, team);
         assertThat("there should be one TeamTag for the team", teamTagPage.getTotalElements(), is(1l));
         assertThat("shouldBeSaved TeamTag should be present", teamTagPage, hasItem(shouldBeSaved));
+
+        teamTagPersistence.removeTeamTagsThatAreNotAssociatedWith(client.getId(), new HashSet<Long>());
+        teamTagPage = teamTagPersistence.getAllTeamTagsForTeam(null, team);
+        assertThat("there should be no remaining team tags", teamTagPage.getTotalElements(), is(0l));
+
     }
 
     /**
