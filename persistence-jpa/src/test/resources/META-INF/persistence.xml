@@ -30,6 +30,8 @@
         <class>com.emmisolutions.emmimanager.model.ClientTier</class>
         <class>com.emmisolutions.emmimanager.model.TeamProvider</class>
         <class>com.emmisolutions.emmimanager.model.TeamLocation</class>
+		<class>com.emmisolutions.emmimanager.model.TeamProviderTeamLocation</class>
+        
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
 import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResource;
@@ -89,7 +90,7 @@ public class TeamProvidersResource {
 	 * @param teamId
 	 * @return ProviderResource
 	 */
-	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
+/*	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
 	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(
 			@PathVariable("teamId") Long teamId,
@@ -104,8 +105,26 @@ public class TeamProvidersResource {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-	}
+	}*/
 
+	
+	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
+	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(
+			@PathVariable("teamId") Long teamId,
+			@RequestBody List<TeamProviderTeamLocationSaveRequest> providers) {
+
+		Team tofind = new Team();
+		tofind.setId(teamId);
+
+		List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
+		if (!teamProviders.isEmpty()) {
+			return new ResponseEntity<>(teamProviders, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
+	
 	/**
 	 * GET for teamProvider by id
 	 *

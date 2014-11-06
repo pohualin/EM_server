@@ -5,9 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 /**
  * Team Provider Service API
  */
@@ -43,7 +44,7 @@ public interface TeamProviderService {
 	 * @param team
 	 * @return
 	 */
-	List<TeamProvider> associateProvidersToTeam(List<Provider> providers, Team team);
+	List<TeamProvider> associateProvidersToTeam(List<TeamProviderTeamLocationSaveRequest> providers, Team team);
 	
 	/**
 	 * Saves a list of team-providers
@@ -52,5 +53,12 @@ public interface TeamProviderService {
 	 * @return
 	 */
 	List<TeamProvider> saveAll(List<TeamProvider> teamProviders);
+/*	
+	*//**
+	 * Saves a list if team provider team locations
+	 * @param list of teamProviderTeamLocations
+	 * @return list of teamProviderTeamLocations
+	 *//*
+	List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls);*/
 
 }

@@ -6,7 +6,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -20,13 +22,18 @@ import org.springframework.data.domain.Sort;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 import com.emmisolutions.emmimanager.model.TeamSalesForce;
 import com.emmisolutions.emmimanager.model.User;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
@@ -35,8 +42,11 @@ import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.UserService;
 
@@ -68,7 +78,15 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
 	TeamProviderService teamProviderService;
-
+	
+	@Resource
+    LocationService locationService;
+	
+	@Resource
+	TeamLocationService teamLocationService;
+	
+	@Resource
+	TeamProviderTeamLocationService teamProviderTeamLocationService;
 	/**
 	 * Testing a provider save without a persistent team.
 	 */
@@ -235,7 +253,14 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         Team savedTeam2 = teamService.create(team2);
         List<Provider> providers = new ArrayList<Provider>();
         providers.add(provider);
-        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, savedTeam2);
+        
+        
+        final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
+        request.setProvider(provider);
+//        request.setTeamLocations(null);
+        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
+    		add(request);
+    	}}, savedTeam2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
     }
     
@@ -272,8 +297,97 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		Team team2 = new Team();
         List<Provider> providers = new ArrayList<Provider>();
         providers.add(provider);
-        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, team2);
+
+        final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
+        request.setProvider(provider);
+        
+        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
+    		add(request);
+    	}}, team2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
         
+    }
+    
+    /**
+     * Associate existing provider with a team and a bunch of team locations
+     */
+    @Test
+    public void testAssociateProvidersToTeamWithTeamLocations(){
+
+    	//create a provider
+    	Client client = makeClient("Mama Morton", "Matron Morton");
+		clientService.create(client);
+		
+    	Provider provider = new Provider();
+		provider.setFirstName("Amos");
+		provider.setMiddleName("Invisible");
+		provider.setLastName("Hart");
+		provider.setEmail("amosHart@fourtysecondstreet.com");
+		provider.setActive(true);
+
+		Team team = new Team();
+		team.setName("The musical team");
+		team.setDescription("We sing");
+		team.setActive(false);
+		team.setClient(client);
+		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
+				+ System.currentTimeMillis()));
+        Team savedTeam = teamService.create(team);
+        provider.setSpecialty(getSpecialty());
+		provider = providerService.create(provider, savedTeam);
+		assertThat("Provider was saved", provider.getId(), is(notNullValue()));        
+		
+	    //new team to associate to the existing provider
+		Team team2 = new Team();
+		team2.setName("Chicago");
+		team2.setDescription("In the city");
+		team2.setActive(false);
+		team2.setClient(client);
+		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+        Team savedTeam2 = teamService.create(team2);
+        List<Provider> providers = new ArrayList<Provider>();
+        providers.add(provider);
+        
+        
+        Location locationOne = locationService.create( makeLocation("Location One", "1") );
+        TeamLocation teamLocationOne = new TeamLocation();
+        teamLocationOne.setLocation(locationOne);
+        teamLocationOne.setTeam(team2);
+        
+        Location locationTwo = locationService.create( makeLocation("Location Two", "2") );
+        TeamLocation teamLocationTwo = new TeamLocation();
+        teamLocationTwo.setLocation(locationTwo);
+        teamLocationTwo.setTeam(team2);
+        
+        Set<Location> locationSet = new HashSet<Location>();
+        locationSet.add(locationOne);
+        locationSet.add(locationTwo);
+        teamLocationService.save(team2, locationSet);
+        
+        Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team2);
+
+        final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
+        request.setProvider(provider);
+        request.setTeamLocations(teamLocationPage.getContent());
+        
+        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
+    		add(request);
+    	}}, savedTeam2);
+
+        Page<TeamProviderTeamLocation> tptl = teamProviderTeamLocationService.findByTeamProvider(teamProviders.iterator().next(), null);
+        
+        assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
+        assertThat("Two teamProviderTeamLocations were saved", tptl.getContent().size(), is(2));
+
+    }
+    
+    private Location makeLocation(String name, String i) {
+        Location location = new Location();
+        location.setName(name + i);
+        location.setCity("Valid City " + i);
+        location.setActive(true);
+        location.setPhone("555-422-1212");
+        location.setState(State.IL);
+        return location;
     }
 }
