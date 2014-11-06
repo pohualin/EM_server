@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.data.domain.Page;
@@ -20,5 +22,10 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 	@Override
 	public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
 		return teamProviderTeamLocationPersistence.findByTeamProvider(teamProvider, page);
+	}
+	
+	@Override
+	public List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> teamProviderTeamLocations) {
+		return teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocations);
 	}
 }
