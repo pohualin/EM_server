@@ -80,7 +80,10 @@ public class ClientProviderServiceImpl implements ClientProviderService {
         // create a new provider
         clientProvider.setId(null);
         clientProvider.setVersion(null);
-        clientProvider.setProvider(providerService.create(clientProvider.getProvider()));
+        boolean active = clientProvider.getProvider().isActive();
+        Provider created = providerService.create(clientProvider.getProvider());
+        created.setActive(active);
+        clientProvider.setProvider(created);
         clientProvider.setClient(clientService.reload(clientProvider.getClient()));
         return clientProviderPersistence.save(clientProvider);
     }
