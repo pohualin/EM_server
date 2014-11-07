@@ -5,10 +5,7 @@ import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.service.*;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 /**
  * Implementation of the TeamProviderService
@@ -35,6 +33,9 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
     @Resource
     ProviderService providerService;
+
+    @Resource
+    ClientProviderService clientProviderService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -90,6 +91,9 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 			teamProvider.setTeam(teamFromDb);
 			providersToSave.add(teamProvider);
 		}
+        // create ClientProviders from new TeamProvider associations
+        clientProviderService.create(teamFromDb.getClient(), new HashSet<>(providers));
+
 		return saveAll(providersToSave);
 	}
 
