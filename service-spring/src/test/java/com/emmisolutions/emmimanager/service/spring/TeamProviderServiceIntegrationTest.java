@@ -15,8 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -220,7 +221,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setClient(client);
 		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
         Team savedTeam2 = teamService.create(team2);
-        List<Provider> providers = new ArrayList<Provider>();
+        Set<Provider> providers = new HashSet<>();
         providers.add(provider);
         List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, savedTeam2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
@@ -261,7 +262,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	    //null team to associate to the existing provider
 		Team team2 = new Team();
-        List<Provider> providers = new ArrayList<>();
+        Set<Provider> providers = new HashSet<>();
         providers.add(provider);
         List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, team2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
