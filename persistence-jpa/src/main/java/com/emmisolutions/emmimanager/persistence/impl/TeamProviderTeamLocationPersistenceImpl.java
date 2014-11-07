@@ -41,11 +41,8 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
         return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
     }
     
-    
-    
 	@Override
 	public void removeAllByTeamProvider(TeamProvider teamProvider){
 		teamProviderTeamLocationRepository.removeAllByTeamProvider(teamProvider);
-		teamProviderTeamLocationRepository.flush();
 	}
 }
