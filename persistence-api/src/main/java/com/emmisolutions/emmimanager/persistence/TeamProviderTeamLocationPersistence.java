@@ -27,4 +27,5 @@ public interface TeamProviderTeamLocationPersistence {
 	 * @return
 	 */
     Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable pageable);
+ void removeAllByTeamProvider(TeamProvider teamProvider);
 }

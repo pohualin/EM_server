@@ -19,4 +19,5 @@ public interface TeamProviderTeamLocationRepository extends JpaRepository<TeamPr
 	 * @return
 	 */
 	Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page);
+	long removeAllByTeamProvider(TeamProvider teamProvider);
 }

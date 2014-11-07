@@ -87,6 +87,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 	@Transactional
 	public void delete(TeamProvider provider) {
 		TeamProvider fromDb = reload(provider);
+		teamProviderTeamLocationService.removeAllByTeamProvider(fromDb);
         if (fromDb != null) {
             teamProviderPersistence.delete(fromDb);
         }

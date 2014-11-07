@@ -29,4 +29,6 @@ public interface TeamProviderTeamLocationService {
 	 */
 	List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls);
 
+	void removeAllByTeamProvider(TeamProvider teamProvider);
+
 }
