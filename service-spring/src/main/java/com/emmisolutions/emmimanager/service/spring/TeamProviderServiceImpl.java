@@ -1,11 +1,11 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.service.*;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 /**
  * Implementation of the TeamProviderService
  */
@@ -26,6 +28,15 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
 	@Resource
 	TeamService teamService;
+
+    @Resource
+    ClientService clientService;
+
+    @Resource
+    ProviderService providerService;
+
+    @Resource
+    ClientProviderService clientProviderService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -41,12 +52,22 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 	public Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team) {
 		Team toFind = teamService.reload(team);
 		if (toFind == null) {
-            throw new IllegalArgumentException("team cannot be null");
+            throw new InvalidDataAccessApiUsageException("team cannot be null");
         }
 		return teamProviderPersistence.findTeamProvidersByTeam(page, toFind);
 	}
 
-	@Override
+    @Override
+    public Page<Team> findTeamsBy(Client client, Provider provider, Pageable page) {
+        Client dbClient = clientService.reload(client);
+        Provider dbProvider = providerService.reload(provider);
+        if (dbClient == null || dbProvider == null){
+            throw new InvalidDataAccessApiUsageException("Client and Provider must exist in the database");
+        }
+        return teamProviderPersistence.findTeamsBy(dbClient, dbProvider, page);
+    }
+
+    @Override
 	@Transactional
 	public void delete(TeamProvider provider) {
 		TeamProvider fromDb = reload(provider);
@@ -57,12 +78,12 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
 	@Override
 	@Transactional
-	public List<TeamProvider> associateProvidersToTeam(List<Provider> providers, Team team){
+	public List<TeamProvider> associateProvidersToTeam(Set<Provider> providers, Team team){
 		Team teamFromDb = teamService.reload(team);
 		if (teamFromDb == null) {
             throw new InvalidDataAccessApiUsageException("Team cannot be null");
         }
-		List<TeamProvider> providersToSave = new ArrayList<TeamProvider>();
+		List<TeamProvider> providersToSave = new ArrayList<>();
 		for (Provider provider: providers){
 			TeamProvider teamProvider = new TeamProvider();
 			teamProvider.setId(null);
@@ -71,13 +92,21 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 			teamProvider.setTeam(teamFromDb);
 			providersToSave.add(teamProvider);
 		}
-		return saveAll(providersToSave);
+        // create ClientProviders from new TeamProvider associations
+        clientProviderService.create(teamFromDb.getClient(), providers);
+
+		return teamProviderPersistence.saveAll(providersToSave);
 	}
 
-	@Override
-	@Transactional
-	public List<TeamProvider> saveAll(List<TeamProvider> providers) {
-          return  teamProviderPersistence.saveAll(providers);
-	}
+    @Override
+    @Transactional
+    public long delete(Client client, Provider provider) {
+        Client dbClient = clientService.reload(client);
+        Provider dbProvider = providerService.reload(provider);
+        if (dbClient == null || dbProvider == null){
+            throw new InvalidDataAccessApiUsageException("Client and Provider must exist in the database");
+        }
+        return teamProviderPersistence.delete(dbClient, dbProvider);
+    }
 
 }
