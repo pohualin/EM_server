@@ -11,16 +11,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
 import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamService;
+
 /**
  * Implementation of the TeamProviderService
  */
@@ -32,8 +38,17 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
 	@Resource
 	TeamService teamService;
-	
-	@Resource
+
+    @Resource
+    ClientService clientService;
+
+    @Resource
+    ProviderService providerService;
+
+    @Resource
+    ClientProviderService clientProviderService;
+    
+    @Resource
 	TeamProviderTeamLocationService teamProviderTeamLocationService;
 	
 	@Resource
@@ -53,21 +68,31 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 	public Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team) {
 		Team toFind = teamService.reload(team);
 		if (toFind == null) {
-            throw new IllegalArgumentException("team cannot be null");
+            throw new InvalidDataAccessApiUsageException("team cannot be null");
         }
 		return teamProviderPersistence.findTeamProvidersByTeam(page, toFind);
 	}
 
-	@Override
+    @Override
+    public Page<Team> findTeamsBy(Client client, Provider provider, Pageable page) {
+        Client dbClient = clientService.reload(client);
+        Provider dbProvider = providerService.reload(provider);
+        if (dbClient == null || dbProvider == null){
+            throw new InvalidDataAccessApiUsageException("Client and Provider must exist in the database");
+        }
+        return teamProviderPersistence.findTeamsBy(dbClient, dbProvider, page);
+    }
+
+    @Override
 	@Transactional
 	public void delete(TeamProvider provider) {
 		TeamProvider fromDb = reload(provider);
-		//remove all TPTLs for this TP
         if (fromDb != null) {
             teamProviderPersistence.delete(fromDb);
         }
 	}
-	@Override
+
+    @Override
 	@Transactional
 	public List<TeamProvider> associateProvidersToTeam(
 			List<TeamProviderTeamLocationSaveRequest> request, Team team) {
@@ -101,10 +126,16 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		return savedProviders;
 	}
 
-	@Override
-	@Transactional
-	public List<TeamProvider> saveAll(List<TeamProvider> providers) {
-          return  teamProviderPersistence.saveAll(providers);
-	}
-	
+
+    @Override
+    @Transactional
+    public long delete(Client client, Provider provider) {
+        Client dbClient = clientService.reload(client);
+        Provider dbProvider = providerService.reload(provider);
+        if (dbClient == null || dbProvider == null){
+            throw new InvalidDataAccessApiUsageException("Client and Provider must exist in the database");
+        }
+        return teamProviderPersistence.delete(dbClient, dbProvider);
+    }
+
 }

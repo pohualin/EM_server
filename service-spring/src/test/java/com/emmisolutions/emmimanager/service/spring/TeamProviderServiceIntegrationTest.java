@@ -99,6 +99,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	/**
 	 * Testing a provider save with team, verify that teamProvider is created
+     * by two different search patterns
 	 */
 	@Test
 	public void testProviderSave() {
@@ -130,6 +131,11 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 		Page<TeamProvider> providerPage = teamProviderService.findTeamProvidersByTeam(null, savedTeam);
 		assertThat("TeamProvider was created", providerPage.getContent().iterator().next().getId(), is(notNullValue()));
+
+        Page<Team> foundByDifferentFinder = teamProviderService.findTeamsBy(client, provider,  null);
+
+        assertThat("teams should be equal", foundByDifferentFinder.iterator().next(), is(providerPage.iterator().next().getTeam()));
+
 	}
 
 	protected Client makeClient(String clientName, String username) {
@@ -190,7 +196,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		Page<TeamProvider> teamProviderPage = teamProviderService.findTeamProvidersByTeam(page, savedTeam);
 		assertThat("teamProviders were found", teamProviderPage.getContent().size(), is(notNullValue()));
 
-		TeamProvider providerToDelete = teamProviderPage.getContent().iterator().next();;
+		TeamProvider providerToDelete = teamProviderPage.getContent().iterator().next();
 		teamProviderService.delete(providerToDelete);
 		Page<TeamProvider> teamProviderPageNew = teamProviderService.findTeamProvidersByTeam(page, savedTeam);
 
@@ -215,7 +221,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Associate existing provider with a team
+     * Associate existing provider with a team, then remove it by Client and Provider
      */
     @Test
     public void testAssociateProvidersToTeam(){
@@ -251,7 +257,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setClient(client);
 		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
         Team savedTeam2 = teamService.create(team2);
-        List<Provider> providers = new ArrayList<Provider>();
+        Set<Provider> providers = new HashSet<>();
         providers.add(provider);
         
         
@@ -261,6 +267,10 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     		add(request);
     	}}, savedTeam2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
+
+
+        assertThat("two team providers were removed", teamProviderService.delete(client, provider), is(2l));
+        assertThat("teamProvider was deleted", teamProviderService.findTeamProvidersByTeam(null, savedTeam).getSize(), is(0));
     }
 
     /**
@@ -294,7 +304,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	    //null team to associate to the existing provider
 		Team team2 = new Team();
-        List<Provider> providers = new ArrayList<Provider>();
+        Set<Provider> providers = new HashSet<>();
         providers.add(provider);
 
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
@@ -388,5 +398,19 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         location.setPhone("555-422-1212");
         location.setState(State.IL);
         return location;
+    }
+    @Test(expected=InvalidDataAccessApiUsageException.class)
+    public void invalidFindByClientAndProvider(){
+        teamProviderService.findTeamsBy(null, null, null);
+    }
+
+    @Test(expected=InvalidDataAccessApiUsageException.class)
+    public void invalidFindByTeam(){
+        teamProviderService.findTeamProvidersByTeam(null, new Team());
+    }
+
+    @Test(expected=InvalidDataAccessApiUsageException.class)
+    public void invalidDeleteByClientAndProvider(){
+        teamProviderService.delete(null, null);
     }
 }

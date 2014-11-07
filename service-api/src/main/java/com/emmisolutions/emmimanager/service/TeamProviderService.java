@@ -5,16 +5,20 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+
 /**
  * Team Provider Service API
  */
 public interface TeamProviderService {
 
-	/**
+    /**
      * Reloads a given teamProvider
+     *
      * @param teamProvider to reload
      * @return teamProvider
      */
@@ -44,13 +48,23 @@ public interface TeamProviderService {
 	 * @return
 	 */
 	List<TeamProvider> associateProvidersToTeam(List<TeamProviderTeamLocationSaveRequest> providers, Team team);
-	
-	/**
-	 * Saves a list of team-providers
-	 *
-	 * @param teamproviders
-	 * @return
-	 */
-	List<TeamProvider> saveAll(List<TeamProvider> teamProviders);
 
+
+    /**
+     * Find Teams by Client and Provider
+     *
+     * @param client   to use
+     * @param provider to use
+     * @param page the page specification
+     * @return a page of TeamProvider objects
+     */
+    Page<Team> findTeamsBy(Client client, Provider provider, Pageable pageable);
+
+    /**
+     * Delete all TeamProviders for a client on the provider of the clientProvider
+     *
+     * @param client   the client
+     * @param provider the provider
+     */
+    long delete(Client client, Provider provider);
 }
