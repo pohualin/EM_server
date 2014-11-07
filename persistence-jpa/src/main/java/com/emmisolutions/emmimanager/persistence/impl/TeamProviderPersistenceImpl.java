@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
@@ -49,4 +51,14 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
 	public List<TeamProvider> saveAll(List<TeamProvider> teamProviders){
 		return teamProviderRepository.save(teamProviders);
 	}
+
+    @Override
+    public long delete(Client client, Provider provider) {
+         return teamProviderRepository.deleteByTeamClientAndProvider(client, provider);
+    }
+
+    @Override
+    public Page<Team> findTeamsBy(Client client, Provider provider, Pageable page) {
+        return teamProviderRepository.findTeamsByClientAndProvider(client, provider, page);
+    }
 }

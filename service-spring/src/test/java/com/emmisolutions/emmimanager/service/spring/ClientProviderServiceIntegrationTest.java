@@ -120,11 +120,11 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Can't delete with a null client provider
+     * Can't delete with a non persistent client provider
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidDeleteCall(){
-        clientProviderService.remove(null);
+        clientProviderService.remove(new ClientProvider());
     }
 
     /**

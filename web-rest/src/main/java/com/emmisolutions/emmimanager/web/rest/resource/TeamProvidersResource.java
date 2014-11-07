@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -86,7 +87,7 @@ public class TeamProvidersResource {
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
 	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(
 			@PathVariable("teamId") Long teamId,
-			@RequestBody List<Provider> providers) {
+			@RequestBody Set<Provider> providers) {
 
 		Team tofind = new Team();
 		tofind.setId(teamId);
