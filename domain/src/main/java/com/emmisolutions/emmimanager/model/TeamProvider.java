@@ -1,19 +1,11 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import org.hibernate.envers.Audited;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
+import java.io.Serializable;
 
 /**
  * A TeamProvider.
@@ -74,4 +66,26 @@ public class TeamProvider extends AbstractAuditingEntity implements
 		this.provider = provider;
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TeamProvider that = (TeamProvider) o;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "TeamProvider{" +
+            "id=" + id +
+            ", version=" + version +
+            ", team=" + team +
+            ", provider=" + provider +
+            '}';
+    }
 }

@@ -1,16 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientProvider;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
 import com.emmisolutions.emmimanager.web.rest.model.clientprovider.ClientProviderFinderResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.clientprovider.ClientProviderResource;
 import com.emmisolutions.emmimanager.web.rest.model.clientprovider.ClientProviderResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.clientprovider.ClientProviderResourcePage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -37,7 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
  */
 @RestController
 @RequestMapping(value = "/webapi",
-        produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
+    produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
 )
 public class ClientProvidersResource {
 
@@ -56,6 +56,12 @@ public class ClientProvidersResource {
     @Resource
     ClientProviderFinderResourceAssembler clientProviderFinderResourceAssembler;
 
+    @Resource
+    TeamProviderService teamProviderService;
+
+    @Resource
+    TeamResourceAssembler teamResourceAssembler;
+
     /**
      * GET to find existing client providers for a client.
      *
@@ -66,23 +72,23 @@ public class ClientProvidersResource {
      * @return Page of ClientProviderResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/providers",
-            method = RequestMethod.GET)
+        method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_LIST"})
     @ApiOperation("finds existing ClientProviders")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "provider.firstName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "provider.firstName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientProviderResourcePage> current(
-            @PathVariable Long clientId,
-            @PageableDefault(size = 10, sort = "provider.firstName", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<ClientProvider> assembler) {
+        @PathVariable Long clientId,
+        @PageableDefault(size = 10, sort = "provider.firstName", direction = Sort.Direction.ASC) Pageable pageable,
+        Sort sort, PagedResourcesAssembler<ClientProvider> assembler) {
         Page<ClientProvider> clientProviderPage = clientProviderService.find(new Client(clientId), pageable);
         if (clientProviderPage.hasContent()) {
             return new ResponseEntity<>(
-                    new ClientProviderResourcePage(assembler.toResource(clientProviderPage, clientProviderResourceAssembler), clientProviderPage, null),
-                    HttpStatus.OK
+                new ClientProviderResourcePage(assembler.toResource(clientProviderPage, clientProviderResourceAssembler), clientProviderPage, null),
+                HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -96,8 +102,8 @@ public class ClientProvidersResource {
      * @return the ClientProviderResource association, success or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/clients/{clientId}/providers",
-            method = RequestMethod.POST,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.POST,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "creates a brand new provider and associates it to an existing client")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_CREATE"})
@@ -123,30 +129,30 @@ public class ClientProvidersResource {
      * @return Page of ClientProviderResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/providers/associate",
-            method = RequestMethod.GET)
+        method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible providers that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_LIST"})
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "fistName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "fistName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientProviderResourcePage> possible(
-            @PathVariable Long clientId,
-            @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<ClientProvider> assembler,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "name", required = false) String name) {
+        @PathVariable Long clientId,
+        @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+        Sort sort, PagedResourcesAssembler<ClientProvider> assembler,
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "name", required = false) String name) {
 
         ProviderSearchFilter filter = new ProviderSearchFilter(fromStringOrActive(status), name);
 
         Page<ClientProvider> clientProviderPage = clientProviderService.findPossibleProvidersToAdd(
-                new Client(clientId), filter, pageable);
+            new Client(clientId), filter, pageable);
 
         if (clientProviderPage.hasContent()) {
             return new ResponseEntity<>(
-                    new ClientProviderResourcePage(assembler.toResource(clientProviderPage, clientProviderFinderResourceAssembler), clientProviderPage, filter),
-                    HttpStatus.OK
+                new ClientProviderResourcePage(assembler.toResource(clientProviderPage, clientProviderFinderResourceAssembler), clientProviderPage, filter),
+                HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -162,8 +168,8 @@ public class ClientProvidersResource {
      * or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/clients/{clientId}/providers/associate",
-            method = RequestMethod.POST,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.POST,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation("create a new ClientProvider on a Client for each existing Provider in a Set")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_CREATE"})
@@ -212,6 +218,34 @@ public class ClientProvidersResource {
     }
 
     /**
+     * GET a page of Teams associated to the client provider
+     *
+     * @param clientProviderId the actual client provider to load
+     * @return page of Teams or NO_CONTENT
+     */
+    @RequestMapping(value = "/client_providers/{clientProviderId}/teams", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_PROVIDER_LIST"})
+    @ApiOperation("view Teams using ClientProvider")
+    @ApiImplicitParams(value = {
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "team.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<TeamPage> teams(@PathVariable Long clientProviderId,
+                                          PagedResourcesAssembler<Team> assembler,
+                                          @PageableDefault(size = 10, sort = "team.name", direction = Sort.Direction.ASC) Pageable pageable) {
+        ClientProvider clientProvider = clientProviderService.reload(new ClientProvider(clientProviderId));
+        if (clientProvider != null) {
+            Page<Team> teamPage = teamProviderService.findTeamsBy(clientProvider.getClient(), clientProvider.getProvider(), pageable);
+            if (teamPage.hasContent()) {
+                return new ResponseEntity<>(
+                    new TeamPage(assembler.toResource(teamPage, teamResourceAssembler), teamPage, null), HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
      * PUT to update a client provider.
      *
      * @param clientProviderId the provider id
@@ -219,8 +253,8 @@ public class ClientProvidersResource {
      * @return ProviderResource or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/client_providers/{clientProviderId}",
-            method = RequestMethod.PUT,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.PUT,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "update a Provider using the client", notes = "This method updates the Provider and the ClientProvider")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_EDIT"})

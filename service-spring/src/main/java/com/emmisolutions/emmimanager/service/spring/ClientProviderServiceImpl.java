@@ -9,6 +9,7 @@ import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,6 +38,9 @@ public class ClientProviderServiceImpl implements ClientProviderService {
     @Resource
     ClientService clientService;
 
+    @Resource
+    TeamProviderService teamProviderService;
+
     @Override
     public Page<ClientProvider> find(Client client, Pageable pageable) {
         if (client == null){
@@ -48,10 +52,12 @@ public class ClientProviderServiceImpl implements ClientProviderService {
     @Override
     @Transactional
     public void remove(ClientProvider clientProvider) {
-        if (clientProvider == null){
+        ClientProvider toRemove = reload(clientProvider);
+        if (toRemove == null){
             throw new InvalidDataAccessApiUsageException("ClientProvider cannot be null");
         }
-        clientProviderPersistence.remove(clientProvider.getId());
+        teamProviderService.delete(toRemove.getClient(), toRemove.getProvider());
+        clientProviderPersistence.remove(toRemove.getId());
     }
 
     @Override
