@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -83,7 +83,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		if (teamFromDb == null) {
             throw new InvalidDataAccessApiUsageException("Team cannot be null");
         }
-		Set<TeamProvider> providersToSave = new HashSet<>();
+		List<TeamProvider> providersToSave = new ArrayList<>();
 		for (Provider provider: providers){
 			TeamProvider teamProvider = new TeamProvider();
 			teamProvider.setId(null);
