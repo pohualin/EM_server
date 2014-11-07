@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * TeamProvider persistence class
@@ -52,7 +53,7 @@ public interface TeamProviderPersistence {
      * @param teamProviders to save
      * @return teamProviders saved
      */
-    List<TeamProvider> saveAll(List<TeamProvider> teamProviders);
+    List<TeamProvider> saveAll(Set<TeamProvider> teamProviders);
 
     /**
      * Delete all TeamProviders for a client and provider

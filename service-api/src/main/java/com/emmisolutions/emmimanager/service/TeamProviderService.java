@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Team Provider Service API
@@ -57,15 +58,7 @@ public interface TeamProviderService {
      * @param team      to associate to
      * @return list of saved TeamProvider objects
      */
-    List<TeamProvider> associateProvidersToTeam(List<Provider> providers, Team team);
-
-    /**
-     * Saves a list of team-providers
-     *
-     * @param teamProviders list of team providers to save
-     * @return saved list
-     */
-    List<TeamProvider> saveAll(List<TeamProvider> teamProviders);
+    List<TeamProvider> associateProvidersToTeam(Set<Provider> providers, Team team);
 
     /**
      * Delete all TeamProviders for a client on the provider of the clientProvider

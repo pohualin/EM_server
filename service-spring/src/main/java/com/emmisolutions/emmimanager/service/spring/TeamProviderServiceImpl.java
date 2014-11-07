@@ -13,9 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 /**
  * Implementation of the TeamProviderService
  */
@@ -77,12 +78,12 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
 	@Override
 	@Transactional
-	public List<TeamProvider> associateProvidersToTeam(List<Provider> providers, Team team){
+	public List<TeamProvider> associateProvidersToTeam(Set<Provider> providers, Team team){
 		Team teamFromDb = teamService.reload(team);
 		if (teamFromDb == null) {
             throw new InvalidDataAccessApiUsageException("Team cannot be null");
         }
-		List<TeamProvider> providersToSave = new ArrayList<>();
+		Set<TeamProvider> providersToSave = new HashSet<>();
 		for (Provider provider: providers){
 			TeamProvider teamProvider = new TeamProvider();
 			teamProvider.setId(null);
@@ -92,15 +93,9 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 			providersToSave.add(teamProvider);
 		}
         // create ClientProviders from new TeamProvider associations
-        clientProviderService.create(teamFromDb.getClient(), new HashSet<>(providers));
+        clientProviderService.create(teamFromDb.getClient(), providers);
 
-		return saveAll(providersToSave);
-	}
-
-	@Override
-	@Transactional
-	public List<TeamProvider> saveAll(List<TeamProvider> providers) {
-          return  teamProviderPersistence.saveAll(providers);
+		return teamProviderPersistence.saveAll(providersToSave);
 	}
 
     @Override

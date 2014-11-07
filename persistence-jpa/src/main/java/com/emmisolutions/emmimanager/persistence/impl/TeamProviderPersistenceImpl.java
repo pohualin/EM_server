@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 /**
  * TeamProvider Persistence Implementation
@@ -48,7 +49,7 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
 
 	@Override
 	@Transactional
-	public List<TeamProvider> saveAll(List<TeamProvider> teamProviders){
+	public List<TeamProvider> saveAll(Set<TeamProvider> teamProviders){
 		return teamProviderRepository.save(teamProviders);
 	}
 
