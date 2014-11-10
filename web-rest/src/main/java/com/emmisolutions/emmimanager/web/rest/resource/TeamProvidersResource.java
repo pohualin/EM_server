@@ -1,12 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderPage;
-import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResource;
-import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResourceAssembler;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,15 +17,20 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import java.util.List;
-import java.util.Set;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderPage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResource;
+import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResourceAssembler;
 
 /**
  * TeamProviders REST API
@@ -85,21 +92,21 @@ public class TeamProvidersResource {
 	 */
 	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
-	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(
+	public ResponseEntity<Set<TeamProvider>> associateProvidersToTeam(
 			@PathVariable("teamId") Long teamId,
-			@RequestBody Set<Provider> providers) {
+			@RequestBody List<TeamProviderTeamLocationSaveRequest> providers) {
 
 		Team tofind = new Team();
 		tofind.setId(teamId);
 
-		List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
+		Set<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
 		if (!teamProviders.isEmpty()) {
 			return new ResponseEntity<>(teamProviders, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 	}
-
+	
 	/**
 	 * GET for teamProvider by id
 	 *
