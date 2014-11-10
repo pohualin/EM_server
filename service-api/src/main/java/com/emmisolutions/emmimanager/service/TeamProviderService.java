@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +48,7 @@ public interface TeamProviderService {
 	 * @param team
 	 * @return
 	 */
-	List<TeamProvider> associateProvidersToTeam(List<TeamProviderTeamLocationSaveRequest> providers, Team team);
+	Set<TeamProvider> associateProvidersToTeam(List<TeamProviderTeamLocationSaveRequest> providers, Team team);
 
 
     /**

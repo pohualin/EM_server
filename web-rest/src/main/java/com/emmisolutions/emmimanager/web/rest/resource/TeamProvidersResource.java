@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
@@ -91,14 +92,14 @@ public class TeamProvidersResource {
 	 */
 	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
-	public ResponseEntity<List<TeamProvider>> associateProvidersToTeam(
+	public ResponseEntity<Set<TeamProvider>> associateProvidersToTeam(
 			@PathVariable("teamId") Long teamId,
 			@RequestBody List<TeamProviderTeamLocationSaveRequest> providers) {
 
 		Team tofind = new Team();
 		tofind.setId(teamId);
 
-		List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
+		Set<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
 		if (!teamProviders.isEmpty()) {
 			return new ResponseEntity<>(teamProviders, HttpStatus.OK);
 		} else {

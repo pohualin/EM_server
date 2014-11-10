@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Provider;
@@ -41,6 +42,7 @@ import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeReposito
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.service.ProviderService;
@@ -84,6 +86,9 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
 	TeamLocationService teamLocationService;
+	
+	@Resource
+	ClientProviderService clientProviderService;
 	
 	@Resource
 	TeamProviderTeamLocationService teamProviderTeamLocationService;
@@ -263,7 +268,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
         request.setProvider(provider);
-        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
+        Set<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
     		add(request);
     	}}, savedTeam2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
@@ -310,7 +315,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
         request.setProvider(provider);
         
-        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
+        Set<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
     		add(request);
     	}}, team2);
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
@@ -377,14 +382,17 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
         request.setProvider(provider);
-        request.setTeamLocations(teamLocationPage.getContent());
+        request.setTeamLocations(new HashSet<TeamLocation>(teamLocationPage.getContent()));
         
-        List<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
+        Set<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(new ArrayList<TeamProviderTeamLocationSaveRequest>() {{
     		add(request);
     	}}, savedTeam2);
 
         Page<TeamProviderTeamLocation> tptl = teamProviderTeamLocationService.findByTeamProvider(teamProviders.iterator().next(), null);
         
+        Page<ClientProvider> clientProviders = clientProviderService.find(client, null);
+        
+        assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
         assertThat("Two teamProviderTeamLocations were saved", tptl.getContent().size(), is(2));
 

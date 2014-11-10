@@ -1,7 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
@@ -95,14 +98,15 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
     @Override
 	@Transactional
-	public List<TeamProvider> associateProvidersToTeam(
+	public Set<TeamProvider> associateProvidersToTeam(
 			List<TeamProviderTeamLocationSaveRequest> request, Team team) {
 		Team teamFromDb = teamService.reload(team);
 		if (teamFromDb == null) {
 			throw new InvalidDataAccessApiUsageException("Team cannot be null");
 		}
 		List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
-		List<TeamProvider> savedProviders = new ArrayList<TeamProvider>();
+		Set<TeamProvider> savedProviders = new HashSet<TeamProvider>();
+		Set<Provider> providers = new HashSet<Provider>();
 
 		for (TeamProviderTeamLocationSaveRequest req : request) {
 			TeamProvider teamProvider = new TeamProvider();
@@ -112,7 +116,8 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 			teamProvider.setTeam(teamFromDb);
 			TeamProvider savedTeamProvider = teamProviderPersistence.save(teamProvider);
 			savedProviders.add(savedTeamProvider);
-
+			providers.add(req.getProvider());
+			
 			if (req.getTeamLocations() != null && !req.getTeamLocations().isEmpty()) {
 				for (TeamLocation teamLocation : req.getTeamLocations()) {
 					TeamLocation savedTeamLocation = teamLocationService.reload(teamLocation);
@@ -123,6 +128,10 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 				}
 			}
 		}
+		
+		// create ClientProviders from new TeamProvider associations
+    	clientProviderService.create(teamFromDb.getClient(), providers);
+        
 		List<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
 		return savedProviders;
 	}

@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * A request for Provider and teamLocations to save a TeamProvider and TeamProviderTeamLocation
@@ -10,7 +10,7 @@ public class TeamProviderTeamLocationSaveRequest {
 
 	private Provider provider;
 
-	private List<TeamLocation> teamLocations;
+	private Set<TeamLocation> teamLocations;
 
 	public Provider getProvider() {
 		return provider;
@@ -20,11 +20,11 @@ public class TeamProviderTeamLocationSaveRequest {
 		this.provider = provider;
 	}
 
-	public List<TeamLocation> getTeamLocations() {
+	public Set<TeamLocation> getTeamLocations() {
 		return teamLocations;
 	}
 
-	public void setTeamLocations(List<TeamLocation> teamLocations) {
+	public void setTeamLocations(Set<TeamLocation> teamLocations) {
 		this.teamLocations = teamLocations;
 	}
 
