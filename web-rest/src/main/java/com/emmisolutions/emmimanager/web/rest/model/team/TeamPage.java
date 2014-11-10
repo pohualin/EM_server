@@ -1,27 +1,21 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.springframework.data.domain.Page;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+import org.springframework.data.domain.Page;
+import org.springframework.hateoas.*;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * A HATEOAS wrapper for a page of TeamResource objects.
@@ -44,9 +38,11 @@ public class TeamPage extends PagedResource<TeamResource> {
      */
     public TeamPage(PagedResources<TeamResource> teamResourceSupports, Page<Team> teamPage, TeamSearchFilter filter) {
         pageDefaults(teamResourceSupports, teamPage);
-        addFilterToLinks(filter);
+        if (filter != null) {
+            addFilterToLinks(filter);
+        }
     }
-    
+
     /**
      * Create the search link
      *
@@ -64,7 +60,7 @@ public class TeamPage extends PagedResource<TeamResource> {
                         new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
-    
+
 	 public static Link createFindTeamByNormalizedNameLink(Long clientId) {
 	        Link link = linkTo(methodOn(TeamsResource.class).findByNormalizedNameForClient(null,null,clientId)).withRel("findByNormalizedName");
 	        UriTemplate uriTemplate = new UriTemplate(link.getHref())
