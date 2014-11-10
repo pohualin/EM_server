@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create_team_provider_team_location" author="Amrita">
+
+		<createTable tableName="team_provider_team_location">
+            <column name="id" type="BIGINT" autoIncrement="true"><constraints nullable="false"/></column>
+            <column name="version" type="INT"/>
+            <column name="team_provider_id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="team_location_id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="created_by" type="varchar(50)" defaultValue="system"><constraints nullable="false"/></column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}"><constraints nullable="false"/></column>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>     
+        </createTable>
+		<addPrimaryKey tableName="team_provider_team_location" columnNames="id" constraintName="pk_team_provider_team_location"/>
+
+		<createTable tableName="team_provider_team_location_audit">
+            <column name="id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="team_location_id" type="BIGINT"/>
+            <column name="team_provider_id" type="BIGINT"/>
+        </createTable>
+	    <addPrimaryKey tableName="team_provider_team_location_audit" columnNames="id, revision" constraintName="pk_team_provider_team_location_audit"/>
+
+	    <addPrimaryKey tableName="team_provider" columnNames="id" constraintName="pk_team_provider_id"/>
+	        		
+		<addForeignKeyConstraint baseTableName="team_provider_team_location"
+                                 baseColumnNames="team_location_id"
+                                 constraintName="fk_team_pro_team_loc_loc_id"
+                                 referencedTableName="client_team_location"
+                                 referencedColumnNames="id"/>
+                                 
+		<addForeignKeyConstraint baseTableName="team_provider_team_location"
+                                 baseColumnNames="team_provider_id"
+                                 constraintName="fk_team_pro_team_loc_pro_id"
+                                 referencedTableName="team_provider"
+                                 referencedColumnNames="id"/>                                 
+
+		<addForeignKeyConstraint baseTableName="team_provider_team_location_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_team_provider_team_location_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>   
+
+        <addUniqueConstraint tableName="team_provider_team_location" columnNames="team_provider_id, team_location_id" constraintName="uk_team_provider_team_location_loc_pro_id"/>        
+                                                                 
+	</changeSet>
+	
+</databaseChangeLog>

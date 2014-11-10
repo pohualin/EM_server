@@ -1,21 +1,34 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.service.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamService;
 
 /**
  * Implementation of the TeamProviderService
@@ -37,6 +50,12 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
     @Resource
     ClientProviderService clientProviderService;
+    
+    @Resource
+	TeamProviderTeamLocationService teamProviderTeamLocationService;
+	
+	@Resource
+	TeamLocationService teamLocationService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -71,32 +90,52 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 	@Transactional
 	public void delete(TeamProvider provider) {
 		TeamProvider fromDb = reload(provider);
+		teamProviderTeamLocationService.removeAllByTeamProvider(fromDb);
         if (fromDb != null) {
             teamProviderPersistence.delete(fromDb);
         }
 	}
 
-	@Override
+    @Override
 	@Transactional
-	public List<TeamProvider> associateProvidersToTeam(Set<Provider> providers, Team team){
+	public Set<TeamProvider> associateProvidersToTeam(
+			List<TeamProviderTeamLocationSaveRequest> request, Team team) {
 		Team teamFromDb = teamService.reload(team);
 		if (teamFromDb == null) {
-            throw new InvalidDataAccessApiUsageException("Team cannot be null");
-        }
-		List<TeamProvider> providersToSave = new ArrayList<>();
-		for (Provider provider: providers){
+			throw new InvalidDataAccessApiUsageException("Team cannot be null");
+		}
+		List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
+		Set<TeamProvider> savedProviders = new HashSet<TeamProvider>();
+		Set<Provider> providers = new HashSet<Provider>();
+
+		for (TeamProviderTeamLocationSaveRequest req : request) {
 			TeamProvider teamProvider = new TeamProvider();
 			teamProvider.setId(null);
 			teamProvider.setVersion(null);
-			teamProvider.setProvider(provider);
+			teamProvider.setProvider(req.getProvider());
 			teamProvider.setTeam(teamFromDb);
-			providersToSave.add(teamProvider);
+			TeamProvider savedTeamProvider = teamProviderPersistence.save(teamProvider);
+			savedProviders.add(savedTeamProvider);
+			providers.add(req.getProvider());
+			
+			if (req.getTeamLocations() != null && !req.getTeamLocations().isEmpty()) {
+				for (TeamLocation teamLocation : req.getTeamLocations()) {
+					TeamLocation savedTeamLocation = teamLocationService.reload(teamLocation);
+					TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
+					tptl.setTeamProvider(savedTeamProvider);
+					tptl.setTeamLocation(savedTeamLocation);
+					teamProviderTeamLocationsToSave.add(tptl);
+				}
+			}
 		}
-        // create ClientProviders from new TeamProvider associations
-        clientProviderService.create(teamFromDb.getClient(), providers);
-
-		return teamProviderPersistence.saveAll(providersToSave);
+		
+		// create ClientProviders from new TeamProvider associations
+    	clientProviderService.create(teamFromDb.getClient(), providers);
+        
+		List<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
+		return savedProviders;
 	}
+
 
     @Override
     @Transactional
