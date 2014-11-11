@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
@@ -36,6 +37,9 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Resource
     ClientLocationPersistence clientLocationPersistence;
+
+    @Resource
+    TeamProviderTeamLocationPersistence teamProviderTeamLocationPersistence;
 
     @Override
     public Page<TeamLocation> findAllTeamLocationsWithTeam(Pageable pageable, Team team) {
@@ -86,6 +90,7 @@ public class TeamLocationServiceImpl implements TeamLocationService {
         if (dbClient == null || dbLocation == null){
             throw new InvalidDataAccessApiUsageException("Client and Location must exist in the database");
         }
+        teamProviderTeamLocationPersistence.removeAllByClientLocation(client, location);
         return teamLocationPersistence.delete(dbClient, dbLocation);
     }
 }

@@ -1,34 +1,20 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
+import com.emmisolutions.emmimanager.service.*;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientProvider;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.service.ClientProviderService;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamService;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of the TeamProviderService
@@ -50,12 +36,15 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
     @Resource
     ClientProviderService clientProviderService;
-    
+
     @Resource
 	TeamProviderTeamLocationService teamProviderTeamLocationService;
-	
+
 	@Resource
 	TeamLocationService teamLocationService;
+
+    @Resource
+    TeamProviderTeamLocationPersistence teamProviderTeamLocationPersistence;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -117,7 +106,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 			TeamProvider savedTeamProvider = teamProviderPersistence.save(teamProvider);
 			savedProviders.add(savedTeamProvider);
 			providers.add(req.getProvider());
-			
+
 			if (req.getTeamLocations() != null && !req.getTeamLocations().isEmpty()) {
 				for (TeamLocation teamLocation : req.getTeamLocations()) {
 					TeamLocation savedTeamLocation = teamLocationService.reload(teamLocation);
@@ -128,10 +117,10 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 				}
 			}
 		}
-		
+
 		// create ClientProviders from new TeamProvider associations
     	clientProviderService.create(teamFromDb.getClient(), providers);
-        
+
 		List<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
 		return savedProviders;
 	}
@@ -145,6 +134,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         if (dbClient == null || dbProvider == null){
             throw new InvalidDataAccessApiUsageException("Client and Provider must exist in the database");
         }
+        teamProviderTeamLocationPersistence.removeAllByClientProvider(client, provider);
         return teamProviderPersistence.delete(dbClient, dbProvider);
     }
 
