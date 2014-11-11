@@ -1,17 +1,17 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientLocation;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientLocationService;
 import com.emmisolutions.emmimanager.service.LocationService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
 import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationFinderResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResource;
 import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResourcePage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationResource;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -56,6 +56,12 @@ public class ClientLocationsResource {
 
     @Resource
     ClientLocationFinderResourceAssembler clientLocationFinderResourceAssembler;
+
+    @Resource
+    TeamLocationService teamLocationService;
+
+    @Resource
+    TeamResourceAssembler teamResourceAssembler;
 
     /**
      * GET to find existing client locations for a client.
@@ -233,5 +239,35 @@ public class ClientLocationsResource {
     @ApiOperation("delete a ClientLocation by id")
     public void delete(@PathVariable Long clientId, @PathVariable Long clientLocationId) {
         clientLocationService.remove(new ClientLocation(clientLocationId));
+    }
+
+    /**
+     * GET a page of Teams associated to the client location
+     *
+     * @param clientId the client id
+     * @param clientLocationId the actual client provider to load
+     * @return page of Teams or NO_CONTENT
+     */
+    @RequestMapping(value = "/clients/{clientId}/locations/{clientLocationId}/teams", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_PROVIDER_LIST"})
+    @ApiOperation("view Teams using ClientProvider")
+    @ApiImplicitParams(value = {
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "team.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<TeamPage> teams(@PathVariable Long clientId,
+                                          @PathVariable Long clientLocationId,
+                                          PagedResourcesAssembler<Team> assembler,
+                                          @PageableDefault(size = 10, sort = "team.name", direction = Sort.Direction.ASC) Pageable pageable) {
+        ClientLocation clientLocation = clientLocationService.reload(new ClientLocation(clientLocationId));
+        if (clientLocation != null) {
+            Page<Team> teamPage = teamLocationService.findTeamsBy(clientLocation.getClient(), clientLocation.getLocation(), pageable);
+            if (teamPage.hasContent()) {
+                return new ResponseEntity<>(
+                    new TeamPage(assembler.toResource(teamPage, teamResourceAssembler), teamPage, null), HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -112,7 +112,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidDeleteCall(){
-        clientLocationService.remove(null);
+        clientLocationService.remove(new ClientLocation());
     }
 
     /**
