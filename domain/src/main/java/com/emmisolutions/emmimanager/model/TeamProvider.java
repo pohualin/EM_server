@@ -5,7 +5,9 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * A TeamProvider.
@@ -33,6 +35,10 @@ public class TeamProvider extends AbstractAuditingEntity implements
 	@ManyToOne
 	@JoinColumn(name = "provider_id")
 	private Provider provider;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy="teamProvider")
+    @XmlTransient
+    private Set<TeamProviderTeamLocation> teamProviderTeamLocations;
 
 	public Long getId() {
 		return id;
@@ -65,6 +71,14 @@ public class TeamProvider extends AbstractAuditingEntity implements
 	public void setProvider(Provider provider) {
 		this.provider = provider;
 	}
+
+    public Set<TeamProviderTeamLocation> getTeamProviderTeamLocations() {
+        return teamProviderTeamLocations;
+    }
+
+    public void setTeamProviderTeamLocations(Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
+        this.teamProviderTeamLocations = teamProviderTeamLocations;
+    }
 
     @Override
     public boolean equals(Object o) {
