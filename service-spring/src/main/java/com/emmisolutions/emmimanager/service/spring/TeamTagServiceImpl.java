@@ -10,6 +10,7 @@ import com.emmisolutions.emmimanager.service.TeamTagService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class TeamTagServiceImpl implements TeamTagService {
     }
 
     @Override
+    @Transactional
     public List<TeamTag> save(Team team, Set<Tag> tagSet) {
         Team teamToFind = teamPersistence.reload(team);
         if (teamToFind != null) {
@@ -52,6 +54,7 @@ public class TeamTagServiceImpl implements TeamTagService {
     }
 
     @Override
+    @Transactional
     public TeamTag saveSingleTeamTag(Team team, Tag tag) {
         Team teamToFind = teamPersistence.reload(team);
         Tag tagToFind = tagPersistence.reload(tag);
@@ -63,6 +66,7 @@ public class TeamTagServiceImpl implements TeamTagService {
     }
 
     @Override
+    @Transactional
     public void deleteSingleTeamTag(TeamTag teamTag) {
         TeamTag newTeamTag = teamTagPersistence.reload(teamTag);
         if (newTeamTag != null) {

@@ -1,12 +1,9 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import javax.annotation.Resource;
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroup_;
+import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import org.hibernate.annotations.QueryHints;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,10 +11,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroup_;
-import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
+import javax.annotation.Resource;
+import javax.persistence.EntityGraph;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 @Repository
 public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence {
@@ -25,10 +25,9 @@ public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence 
 	@Resource
 	ReferenceGroupRepository referenceGroupRepository;
 
-	@Resource
+    @PersistenceContext
 	EntityManager entityManager;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<ReferenceGroup> loadReferenceGroups(Pageable page) {
 		if (page == null) {
@@ -38,7 +37,6 @@ public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence 
 		Page<ReferenceGroup> groups = referenceGroupRepository.findAll(page);
 
 		if (groups.hasContent()) {
-
 			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 			EntityGraph<ReferenceGroup> graph = entityManager.createEntityGraph(ReferenceGroup.class);
 			graph.addAttributeNodes(ReferenceGroup_.tags);

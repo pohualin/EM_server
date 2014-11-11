@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
 import java.util.Set;
 
 /**
@@ -67,7 +66,6 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     }
 
     @Override
-    @Transactional
     public void deleteTeamTagsWithTeam(Team team) {
         if (team == null) {
             throw new IllegalArgumentException("team tag is null");
@@ -79,7 +77,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     @Override
     public long removeTeamTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep) {
         if (clientId != null) {
-            if (groupIdsToKeep == null || groupIdsToKeep.isEmpty()){
+            if (groupIdsToKeep == null || groupIdsToKeep.isEmpty()) {
                 return teamTagRepository.deleteByTeamClientIdEquals(clientId);
             } else {
                 return teamTagRepository.deleteByTeamClientIdEqualsAndTagGroupIdNotIn(clientId, groupIdsToKeep);
