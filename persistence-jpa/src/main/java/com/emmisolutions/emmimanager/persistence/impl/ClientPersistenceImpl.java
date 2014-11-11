@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -15,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.hasNames;
-import static com.emmisolutions.emmimanager.persistence.impl.specification.ClientSpecifications.isInStatus;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
@@ -40,6 +39,9 @@ public class ClientPersistenceImpl implements ClientPersistence {
     @Resource
     UserRepository userRepository;
 
+    @Resource
+    ClientSpecifications clientSpecifications;
+
     @Override
     public Page<Client> list(Pageable page, ClientSearchFilter searchFilter) {
         if (page == null) {
@@ -47,8 +49,8 @@ public class ClientPersistenceImpl implements ClientPersistence {
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
         return clientRepository.findAll(
-                where(hasNames(searchFilter)).and(isInStatus(searchFilter)),
-                caseInsensitiveSort(page));
+            where(clientSpecifications.hasNames(searchFilter)).and(clientSpecifications.isInStatus(searchFilter)),
+            caseInsensitiveSort(page));
     }
 
     public Client save(Client client) {

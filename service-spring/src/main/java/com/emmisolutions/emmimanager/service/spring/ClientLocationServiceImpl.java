@@ -74,6 +74,7 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     }
 
     @Override
+    @Transactional
     public ClientLocation createLocationAndAssociateTo(Client client, Location location) {
         return clientLocationPersistence.create(locationService.create(client, location).getId(), client.getId());
     }
