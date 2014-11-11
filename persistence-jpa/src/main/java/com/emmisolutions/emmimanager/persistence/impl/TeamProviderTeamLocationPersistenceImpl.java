@@ -1,9 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderTeamLocationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,10 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
-import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderTeamLocationRepository;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * TeamProviderTeamLocation Persistence Implementation
@@ -31,7 +28,7 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
 	public List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderteamLocations){
 		return teamProviderTeamLocationRepository.save(teamProviderteamLocations);
 	}
-	
+
     @Override
     public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
         if (page == null) {
@@ -40,9 +37,19 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
         }
         return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
     }
-    
+
 	@Override
 	public void removeAllByTeamProvider(TeamProvider teamProvider){
 		teamProviderTeamLocationRepository.removeAllByTeamProvider(teamProvider);
 	}
+
+    @Override
+    public void removeAllByClientLocation(Client client, Location location) {
+        teamProviderTeamLocationRepository.deleteByTeamProviderTeamClientAndTeamLocationLocation(client, location);
+    }
+
+    @Override
+    public void removeAllByClientProvider(Client client, Provider provider) {
+        teamProviderTeamLocationRepository.deleteByTeamProviderTeamClientAndTeamProviderProvider(client, provider);
+    }
 }
