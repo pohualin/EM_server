@@ -5,8 +5,10 @@ import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.Client_;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -17,10 +19,11 @@ import java.util.List;
 /**
  * This is the specification class that allows for filtering of Client objects.
  */
+@Component
 public class ClientSpecifications {
 
-    private ClientSpecifications() {
-    }
+    @Resource
+    MatchingCriteriaBean matchCriteria;
 
     /**
      * EM-12: Client types multiple words, separated only by spaces (no other delimiters needed),
@@ -29,7 +32,7 @@ public class ClientSpecifications {
      * @param searchFilter to be found
      * @return the specification as a filter predicate
      */
-    public static Specification<Client> hasNames(final ClientSearchFilter searchFilter) {
+    public Specification<Client> hasNames(final ClientSearchFilter searchFilter) {
         return new Specification<Client>() {
             @Override
             public Predicate toPredicate(Root<Client> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -39,9 +42,12 @@ public class ClientSpecifications {
                         List<String> searchTerms = new ArrayList<>();
 
                         // filter out duplicate terms
-                        for (String term : StringUtils.split(normalizeName(name), " ")) {
-                            if (!searchTerms.contains(term)) {
-                                searchTerms.add(term);
+                        String[] terms = StringUtils.split(matchCriteria.normalizeName(name), " ");
+                        if (terms != null) {
+                            for (String term : terms) {
+                                if (!searchTerms.contains(term)) {
+                                    searchTerms.add(term);
+                                }
                             }
                         }
                         List<Predicate> andClause = new ArrayList<>();
@@ -57,14 +63,6 @@ public class ClientSpecifications {
         };
     }
 
-    private static String normalizeName(String name) {
-        String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
-        if (StringUtils.isNotBlank(normalizedName)) {
-            // do regex
-            normalizedName = normalizedName.replaceAll("[^a-z0-9 ]*", "");
-        }
-        return normalizedName;
-    }
 
     /**
      * Ensures that the Client is in a particular status
@@ -72,7 +70,7 @@ public class ClientSpecifications {
      * @param searchFilter used to find the status
      * @return the specification as a filter predicate
      */
-    public static Specification<Client> isInStatus(final ClientSearchFilter searchFilter) {
+    public Specification<Client> isInStatus(final ClientSearchFilter searchFilter) {
         return new Specification<Client>() {
             @Override
             public Predicate toPredicate(Root<Client> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

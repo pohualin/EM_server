@@ -41,7 +41,6 @@ public class GroupPersistenceImpl implements GroupPersistence {
         return groupRepository.save(group);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Page<Group> list(Pageable page, GroupSearchFilter searchFilter) {
         if (page == null) {

@@ -14,8 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -31,14 +29,10 @@ public class LocationPersistenceImpl implements LocationPersistence {
     @Resource
     LocationRepository locationRepository;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     @Resource
     ClientPersistence clientPersistence;
 
     @Override
-    @SuppressWarnings("unchecked")
     public Page<Location> list(Pageable page, LocationSearchFilter filter) {
         if (page == null) {
             // default pagination request if none

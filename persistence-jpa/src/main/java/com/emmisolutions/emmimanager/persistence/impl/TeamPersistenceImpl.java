@@ -1,14 +1,12 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.TeamSpecifications.hasNames;
-import static com.emmisolutions.emmimanager.persistence.impl.specification.TeamSpecifications.isInStatus;
-import static com.emmisolutions.emmimanager.persistence.impl.specification.TeamSpecifications.usedBy;
-import static org.springframework.data.jpa.domain.Specifications.where;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSearchFilter;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.TeamSpecifications;
+import com.emmisolutions.emmimanager.persistence.repo.TeamRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,24 +14,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TeamRepository;
+import javax.annotation.Resource;
+
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 @Repository
 public class TeamPersistenceImpl implements TeamPersistence {
-	
+
 	@Resource
     TeamRepository teamRepository;
-	
-	@PersistenceContext
-    EntityManager entityManager;
+
+	@Resource
+    TeamSpecifications teamSpecifications;
 
     @Resource
-    ClientPersistence clientPersistence;	
+    ClientPersistence clientPersistence;
 
 	@Override
 	public Page<Team> list(Pageable page, TeamSearchFilter filter) {
@@ -45,16 +40,14 @@ public class TeamPersistenceImpl implements TeamPersistence {
         if (filter != null && filter.getClientId() != null){
             client = clientPersistence.reload(filter.getClientId());
         }
-        Page<Team> ret = teamRepository.findAll(where(usedBy(client)).and(hasNames(filter)).and(isInStatus(filter)), page);
-
-        return ret;
+        return teamRepository.findAll(where(teamSpecifications.usedBy(client))
+            .and(teamSpecifications.hasNames(filter)).and(teamSpecifications.isInStatus(filter)), page);
 	}
 
 	@Override
 	public Team save(Team team) {
 		team.setNormalizedTeamName(normalizeName(team));
-		Team teams = teamRepository.save(team);
-		return teams;		
+		return teamRepository.save(team);
 	}
 
 	@Override
@@ -64,12 +57,12 @@ public class TeamPersistenceImpl implements TeamPersistence {
         }
         return teamRepository.findOne(team.getId());
 	}
-	
+
     /**
      * remove the special characters replacing it with blank (" ") and change all to lower case
-     * 
-     * @param name
-     * @return
+     *
+     * @param name the name
+     * @return normalized name
      */
     private String normalizeName(String name) {
     	String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
@@ -79,8 +72,8 @@ public class TeamPersistenceImpl implements TeamPersistence {
     	}
     	return normalizedName;
     }
-    
-    private String normalizeName(Team team){    	
+
+    private String normalizeName(Team team){
     	return normalizeName(team.getName()==null?"":team.getName());
     }
 

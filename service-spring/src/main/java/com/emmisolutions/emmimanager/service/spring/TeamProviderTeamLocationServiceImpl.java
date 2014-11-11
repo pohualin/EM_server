@@ -12,6 +12,7 @@ import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
 import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLocationService {
@@ -23,13 +24,15 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 	public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
 		return teamProviderTeamLocationPersistence.findByTeamProvider(teamProvider, page);
 	}
-	
+
 	@Override
+    @Transactional
 	public List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> teamProviderTeamLocations) {
 		return teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocations);
 	}
-	
+
 	@Override
+    @Transactional
 	public void removeAllByTeamProvider(TeamProvider teamProvider){
 		teamProviderTeamLocationPersistence.removeAllByTeamProvider(teamProvider);
 	}
