@@ -25,7 +25,6 @@ public interface TeamProviderRepository extends JpaRepository<TeamProvider, Long
      */
     Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team);
 
-
     /**
      * Delete all TeamProvider objects for a Client and Provider
      *
