@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientLocationService;
 import com.emmisolutions.emmimanager.service.LocationService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +34,9 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     @Resource
     LocationService locationService;
 
+    @Resource
+    TeamLocationService teamLocationService;
+
     @Override
     public Page<ClientLocation> find(Client client, Pageable pageable) {
         if (client == null){
@@ -44,10 +48,12 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     @Override
     @Transactional
     public void remove(ClientLocation clientLocation) {
-        if (clientLocation == null){
+        ClientLocation toRemove = reload(clientLocation);
+        if (toRemove == null){
             throw new InvalidDataAccessApiUsageException("ClientLocation cannot be null");
         }
-        clientLocationPersistence.remove(clientLocation.getId());
+        teamLocationService.delete(toRemove.getClient(), toRemove.getLocation());
+        clientLocationPersistence.remove(toRemove.getId());
     }
 
     @Override

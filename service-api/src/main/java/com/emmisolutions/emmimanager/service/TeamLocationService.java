@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
@@ -49,4 +50,22 @@ public interface TeamLocationService {
      */
     void delete(TeamLocation teamLocation);
 
+    /**
+     * Find a page of teams using both the client and location
+     *
+     * @param client   used
+     * @param location used
+     * @param pageable the page spec
+     * @return a page of Team
+     */
+    Page<Team> findTeamsBy(Client client, Location location, Pageable pageable);
+
+    /**
+     * Delete all TeamLocations for a client and location
+     *
+     * @param client   the client
+     * @param location the location
+     * @return the number deleted
+     */
+    long delete(Client client, Location location);
 }

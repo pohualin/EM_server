@@ -1,14 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import javax.annotation.Resource;
-import javax.transaction.Transactional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
-
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
@@ -16,6 +8,13 @@ import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.TeamLocationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
 
 /*
  * teamLocation persistence implementation
@@ -65,13 +64,13 @@ public class TeamLocationPersistenceImpl implements TeamLocationPersistence {
     }
 
     @Override
-    @Transactional
-    public void deleteTeamLocationsWithTeam(Team team) {
-        if (team == null) {
-            throw new IllegalArgumentException("team location is null");
-        }
-        teamLocationRepository.deleteByTeam(team);
-        teamLocationRepository.flush();
+    public Page<Team> findTeamsBy(Client client, Location location, Pageable page) {
+        return teamLocationRepository.findTeamsByClientAndLocation(client, location, page);
+    }
+
+    @Override
+    public long delete(Client client, Location location) {
+        return teamLocationRepository.deleteByTeamClientAndLocation(client, location);
     }
 
     private void checkTeamLocationNull(TeamLocation teamLocation) {

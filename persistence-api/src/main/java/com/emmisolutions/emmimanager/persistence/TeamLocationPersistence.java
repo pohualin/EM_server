@@ -1,10 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 /**
  * TeamTag persistence class
  */
@@ -37,8 +38,21 @@ public interface TeamLocationPersistence {
     Page<TeamLocation> getAllTeamLocationsForTeam(Pageable pageable,Team team);
 
     /**
-     * deletes all teamLocations with the given team
-     * @param Team team	to search for
+     * Finds a page of TeamLocations for a client and location
+     *
+     * @param client   the client
+     * @param location the location
+     * @param page     specification
+     * @return page of Teams
      */
-    void deleteTeamLocationsWithTeam(Team team);
+    Page<Team> findTeamsBy(Client client, Location location, Pageable page);
+
+    /**
+     * Delete all TeamLocations for a client and location
+     *
+     * @param client   the client
+     * @param location the location
+     * @return the number deleted
+     */
+    long delete(Client client, Location location);
 }
