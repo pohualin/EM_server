@@ -1,18 +1,14 @@
 package com.emmisolutions.emmimanager.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.Set;
 
 /**
  * A Team location.
@@ -38,6 +34,10 @@ public class TeamLocation extends AbstractAuditingEntity {
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy="teamProvider")
+    @XmlTransient
+    private Set<TeamProviderTeamLocation> teamProviderTeamLocations;
 
     /**
      * create a TeamLocation based on a Location and a Team
@@ -96,5 +96,12 @@ public class TeamLocation extends AbstractAuditingEntity {
 	public void setTeam(Team team) {
 		this.team = team;
 	}
-    
+
+    public Set<TeamProviderTeamLocation> getTeamProviderTeamLocations() {
+        return teamProviderTeamLocations;
+    }
+
+    public void setTeamProviderTeamLocations(Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
+        this.teamProviderTeamLocations = teamProviderTeamLocations;
+    }
 }
