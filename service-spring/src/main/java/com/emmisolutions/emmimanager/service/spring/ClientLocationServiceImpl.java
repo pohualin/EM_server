@@ -48,11 +48,12 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     @Override
     @Transactional
     public void remove(ClientLocation clientLocation) {
-        if (clientLocation == null){
+        ClientLocation toRemove = reload(clientLocation);
+        if (toRemove == null){
             throw new InvalidDataAccessApiUsageException("ClientLocation cannot be null");
         }
-        teamLocationService.delete(clientLocation.getClient(), clientLocation.getLocation());
-        clientLocationPersistence.remove(clientLocation.getId());
+        teamLocationService.delete(toRemove.getClient(), toRemove.getLocation());
+        clientLocationPersistence.remove(toRemove.getId());
     }
 
     @Override
