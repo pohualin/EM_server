@@ -78,11 +78,11 @@ public class ClientProvidersResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "provider.firstName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "provider.lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientProviderResourcePage> current(
         @PathVariable Long clientId,
-        @PageableDefault(size = 10, sort = "provider.firstName", direction = Sort.Direction.ASC) Pageable pageable,
+        @PageableDefault(size = 10, sort = {"provider.lastName"}, direction = Sort.Direction.ASC) Pageable pageable,
         Sort sort, PagedResourcesAssembler<ClientProvider> assembler) {
         Page<ClientProvider> clientProviderPage = clientProviderService.find(new Client(clientId), pageable);
         if (clientProviderPage.hasContent()) {
@@ -135,11 +135,11 @@ public class ClientProvidersResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "fistName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientProviderResourcePage> possible(
         @PathVariable Long clientId,
-        @PageableDefault(size = 10, sort = "firstName", direction = Sort.Direction.ASC) Pageable pageable,
+        @PageableDefault(size = 10, sort = {"lastName"}, direction = Sort.Direction.ASC) Pageable pageable,
         Sort sort, PagedResourcesAssembler<ClientProvider> assembler,
         @RequestParam(value = "status", required = false) String status,
         @RequestParam(value = "name", required = false) String name) {
