@@ -9,13 +9,25 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import cz.jirutka.spring.exhandler.RestHandlerExceptionResolver;
+import cz.jirutka.spring.exhandler.support.HttpMessageConverterUtils;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.geo.GeoModule;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.AuthorizationServiceException;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +37,9 @@ import java.util.List;
  */
 @Configuration
 @ComponentScan(basePackages = {
-        "com.emmisolutions.emmimanager.service.configuration",
-        "com.emmisolutions.emmimanager.web.rest.resource",
-        "com.emmisolutions.emmimanager.web.rest.model"
+    "com.emmisolutions.emmimanager.service.configuration",
+    "com.emmisolutions.emmimanager.web.rest.resource",
+    "com.emmisolutions.emmimanager.web.rest.model"
 })
 public class RestConfiguration extends DelegatingWebMvcConfiguration {
 
@@ -40,6 +52,39 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new JsonJacksonConverter());
         converters.add(new XmlJacksonConverter());
+    }
+
+    @Override
+    protected void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        resolvers.add(exceptionHandlerExceptionResolver()); // resolves @ExceptionHandler
+        resolvers.add(restExceptionResolver());
+    }
+
+    @Bean
+    public RestHandlerExceptionResolver restExceptionResolver() {
+        return RestHandlerExceptionResolver.builder()
+            .messageSource(httpErrorMessageSource())
+            .defaultContentType(MediaType.APPLICATION_JSON)
+            .addErrorMessageHandler(EmptyResultDataAccessException.class, HttpStatus.NOT_FOUND)
+            .addErrorMessageHandler(OptimisticLockingFailureException.class, HttpStatus.CONFLICT)
+            .addErrorMessageHandler(AccessDeniedException.class, HttpStatus.FORBIDDEN)
+            .addErrorMessageHandler(AuthorizationServiceException.class, HttpStatus.INTERNAL_SERVER_ERROR)
+            .build();
+    }
+
+    @Bean
+    public MessageSource httpErrorMessageSource() {
+        ReloadableResourceBundleMessageSource m = new ReloadableResourceBundleMessageSource();
+        m.setBasename("classpath:/errors/messages");
+        m.setDefaultEncoding("UTF-8");
+        return m;
+    }
+
+    @Bean
+    public ExceptionHandlerExceptionResolver exceptionHandlerExceptionResolver() {
+        ExceptionHandlerExceptionResolver resolver = new ExceptionHandlerExceptionResolver();
+        resolver.setMessageConverters(HttpMessageConverterUtils.getDefaultHttpMessageConverters());
+        return resolver;
     }
 
     private void enableJacksonFeatures(ObjectMapper mapper) {
