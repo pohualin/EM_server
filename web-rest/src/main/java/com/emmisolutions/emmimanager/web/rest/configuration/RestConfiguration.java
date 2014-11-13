@@ -10,7 +10,7 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import cz.jirutka.spring.exhandler.RestHandlerExceptionResolver;
-import cz.jirutka.spring.exhandler.support.HttpMessageConverterUtils;
+import cz.jirutka.spring.exhandler.handlers.AbstractRestExceptionHandler;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,11 +24,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +73,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
             .addErrorMessageHandler(EmptyResultDataAccessException.class, HttpStatus.NOT_FOUND)
             .addErrorMessageHandler(OptimisticLockingFailureException.class, HttpStatus.CONFLICT)
             .addErrorMessageHandler(AccessDeniedException.class, HttpStatus.FORBIDDEN)
-            .addErrorMessageHandler(AuthorizationServiceException.class, HttpStatus.INTERNAL_SERVER_ERROR)
+            .addHandler(Exception.class, new UncaughtExceptionRestExceptionHandler())
             .build();
     }
 
@@ -83,7 +88,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
     @Bean
     public ExceptionHandlerExceptionResolver exceptionHandlerExceptionResolver() {
         ExceptionHandlerExceptionResolver resolver = new ExceptionHandlerExceptionResolver();
-        resolver.setMessageConverters(HttpMessageConverterUtils.getDefaultHttpMessageConverters());
+        resolver.setMessageConverters(getMessageConverters());
         return resolver;
     }
 
@@ -130,6 +135,118 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
          */
         public JsonJacksonConverter() {
             enableJacksonFeatures(getObjectMapper());
+        }
+    }
+
+    /**
+     * This class writes the stack trace to the error message details
+     */
+    @SuppressWarnings("all")
+    private class UncaughtExceptionRestExceptionHandler extends AbstractRestExceptionHandler<Exception, ErrorMessage> {
+        /**
+         * Constructor which sets 500 error
+         */
+        private UncaughtExceptionRestExceptionHandler() {
+            super(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @Override
+        public ErrorMessage createBody(Exception ex, HttpServletRequest req) {
+            ErrorMessage m = new ErrorMessage();
+            m.setTitle("Uncaught Exception");
+            m.setStatus(getStatus());
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            m.setDetail(sw.toString());
+            return m;
+        }
+    }
+
+    /**
+     * Patch to the ErrorMessage because it has dependencies on jars which don't exist in our project.
+     * This class removes the compile warnings.
+     */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @XmlRootElement(name = "problem")
+    public static class ErrorMessage implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private URI type;
+
+        private String title;
+
+        private Integer status;
+
+        private String detail;
+
+        private URI instance;
+
+        public void setStatus(Integer status) {
+            this.status = status;
+        }
+
+        public void setStatus(HttpStatus status) {
+            this.setStatus(status.value());
+        }
+
+        /**
+         * An absolute URI that identifies the problem type. When dereferenced, it
+         * SHOULD provide human-readable documentation for the problem type (e.g.,
+         * using HTML). When this member is not present, its value is assumed to
+         * be "about:blank".
+         */
+        public URI getType() {
+            return type;
+        }
+
+        public void setType(URI type) {
+            this.type = type;
+        }
+
+        /**
+         * A short, human-readable summary of the problem type. It SHOULD NOT
+         * change from occurrence to occurrence of the problem, except for purposes
+         * of localization.
+         */
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        /**
+         * The HTTP status code generated by the origin server for this occurrence
+         * of the problem.
+         */
+        public Integer getStatus() {
+            return status;
+        }
+
+        /**
+         * An human readable explanation specific to this occurrence of the
+         * problem.
+         */
+        public String getDetail() {
+            return detail;
+        }
+
+        public void setDetail(String detail) {
+            this.detail = detail;
+        }
+
+        /**
+         * An absolute URI that identifies the specific occurrence of the problem.
+         * It may or may not yield further information if dereferenced.
+         */
+        public URI getInstance() {
+            return instance;
+        }
+
+        public void setInstance(URI instance) {
+            this.instance = instance;
         }
     }
 }
