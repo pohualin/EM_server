@@ -49,7 +49,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("client provider was loaded", clientProvider, is(notNullValue()));
 
         clientProviderService.remove(clientProvider);
-        assertThat("client has zero providers after delete", 0l, is(clientProviderService.find(client, null).getTotalElements()));
+        assertThat("client has zero providers after delete", 0l, is(clientProviderService.findByClient(client, null).getTotalElements()));
     }
 
     /**
@@ -60,7 +60,10 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
     public void findPossibleProviders(){
         // make a bunch of providers
         final Provider provider = makeProvider();
-        for (int i = 0; i < 10; i++) {
+        // Note: This test is effected by findByProviderId test
+        // One additional Provider was added in findByProviderId
+        // We should remove that Provider once delete functionality is added
+        for (int i = 0; i < 9; i++) {
             makeProvider();
         }
 
@@ -94,7 +97,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         ClientProvider clientProvider = clientProviderService.create(new ClientProvider(client, provider));
         assertThat("ClientProvider is not null", clientProvider, is(notNullValue()));
 
-        Page<ClientProvider> clientProviderPage = clientProviderService.find(client, null);
+        Page<ClientProvider> clientProviderPage = clientProviderService.findByClient(client, null);
         assertThat("finding client providers should include the newly created one", clientProviderPage, hasItem(clientProvider));
 
         // update the clientProvider
@@ -104,6 +107,19 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("provider was updated", updated.getProvider().isActive(), is(true));
         assertThat("client provider was updated", updated.getExternalId(), is(clientProvider.getExternalId()));
         assertThat("client provider version should be different", updated.getVersion(), is(not(clientProvider.getVersion())));
+    }
+    
+    @Test
+    public void findByProvider(){
+    	Client clientA = makeClient();
+    	Client clientB = makeClient();
+    	Provider provider = makeProvider();
+    	Set<Provider> providers = new HashSet<Provider>();
+    	providers.add(provider);
+    	clientProviderService.create(clientA, providers);
+    	clientProviderService.create(clientB, providers);
+    	Page<ClientProvider> list = clientProviderService.findByProvider(provider, null);
+    	assertThat("There shoule be 2 clients found for the provider.", list.getTotalElements(), is(2l));
     }
 
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -116,7 +132,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
-        clientProviderService.find(null, null);
+        clientProviderService.findByClient(null, null);
     }
 
     /**

@@ -84,7 +84,7 @@ public class ClientProvidersResource {
         @PathVariable Long clientId,
         @PageableDefault(size = 10, sort = "provider.firstName", direction = Sort.Direction.ASC) Pageable pageable,
         Sort sort, PagedResourcesAssembler<ClientProvider> assembler) {
-        Page<ClientProvider> clientProviderPage = clientProviderService.find(new Client(clientId), pageable);
+        Page<ClientProvider> clientProviderPage = clientProviderService.findByClient(new Client(clientId), pageable);
         if (clientProviderPage.hasContent()) {
             return new ResponseEntity<>(
                 new ClientProviderResourcePage(assembler.toResource(clientProviderPage, clientProviderResourceAssembler), clientProviderPage, null),

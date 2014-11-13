@@ -16,6 +16,7 @@ public class ProviderResourceAssembler implements ResourceAssembler<Provider, Pr
 	public ProviderResource toResource(Provider entity){
 		ProviderResource ret = new ProviderResource();
         ret.add(linkTo(methodOn(ProvidersResource.class).getById(entity.getId())).withSelfRel());
+        ret.add(ProviderClientResourcePage.createCurrentClientsSearchLink(entity));
 		ret.setEntity(entity);
 		return ret;
 	}

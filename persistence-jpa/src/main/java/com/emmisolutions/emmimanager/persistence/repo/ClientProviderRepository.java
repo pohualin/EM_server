@@ -23,6 +23,15 @@ public interface ClientProviderRepository extends JpaRepository<ClientProvider, 
      * @return a page of matching ClientProvider objects
      */
     Page<ClientProvider> findByClientId(Long clientId, Pageable page);
+    
+    /**
+     * Finds a page of providers by provider id
+     *
+     * @param providerId to narrow by
+     * @param page     the page specification
+     * @return a page of matching ClientProvider objects
+     */
+    Page<ClientProvider> findByProviderId(Long providerId, Pageable page);
 
     /**
      * Finds a full list of ClientProvider objects for a single client for a

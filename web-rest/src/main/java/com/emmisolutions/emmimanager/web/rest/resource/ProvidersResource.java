@@ -1,16 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResource;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ReferenceData;
+import static com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,14 +15,31 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
-import static com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter.fromStringOrActive;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderClientResourcePage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResource;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ReferenceData;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
  * Providers REST API
@@ -39,9 +52,15 @@ public class ProvidersResource {
 
     @Resource
     ProviderService providerService;
+    
+    @Resource
+    ClientProviderService clientProviderService;
 
     @Resource
     ProviderResourceAssembler providerResourceAssembler;
+    
+    @Resource
+    ProviderClientResourceAssembler providerClientResourceAssembler;
 
     @Resource
     ReferenceTagResourceAssembler referenceTagResourceAssembler;
@@ -158,5 +177,38 @@ public class ProvidersResource {
     @RolesAllowed({"PERM_GOD", "PERM_PROVIDER_VIEW"})
     public ReferenceData getReferenceData() {
         return new ReferenceData();
+    }
+    
+    /**
+     * GET to find existing client providers for a client.
+     *
+     * @param clientId  the client
+     * @param pageable  the page to request
+     * @param sort      sorting
+     * @param assembler used to create the PagedResources
+     * @return Page of ClientProviderResource objects or NO_CONTENT
+     */
+    @RequestMapping(value = "/providers/{providerId}/clients",
+        method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_LIST"})
+    @ApiOperation("finds existing ClientProviders by providerId")
+    @ApiImplicitParams(value = {
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "client.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<ProviderClientResourcePage> currentClients(
+        @PathVariable Long providerId,
+        @PageableDefault(size = 10, sort = "client.name", direction = Sort.Direction.ASC) Pageable pageable,
+        Sort sort, PagedResourcesAssembler<ClientProvider> assembler) {
+        Page<ClientProvider> clientProviderPage = clientProviderService.findByProvider(new Provider(providerId), pageable);
+        if (clientProviderPage.hasContent()) {
+            return new ResponseEntity<>(
+                new ProviderClientResourcePage(assembler.toResource(clientProviderPage, providerClientResourceAssembler), clientProviderPage, null),
+                HttpStatus.OK
+            );
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 }
