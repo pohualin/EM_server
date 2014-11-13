@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
@@ -29,6 +30,7 @@ import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderClientResourceAssembler;
@@ -209,6 +211,26 @@ public class ProvidersResource {
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
+    /**
+     * PUT to update the provider
+     *
+     * @param provider to update
+     * @return ProviderResource or INTERNAL_SERVER_ERROR if update were unsuccessful
+     */
+    @RequestMapping(value = "/providers",
+            method = RequestMethod.PUT,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_EDIT"})
+    public ResponseEntity<ProviderResource> update(@RequestBody Provider provider) {
+        provider = providerService.update(provider);
+        if (provider == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(providerResourceAssembler.toResource(provider), HttpStatus.OK);
         }
     }
 }
