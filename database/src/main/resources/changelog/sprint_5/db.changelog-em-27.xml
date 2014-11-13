@@ -136,4 +136,8 @@
 	                  separator=";"
 	                  tableName="permission"/>
 	</changeSet>
+    <changeSet id="em-435" author="Amrita">
+	    <dropNotNullConstraint tableName="provider" columnName="reference_tag_specialty"/>
+	    <dropNotNullConstraint tableName="provider" columnName="email"/>
+    </changeSet>
 </databaseChangeLog>    
