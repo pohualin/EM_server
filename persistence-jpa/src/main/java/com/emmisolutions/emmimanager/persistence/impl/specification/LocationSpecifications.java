@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.model.Location_;
-import com.emmisolutions.emmimanager.persistence.impl.helper.MatchingCriteriaBean;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -27,9 +26,6 @@ public class LocationSpecifications {
 	@Resource
 	MatchingCriteriaBean matchCriteria;
 
-    public LocationSpecifications() {
-    }
-
     /**
      * Case insensitive name anywhere match
      *
@@ -47,13 +43,14 @@ public class LocationSpecifications {
 
                     for (String name : searchFilter.getNames()) {
                         List<String> searchTerms = new ArrayList<>();
-
-                        for (String term: StringUtils.split(matchCriteria.normalizeName(name), " ")) {
-                            if (!searchTerms.contains(term)){
-                                searchTerms.add(term);
+                        String[] terms = StringUtils.split(matchCriteria.normalizeName(name), " ");
+                        if (terms != null) {
+                            for (String term : terms) {
+                                if (!searchTerms.contains(term)) {
+                                    searchTerms.add(term);
+                                }
                             }
                         }
-
                         for (String searchTerm: searchTerms){
                             if (StringUtils.isNotBlank(searchTerm)) {
                                 addedANameFilter = true;

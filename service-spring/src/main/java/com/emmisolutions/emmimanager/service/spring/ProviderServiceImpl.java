@@ -28,7 +28,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Resource
     TeamService teamService;
-    
+
 	@Resource
 	TeamProviderPersistence teamProviderPersistence;
 
@@ -66,10 +66,10 @@ public class ProviderServiceImpl implements ProviderService {
 
         // create the client provider
         clientProviderPersistence.create(savedProvider.getId(), toFind.getClient().getId());
-			
+
 		return savedProvider;
     }
-    
+
     @Override
     @Transactional
     public Provider update(Provider provider) {
@@ -90,7 +90,7 @@ public class ProviderServiceImpl implements ProviderService {
         }
         return providerPersistence.findAllByGroupTypeName(page);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
 	public Page<Provider> list(Pageable page, ProviderSearchFilter filter) {
@@ -98,6 +98,7 @@ public class ProviderServiceImpl implements ProviderService {
  	}
 
     @Override
+    @Transactional
     public Provider create(Provider provider) {
         if (provider == null) {
             throw new InvalidDataAccessApiUsageException("provider cannot be null");

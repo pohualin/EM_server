@@ -63,6 +63,7 @@ public class TeamServiceImpl implements TeamService {
      * @return Team  returns a persisted Team entity
      */
     @Override
+    @Transactional
     public Team create(Team team) {
         if (team == null) {
             throw new IllegalArgumentException("teams cannot be null");
@@ -78,6 +79,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
     @Override
+    @Transactional
     public Team update(Team team) {
         Team dbTeam = teamPersistence.reload(team);
         if (dbTeam == null) {
