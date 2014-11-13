@@ -48,7 +48,6 @@ public class ApplicationInitializer implements WebApplicationInitializer {
     private void initSpring(ServletContext servletContext, EnumSet<DispatcherType> disps, AnnotationConfigWebApplicationContext rootContext) {
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(rootContext));
         dispatcher.setLoadOnStartup(1);
-        dispatcher.setInitParameter("throwExceptionIfNoHandlerFound", "true");
         dispatcher.addMapping("/");
     }
 
