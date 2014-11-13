@@ -1,15 +1,24 @@
 package com.emmisolutions.emmimanager.model;
 
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.hibernate.validator.constraints.Email;
+import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.validator.constraints.Email;
 /**
  * A Provider and its specialty and teams
  */
@@ -46,14 +55,12 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	private String middleName;
 
 	@Email
-	@NotNull
 	@Size(min = 0, max = 100)
-	@Column(length = 100, nullable = false)
+	@Column(length = 100)
 	private String email;
 
 	@ManyToOne
-    @NotNull
-	@JoinColumn(name = "reference_tag_specialty", nullable = false)
+	@JoinColumn(name = "reference_tag_specialty")
 	private ReferenceTag specialty;
 	
 	@NotNull
