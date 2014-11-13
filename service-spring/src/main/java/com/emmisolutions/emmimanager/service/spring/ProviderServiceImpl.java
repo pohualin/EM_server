@@ -50,10 +50,16 @@ public class ProviderServiceImpl implements ProviderService {
     @Override
     @Transactional
     public Provider create(Provider provider, Team team) {
+    	
         final Team toFind = teamService.reload(team);
         if (provider == null || toFind == null) {
             throw new IllegalArgumentException("provider or team cannot be null");
         }
+        
+        if (provider.getSpecialty() == null && provider.getEmail() == null) {
+            throw new InvalidDataAccessApiUsageException("provider specialty and email cannot be null");
+        }
+        
         provider.setId(null);
         provider.setVersion(null);
 		Provider savedProvider =  providerPersistence.save(provider);
