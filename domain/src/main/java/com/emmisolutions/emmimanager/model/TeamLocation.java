@@ -35,7 +35,7 @@ public class TeamLocation extends AbstractAuditingEntity {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy="teamProvider")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy="teamLocation")
     @XmlTransient
     private Set<TeamProviderTeamLocation> teamProviderTeamLocations;
 
