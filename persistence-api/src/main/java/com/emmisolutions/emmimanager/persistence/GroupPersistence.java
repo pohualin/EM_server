@@ -3,9 +3,11 @@ package com.emmisolutions.emmimanager.persistence;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,5 +57,5 @@ public interface GroupPersistence {
      * @param clientId for the scope of the tags to check
      * @return set of conflicting teams
      */
-    java.util.HashSet<com.emmisolutions.emmimanager.model.TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);
+    HashSet<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);
 }

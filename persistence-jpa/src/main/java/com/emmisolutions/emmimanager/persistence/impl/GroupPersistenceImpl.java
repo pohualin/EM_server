@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -88,15 +89,17 @@ public class GroupPersistenceImpl implements GroupPersistence {
         Set<Long> notInTheseTags = new HashSet<>();
         for (GroupSaveRequest groupSaveRequest : groupSaveRequests) {
             for (Tag tag : groupSaveRequest.getTags()) {
-                if (tag.getId() != null){
+                if (tag.getId() != null) {
                     notInTheseTags.add(tag.getId());
                 }
             }
         }
-        if(notInTheseTags.size()==0){
-            notInTheseTags.add(0L);
+        List<TeamTag> conflictingTeams;
+        if (notInTheseTags.size() == 0) {
+            conflictingTeams = groupRepository.findTeamsPreventingSaveOf(clientId);
+        } else {
+            conflictingTeams = groupRepository.findTeamsPreventingSaveOf(clientId, notInTheseTags);
         }
-        List<TeamTag> conflictingTeams = groupRepository.findTeamsPreventingSaveOf(clientId, notInTheseTags);
         return new HashSet<>(conflictingTeams);
     }
 }
