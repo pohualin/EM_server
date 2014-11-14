@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
         ret.add(linkTo(methodOn(TeamsResource.class).clientTeams(entity.getId(), null, null, null, null, (String[]) null)).withRel("teams"));
         ret.add(GroupPage.createFullSearchLink(entity.getId()));
+        ret.add(linkTo(methodOn(GroupsResource.class).invalidTeams(null, entity.getId())).withRel("invalidTeams"));
         ret.add(TeamPage.createFindTeamByNormalizedNameLink(entity.getId()));
         ret.add(TeamResource.createTeamByTeamIdLink(entity.getId()));
         ret.add(ClientLocationResourcePage.createCurrentLocationsSearchLink(entity));

@@ -99,6 +99,11 @@ public class GroupServiceImpl implements GroupService {
         return groups;
     }
 
+    @Override
+    public HashSet<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
+        return groupPersistence.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
+    }
+
     private void cleanOutOrphans(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
         Set<Long> groupIdsToKeep = new HashSet<>();
         for (GroupSaveRequest groupSaveRequest : groupSaveRequests) {

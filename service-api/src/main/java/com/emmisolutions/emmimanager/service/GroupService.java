@@ -59,4 +59,12 @@ public interface GroupService {
     public Set<Group> saveGroupsAndTags(
             List<GroupSaveRequest> groupSaveRequests, Long clientId);
 
+    /**
+     * Find the set of Teams that are already mapped to tags not present in the
+     * save request.
+     * @param groupSaveRequests to check
+     * @param clientId for the scope of the tags to check
+     * @return set of conflicting teams
+     */
+    java.util.HashSet<com.emmisolutions.emmimanager.model.TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);
 }

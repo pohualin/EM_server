@@ -1,10 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.GroupPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
@@ -14,7 +11,9 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -44,11 +43,22 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     ClientTypeRepository clientTypeRepository;
 
+    @Resource
+    TagPersistence tagPersistence;
+
+    @Resource
+    TeamPersistence teamPersistence;
+
+    @Resource
+    TeamTagPersistence teamTagPersistence;
+
 	User superAdmin;
 
     ClientType clientType;
 
-	@Before
+
+
+    @Before
 	public void init() {
 	    superAdmin = userPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
@@ -107,6 +117,38 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("remove of null should return zero", groupPersistence.removeGroupsThatAreNotAssociatedWith(null, null), is(0l));
     }
 
+    /**
+     * should return a set of conflicting teams
+     */
+    @Test
+    public void findTeamsPreventingSaveOf(){
+        List<GroupSaveRequest> groupSaveRequests = new ArrayList<>();
+        // create groups
+        Group groupOne = new Group();
+        groupOne.setName("TestGroup1");
+
+        Client clientOne = makeClient();
+        clientPersistence.save(clientOne);
+        groupOne.setClient(clientPersistence.reload(clientOne.getId()));
+        groupOne = groupPersistence.save(groupOne);
+
+        List<Tag> tagList = createTagList(groupOne, 4);
+        List<Tag> subTagList = tagList.subList(0,3);
+        Team team1 = createTeam(clientOne, 1);
+        teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(0)));
+        teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(3)));
+
+        GroupSaveRequest groupSaveRequest = new GroupSaveRequest();
+        groupSaveRequest.setGroup(groupOne);
+
+        groupSaveRequest.setTags(subTagList);
+
+        groupSaveRequests.add(groupSaveRequest);
+
+        HashSet hashSet = groupPersistence.findTeamsPreventingSaveOf(groupSaveRequests,clientOne.getId());
+        assertThat("found conflicting team",hashSet.size(),is(1));
+    }
+
     private Client makeClient(){
         Client client = new Client();
         client.setTier(new ClientTier(3l));
@@ -119,5 +161,34 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
+    }
+
+    private List<Tag> createTagList(Group group, int numberOfTags) {
+        List<Tag> tagList = new ArrayList<>();
+        for (int i = 0; i < numberOfTags; i++) {
+            Tag tag = createTag(group);
+            tagList.add(tag);
+        }
+
+        tagList = tagPersistence.createAll(tagList);
+        return tagList;
+    }
+
+    private Tag createTag(Group group) {
+        Tag tag = new Tag();
+        tag.setName("Test Tag " + System.currentTimeMillis());
+        tag.setGroup(group);
+        return tag;
+    }
+
+    private Team createTeam(Client client, int i) {
+        Team team = new Team();
+        team.setName("Test Team" + i);
+        team.setDescription("Test Team description");
+        team.setActive(i % 2 == 0);
+        team.setClient(client);
+        team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+        team = teamPersistence.save(team);
+        return team;
     }
 }
