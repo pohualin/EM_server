@@ -21,7 +21,16 @@ public interface ClientProviderService {
      * @param pageable which page to fetch
      * @return a page of client provider objects
      */
-    Page<ClientProvider> find(Client client, Pageable pageable);
+    Page<ClientProvider> findByClient(Client client, Pageable pageable);
+    
+    /**
+     * Find a page of client providers for a provider
+     *
+     * @param provider to find client providers
+     * @param pageable which page to fetch
+     * @return a page of client provider objects
+     */
+    Page<ClientProvider> findByProvider(Provider provider, Pageable pageable);
 
     /**
      * Removes a ClientProvider
