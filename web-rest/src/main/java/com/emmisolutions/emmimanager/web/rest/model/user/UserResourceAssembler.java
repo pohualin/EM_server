@@ -63,7 +63,7 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());
         ret.add(linkTo(methodOn(ProvidersResource.class).getReferenceData()).withRel("providersReferenceData"));
-        ret.add(createProviderByIdLink());
+
         return ret;
     }
 
@@ -86,20 +86,6 @@ public class UserResourceAssembler implements ResourceAssembler<User, UserResour
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).createTeam(1l,null);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("teamsByClientId");
-        String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
-        if (idx != -1) {
-            return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
-                    link.getRel());
-        }
-        return null;
-    }
-    
-    public Link createProviderByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ProvidersResource.class).getById(1l);
-        Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("providerById");
         String href = link.getHref();
         int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
         if (idx != -1) {

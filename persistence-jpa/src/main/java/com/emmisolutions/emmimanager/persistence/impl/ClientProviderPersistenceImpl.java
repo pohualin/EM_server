@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientProviderRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
-
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,8 +89,6 @@ public class ClientProviderPersistenceImpl implements ClientProviderPersistence 
     public ClientProvider save(ClientProvider clientProvider) {
         return clientProviderRepository.save(clientProvider);
     }
-
-	
 
 
 }
