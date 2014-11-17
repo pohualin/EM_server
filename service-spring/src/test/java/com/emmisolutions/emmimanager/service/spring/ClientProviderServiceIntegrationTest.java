@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -60,10 +61,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
     public void findPossibleProviders(){
         // make a bunch of providers
         final Provider provider = makeProvider();
-        // Note: This test is effected by findByProviderId test
-        // One additional Provider was added in findByProviderId
-        // We should remove that Provider once delete functionality is added
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             makeProvider();
         }
 
@@ -113,7 +111,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
     public void findByProvider(){
     	Client clientA = makeClient();
     	Client clientB = makeClient();
-    	Provider provider = makeProvider();
+    	Provider provider = makeProvider("findByProvider");
     	Set<Provider> providers = new HashSet<Provider>();
     	providers.add(provider);
     	clientProviderService.create(clientA, providers);
@@ -182,12 +180,19 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         return clientService.create(client);
     }
 
-    private Provider makeProvider() {
+    private Provider makeProvider(String firstName) {
         Provider provider = new Provider();
-        provider.setFirstName("ClientProviderServiceIntegrationTest Provider");
+        if(StringUtils.isBlank(firstName)){
+        	firstName = "ClientProviderServiceIntegrationTest Provider";
+        }
+        provider.setFirstName(firstName);
         provider.setLastName(RandomStringUtils.randomAlphabetic(255));
         provider.setSpecialty(new ReferenceTag(20));
         provider.setEmail("whatever@whatever.com");
         return providerService.create(provider);
+    }
+    
+    private Provider makeProvider(){
+    	return makeProvider("");
     }
 }
