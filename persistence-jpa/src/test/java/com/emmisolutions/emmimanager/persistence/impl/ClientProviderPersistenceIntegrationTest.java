@@ -45,7 +45,7 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
         clientProvider = clientProviderPersistence.reload(clientProvider.getId());
         assertThat("client provider is not null", clientProvider, is(notNullValue()));
 
-        Page<ClientProvider> clientProviderPage = clientProviderPersistence.find(client.getId(), null);
+        Page<ClientProvider> clientProviderPage = clientProviderPersistence.findByClientId(client.getId(), null);
         assertThat("client provider is on the page", clientProviderPage, hasItem(clientProvider));
 
         clientProviderPersistence.remove(clientProvider.getId());
@@ -97,7 +97,21 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
-        clientProviderPersistence.find(null, null);
+        clientProviderPersistence.findByClientId(null, null);
+    }
+    
+    @Test
+    public void findByProviderId(){
+    	Client clientA = makeClient();
+    	Client clientB = makeClient();
+    	
+    	Provider provider = makeProvider();
+    	
+    	clientProviderPersistence.create(provider.getId(), clientA.getId());
+    	clientProviderPersistence.create(provider.getId(), clientB.getId());
+    	
+    	Page<ClientProvider> list = clientProviderPersistence.findByProviderId(provider.getId(), null);
+    	assertThat("There should be 2 clients found", list.getTotalElements(), is(2l));
     }
 
     private Client makeClient() {

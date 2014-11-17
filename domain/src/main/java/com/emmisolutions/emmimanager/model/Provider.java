@@ -68,7 +68,20 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
     @Column(name="normalized_name", length = 512, nullable = false)
     @NotAudited
     @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
-    private String normalizedName;    
+    private String normalizedName;
+	
+	public Provider(){
+		
+	}
+	
+	/**
+     * ID constructor
+     *
+     * @param id      to use
+     */
+    public Provider(Long id) {
+        this.id = id;
+    }
 
 	public String getNormalizedName() {
 		return normalizedName;

@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSaveRequest;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
 import com.emmisolutions.emmimanager.service.TagService;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -101,6 +99,25 @@ public class GroupsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(groups, HttpStatus.OK);
+        }
+    }
+
+/**
+     * get to get conflicting teams
+     *
+     * @param groupSaveRequests groups and tags to create
+     * @param clientId          the client id
+     * @return List of Group objects or INTERNAL_SERVER_ERROR if update were unsuccessful
+     */
+    @RequestMapping(value = "/clients/{clientId}/invalidTeam", method = RequestMethod.POST)
+    @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
+    public ResponseEntity<Set<TeamTag>> invalidTeams(@RequestBody List<GroupSaveRequest> groupSaveRequests,
+                                                         @PathVariable("clientId") Long clientId) {
+        Set<TeamTag> teamTags = groupService.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
+        if (teamTags == null || teamTags.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(teamTags, HttpStatus.OK);
         }
     }
 
