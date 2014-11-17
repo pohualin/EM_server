@@ -145,7 +145,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
         groupSaveRequests.add(groupSaveRequest);
 
-        HashSet hashSet = groupPersistence.findTeamsPreventingSaveOf(groupSaveRequests,clientOne.getId());
+        HashSet hashSet = (HashSet) groupPersistence.findTeamsPreventingSaveOf(groupSaveRequests,clientOne.getId());
         assertThat("found conflicting team",hashSet.size(),is(1));
     }
 

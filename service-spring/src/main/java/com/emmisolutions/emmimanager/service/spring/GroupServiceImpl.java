@@ -101,7 +101,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public HashSet<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
-        return groupPersistence.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
+        return (HashSet)groupPersistence.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
     }
 
     private void cleanOutOrphans(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
