@@ -6,6 +6,19 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResource;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ReferenceData;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -152,9 +165,14 @@ public class ProvidersResource {
      */
     @RequestMapping(value = "/providers", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_PROVIDER_LIST"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
     public ResponseEntity<ProviderPage> list(
-            @PageableDefault(size = 10) Pageable page,
-            @SortDefault(sort = "id") Sort sort,
+            @PageableDefault(size = 10, sort="lastName") Pageable page,
+            @SortDefault(sort = "lastName") Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Provider> assembler,
             @RequestParam(value = "name", required = false) String name) {
