@@ -49,7 +49,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("client location was loaded", clientLocation, is(notNullValue()));
 
         clientLocationService.remove(clientLocation);
-        assertThat("client has zero locations after delete", 0l, is(clientLocationService.find(client, null).getTotalElements()));
+        assertThat("client has zero locations after delete", 0l, is(clientLocationService.findByClient(client, null).getTotalElements()));
     }
 
     /**
@@ -94,9 +94,13 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         ClientLocation clientLocation = clientLocationService.createLocationAndAssociateTo(client, location);
         assertThat("ClientLocation is not null", clientLocation, is(notNullValue()));
 
-        Page<ClientLocation> clientLocationPage = clientLocationService.find(client, null);
+        Page<ClientLocation> clientLocationPage = clientLocationService.findByClient(client, null);
         assertThat("finding client locations should include the newly created one", clientLocationPage, hasItem(clientLocation));
         assertThat("Belongs To is correct", clientLocationPage.iterator().next().getLocation().getBelongsTo(), is(client));
+        
+        Page<ClientLocation> clientLocationPageA = clientLocationService.findByLocation(location, null);
+        assertThat("finding client locations should include the newly created one", clientLocationPageA, hasItem(clientLocation));
+        assertThat("Belongs To is correct", clientLocationPageA.iterator().next().getLocation().getBelongsTo(), is(client));
     }
 
     /**
@@ -104,7 +108,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
-        clientLocationService.find(null, null);
+        clientLocationService.findByClient(null, null);
     }
 
     /**
