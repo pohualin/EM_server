@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.Group_;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
 import org.hibernate.annotations.QueryHints;
@@ -19,6 +17,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications.byClientId;
@@ -81,5 +82,24 @@ public class GroupPersistenceImpl implements GroupPersistence {
             }
         }
         return 0;
+    }
+
+    @Override
+    public Set<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
+        Set<Long> notInTheseTags = new HashSet<>();
+        for (GroupSaveRequest groupSaveRequest : groupSaveRequests) {
+            for (Tag tag : groupSaveRequest.getTags()) {
+                if (tag.getId() != null) {
+                    notInTheseTags.add(tag.getId());
+                }
+            }
+        }
+        List<TeamTag> conflictingTeams;
+        if (notInTheseTags.size() == 0) {
+            conflictingTeams = groupRepository.findTeamsPreventingSaveOf(clientId);
+        } else {
+            conflictingTeams = groupRepository.findTeamsPreventingSaveOf(clientId, notInTheseTags);
+        }
+        return new HashSet<>(conflictingTeams);
     }
 }
