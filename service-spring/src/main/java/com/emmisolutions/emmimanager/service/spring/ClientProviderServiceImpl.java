@@ -42,11 +42,19 @@ public class ClientProviderServiceImpl implements ClientProviderService {
     TeamProviderService teamProviderService;
 
     @Override
-    public Page<ClientProvider> find(Client client, Pageable pageable) {
+    public Page<ClientProvider> findByClient(Client client, Pageable pageable) {
         if (client == null){
             throw new InvalidDataAccessApiUsageException("Client cannot be null");
         }
-        return clientProviderPersistence.find(client.getId(), pageable);
+        return clientProviderPersistence.findByClientId(client.getId(), pageable);
+    }
+    
+    @Override
+    public Page<ClientProvider> findByProvider(Provider provider, Pageable pageable) {
+        if (provider == null){
+            throw new InvalidDataAccessApiUsageException("Provider cannot be null");
+        }
+        return clientProviderPersistence.findByProviderId(provider.getId(), pageable);
     }
 
     @Override

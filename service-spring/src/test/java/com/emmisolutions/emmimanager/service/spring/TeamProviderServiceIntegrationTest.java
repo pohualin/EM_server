@@ -361,7 +361,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
         Page<TeamProviderTeamLocation> tptl = teamProviderTeamLocationService.findByTeamProvider(teamProviders.iterator().next(), null);
 
-        Page<ClientProvider> clientProviders = clientProviderService.find(client, null);
+        Page<ClientProvider> clientProviders = clientProviderService.findByClient(client, null);
 
         assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));

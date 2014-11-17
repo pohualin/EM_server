@@ -1,10 +1,14 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Group;
+import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,4 +49,13 @@ public interface GroupPersistence {
      * @return number deleted
      */
     long removeGroupsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep);
+
+    /**
+     * Find the set of Teams that are already mapped to tags not present in the
+     * save request.
+     * @param groupSaveRequests to check
+     * @param clientId for the scope of the tags to check
+     * @return set of conflicting teams
+     */
+    Set<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);
 }
