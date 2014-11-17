@@ -34,13 +34,25 @@ public class ClientProviderPersistenceImpl implements ClientProviderPersistence 
     ProviderRepository providerRepository;
 
     @Override
-    public Page<ClientProvider> find(Long clientId, Pageable pageable) {
+    public Page<ClientProvider> findByClientId(Long clientId, Pageable pageable) {
         if (clientId == null) {
             throw new InvalidDataAccessApiUsageException("Client Id cannot be null");
         }
         return clientProviderRepository.findByClientId(clientId,
                 pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "createdDate"));
     }
+    
+	@Override
+	public Page<ClientProvider> findByProviderId(Long providerId,
+			Pageable pageable) {
+		if (providerId == null) {
+			throw new InvalidDataAccessApiUsageException(
+					"Provider Id cannot be null");
+		}
+		return clientProviderRepository.findByProviderId(providerId,
+				pageable != null ? pageable : new PageRequest(0, 10,
+						Sort.Direction.DESC, "createdDate"));
+	}
 
     @Override
     public ClientProvider create(Long providerId, Long clientId) {

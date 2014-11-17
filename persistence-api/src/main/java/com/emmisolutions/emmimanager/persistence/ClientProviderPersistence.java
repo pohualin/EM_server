@@ -19,7 +19,16 @@ public interface ClientProviderPersistence {
      * @param pageable which page to fetch
      * @return a page of client provider objects
      */
-    Page<ClientProvider> find(Long clientId, Pageable pageable);
+    Page<ClientProvider> findByClientId(Long clientId, Pageable pageable);
+    
+    /**
+     * Find a page of client providers for a client
+     *
+     * @param clientId   to find client providers
+     * @param pageable which page to fetch
+     * @return a page of client provider objects
+     */
+    Page<ClientProvider> findByProviderId(Long providerId, Pageable pageable);
 
     /**
      * Creates a ClientProvider from a Provider and a Client
