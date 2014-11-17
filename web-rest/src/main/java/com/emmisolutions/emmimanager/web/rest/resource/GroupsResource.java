@@ -111,9 +111,9 @@ public class GroupsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/invalidTeam", method = RequestMethod.POST)
     @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
-    public ResponseEntity<HashSet<TeamTag>> invalidTeams(@RequestBody List<GroupSaveRequest> groupSaveRequests,
+    public ResponseEntity<Set<TeamTag>> invalidTeams(@RequestBody List<GroupSaveRequest> groupSaveRequests,
                                                          @PathVariable("clientId") Long clientId) {
-        HashSet<TeamTag> teamTags = groupService.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
+        Set<TeamTag> teamTags = groupService.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
         if (teamTags == null || teamTags.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {

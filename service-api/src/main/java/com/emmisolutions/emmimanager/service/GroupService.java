@@ -68,5 +68,5 @@ public interface GroupService {
      * @param clientId for the scope of the tags to check
      * @return set of conflicting teams
      */
-    HashSet<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);
+    Set<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);
 }

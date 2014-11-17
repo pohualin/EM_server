@@ -85,7 +85,7 @@ public class GroupPersistenceImpl implements GroupPersistence {
     }
 
     @Override
-    public HashSet<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
+    public Set<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId) {
         Set<Long> notInTheseTags = new HashSet<>();
         for (GroupSaveRequest groupSaveRequest : groupSaveRequests) {
             for (Tag tag : groupSaveRequest.getTags()) {
