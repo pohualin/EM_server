@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -49,7 +50,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("client provider was loaded", clientProvider, is(notNullValue()));
 
         clientProviderService.remove(clientProvider);
-        assertThat("client has zero providers after delete", 0l, is(clientProviderService.find(client, null).getTotalElements()));
+        assertThat("client has zero providers after delete", 0l, is(clientProviderService.findByClient(client, null).getTotalElements()));
     }
 
     /**
@@ -94,7 +95,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         ClientProvider clientProvider = clientProviderService.create(new ClientProvider(client, provider));
         assertThat("ClientProvider is not null", clientProvider, is(notNullValue()));
 
-        Page<ClientProvider> clientProviderPage = clientProviderService.find(client, null);
+        Page<ClientProvider> clientProviderPage = clientProviderService.findByClient(client, null);
         assertThat("finding client providers should include the newly created one", clientProviderPage, hasItem(clientProvider));
 
         // update the clientProvider
@@ -104,6 +105,19 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("provider was updated", updated.getProvider().isActive(), is(true));
         assertThat("client provider was updated", updated.getExternalId(), is(clientProvider.getExternalId()));
         assertThat("client provider version should be different", updated.getVersion(), is(not(clientProvider.getVersion())));
+    }
+    
+    @Test
+    public void findByProvider(){
+    	Client clientA = makeClient();
+    	Client clientB = makeClient();
+    	Provider provider = makeProvider("findByProvider");
+    	Set<Provider> providers = new HashSet<Provider>();
+    	providers.add(provider);
+    	clientProviderService.create(clientA, providers);
+    	clientProviderService.create(clientB, providers);
+    	Page<ClientProvider> list = clientProviderService.findByProvider(provider, null);
+    	assertThat("There shoule be 2 clients found for the provider.", list.getTotalElements(), is(2l));
     }
 
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -116,7 +130,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
-        clientProviderService.find(null, null);
+        clientProviderService.findByClient(null, null);
     }
 
     /**
@@ -166,12 +180,19 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         return clientService.create(client);
     }
 
-    private Provider makeProvider() {
+    private Provider makeProvider(String firstName) {
         Provider provider = new Provider();
-        provider.setFirstName("ClientProviderServiceIntegrationTest Provider");
+        if(StringUtils.isBlank(firstName)){
+        	firstName = "ClientProviderServiceIntegrationTest Provider";
+        }
+        provider.setFirstName(firstName);
         provider.setLastName(RandomStringUtils.randomAlphabetic(255));
         provider.setSpecialty(new ReferenceTag(20));
         provider.setEmail("whatever@whatever.com");
         return providerService.create(provider);
+    }
+    
+    private Provider makeProvider(){
+    	return makeProvider("");
     }
 }
