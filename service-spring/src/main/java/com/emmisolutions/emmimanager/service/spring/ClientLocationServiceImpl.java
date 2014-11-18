@@ -1,5 +1,21 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientLocation;
 import com.emmisolutions.emmimanager.model.Location;
@@ -9,15 +25,6 @@ import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientLocationService;
 import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.util.*;
 
 /**
  * Spring JPA ClientLocation Service Implementation
@@ -38,11 +45,19 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     TeamLocationService teamLocationService;
 
     @Override
-    public Page<ClientLocation> find(Client client, Pageable pageable) {
+    public Page<ClientLocation> findByClient(Client client, Pageable pageable) {
         if (client == null){
             throw new InvalidDataAccessApiUsageException("Client cannot be null");
         }
-        return clientLocationPersistence.find(client.getId(), pageable);
+        return clientLocationPersistence.findByClient(client.getId(), pageable);
+    }
+    
+    @Override
+    public Page<ClientLocation> findByLocation(Location location, Pageable pageable) {
+        if (location == null){
+            throw new InvalidDataAccessApiUsageException("Location cannot be null");
+        }
+        return clientLocationPersistence.findByLocation(location.getId(), pageable);
     }
 
     @Override

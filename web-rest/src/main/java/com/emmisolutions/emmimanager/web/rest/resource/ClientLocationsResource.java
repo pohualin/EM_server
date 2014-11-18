@@ -85,7 +85,7 @@ public class ClientLocationsResource {
             @PathVariable Long clientId,
             @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
             Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
-        Page<ClientLocation> clientLocationPage = clientLocationService.find(new Client(clientId), pageable);
+        Page<ClientLocation> clientLocationPage = clientLocationService.findByClient(new Client(clientId), pageable);
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(
                     new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationResourceAssembler), clientLocationPage, null),
