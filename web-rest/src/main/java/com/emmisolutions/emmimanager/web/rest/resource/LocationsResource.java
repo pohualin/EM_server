@@ -1,19 +1,11 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.ClientLocation;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.service.ClientLocationService;
-import com.emmisolutions.emmimanager.service.LocationService;
-import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResourcePage;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationReferenceData;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationResource;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationResourceAssembler;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
-import com.wordnik.swagger.annotations.ApiOperation;
+import static com.emmisolutions.emmimanager.model.LocationSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,14 +15,28 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
-import static com.emmisolutions.emmimanager.model.LocationSearchFilter.StatusFilter.fromStringOrActive;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import com.emmisolutions.emmimanager.model.ClientLocation;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.service.ClientLocationService;
+import com.emmisolutions.emmimanager.service.LocationService;
+import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResourcePage;
+import com.emmisolutions.emmimanager.web.rest.model.clientlocation.LocationClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.clientlocation.LocationClientResourcePage;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationReferenceData;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationResource;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
  * Locations REST API
@@ -51,7 +57,7 @@ public class LocationsResource {
     ClientLocationService clientLocationService;
     
     @Resource
-    ClientLocationResourceAssembler clientLocationResourceAssembler;
+    LocationClientResourceAssembler locationClientResourceAssembler;
 
     /**
      * GET a single location
@@ -169,13 +175,13 @@ public class LocationsResource {
     /**
      * GET to find existing client locations for a location.
      *
-     * @param locationId  the location
+     * @param id  the location
      * @param pageable  the page to request
      * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
-    @RequestMapping(value = "/locations/{locationId}/clients",
+    @RequestMapping(value = "/locations/{id}/clients",
             method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
     @ApiOperation("finds existing ClientLocations")
@@ -184,14 +190,14 @@ public class LocationsResource {
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "client.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<ClientLocationResourcePage> current(
-            @PathVariable Long locationId,
+    public ResponseEntity<LocationClientResourcePage> currentClients(
+            @PathVariable Long id,
             @PageableDefault(size = 10, sort = "client.name", direction = Sort.Direction.ASC) Pageable pageable,
             Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
-        Page<ClientLocation> clientLocationPage = clientLocationService.findByLocation(new Location(locationId), pageable);
+        Page<ClientLocation> clientLocationPage = clientLocationService.findByLocation(new Location(id), pageable);
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(
-                    new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationResourceAssembler), clientLocationPage, null),
+                    new LocationClientResourcePage(assembler.toResource(clientLocationPage, locationClientResourceAssembler), clientLocationPage),
                     HttpStatus.OK
             );
         } else {
