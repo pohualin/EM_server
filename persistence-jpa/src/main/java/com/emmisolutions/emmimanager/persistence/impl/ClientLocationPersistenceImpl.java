@@ -39,7 +39,7 @@ public class ClientLocationPersistenceImpl implements ClientLocationPersistence 
             throw new InvalidDataAccessApiUsageException("Client Id cannot be null");
         }
         return clientLocationRepository.findByClientId(clientId,
-                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "createdDate"));
+                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "id"));
     }
     
     @Override
@@ -48,7 +48,7 @@ public class ClientLocationPersistenceImpl implements ClientLocationPersistence 
             throw new InvalidDataAccessApiUsageException("Location Id cannot be null");
         }
         return clientLocationRepository.findByLocationId(locationId,
-                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "createdDate"));
+                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "id"));
     }
 
     @Override
