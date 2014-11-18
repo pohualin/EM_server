@@ -47,8 +47,8 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         Page<ClientLocation> clientLocationPage = clientLocationPersistence.findByClient(client.getId(), null);
         assertThat("client location is on the page", clientLocationPage, hasItem(clientLocation));
         
-        Page<ClientLocation> clientLocationPageA = clientLocationPersistence.findByLocation(location.getId(), null);
-        assertThat("client location is on the page", clientLocationPageA, hasItem(clientLocation));
+        Page<ClientLocation> locationClientPage = clientLocationPersistence.findByLocation(location.getId(), null);
+        assertThat("client location is on the page", locationClientPage, hasItem(clientLocation));
 
         clientLocationPersistence.remove(clientLocation.getId());
         assertThat("client location has been removed", clientLocationPersistence.reload(clientLocation.getId()), is(nullValue()));

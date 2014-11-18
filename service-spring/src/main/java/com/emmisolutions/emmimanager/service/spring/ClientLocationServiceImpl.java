@@ -55,7 +55,7 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     @Override
     public Page<ClientLocation> findByLocation(Location location, Pageable pageable) {
         if (location == null){
-            throw new InvalidDataAccessApiUsageException("Client cannot be null");
+            throw new InvalidDataAccessApiUsageException("Location cannot be null");
         }
         return clientLocationPersistence.findByLocation(location.getId(), pageable);
     }
