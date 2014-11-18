@@ -34,12 +34,21 @@ public class ClientLocationPersistenceImpl implements ClientLocationPersistence 
     LocationRepository locationRepository;
 
     @Override
-    public Page<ClientLocation> find(Long clientId, Pageable pageable) {
+    public Page<ClientLocation> findByClient(Long clientId, Pageable pageable) {
         if (clientId == null) {
             throw new InvalidDataAccessApiUsageException("Client Id cannot be null");
         }
         return clientLocationRepository.findByClientId(clientId,
-                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "createdDate"));
+                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "id"));
+    }
+    
+    @Override
+    public Page<ClientLocation> findByLocation(Long locationId, Pageable pageable) {
+        if (locationId == null) {
+            throw new InvalidDataAccessApiUsageException("Location Id cannot be null");
+        }
+        return clientLocationRepository.findByLocationId(locationId,
+                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "id"));
     }
 
     @Override
