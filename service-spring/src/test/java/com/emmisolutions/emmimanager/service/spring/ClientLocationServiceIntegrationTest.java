@@ -99,7 +99,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Belongs To is correct", clientLocationPage.iterator().next().getLocation().getBelongsTo(), is(client));
         
         Page<ClientLocation> locationClientPage = clientLocationService.findByLocation(location, null);
-        assertThat("finding client locations should include the newly created one", clientLocationPageA, hasItem(clientLocation));
+        assertThat("finding client locations should include the newly created one", locationClientPage, hasItem(clientLocation));
         assertThat("Belongs To is correct", locationClientPage.iterator().next().getLocation().getBelongsTo(), is(client));
     }
 
