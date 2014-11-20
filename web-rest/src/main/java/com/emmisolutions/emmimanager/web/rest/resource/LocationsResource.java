@@ -119,7 +119,7 @@ public class LocationsResource {
             @ApiImplicitParam(name="sort",  value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<LocationPage> list(
-            @PageableDefault(size = 2) Pageable pageable,
+            @PageableDefault(size = 10) Pageable pageable,
             @SortDefault(sort = {"name","state"}) Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
