@@ -20,8 +20,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientProvider;
-import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
@@ -53,7 +51,6 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
 
     @Override
     public Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team) {
-//        return teamProviderRepository.findTeamProvidersByTeam(page, team);
         
         if (page == null) {
             // default pagination request if none

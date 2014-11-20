@@ -70,6 +70,14 @@ public interface TeamProviderService {
      */
     long delete(Client client, Provider provider);
     
+    /**
+     * Finds a full list of TeamProvider objects for a single team for a
+     * discrete list of providers
+     *
+     * @param teamId  to narrow by
+     * @param providers the discrete list of providers we are interested in
+     * @return a List of TeamProvider objects
+     */
     Page<TeamProvider> findPossibleProvidersToAdd(Team team, ProviderSearchFilter providerSearchFilter, Pageable pageable);
 
 }

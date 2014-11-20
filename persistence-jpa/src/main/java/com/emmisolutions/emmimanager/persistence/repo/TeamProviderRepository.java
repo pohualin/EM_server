@@ -51,12 +51,12 @@ public interface TeamProviderRepository extends JpaRepository<TeamProvider, Long
 
 
     /**
-     * Finds a full list of ClientProvider objects for a single client for a
+     * Finds a full list of TeamProvider objects for a single team for a
      * discrete list of providers
      *
-     * @param clientId  to narrow by
+     * @param teamId  to narrow by
      * @param providers the discrete list of providers we are interested in
-     * @return a List of ClientProvider objects
+     * @return a List of TeamProvider objects
      */
     List<TeamProvider> findByTeamIdAndProviderIn(Long teamId, Collection<Provider> providers);
 }

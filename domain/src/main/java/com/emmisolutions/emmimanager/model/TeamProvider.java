@@ -45,17 +45,17 @@ public class TeamProvider extends AbstractAuditingEntity implements
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "team_id")
-	  @XmlElement(name = "team")
-		@XmlElementWrapper(name = "team")
-		@JsonProperty("team")
+	@XmlElement(name = "team")
+	@XmlElementWrapper(name = "team")
+	@JsonProperty("team")
 	private Team team;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "provider_id")
-	  @XmlElement(name = "provider")
-			@XmlElementWrapper(name = "provider")
-			@JsonProperty("provider")
+	@XmlElement(name = "provider")
+	@XmlElementWrapper(name = "provider")
+	@JsonProperty("provider")
 	private Provider provider;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy="teamProvider")
