@@ -1,22 +1,27 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.model.Location_;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientLocation;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.model.Location_;
+import com.emmisolutions.emmimanager.model.ClientLocation_;
 /**
  * This is the specification class that allows for filtering of Location objects.
  */
@@ -101,4 +106,15 @@ public class LocationSpecifications {
         };
     }
 
+    public Specification<Location> notUsedBy(final Client client) {
+        return new Specification<Location>() {
+            @Override
+            public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (client != null) {    
+                	return cb.notEqual(root.join(Location_.usingThisLocation, JoinType.LEFT).get(ClientLocation_.client), client);
+                }
+                return null;
+            }
+        };
+    }    
 }
