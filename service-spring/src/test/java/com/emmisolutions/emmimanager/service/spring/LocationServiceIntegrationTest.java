@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
@@ -36,7 +37,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserRepository userService;
 
-    User user;
+    UserAdmin user;
 
     /**
      * Save a user to the db

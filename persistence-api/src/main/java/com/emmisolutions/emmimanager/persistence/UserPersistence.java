@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +15,7 @@ public interface UserPersistence {
      * @param user the user to save or create
      * @return the saved user
      */
-    User saveOrUpdate(User user);
+    UserAdmin saveOrUpdate(UserAdmin user);
 
     /**
      * Pulls the User from the database using the login
@@ -23,7 +23,7 @@ public interface UserPersistence {
      * @param login case insensitive search
      * @return User or null if one is not found
      */
-    User reload(String login);
+    UserAdmin reload(String login);
 
     /**
      * Retrieves a user by login and eagerly loads all permissions
@@ -31,12 +31,12 @@ public interface UserPersistence {
      * @param login case insensitive search
      * @return a User or null
      */
-    User fetchUserWillFullPermissions(String login);
+    UserAdmin fetchUserWillFullPermissions(String login);
 
     /**
      * Finds a page of Users that are eligible to be contract owners
      * @param pageable the specification to fetch
      * @return a page of User objects
      */
-    Page<User> listPotentialContractOwners(Pageable pageable);
+    Page<UserAdmin> listPotentialContractOwners(Pageable pageable);
 }
