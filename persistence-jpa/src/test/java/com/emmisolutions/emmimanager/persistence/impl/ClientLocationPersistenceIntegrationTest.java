@@ -44,13 +44,16 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         clientLocation = clientLocationPersistence.reload(clientLocation.getId());
         assertThat("client location is not null", clientLocation, is(notNullValue()));
 
-        Page<ClientLocation> clientLocationPage = clientLocationPersistence.find(client.getId(), null);
+        Page<ClientLocation> clientLocationPage = clientLocationPersistence.findByClient(client.getId(), null);
         assertThat("client location is on the page", clientLocationPage, hasItem(clientLocation));
+        
+        Page<ClientLocation> locationClientPage = clientLocationPersistence.findByLocation(location.getId(), null);
+        assertThat("client location is on the page", locationClientPage, hasItem(clientLocation));
 
         clientLocationPersistence.remove(clientLocation.getId());
         assertThat("client location has been removed", clientLocationPersistence.reload(clientLocation.getId()), is(nullValue()));
     }
-
+    
     /**
      * Reload of a null id should not error out
      */
@@ -96,7 +99,7 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
-        clientLocationPersistence.find(null, null);
+        clientLocationPersistence.findByClient(null, null);
     }
 
     private Client makeClient() {
