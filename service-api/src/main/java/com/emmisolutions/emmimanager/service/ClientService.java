@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -57,7 +58,7 @@ public interface ClientService {
      * @param pageable the specification to fetch
      * @return a page of User objects
      */
-    Page<User> listPotentialContractOwners(Pageable pageable);
+    Page<UserAdmin> listPotentialContractOwners(Pageable pageable);
 
     /**
      * Find a client that are equal to normalizedName

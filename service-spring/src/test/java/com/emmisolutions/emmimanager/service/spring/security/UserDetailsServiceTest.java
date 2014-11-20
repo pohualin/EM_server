@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserService;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
     @Test
     public void testLoad() {
         String login = "aUser";
-        User aUser = new User(login, "pw");
+        UserAdmin aUser = new UserAdmin(login, "pw");
         userService.save(aUser);
 
         UserDetails details = userDetailsService.loadUserByUsername(login);

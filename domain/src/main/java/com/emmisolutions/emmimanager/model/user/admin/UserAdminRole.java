@@ -1,5 +1,6 @@
-package com.emmisolutions.emmimanager.model;
+package com.emmisolutions.emmimanager.model.user.admin;
 
+import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -14,40 +15,48 @@ import java.util.Set;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 /**
- * A Role is an aggregation of Permission objects.
+ * A role defined for administrative users.
  */
 @Entity
 @Audited
-@Table(name = "role",
-        uniqueConstraints =
-        @UniqueConstraint(columnNames = {"name"}))
+@Table(name = "user_admin_role",
+    uniqueConstraints =
+    @UniqueConstraint(columnNames = {"name"}, name = "uk_user_admin_role_name"))
 @XmlRootElement(name = "role")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Role extends AbstractAuditingEntity implements Serializable {
+public class UserAdminRole extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "bigint")
     private Long id;
 
     @NotNull
-    @Column(length = 50)
-    @Size(min = 0, max = 50)
+    @Column(length = 255, columnDefinition = "nvarchar(255)")
+    @Size(min = 0, max = 255)
     private String name;
 
     @NotNull
-    @Column(name = "system_role", updatable = false, insertable = false)
+    @Column(name = "system_role", updatable = false, insertable = false, nullable = false)
     private boolean systemRole;
-
 
     @ManyToMany
     @JoinTable(
-            name = "role_permission",
-            joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "permissions_name", referencedColumnName = "name")})
+        name = "user_admin_role_user_admin_permission",
+        joinColumns = {
+            @JoinColumn(name = "role_id", referencedColumnName = "id",
+                foreignKey = @ForeignKey(name = "fk_user_admin_role_user_admin_permission_role"))
+        },
+        inverseJoinColumns = {
+            @JoinColumn(name = "permission_name", referencedColumnName = "name",
+                foreignKey = @ForeignKey(name = "fk_user_admin_role_user_admin_permission_permission"))
+        }
+    )
     @Audited(targetAuditMode = NOT_AUDITED)
-    private Set<Permission> permissions;
+    private Set<UserAdminPermission> permissions;
 
     @Version
+    @Column(columnDefinition = "int")
     private Integer version;
 
     public Long getId() {
@@ -66,11 +75,11 @@ public class Role extends AbstractAuditingEntity implements Serializable {
         this.name = name;
     }
 
-    public Set<Permission> getPermissions() {
+    public Set<UserAdminPermission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(Set<Permission> permissions) {
+    public void setPermissions(Set<UserAdminPermission> permissions) {
         this.permissions = permissions;
     }
 
@@ -86,7 +95,7 @@ public class Role extends AbstractAuditingEntity implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Role role = (Role) o;
+        UserAdminRole role = (UserAdminRole) o;
         return !(id != null ? !id.equals(role.id) : role.id != null);
     }
 
@@ -97,10 +106,10 @@ public class Role extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "UserAdminRole{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
     }
 
     public boolean isSystemRole() {

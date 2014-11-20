@@ -1,41 +1,32 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import static com.emmisolutions.emmimanager.model.PermissionName.PERM_CONTRACT_OWNER;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import com.emmisolutions.emmimanager.model.user.admin.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.emmisolutions.emmimanager.model.Permission;
-import com.emmisolutions.emmimanager.model.Permission_;
-import com.emmisolutions.emmimanager.model.Role;
-import com.emmisolutions.emmimanager.model.Role_;
-import com.emmisolutions.emmimanager.model.User;
-import com.emmisolutions.emmimanager.model.User_;
+import javax.persistence.criteria.*;
+
+import static com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName.PERM_ADMIN_CONTRACT_OWNER;
 
 /**
  * Specifications for a User.
  */
 public class UserSpecifications {
 
-    private UserSpecifications(){}
+    private UserSpecifications() {
+    }
 
     /**
      * Filter to ensure User is a contract owner
      *
      * @return he specification as a filter predicate
      */
-    public static Specification<User> isContractOwner() {
+    public static Specification<UserAdmin> isContractOwner() {
 
-        return new Specification<User>() {
+        return new Specification<UserAdmin>() {
             @Override
-            public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Join<Role, Permission> permissions = root.join(User_.roles).join(Role_.permissions);
-                return cb.equal(permissions.get(Permission_.name), PERM_CONTRACT_OWNER);
+            public Predicate toPredicate(Root<UserAdmin> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Join<UserAdminRole, UserAdminPermission> permissions = root.join(UserAdmin_.roles).join(UserAdminUserAdminRole_.userAdminRole).join(UserAdminRole_.permissions);
+                return cb.equal(permissions.get(UserAdminPermission_.name), PERM_ADMIN_CONTRACT_OWNER);
             }
         };
     }

@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserService;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = ConstraintViolationException.class)
     public void testUserCreateWithoutLogin() {
-        userService.save(new User());
+        userService.save(new UserAdmin());
     }
 
     /**
@@ -33,7 +33,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testUserCreate() {
-        User user = new User("login", "pw");
+        UserAdmin user = new UserAdmin("login", "pw");
         user = userService.save(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));

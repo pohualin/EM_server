@@ -7,9 +7,14 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>com.emmisolutions.emmimanager.model.audit.UsernameRevisionEntity</class>
-        <class>com.emmisolutions.emmimanager.model.User</class>
-        <class>com.emmisolutions.emmimanager.model.Permission</class>
-        <class>com.emmisolutions.emmimanager.model.Role</class>
+        <class>com.emmisolutions.emmimanager.model.user.admin.UserAdmin</class>
+        <class>com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission</class>
+        <class>com.emmisolutions.emmimanager.model.user.admin.UserAdminRole</class>
+        <class>com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClient</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientRole</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientPermission</class>
         <class>com.emmisolutions.emmimanager.model.Client</class>
         <class>com.emmisolutions.emmimanager.model.SalesForce</class>
         <class>com.emmisolutions.emmimanager.model.TeamSalesForce</class>
