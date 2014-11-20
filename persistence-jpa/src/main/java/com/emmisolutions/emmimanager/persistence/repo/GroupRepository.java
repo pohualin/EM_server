@@ -40,7 +40,7 @@ public interface GroupRepository extends JpaRepository<Group, Long>, JpaSpecific
      * @param clientId for the scope of the tags to check
      * @return list of conflicting teams
      */
-    @Query("select tt from TeamTag tt where tt.team.client.id = :clientId and tt.tag.id not in (:notInTheseTags)")
+    @Query("select tt from TeamTag tt where tt.team.client.id = :clientId and tt.team.active = true and tt.tag.id not in (:notInTheseTags)")
     List<TeamTag> findTeamsPreventingSaveOf(@Param("clientId") Long clientId, @Param("notInTheseTags") Collection<Long> notInTheseTags);
  /**
      * Find the set of Teams that are already mapped to tags not present in the
@@ -48,6 +48,6 @@ public interface GroupRepository extends JpaRepository<Group, Long>, JpaSpecific
      * @param clientId for the scope of the tags to check
      * @return list of conflicting teams
      */
-    @Query("select tt from TeamTag tt where tt.team.client.id = :clientId")
+    @Query("select tt from TeamTag tt where tt.team.client.id = :clientId and tt.team.active = true")
     List<TeamTag> findTeamsPreventingSaveOf(@Param("clientId") Long clientId);
 }
