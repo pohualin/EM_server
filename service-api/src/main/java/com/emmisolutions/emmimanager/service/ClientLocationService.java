@@ -21,7 +21,16 @@ public interface ClientLocationService {
      * @param pageable which page to fetch
      * @return a page of client location objects
      */
-    Page<ClientLocation> find(Client client, Pageable pageable);
+    Page<ClientLocation> findByClient(Client client, Pageable pageable);
+
+    /**
+     * Find a page of client locations for a location
+     *
+     * @param location to find client locations
+     * @param pageable which page to fetch
+     * @return a page of client location objects
+     */
+    Page<ClientLocation> findByLocation(Location location, Pageable pageable);
 
     /**
      * Removes a ClientLocation

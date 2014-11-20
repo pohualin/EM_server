@@ -70,6 +70,10 @@ public class Location extends AbstractAuditingEntity {
 
     }
 
+    public Location(Long id) {
+    	this.id = id;
+    }
+    
     /**
      * JPA Id constructor
      *
