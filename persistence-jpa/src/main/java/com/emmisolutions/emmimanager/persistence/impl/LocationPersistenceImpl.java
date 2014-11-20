@@ -42,7 +42,6 @@ public class LocationPersistenceImpl implements LocationPersistence {
         if (filter != null && filter.getClientId() != null){
             client = clientPersistence.reload(filter.getClientId());
         }
-        //return locationRepository.findAll(where(locationSpecifications.belongsTo(client)).and(locationSpecifications.hasNames(filter)).and(locationSpecifications.isInStatus(filter)), page);
         return locationRepository.findAll(where(locationSpecifications.notUsedBy(client)).and(locationSpecifications.hasNames(filter)).and(locationSpecifications.isInStatus(filter)) , page);
     }
 

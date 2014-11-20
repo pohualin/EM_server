@@ -6,10 +6,10 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,6 +22,7 @@ import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.model.Location_;
 import com.emmisolutions.emmimanager.model.ClientLocation_;
+
 /**
  * This is the specification class that allows for filtering of Location objects.
  */
@@ -110,8 +111,10 @@ public class LocationSpecifications {
         return new Specification<Location>() {
             @Override
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (client != null) {    
-                	return cb.notEqual(root.join(Location_.usingThisLocation, JoinType.LEFT).get(ClientLocation_.client), client);
+                if (client != null) {  
+                	Expression<Client> e = root.join(Location_.usingThisLocation, JoinType.LEFT).get(ClientLocation_.client);
+                	Predicate p = e.isNull();
+                	return cb.or( cb.notEqual(e, client), p);
                 }
                 return null;
             }
