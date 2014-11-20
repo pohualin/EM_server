@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientLocationService;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -49,7 +50,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("client location was loaded", clientLocation, is(notNullValue()));
 
         clientLocationService.remove(clientLocation);
-        assertThat("client has zero locations after delete", 0l, is(clientLocationService.find(client, null).getTotalElements()));
+        assertThat("client has zero locations after delete", 0l, is(clientLocationService.findByClient(client, null).getTotalElements()));
     }
 
     /**
@@ -94,9 +95,13 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         ClientLocation clientLocation = clientLocationService.createLocationAndAssociateTo(client, location);
         assertThat("ClientLocation is not null", clientLocation, is(notNullValue()));
 
-        Page<ClientLocation> clientLocationPage = clientLocationService.find(client, null);
+        Page<ClientLocation> clientLocationPage = clientLocationService.findByClient(client, null);
         assertThat("finding client locations should include the newly created one", clientLocationPage, hasItem(clientLocation));
         assertThat("Belongs To is correct", clientLocationPage.iterator().next().getLocation().getBelongsTo(), is(client));
+        
+        Page<ClientLocation> locationClientPage = clientLocationService.findByLocation(location, null);
+        assertThat("finding client locations should include the newly created one", locationClientPage, hasItem(clientLocation));
+        assertThat("Belongs To is correct", locationClientPage.iterator().next().getLocation().getBelongsTo(), is(client));
     }
 
     /**
@@ -104,7 +109,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
-        clientLocationService.find(null, null);
+        clientLocationService.findByClient(null, null);
     }
 
     /**
@@ -149,7 +154,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         client.setName(RandomStringUtils.randomAlphanumeric(18));
         client.setType(new ClientType(1l));
         client.setActive(true);
-        client.setContractOwner(new User(1l, 0));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientService.create(client);
     }

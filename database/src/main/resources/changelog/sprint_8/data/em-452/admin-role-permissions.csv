@@ -1,0 +1,7 @@
+role_id;permission_name
+1;PERM_GOD
+2;PERM_GOD
+3;PERM_ADMIN_USER
+4;PERM_ADMIN_CONTRACT_OWNER
+
+

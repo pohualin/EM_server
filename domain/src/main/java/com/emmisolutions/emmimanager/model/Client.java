@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -57,7 +58,7 @@ public class Client extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "contract_owner_id")
-    private User contractOwner;
+    private UserAdmin contractOwner;
 
     @NotNull
     @Column(name = "contract_start", nullable = false)
@@ -174,11 +175,11 @@ public class Client extends AbstractAuditingEntity implements Serializable {
         this.tier = tier;
     }
 
-    public User getContractOwner() {
+    public UserAdmin getContractOwner() {
         return contractOwner;
     }
 
-    public void setContractOwner(User contractOwner) {
+    public void setContractOwner(UserAdmin contractOwner) {
         this.contractOwner = contractOwner;
     }
 

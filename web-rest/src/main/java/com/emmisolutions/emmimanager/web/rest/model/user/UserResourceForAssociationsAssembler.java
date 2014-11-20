@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
  * As such, it contains no links, and has no permissions in it.
  */
 @Component("userResourceForAssociationsAssembler")
-public class UserResourceForAssociationsAssembler implements ResourceAssembler<User, UserResource> {
+public class UserResourceForAssociationsAssembler implements ResourceAssembler<UserAdmin, UserResource> {
 
     @Override
-    public UserResource toResource(User user) {
+    public UserResource toResource(UserAdmin user) {
         return new UserResource(
                 user.getId(),
                 user.getVersion(),

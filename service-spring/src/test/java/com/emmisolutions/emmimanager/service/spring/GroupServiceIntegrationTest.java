@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -37,7 +38,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TagService tagService;
 
-    private User superAdmin;
+    private UserAdmin superAdmin;
 
     @Before
     public void init() {
@@ -314,7 +315,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
             add(groupTwoSaveRequest);
         }}, clientService.create(makeClient(6)).getId());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDuplicateTags(){
         final Tag tagThreeA = new Tag();
@@ -335,10 +336,10 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
         groupService.saveGroupsAndTags(new ArrayList<GroupSaveRequest>() {{
             add(groupOneSaveRequest);
         }}, clientService.create(makeClient(7)).getId());
-    
-    	
+
+
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testNullTags(){
     	final Tag tagThreeA = new Tag();
@@ -349,25 +350,25 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
     		add(tagThreeA);
     		add(tagThreeB);
     	}};
-	
+
     	final GroupSaveRequest groupOneSaveRequest = new GroupSaveRequest();
     	Group groupOne = new Group();
     	groupOne.setName("GroupOne");
     	groupOneSaveRequest.setGroup(groupOne);
     	groupOneSaveRequest.setTags(tags);
-	
+
     	groupService.saveGroupsAndTags(new ArrayList<GroupSaveRequest>() {{
     		add(groupOneSaveRequest);
     	}}, clientService.create(makeClient(8)).getId());
   }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testBlankGroupName(){
     	final GroupSaveRequest groupOneSaveRequest = new GroupSaveRequest();
     	Group groupOne = new Group();
     	groupOne.setName(" ");
     	groupOneSaveRequest.setGroup(groupOne);
-	
+
     	groupService.saveGroupsAndTags(new ArrayList<GroupSaveRequest>() {{
     		add(groupOneSaveRequest);
     	}}, clientService.create(makeClient(9)).getId());

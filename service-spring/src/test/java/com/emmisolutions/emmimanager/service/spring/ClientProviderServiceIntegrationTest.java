@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -106,7 +107,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("client provider was updated", updated.getExternalId(), is(clientProvider.getExternalId()));
         assertThat("client provider version should be different", updated.getVersion(), is(not(clientProvider.getVersion())));
     }
-    
+
     @Test
     public void findByProvider(){
     	Client clientA = makeClient();
@@ -175,7 +176,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         client.setName(RandomStringUtils.randomAlphabetic(255));
         client.setType(new ClientType(1l));
         client.setActive(true);
-        client.setContractOwner(new User(1l, 0));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientService.create(client);
     }
@@ -191,7 +192,7 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         provider.setEmail("whatever@whatever.com");
         return providerService.create(provider);
     }
-    
+
     private Provider makeProvider(){
     	return makeProvider("");
     }

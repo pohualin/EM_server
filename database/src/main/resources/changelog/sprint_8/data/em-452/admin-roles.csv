@@ -1,0 +1,5 @@
+name;system_role;version
+SYSTEM;true;0
+Super User;false;0
+User;false;0
+Contract Owner;false;0

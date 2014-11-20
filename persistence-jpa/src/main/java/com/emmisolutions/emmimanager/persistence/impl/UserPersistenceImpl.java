@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -25,24 +25,24 @@ public class UserPersistenceImpl implements UserPersistence {
     UserRepository userRepository;
 
     @Override
-    public User saveOrUpdate(User user) {
+    public UserAdmin saveOrUpdate(UserAdmin user) {
         user.setLogin(StringUtils.lowerCase(user.getLogin()));
         return userRepository.save(user);
     }
 
     @Override
-    public User reload(String login) {
+    public UserAdmin reload(String login) {
         return userRepository.findByLoginIgnoreCase(login);
     }
 
     @Override
-    public User fetchUserWillFullPermissions(String login) {
+    public UserAdmin fetchUserWillFullPermissions(String login) {
         return userRepository.fetchWithFullPermissions(login);
     }
 
 
     @Override
-    public Page<User> listPotentialContractOwners(Pageable pageable) {
+    public Page<UserAdmin> listPotentialContractOwners(Pageable pageable) {
         if (pageable == null){
             // default pagination request if none
             pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
