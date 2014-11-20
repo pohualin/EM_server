@@ -2,12 +2,17 @@ package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 import java.util.Set;
 
 /**
@@ -28,6 +33,9 @@ public class TeamLocation extends AbstractAuditingEntity {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "location_id", nullable = false)
+	@XmlElement(name = "location")
+	@XmlElementWrapper(name = "location")
+	@JsonProperty("location")
     private Location location;
 
     @NotNull

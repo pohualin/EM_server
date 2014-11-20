@@ -163,5 +163,14 @@ public class Team extends AbstractAuditingEntity implements Serializable {
 		return "Team [id=" + id + ", version=" + version + ", name=" + name
 				+ "]";
 	}
+
+	public Team(Long id) {
+		super();
+		this.id = id;
+	}
+
+	public Team() {
+		super();
+	}
 	
 }

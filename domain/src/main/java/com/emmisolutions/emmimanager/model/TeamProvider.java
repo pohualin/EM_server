@@ -1,13 +1,29 @@
 package com.emmisolutions.emmimanager.model;
 
-import org.hibernate.envers.Audited;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A TeamProvider.
@@ -29,17 +45,30 @@ public class TeamProvider extends AbstractAuditingEntity implements
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "team_id")
+	  @XmlElement(name = "team")
+		@XmlElementWrapper(name = "team")
+		@JsonProperty("team")
 	private Team team;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "provider_id")
+	  @XmlElement(name = "provider")
+			@XmlElementWrapper(name = "provider")
+			@JsonProperty("provider")
 	private Provider provider;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy="teamProvider")
-    @XmlTransient
+    @JsonManagedReference
+    @XmlElement(name = "teamProviderTeamLocations")
+	@XmlElementWrapper(name = "teamProviderTeamLocations")
+	@JsonProperty("teamProviderTeamLocations")
     private Set<TeamProviderTeamLocation> teamProviderTeamLocations;
 
+    @Length(max = 255)
+    @Column(name = "external_id", length = 255, columnDefinition = "nvarchar(255)")
+    private String externalId;
+    
 	public Long getId() {
 		return id;
 	}
@@ -80,7 +109,15 @@ public class TeamProvider extends AbstractAuditingEntity implements
         this.teamProviderTeamLocations = teamProviderTeamLocations;
     }
 
-    @Override
+    public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -101,5 +138,19 @@ public class TeamProvider extends AbstractAuditingEntity implements
             ", team=" + team +
             ", provider=" + provider +
             '}';
+    }
+    
+    /**
+     * Create a TeamProvider from its required parts
+     *
+     * @param team   the team
+     * @param provider the provider
+     */
+    public TeamProvider(Team team, Provider provider) {
+        this.team = team;
+        this.provider = provider;
+    }
+    
+    public TeamProvider() {
     }
 }

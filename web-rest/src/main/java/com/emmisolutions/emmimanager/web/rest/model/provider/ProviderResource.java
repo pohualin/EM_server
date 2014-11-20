@@ -25,6 +25,14 @@ public class ProviderResource extends ResourceSupport {
 		this.entity = entity;
 	}
 	
+	public ProviderResource(Provider entity) {
+		super();
+		this.entity = entity;
+	}
+	
+	public ProviderResource() {
+	}
+
 	/**
      * Override to change the link property name for serialization
      *
