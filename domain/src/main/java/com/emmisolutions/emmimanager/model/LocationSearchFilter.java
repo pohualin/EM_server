@@ -21,7 +21,9 @@ public class LocationSearchFilter {
 
     private StatusFilter status;
 
-    private Long clientId;
+    private Client notUsingThisClient;
+
+    private Client belongsToClient;
 
     /**
      * Constructor
@@ -55,18 +57,6 @@ public class LocationSearchFilter {
         }
     }
 
-    /**
-     * Fully qualified filter
-     *
-     * @param clientId that the location belongs to
-     * @param status   filter
-     * @param names    to filter
-     */
-    public LocationSearchFilter(Long clientId, StatusFilter status, String... names) {
-        this(status, names);
-        this.clientId = clientId;
-    }
-
     public Set<String> getNames() {
         return names;
     }
@@ -75,9 +65,22 @@ public class LocationSearchFilter {
         return status;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public Client getNotUsingThisClient() {
+        return notUsingThisClient;
     }
+
+    public void setNotUsingThisClient(Client notUsingThisClient) {
+        this.notUsingThisClient = notUsingThisClient;
+    }
+
+    public Client getBelongsToClient() {
+        return belongsToClient;
+    }
+
+    public void setBelongsToClient(Client belongsToClient) {
+        this.belongsToClient = belongsToClient;
+    }
+
 
     /**
      * Location Statuses

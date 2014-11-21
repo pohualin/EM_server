@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model;
+package com.emmisolutions.emmimanager.model.user.client;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,25 +8,26 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This is an application permission.
+ * A client level permission
  */
 @Entity
-@Table(name = "permission")
+@Table(name = "user_client_permission")
 @XmlRootElement(name = "permission")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Permission {
+public class UserClientPermission {
 
     @Id
     @NotNull
     @Size(min = 0, max = 100)
+    @Column(length = 100, columnDefinition = "varchar(100)")
     @Enumerated(EnumType.STRING)
-    private PermissionName name;
+    private UserClientPermissionName name;
 
-    public PermissionName getName() {
+    public UserClientPermissionName getName() {
         return name;
     }
 
-    public void setName(PermissionName name) {
+    public void setName(UserClientPermissionName name) {
         this.name = name;
     }
 
@@ -34,7 +35,7 @@ public class Permission {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Permission that = (Permission) o;
+        UserClientPermission that = (UserClientPermission) o;
         return name == that.name;
     }
 
@@ -45,8 +46,9 @@ public class Permission {
 
     @Override
     public String toString() {
-        return "Permission{" +
-                "name=" + name +
-                '}';
+        return "UserClientPermission{" +
+            "name=" + name +
+            '}';
     }
+
 }

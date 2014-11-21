@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientLocationService;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -153,7 +154,7 @@ public class ClientLocationServiceIntegrationTest extends BaseIntegrationTest {
         client.setName(RandomStringUtils.randomAlphanumeric(18));
         client.setType(new ClientType(1l));
         client.setActive(true);
-        client.setContractOwner(new User(1l, 0));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientService.create(client);
     }
