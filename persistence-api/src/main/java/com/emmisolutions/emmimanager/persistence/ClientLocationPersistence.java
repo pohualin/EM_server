@@ -19,7 +19,16 @@ public interface ClientLocationPersistence {
      * @param pageable which page to fetch
      * @return a page of client location objects
      */
-    Page<ClientLocation> find(Long clientId, Pageable pageable);
+    Page<ClientLocation> findByClient(Long clientId, Pageable pageable);
+
+    /**
+     * Find a page of client locations for a location
+     *
+     * @param locationId   to find client locations
+     * @param pageable which page to fetch
+     * @return a page of client location objects
+     */
+    Page<ClientLocation> findByLocation(Long locationId, Pageable pageable);
 
     /**
      * Creates a ClientLocation from a Location and a Client

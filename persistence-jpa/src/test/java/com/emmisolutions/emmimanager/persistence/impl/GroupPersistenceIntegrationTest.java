@@ -135,7 +135,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
         List<Tag> tagList = createTagList(groupOne, 4);
         List<Tag> subTagList = tagList.subList(0,3);
-        Team team1 = createTeam(clientOne, 1);
+        Team team1 = createTeam(clientOne, 2);
         teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(0)));
         teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(3)));
 

@@ -85,7 +85,7 @@ public class ClientLocationsResource {
             @PathVariable Long clientId,
             @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
             Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
-        Page<ClientLocation> clientLocationPage = clientLocationService.find(new Client(clientId), pageable);
+        Page<ClientLocation> clientLocationPage = clientLocationService.findByClient(new Client(clientId), pageable);
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(
                     new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationResourceAssembler), clientLocationPage, null),
@@ -167,6 +167,50 @@ public class ClientLocationsResource {
             @RequestParam(value = "name", required = false) String name) {
 
         LocationSearchFilter filter = new LocationSearchFilter(fromStringOrActive(status), name);
+
+        Page<ClientLocation> clientLocationPage = clientLocationService.findPossibleLocationsToAdd(
+                new Client(clientId), filter, pageable);
+
+        if (clientLocationPage.hasContent()) {
+            return new ResponseEntity<>(
+                    new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationFinderResourceAssembler), clientLocationPage, filter),
+                    HttpStatus.OK
+            );
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
+     * GET to find all possible locations for a client without the ClientLocations associated to this client.
+     * The object will come back with a link
+     * if it is currently associated to the passed client. If it is not currently in use at the passed client,
+     * the link will be null.
+     *
+     * @param clientId  the client
+     * @param pageable  the page to request
+     * @param sort      sorting
+     * @param assembler used to create the PagedResources
+     * @return Page of ClientLocationResource objects or NO_CONTENT
+     */
+    @RequestMapping(value = "/clients/{clientId}/locations/associateWithoutCL",
+            method = RequestMethod.GET)
+    @ApiOperation(value = "finds all possible locations that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<ClientLocationResourcePage> possibleWithoutClientLocations(
+            @PathVariable Long clientId,
+            @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+            Sort sort, PagedResourcesAssembler<ClientLocation> assembler,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "name", required = false) String name) {
+
+        LocationSearchFilter filter = new LocationSearchFilter(fromStringOrActive(status), name);
+        filter.setNotUsingThisClient(new Client(clientId));
 
         Page<ClientLocation> clientLocationPage = clientLocationService.findPossibleLocationsToAdd(
                 new Client(clientId), filter, pageable);
