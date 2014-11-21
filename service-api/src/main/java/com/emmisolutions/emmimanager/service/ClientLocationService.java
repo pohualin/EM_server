@@ -74,4 +74,14 @@ public interface ClientLocationService {
      * @return a page of ClientLocation objects, the client relationship could be null
      */
     Page<ClientLocation> findPossibleLocationsToAdd(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable);
+    
+    
+    /**
+     * Finds a page of ClientLocation without the client locations used by the client
+     *
+     * @param pageable             a page
+     * @param locationSearchFilter used to find the locations
+     * @return a page of ClientLocation objects, the client relationship could be null
+     */
+    Page<ClientLocation> findLocationsWithoutClientLocations(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable);
 }

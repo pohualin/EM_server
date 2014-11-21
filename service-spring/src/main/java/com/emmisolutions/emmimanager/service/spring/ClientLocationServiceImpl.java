@@ -105,12 +105,23 @@ public class ClientLocationServiceImpl implements ClientLocationService {
     @Override
     @Transactional(readOnly = true)
     public Page<ClientLocation> findPossibleLocationsToAdd(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable) {
+        // find matching locations
+        Page<Location> matchedLocations = locationPersistence.list(pageable, locationSearchFilter);
+        return findPossibleLocations(client, matchedLocations, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ClientLocation> findLocationsWithoutClientLocations(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable) {
+        // find matching locations
+    	Page<Location> matchedLocations = locationPersistence.listWithoutLocations(pageable, locationSearchFilter);
+        return findPossibleLocations(client, matchedLocations, pageable);
+    }
+    
+    private Page<ClientLocation> findPossibleLocations(Client client, Page<Location> matchedLocations, Pageable pageable) {
         if (client == null) {
             throw new InvalidDataAccessApiUsageException("Client cannot be null");
         }
-
-        // find matching locations
-        Page<Location> matchedLocations = locationPersistence.list(pageable, locationSearchFilter);
 
         // find ClientLocations for the page of matching locations
         Map<Location, ClientLocation> matchedClientLocationMap = new HashMap<>();
@@ -127,4 +138,5 @@ public class ClientLocationServiceImpl implements ClientLocationService {
         }
         return new PageImpl<>(clientLocations, pageable, matchedLocations.getTotalElements());
     }
+    
 }

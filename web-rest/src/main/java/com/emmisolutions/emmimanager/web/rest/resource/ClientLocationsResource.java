@@ -211,7 +211,7 @@ public class ClientLocationsResource {
 
         LocationSearchFilter filter = new LocationSearchFilter(clientId, fromStringOrActive(status), name);
 
-        Page<ClientLocation> clientLocationPage = clientLocationService.findPossibleLocationsToAdd(
+        Page<ClientLocation> clientLocationPage = clientLocationService.findLocationsWithoutClientLocations(
                 new Client(clientId), filter, pageable);
 
         if (clientLocationPage.hasContent()) {

@@ -20,6 +20,15 @@ public interface LocationPersistence {
     Page<Location> list(Pageable page, LocationSearchFilter filter);
 
     /**
+     * Get a page of locations without the client locations associated to the location
+     *
+     * @param page   to fetch
+     * @param filter to filter
+     * @return page of location objects
+     */
+    Page<Location> listWithoutLocations(Pageable page, LocationSearchFilter filter);
+    
+    /**
      * Save a location
      *
      * @param location to be saved

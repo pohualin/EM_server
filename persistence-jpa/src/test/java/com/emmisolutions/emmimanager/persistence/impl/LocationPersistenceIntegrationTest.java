@@ -159,7 +159,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         ClientLocation clientLocation = clientLocationPersistence.create(location.getId(), client.getId());
         //ClientLocation clientLocation2 = clientLocationPersistence.create(location2.getId(), client2.getId());
         
-        Page<Location> locationPage = locationPersistence.list(null, new LocationSearchFilter(client.getId(), null, (String) null));
+        Page<Location> locationPage = locationPersistence.listWithoutLocations(null, new LocationSearchFilter(client.getId(), null, (String) null));
         assertThat("location2 is in the result page", locationPage.getContent(), hasItem(location2));
 
     }
