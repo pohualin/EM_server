@@ -25,12 +25,17 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
     public List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderteamLocations) {
         return teamProviderTeamLocationRepository.save(teamProviderteamLocations);
     }
+    
+    @Override
+    public void delete(List<TeamProviderTeamLocation> teamProviderTeamLocations){
+    	teamProviderTeamLocationRepository.delete(teamProviderTeamLocations);
+    }
 
     @Override
     public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
         if (page == null) {
             // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+            page = new PageRequest(0, 5, Sort.Direction.ASC, "id");
         }
         return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
     }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 
@@ -41,6 +42,15 @@ public interface TeamProviderService {
 	 * @return void
 	 */
 	void delete(TeamProvider provider);
+	
+	/**
+	 * Update a teamProvider
+	 *
+	 * @param  teamProvider to be updated
+	 * @return void
+	 */
+	void update(TeamProviderTeamLocationSaveRequest request);
+	
 	/**
 	 * Associates a list of existing providers to the team passed in
 	 *
@@ -68,4 +78,13 @@ public interface TeamProviderService {
      * @param provider the provider
      */
     long delete(Client client, Provider provider);
+    
+    /**
+     * Find all teamLocation by teamProvider
+     *
+     * @param teamProvider to use
+     * @param page the page specification
+     * @return a set of TeamProviderTeamLocation objects
+     */
+    Set<TeamLocation> findTeamLocationsByTeamProvider(TeamProvider teamProvider, Pageable pageable);
 }

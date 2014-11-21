@@ -1,20 +1,37 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import com.emmisolutions.emmimanager.service.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamService;
 
 /**
  * Implementation of the TeamProviderService
@@ -137,5 +154,79 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         teamProviderTeamLocationPersistence.removeAllByClientProvider(client, provider);
         return teamProviderPersistence.delete(dbClient, dbProvider);
     }
+    
+	@Transactional
+	public Set<TeamProviderTeamLocation> findTeamProviderTeamLocationsByTeamProvider(
+			TeamProvider teamProvider, Pageable pageable,
+			Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
+		Page<TeamProviderTeamLocation> tptls = teamProviderTeamLocationService
+				.findByTeamProvider(teamProvider, pageable);
+		if (tptls.hasContent()) {
+			teamProviderTeamLocations.addAll(tptls.getContent());
+			if (tptls.hasNext()) {
+				findTeamProviderTeamLocationsByTeamProvider(teamProvider, tptls.nextPageable(), teamProviderTeamLocations);
+			}
+		}
+		return teamProviderTeamLocations;
+	}
+	
+	@Override
+	@Transactional
+	public Set<TeamLocation> findTeamLocationsByTeamProvider(
+			TeamProvider teamProvider, Pageable pageable) {
+		Set<TeamProviderTeamLocation> tptls = findTeamProviderTeamLocationsByTeamProvider(teamProvider, pageable, new HashSet<TeamProviderTeamLocation>());
+		Set<TeamLocation> tls = new HashSet<TeamLocation>();
+		for(TeamProviderTeamLocation tptl: tptls){
+			tls.add(tptl.getTeamLocation());
+		}
+		return tls;
+	}
+    
+    @Override
+    @Transactional
+	public void update(TeamProviderTeamLocationSaveRequest request) {
+		providerService.update(request.getProvider());
+		if (request.getClientProvider() != null) {
+			ClientProvider toBeSaved = clientProviderService.reload(request
+					.getClientProvider());
+			toBeSaved
+					.setExternalId(request.getClientProvider().getExternalId());
+			clientProviderService.save(toBeSaved);
+		}
+		TeamProvider tp = teamProviderPersistence.reload(request.getTeamProvider().getId());
+
+		Map<Long, TeamLocation> incoming = new HashMap<Long, TeamLocation>();
+		for (TeamLocation tl : request.getTeamLocations()) {
+			incoming.put(tl.getId(), tl);
+		}
+
+		Set<TeamProviderTeamLocation> exist = findTeamProviderTeamLocationsByTeamProvider(
+				tp, null, new HashSet<TeamProviderTeamLocation>());
+		Map<Long, TeamProviderTeamLocation> existing = new HashMap<Long, TeamProviderTeamLocation>();
+		for (TeamProviderTeamLocation tptl : exist) {
+			existing.put(tptl.getTeamLocation().getId(), tptl);
+		}
+
+		List<TeamProviderTeamLocation> newTptls = new ArrayList<TeamProviderTeamLocation>();
+		for (Long key : incoming.keySet()) {
+			if (!existing.containsKey(key)) {
+				TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
+				tptl.setTeamLocation(incoming.get(key));
+				tptl.setTeamProvider(tp);
+				newTptls.add(tptl);
+			}
+		}
+		teamProviderTeamLocationService
+				.saveAllTeamProviderTeamLocations(newTptls);
+
+		List<TeamProviderTeamLocation> removeTptls = new ArrayList<TeamProviderTeamLocation>();
+		for (Long key : existing.keySet()) {
+			if (!incoming.containsKey(key)) {
+				removeTptls.add(existing.get(key));
+			}
+		}
+		teamProviderTeamLocationService
+				.deleteTeamProviderTeamLocations(removeTptls);
+	}
 
 }
