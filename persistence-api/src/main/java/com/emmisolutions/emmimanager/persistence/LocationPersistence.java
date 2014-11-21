@@ -18,7 +18,7 @@ public interface LocationPersistence {
      * @return page of location objects
      */
     Page<Location> list(Pageable page, LocationSearchFilter filter);
-
+    
     /**
      * Save a location
      *
