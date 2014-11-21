@@ -1,37 +1,20 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.*;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientLocation;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.State;
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.LocationPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class
@@ -129,7 +112,9 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setBelongsTo(client);
         location = locationPersistence.save(location);
 
-        Page<Location> locationPage = locationPersistence.list(null, new LocationSearchFilter(client.getId(), null, (String) null));
+        LocationSearchFilter filter = new LocationSearchFilter();
+        filter.setBelongsToClient(client);
+        Page<Location> locationPage = locationPersistence.list(null, filter);
         assertThat("location is in the result page", locationPage.getContent(), hasItem(location));
 
     }
@@ -145,7 +130,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setState(State.IL);
         location.setBelongsTo(client);
         location = locationPersistence.save(location);
-        
+
         Client client2 = makeClient();
         client2 = clientPersistence.save(client2);
         Location location2 = new Location();
@@ -156,10 +141,11 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location2.setBelongsTo(client2);
         location2 = locationPersistence.save(location2);
 
-        ClientLocation clientLocation = clientLocationPersistence.create(location.getId(), client.getId());
-        //ClientLocation clientLocation2 = clientLocationPersistence.create(location2.getId(), client2.getId());
-        
-        Page<Location> locationPage = locationPersistence.list(null, new LocationSearchFilter(client.getId(), null, (String) null));
+        clientLocationPersistence.create(location.getId(), client.getId());
+
+        LocationSearchFilter filter = new LocationSearchFilter();
+        filter.setNotUsingThisClient(client);
+        Page<Location> locationPage = locationPersistence.list(null, filter);
         assertThat("location2 is in the result page", locationPage.getContent(), hasItem(location2));
 
     }
