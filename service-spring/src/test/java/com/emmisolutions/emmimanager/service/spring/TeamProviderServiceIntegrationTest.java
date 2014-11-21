@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
@@ -120,7 +121,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractStart(LocalDate.now());
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setName(clientName);
-		client.setContractOwner(userService.save(new User(username, "pw")));
+		client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
 		client.setSalesForceAccount(new SalesForce("xxxWW"
 				+ System.currentTimeMillis()));
 		return client;

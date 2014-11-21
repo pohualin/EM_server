@@ -1,0 +1,5 @@
+user_type;login;password;first_name;last_name;email;version
+A;system;NONE;NULL;System;NULL;0
+A;super_admin;$2a$08$DnPYfk.kLylnfQLlHWALMOs.VpUJjPpWp5dsNEyyPI8wBW2eHM5HO;System;Administrator;NULL;0
+A;contract_owner;NONE;Contract;Owner I;contract_owner@emmis0lutions.com;0
+A;contract_owner2;NONE;Contract;Owner II;contract_owner2@emmis0lutions.com;0

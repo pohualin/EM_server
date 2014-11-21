@@ -60,6 +60,9 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Override
     public Client reload(Long id) {
+        if (id == null){
+            return null;
+        }
         return clientRepository.findOne(id);
     }
 

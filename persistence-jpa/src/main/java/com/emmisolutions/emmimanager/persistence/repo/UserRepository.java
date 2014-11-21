@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 /**
  * Spring Data repo for User Entities
  */
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+public interface UserRepository extends JpaRepository<UserAdmin, Long>, JpaSpecificationExecutor<UserAdmin> {
 
     /**
      * Find a user by the login
@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @param login case insensitive comparison
      * @return User or null
      */
-    User findByLoginIgnoreCase(String login);
+    UserAdmin findByLoginIgnoreCase(String login);
 
 
     /**
@@ -26,6 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * @param login this is case sensitive (on purpose)
      * @return User or null
      */
-    @Query("select u from User u left join fetch u.roles r left join fetch r.permissions p where u.login = :login")
-    User fetchWithFullPermissions(@Param("login") String login);
+    @Query("select u from UserAdmin u left join fetch u.roles ur left join fetch ur.userAdminRole r left join fetch r.permissions p where u.login = :login")
+    UserAdmin fetchWithFullPermissions(@Param("login") String login);
 }

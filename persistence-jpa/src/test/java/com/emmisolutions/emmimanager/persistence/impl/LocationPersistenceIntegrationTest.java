@@ -1,10 +1,9 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+
 import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.LocationPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -31,7 +30,10 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
-    User superAdmin;
+    @Resource
+    ClientLocationPersistence clientLocationPersistence;
+
+    UserAdmin superAdmin;
 
     @Resource
     ClientTypeRepository clientTypeRepository;
@@ -110,11 +112,43 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setBelongsTo(client);
         location = locationPersistence.save(location);
 
-        Page<Location> locationPage = locationPersistence.list(null, new LocationSearchFilter(client.getId(), null, (String) null));
+        LocationSearchFilter filter = new LocationSearchFilter();
+        filter.setBelongsToClient(client);
+        Page<Location> locationPage = locationPersistence.list(null, filter);
         assertThat("location is in the result page", locationPage.getContent(), hasItem(location));
 
     }
 
+    @Test
+    public void excludeClient() {
+        Client client = makeClient();
+        client = clientPersistence.save(client);
+        Location location = new Location();
+        location.setName("Covenant Hospital");
+        location.setCity("Chicago");
+        location.setPhone("312-555-1212");
+        location.setState(State.IL);
+        location.setBelongsTo(client);
+        location = locationPersistence.save(location);
+
+        Client client2 = makeClient();
+        client2 = clientPersistence.save(client2);
+        Location location2 = new Location();
+        location2.setName("Covenant Hospital");
+        location2.setCity("Chicago");
+        location2.setPhone("312-555-1212");
+        location2.setState(State.IL);
+        location2.setBelongsTo(client2);
+        location2 = locationPersistence.save(location2);
+
+        clientLocationPersistence.create(location.getId(), client.getId());
+
+        LocationSearchFilter filter = new LocationSearchFilter();
+        filter.setNotUsingThisClient(client);
+        Page<Location> locationPage = locationPersistence.list(null, filter);
+        assertThat("location2 is in the result page", locationPage.getContent(), hasItem(location2));
+
+    }
 
     private Client makeClient() {
         Client client = new Client();
