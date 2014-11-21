@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
-import com.emmisolutions.emmimanager.model.PermissionName;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -29,7 +29,7 @@ public class UserResource extends ResourceSupport {
 
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
-    private List<PermissionName> permissions;
+    private List<UserAdminPermissionName> permissions;
 
     public UserResource() {
     }
@@ -45,7 +45,7 @@ public class UserResource extends ResourceSupport {
      * @param email       email
      * @param permissions permissions
      */
-    public UserResource(Long id, Integer version, String login, String firstName, String lastName, String email, List<PermissionName> permissions) {
+    public UserResource(Long id, Integer version, String login, String firstName, String lastName, String email, List<UserAdminPermissionName> permissions) {
         this.id = id;
         this.version = version;
         this.login = login;

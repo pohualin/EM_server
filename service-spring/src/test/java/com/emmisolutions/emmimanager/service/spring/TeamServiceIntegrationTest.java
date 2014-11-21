@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TeamService;
@@ -19,25 +20,25 @@ import static org.junit.Assert.assertThat;
  * Team Service Integration test
  */
 public class TeamServiceIntegrationTest extends BaseIntegrationTest {
-	
+
 	@Resource
 	ClientService clientService;
-	
+
 	@Resource
 	TeamService teamService;
-	
+
 	@Resource
     UserService userService;
-	
+
 	/**
      * Not all required fields
      */
     @Test(expected = ConstraintViolationException.class)
     public void createNotAllRequired() {
-        Team team = new Team();	
+        Team team = new Team();
         teamService.create(team);
     }
-    
+
     /**
      * Create team successfully
      */
@@ -45,7 +46,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     public void create() {
     	Client client = makeClient("clientTeam", "teamUser");
     	clientService.create(client);
-    	
+
     	Team team = makeTeamForClient(client);
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
@@ -64,7 +65,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         savedTeam = teamService.update(team);
         assertThat("client was not updated", savedTeam.getClient(), is(client));
     }
-    
+
     private Team makeTeamForClient(Client client){
 		 Team team = new Team();
 		 team.setName("Test Team");
@@ -74,14 +75,14 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 		 team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
 		 return team;
 	 }
-    
+
     protected Client makeClient(String clientName, String username){
         Client client = new Client();
         client.setType(new ClientType(4l));
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        client.setContractOwner(userService.save(new User(username, "pw")));
+        client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
     }

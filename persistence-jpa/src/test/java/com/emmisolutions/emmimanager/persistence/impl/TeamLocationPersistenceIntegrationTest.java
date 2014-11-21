@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import org.joda.time.LocalDate;
@@ -31,7 +32,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
     @Resource
     TeamPersistence teamPersistence;
 
-    User superAdmin;
+    UserAdmin superAdmin;
 
     @Resource
     ClientTypeRepository clientTypeRepository;
@@ -113,7 +114,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
     }
 
     /**
-     * Delete a location team 
+     * Delete a location team
      */
     @Test
     public void delete() {
@@ -131,7 +132,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         teamLocation = teamLocationPersistence.reload(teamLocation);
         assertThat("TeamLocation was deleted", teamLocation, is(nullValue()));
     }
-    
+
     private Team createTeam(Client client, int i) {
         Team team = new Team();
         team.setName("Test Team"+i);

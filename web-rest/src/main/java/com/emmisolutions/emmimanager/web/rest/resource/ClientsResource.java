@@ -2,7 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
@@ -139,8 +139,8 @@ public class ClientsResource {
     })
     public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 100, sort="firstName") Pageable pageable,
                                                            @SortDefault(sort = "id") Sort sort,
-                                                           PagedResourcesAssembler<User> assembler) {
-        Page<User> userPage = clientService.listPotentialContractOwners(pageable);
+                                                           PagedResourcesAssembler<UserAdmin> assembler) {
+        Page<UserAdmin> userPage = clientService.listPotentialContractOwners(pageable);
         if (userPage.hasContent()) {
             return new ResponseEntity<>(
                     new UserPage(assembler.toResource(userPage, userResourceAssembler), userPage),
@@ -189,8 +189,8 @@ public class ClientsResource {
             return new ResponseEntity<>(clientResourceAssembler.toResource(client), HttpStatus.OK);
         }
     }
-    
-   @RequestMapping(value = "/clients/ref/findByNormalizedName", 
+
+   @RequestMapping(value = "/clients/ref/findByNormalizedName",
             method = RequestMethod.GET)
    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
    public ResponseEntity<ClientResource> findByNormalizedName(@RequestParam(value = "normalizedName", required = false)String normalizedName) {
@@ -200,6 +200,6 @@ public class ClientsResource {
            return new ResponseEntity<>(clientResourceAssembler.toResource(toFind), HttpStatus.OK);
        } else {
            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-       } 
+       }
     }
 }

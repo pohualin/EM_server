@@ -1,14 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.service.LocationService;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationReferenceData;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationResource;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationResourceAssembler;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
+import static com.emmisolutions.emmimanager.model.LocationSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,14 +15,28 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
-import static com.emmisolutions.emmimanager.model.LocationSearchFilter.StatusFilter.fromStringOrActive;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import com.emmisolutions.emmimanager.model.ClientLocation;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.service.ClientLocationService;
+import com.emmisolutions.emmimanager.service.LocationService;
+import com.emmisolutions.emmimanager.web.rest.model.clientlocation.ClientLocationResourcePage;
+import com.emmisolutions.emmimanager.web.rest.model.clientlocation.LocationClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.clientlocation.LocationClientResourcePage;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationReferenceData;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationResource;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
  * Locations REST API
@@ -40,6 +52,12 @@ public class LocationsResource {
 
     @Resource
     LocationService locationService;
+    
+    @Resource
+    ClientLocationService clientLocationService;
+    
+    @Resource
+    LocationClientResourceAssembler locationClientResourceAssembler;
 
     /**
      * GET a single location
@@ -119,7 +137,7 @@ public class LocationsResource {
             @ApiImplicitParam(name="sort",  value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<LocationPage> list(
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault(size = 10, sort="name") Pageable pageable,
             @SortDefault(sort = {"name","state"}) Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
@@ -152,6 +170,39 @@ public class LocationsResource {
     @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST", "PERM_LOCATION_EDIT"})
     public LocationReferenceData getReferenceData() {
         return new LocationReferenceData();
+    }
+    
+    /**
+     * GET to find existing client locations for a location.
+     *
+     * @param id  the location
+     * @param pageable  the page to request
+     * @param sort      sorting
+     * @param assembler used to create the PagedResources
+     * @return Page of ClientLocationResource objects or NO_CONTENT
+     */
+    @RequestMapping(value = "/locations/{id}/clients",
+            method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    @ApiOperation("finds existing ClientLocations")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "client.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<LocationClientResourcePage> currentClients(
+            @PathVariable Long id,
+            @PageableDefault(size = 10, sort = "client.name", direction = Sort.Direction.ASC) Pageable pageable,
+            Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
+        Page<ClientLocation> clientLocationPage = clientLocationService.findByLocation(new Location(id), pageable);
+        if (clientLocationPage.hasContent()) {
+            return new ResponseEntity<>(
+                    new LocationClientResourcePage(assembler.toResource(clientLocationPage, locationClientResourceAssembler), clientLocationPage),
+                    HttpStatus.OK
+            );
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
 }

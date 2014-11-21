@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
@@ -44,13 +45,16 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         clientLocation = clientLocationPersistence.reload(clientLocation.getId());
         assertThat("client location is not null", clientLocation, is(notNullValue()));
 
-        Page<ClientLocation> clientLocationPage = clientLocationPersistence.find(client.getId(), null);
+        Page<ClientLocation> clientLocationPage = clientLocationPersistence.findByClient(client.getId(), null);
         assertThat("client location is on the page", clientLocationPage, hasItem(clientLocation));
+        
+        Page<ClientLocation> locationClientPage = clientLocationPersistence.findByLocation(location.getId(), null);
+        assertThat("client location is on the page", locationClientPage, hasItem(clientLocation));
 
         clientLocationPersistence.remove(clientLocation.getId());
         assertThat("client location has been removed", clientLocationPersistence.reload(clientLocation.getId()), is(nullValue()));
     }
-
+    
     /**
      * Reload of a null id should not error out
      */
@@ -96,7 +100,7 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidFindCall(){
-        clientLocationPersistence.find(null, null);
+        clientLocationPersistence.findByClient(null, null);
     }
 
     private Client makeClient() {
@@ -108,7 +112,7 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         client.setName("clientLocationPersistenceIntegrationTestClient " + System.currentTimeMillis());
         client.setType(new ClientType(1l));
         client.setActive(true);
-        client.setContractOwner(new User(1l, 0));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce("clpit" + System.currentTimeMillis()));
         return clientPersistence.save(client);
     }
