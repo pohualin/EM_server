@@ -1,6 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -70,8 +74,8 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void contractUserFetch(){
-        User contractOwner = userPersistence.reload("contract_owner");
-        Page<User> ret = clientService.listPotentialContractOwners(null);
+        UserAdmin contractOwner = userPersistence.reload("contract_owner");
+        Page<UserAdmin> ret = clientService.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }
@@ -82,7 +86,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        client.setContractOwner(userService.save(new User(username, "pw")));
+        client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
         client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
         return client;
     }

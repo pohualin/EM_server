@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 
 /**
  * The User Service
@@ -13,13 +13,13 @@ public interface UserService {
      * @param user to save
      * @return the saved user
      */
-    User save(User user);
+    UserAdmin save(UserAdmin user);
 
     /**
      * Fetch the currently logged in user.
      *
      * @return the User
      */
-    User loggedIn();
+    UserAdmin loggedIn();
 
 }

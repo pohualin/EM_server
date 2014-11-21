@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
@@ -27,16 +28,16 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientPersistence clientPersistence;
-    
+
     @Resource
     GroupPersistence groupPersistence;
-    
+
 	@Resource
 	UserPersistence userPersistence;
-	
+
 	@Resource
 	GroupRepository groupRepository;
-	
+
 	@Resource
 	ClientRepository clientRepository;
 
@@ -52,7 +53,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamTagPersistence teamTagPersistence;
 
-	User superAdmin;
+	UserAdmin superAdmin;
 
     ClientType clientType;
 
@@ -63,7 +64,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	    superAdmin = userPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
 	}
-	
+
 	/**
 	 * 	Big method.. save some groups, search for em, remove groups,
 	 */
@@ -134,7 +135,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
         List<Tag> tagList = createTagList(groupOne, 4);
         List<Tag> subTagList = tagList.subList(0,3);
-        Team team1 = createTeam(clientOne, 1);
+        Team team1 = createTeam(clientOne, 2);
         teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(0)));
         teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(3)));
 
