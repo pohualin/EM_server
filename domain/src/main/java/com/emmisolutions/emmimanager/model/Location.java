@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
+import java.util.Set;
+
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Length;
 
@@ -9,6 +11,7 @@ import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * A location.
@@ -55,6 +58,10 @@ public class Location extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 2, nullable = false)
     private State state;
+
+    @OneToMany(mappedBy="location")
+    @XmlTransient
+    private Set<ClientLocation> usingThisLocation;
 
     /**
      * No Arg Constructor
