@@ -148,19 +148,19 @@ public class TeamProvidersResource {
 	}
 	
     /**
-     * GET to find all possible providers that can be used on a client. The object will come back with a link
-     * if it is currently associated to the passed client. If it is not currently in use at the passed client,
+     * GET to find all possible providers that can be used on a team. The object will come back with a link
+     * if it is currently associated to the passed team. If it is not currently in use at the passed team,
      * the link will be null.
      *
-     * @param clientId  the client
+     * @param teamId  the team
      * @param pageable  the page to request
      * @param sort      sorting
      * @param assembler used to create the PagedResources
-     * @return Page of ClientProviderResource objects or NO_CONTENT
+     * @return Page of TeamProviderResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/team/{teamId}/providers/associate",
             method = RequestMethod.GET)
-        @ApiOperation(value = "finds all possible providers that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
+        @ApiOperation(value = "finds all possible providers that can be associated to a team", notes = "The object will come back with a link, if it is currently associated to the passed team. If it is not currently in use at the passed team, the link will be null.")
         @RolesAllowed({"PERM_GOD", "PERM_TEAM_PROVIDER_LIST"})
         @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),

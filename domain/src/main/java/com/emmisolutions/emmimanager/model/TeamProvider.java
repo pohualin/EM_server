@@ -64,10 +64,6 @@ public class TeamProvider extends AbstractAuditingEntity implements
 	@XmlElementWrapper(name = "teamProviderTeamLocations")
 	@JsonProperty("teamProviderTeamLocations")
     private Set<TeamProviderTeamLocation> teamProviderTeamLocations;
-
-    @Length(max = 255)
-    @Column(name = "external_id", length = 255, columnDefinition = "nvarchar(255)")
-    private String externalId;
     
 	public Long getId() {
 		return id;
@@ -108,14 +104,6 @@ public class TeamProvider extends AbstractAuditingEntity implements
     public void setTeamProviderTeamLocations(Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
         this.teamProviderTeamLocations = teamProviderTeamLocations;
     }
-
-    public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
-	}
 
 	@Override
     public boolean equals(Object o) {

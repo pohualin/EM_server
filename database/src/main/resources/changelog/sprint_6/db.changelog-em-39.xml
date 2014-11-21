@@ -49,15 +49,4 @@
         <addUniqueConstraint tableName="team_provider" columnNames="provider_id,team_id" constraintName="uk_team_provider_teamid_provid"/>        
                                  
 	</changeSet>
-	
-	<changeSet id="add_a_column" author="Amrita">
-		<addColumn tableName="team_provider" >
-			<column name="external_id"  type="nvarchar(255)"></column>
-		</addColumn>
-	
-		<addColumn tableName="team_provider_audit" >
-			<column name="external_id"  type="nvarchar(255)"></column>
-		</addColumn>
-	</changeSet>
-	
 </databaseChangeLog>
