@@ -1,27 +1,16 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientLocation;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.model.Location_;
-import com.emmisolutions.emmimanager.model.ClientLocation_;
+import javax.annotation.Resource;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the specification class that allows for filtering of Location objects.
@@ -29,8 +18,11 @@ import com.emmisolutions.emmimanager.model.ClientLocation_;
 @Component
 public class LocationSpecifications {
 
-	@Resource
-	MatchingCriteriaBean matchCriteria;
+    @Resource
+    MatchingCriteriaBean matchCriteria;
+
+    @Resource
+    ClientPersistence clientPersistence;
 
     /**
      * Case insensitive name anywhere match
@@ -57,7 +49,7 @@ public class LocationSpecifications {
                                 }
                             }
                         }
-                        for (String searchTerm: searchTerms){
+                        for (String searchTerm : searchTerms) {
                             if (StringUtils.isNotBlank(searchTerm)) {
                                 addedANameFilter = true;
                                 predicates.add(cb.like(cb.lower(root.get(Location_.name)), "%" + searchTerm.toLowerCase() + "%"));
@@ -92,32 +84,46 @@ public class LocationSpecifications {
     /**
      * Ensures that the location belongs to a client
      *
-     * @param client to use
+     * @param filter to use to find the belongs to client
      * @return the specification
      */
-    public Specification<Location> belongsTo(final Client client) {
+    public Specification<Location> belongsTo(final LocationSearchFilter filter) {
         return new Specification<Location>() {
             @Override
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (client != null) {
-                    return cb.equal(root.get(Location_.belongsTo), client);
+                Client belongsToClient = null;
+                if (filter != null && filter.getBelongsToClient() != null) {
+                    belongsToClient = clientPersistence.reload(filter.getBelongsToClient().getId());
+                }
+                if (belongsToClient != null) {
+                    return cb.equal(root.get(Location_.belongsTo), belongsToClient);
                 }
                 return null;
             }
         };
     }
 
-    public Specification<Location> notUsedBy(final Client client) {
+    /**
+     * Ensures that the location is not in use by the client on the filter
+     *
+     * @param filter to find the client not to use
+     * @return the specification
+     */
+    public Specification<Location> notUsedBy(final LocationSearchFilter filter) {
         return new Specification<Location>() {
             @Override
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (client != null) {  
-                	Expression<Client> e = root.join(Location_.usingThisLocation, JoinType.LEFT).get(ClientLocation_.client);
-                	Predicate p = e.isNull();
-                	return cb.or( cb.notEqual(e, client), p);
+                Client notUsedByClient = null;
+                if (filter != null && filter.getNotUsingThisClient() != null) {
+                    notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient().getId());
+                }
+                if (notUsedByClient != null) {
+                    Expression<Client> e = root.join(Location_.usingThisLocation, JoinType.LEFT).get(ClientLocation_.client);
+                    Predicate p = e.isNull();
+                    return cb.or(cb.notEqual(e, notUsedByClient), p);
                 }
                 return null;
             }
         };
-    }    
+    }
 }

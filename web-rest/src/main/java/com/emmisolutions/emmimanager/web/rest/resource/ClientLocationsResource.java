@@ -182,11 +182,11 @@ public class ClientLocationsResource {
     }
 
     /**
-     * GET to find all possible locations for a client without the ClientLocations associated to this client. 
+     * GET to find all possible locations for a client without the ClientLocations associated to this client.
      * The object will come back with a link
      * if it is currently associated to the passed client. If it is not currently in use at the passed client,
      * the link will be null.
-     * 
+     *
      * @param clientId  the client
      * @param pageable  the page to request
      * @param sort      sorting
@@ -209,7 +209,8 @@ public class ClientLocationsResource {
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "name", required = false) String name) {
 
-        LocationSearchFilter filter = new LocationSearchFilter(clientId, fromStringOrActive(status), name);
+        LocationSearchFilter filter = new LocationSearchFilter(fromStringOrActive(status), name);
+        filter.setNotUsingThisClient(new Client(clientId));
 
         Page<ClientLocation> clientLocationPage = clientLocationService.findPossibleLocationsToAdd(
                 new Client(clientId), filter, pageable);
@@ -222,8 +223,8 @@ public class ClientLocationsResource {
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-    }    
-    
+    }
+
     /**
      * POST to create new ClientLocation on a Client with a Set of existing Location objects.
      *
