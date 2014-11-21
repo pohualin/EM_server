@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 import javax.annotation.Resource;
@@ -10,10 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.LocationRepository;
@@ -24,41 +23,24 @@ import com.emmisolutions.emmimanager.persistence.repo.LocationRepository;
 @Repository
 public class LocationPersistenceImpl implements LocationPersistence {
 
-	@Resource
-	LocationSpecifications locationSpecifications;
+    @Resource
+    LocationSpecifications locationSpecifications;
 
     @Resource
     LocationRepository locationRepository;
 
-    @Resource
-    ClientPersistence clientPersistence; 
-    
     @Override
     public Page<Location> list(Pageable page, LocationSearchFilter filter) {
         if (page == null) {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        Client client = null;
-        if (filter != null && filter.getClientId() != null){
-            client = clientPersistence.reload(filter.getClientId());
-        }
-        
-        return locationRepository.findAll(where(locationSpecifications.belongsTo(client)).and(locationSpecifications.hasNames(filter)).and(locationSpecifications.isInStatus(filter)) , page);
-    }
 
-    @Override
-    public Page<Location> listWithoutLocations(Pageable page, LocationSearchFilter filter) {
-        if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
-        }
-        Client client = null;
-        if (filter != null && filter.getClientId() != null){
-            client = clientPersistence.reload(filter.getClientId());
-        }
-        
-        return locationRepository.findAll(where(locationSpecifications.notUsedBy(client)).and(locationSpecifications.hasNames(filter)).and(locationSpecifications.isInStatus(filter)) , page);
+        return locationRepository.findAll(where(
+            locationSpecifications.notUsedBy(filter))
+            .and(locationSpecifications.belongsTo(filter))
+            .and(locationSpecifications.hasNames(filter))
+            .and(locationSpecifications.isInStatus(filter)), page);
     }
     
     @Override
