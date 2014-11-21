@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ public class UserPage extends PagedResource<UserResource> {
      * @param userResources to be wrapped
      * @param userPage      the raw response
      */
-    public UserPage(PagedResources<UserResource> userResources, Page<User> userPage) {
+    public UserPage(PagedResources<UserResource> userResources, Page<UserAdmin> userPage) {
         pageDefaults(userResources, userPage);
     }
 

@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.*;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
 
     private Client createClient() {
-        User user = userService.save(new User("login " + System.currentTimeMillis(), "pw"));
+        UserAdmin user = userService.save(new UserAdmin("login " + System.currentTimeMillis(), "pw"));
 
         Client client = new Client();
         client.setTier(new ClientTier(3l));

@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
@@ -111,7 +112,7 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         client.setName("clientLocationPersistenceIntegrationTestClient " + System.currentTimeMillis());
         client.setType(new ClientType(1l));
         client.setActive(true);
-        client.setContractOwner(new User(1l, 0));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce("clpit" + System.currentTimeMillis()));
         return clientPersistence.save(client);
     }

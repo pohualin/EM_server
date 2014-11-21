@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -23,7 +24,8 @@ import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.State;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
@@ -47,8 +49,8 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientLocationPersistence clientLocationPersistence;
-    
-    User superAdmin;
+
+    UserAdmin superAdmin;
 
     @Resource
     ClientTypeRepository clientTypeRepository;
@@ -115,7 +117,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
     /**
      * Make sure locations belonging to a client can be searched for
      */
-    /*@Test
+    @Test
     public void belongsToFilter() {
         Client client = makeClient();
         client = clientPersistence.save(client);
@@ -130,7 +132,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         Page<Location> locationPage = locationPersistence.list(null, new LocationSearchFilter(client.getId(), null, (String) null));
         assertThat("location is in the result page", locationPage.getContent(), hasItem(location));
 
-    }*/
+    }
 
     @Test
     public void excludeClient() {
