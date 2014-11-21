@@ -119,14 +119,12 @@ public class LocationSpecifications {
                 }
                 if (notUsedByClient != null) {
                 	
-                	Subquery<Long> sq = query.subquery(Long.class);
-                	Root<ClientLocation> cl = sq.from(ClientLocation.class);  
-                	Join<ClientLocation, Location> clJoin = cl.join(ClientLocation_.location);
-                	sq.select(clJoin.get(Location_.id));        	
-                	Predicate where = cb.equal(cl.get(ClientLocation_.client),notUsedByClient);
-                	sq.where(where);
-                	
-                	return cb.not(cb.in(root.get(Location_.id)).value(sq));
+                	Subquery<Location> locationSubquery = query.subquery(Location.class);
+                	Root<ClientLocation> clientLocationRoot = locationSubquery.from(ClientLocation.class);
+                	locationSubquery
+                	    .select(clientLocationRoot.get(ClientLocation_.location))
+                	    .where(cb.equal(clientLocationRoot.get(ClientLocation_.client), notUsedByClient));
+                	return cb.not(cb.in(root).value(locationSubquery));
                 }
                 return null;
             }
