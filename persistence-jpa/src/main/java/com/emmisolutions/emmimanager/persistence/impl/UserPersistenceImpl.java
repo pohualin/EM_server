@@ -2,7 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,22 +22,22 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 public class UserPersistenceImpl implements UserPersistence {
 
     @Resource
-    UserRepository userRepository;
+    UserAdminRepository userAdminRepository;
 
     @Override
     public UserAdmin saveOrUpdate(UserAdmin user) {
         user.setLogin(StringUtils.lowerCase(user.getLogin()));
-        return userRepository.save(user);
+        return userAdminRepository.save(user);
     }
 
     @Override
     public UserAdmin reload(String login) {
-        return userRepository.findByLoginIgnoreCase(login);
+        return userAdminRepository.findByLoginIgnoreCase(login);
     }
 
     @Override
     public UserAdmin fetchUserWillFullPermissions(String login) {
-        return userRepository.fetchWithFullPermissions(login);
+        return userAdminRepository.fetchWithFullPermissions(login);
     }
 
 
@@ -47,6 +47,6 @@ public class UserPersistenceImpl implements UserPersistence {
             // default pagination request if none
             pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return userRepository.findAll(where(isContractOwner()), pageable);
+        return userAdminRepository.findAll(where(isContractOwner()), pageable);
     }
 }
