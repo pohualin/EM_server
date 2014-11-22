@@ -19,7 +19,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Audited
 @Table(name = "user_client_role",
     uniqueConstraints =
-    @UniqueConstraint(columnNames = {"client_id","name"}, name = "uk_user_client_role_name"))
+    @UniqueConstraint(columnNames = {"client_id", "name"}, name = "uk_user_client_role_name"))
 public class UserClientRole extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -31,6 +31,32 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
     @Column(length = 255, columnDefinition = "nvarchar(255)", nullable = false)
     @Size(min = 0, max = 255)
     private String name;
+
+
+    public UserClientRole() {
+    }
+
+    /**
+     * Create UserClientRole by id
+     *
+     * @param id to use
+     */
+    public UserClientRole(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Create UserClientRole by its parts
+     *
+     * @param name                  the name of the role
+     * @param client                the client to use
+     * @param userClientPermissions the permission set
+     */
+    public UserClientRole(String name, Client client, Set<UserClientPermission> userClientPermissions) {
+        this.name = name;
+        this.client = client;
+        this.userClientPermissions = userClientPermissions;
+    }
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false,

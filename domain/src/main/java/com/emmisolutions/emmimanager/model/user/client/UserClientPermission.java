@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.model.user.client;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,11 +15,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class UserClientPermission {
 
     @Id
-    @NotNull
-    @Size(min = 0, max = 100)
-    @Column(length = 100, columnDefinition = "varchar(100)")
+    @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserClientPermissionName name;
+
+    public UserClientPermission() {
+    }
+
+    /**
+     * Make a permission by name
+     * @param name to use
+     */
+    public UserClientPermission(UserClientPermissionName name) {
+        this.name = name;
+    }
 
     public UserClientPermissionName getName() {
         return name;

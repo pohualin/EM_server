@@ -59,10 +59,6 @@ public class Location extends AbstractAuditingEntity {
     @Column(length = 2, nullable = false)
     private State state;
 
-    @OneToMany(mappedBy="location")
-    @XmlTransient
-    private Set<ClientLocation> usingThisLocation;
-
     /**
      * No Arg Constructor
      */

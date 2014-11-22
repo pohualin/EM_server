@@ -118,9 +118,13 @@ public class LocationSpecifications {
                     notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient().getId());
                 }
                 if (notUsedByClient != null) {
-                    Expression<Client> e = root.join(Location_.usingThisLocation, JoinType.LEFT).get(ClientLocation_.client);
-                    Predicate p = e.isNull();
-                    return cb.or(cb.notEqual(e, notUsedByClient), p);
+                	
+                	Subquery<Location> locationSubquery = query.subquery(Location.class);
+                	Root<ClientLocation> clientLocationRoot = locationSubquery.from(ClientLocation.class);
+                	locationSubquery
+                	    .select(clientLocationRoot.get(ClientLocation_.location))
+                	    .where(cb.equal(clientLocationRoot.get(ClientLocation_.client), notUsedByClient));
+                	return cb.not(cb.in(root).value(locationSubquery));
                 }
                 return null;
             }
