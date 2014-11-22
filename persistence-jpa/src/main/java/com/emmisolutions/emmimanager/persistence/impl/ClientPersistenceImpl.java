@@ -37,7 +37,7 @@ public class ClientPersistenceImpl implements ClientPersistence {
     ClientTierRepository clientTierRepository;
 
     @Resource
-    UserRepository userRepository;
+    UserAdminRepository userAdminRepository;
 
     @Resource
     ClientSpecifications clientSpecifications;
