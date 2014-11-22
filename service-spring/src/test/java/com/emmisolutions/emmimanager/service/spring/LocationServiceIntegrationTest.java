@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
@@ -35,7 +35,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     ClientService clientService;
 
     @Resource
-    UserRepository userService;
+    UserAdminRepository userService;
 
     UserAdmin user;
 

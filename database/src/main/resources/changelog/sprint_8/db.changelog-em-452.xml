@@ -435,4 +435,11 @@
                   tableName="user_client_permission"/>
     </changeSet>
 
+    <changeSet id="client permission translations" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/client-permission-translations.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
+
 </databaseChangeLog>

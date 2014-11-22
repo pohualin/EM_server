@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 /**
  * Spring Data repo for User Entities
  */
-public interface UserRepository extends JpaRepository<UserAdmin, Long>, JpaSpecificationExecutor<UserAdmin> {
+public interface UserAdminRepository extends JpaRepository<UserAdmin, Long>, JpaSpecificationExecutor<UserAdmin> {
 
     /**
      * Find a user by the login
