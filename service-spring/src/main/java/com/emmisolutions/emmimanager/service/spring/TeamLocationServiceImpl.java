@@ -16,6 +16,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
@@ -54,16 +55,17 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     @Transactional
-    public void save(Team team, Set<Location> locationSet, Set<TeamProvider> providerSet) {
+    public void save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
         Team teamToFind = teamPersistence.reload(team);
-        if(teamToFind != null && locationSet != null) {
-            for (Location location : locationSet) {
+        if(teamToFind != null && request != null) {
+            for (TeamLocationTeamProviderSaveRequest req : request) {
+            	Location location = req.getLocation();
                 TeamLocation teamLocation = new TeamLocation(location, teamToFind);
                 teamLocationPersistence.saveTeamLocation(teamLocation);
                 
                 List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
             
-				for (TeamProvider teamProvider : providerSet) {
+				for (TeamProvider teamProvider : req.getProviders()) {
 					TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
 					tptl.setTeamProvider(teamProvider);
 					tptl.setTeamLocation(teamLocation);

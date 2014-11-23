@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.service.*;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,14 +58,17 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
 
-        Set<Location> locationSet = new HashSet<>();
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
+        TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
+  
         Location location = locationService.create( makeLocation("Location ", "1") );
-        locationSet.add(location);
+        req.setLocation(location);
+        reqs.add(req);
 
         assertThat("there is no client location yet", clientLocationPersistence.reload(location.getId(), client.getId()), is(nullValue()));
-
+      
         // create the team location
-        teamLocationService.save(savedTeam, locationSet);
+        teamLocationService.save(savedTeam, reqs);
 
         assertThat("location also added to the client location", clientLocationPersistence.reload(location.getId(), client.getId()), is(notNullValue()));
 
@@ -91,12 +96,15 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
 
-        Set<Location> locationSet = new HashSet<>();
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
+        TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
+
         Location location = locationService.create( makeLocation("Location ",  RandomStringUtils.randomNumeric(15)) );
-        locationSet.add(location);
+        req.setLocation(location);
+        reqs.add(req);
 
         // create the team location
-        teamLocationService.save(savedTeam, locationSet);
+        teamLocationService.save(savedTeam, reqs);
 
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null, savedTeam);
 
@@ -124,10 +132,14 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
 
-        Set<Location> locationSet = new HashSet<>();
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
+        TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
+
         Location location = locationService.create( makeLocation("Location ", "1") );
-        locationSet.add(location);
-        teamLocationService.save(savedTeam, locationSet);
+        req.setLocation(location);
+        reqs.add(req);
+        
+        teamLocationService.save(savedTeam, reqs);
 
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team);
         for (TeamLocation teamLocation : teamLocationPage.getContent()) {

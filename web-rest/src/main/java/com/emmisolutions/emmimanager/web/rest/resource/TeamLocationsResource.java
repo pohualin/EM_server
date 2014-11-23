@@ -27,6 +27,7 @@ import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationSearchFilter;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationPage;
@@ -105,10 +106,10 @@ public class TeamLocationsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_CREATE"})
-    public void create(@PathVariable("teamId") Long teamId,@RequestBody Set<Location> locationSet) {
+    public void create(@PathVariable("teamId") Long teamId,@RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs) {
         Team toFind = new Team();
         toFind.setId(teamId);
-        teamLocationService.save(toFind,locationSet);
+        teamLocationService.save(toFind,reqs);
     }
 
     /**

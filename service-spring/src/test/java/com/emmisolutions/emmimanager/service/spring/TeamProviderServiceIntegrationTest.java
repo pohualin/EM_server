@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeReposito
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 import com.emmisolutions.emmimanager.service.*;
+
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -345,10 +347,16 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         teamLocationTwo.setLocation(locationTwo);
         teamLocationTwo.setTeam(team2);
 
-        Set<Location> locationSet = new HashSet<Location>();
-        locationSet.add(locationOne);
-        locationSet.add(locationTwo);
-        teamLocationService.save(team2, locationSet);
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
+        TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
+        req.setLocation(locationOne);
+        reqs.add(req);
+        
+        req = new TeamLocationTeamProviderSaveRequest();
+        req.setLocation(locationTwo);
+        reqs.add(req);
+        
+        teamLocationService.save(team2, reqs);
 
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team2);
 
