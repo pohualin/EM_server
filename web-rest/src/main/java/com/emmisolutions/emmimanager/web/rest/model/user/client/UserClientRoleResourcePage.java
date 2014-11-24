@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.model.user.client;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
-import com.emmisolutions.emmimanager.web.rest.resource.RolesResource;
+import com.emmisolutions.emmimanager.web.rest.resource.ClientRolesAdminResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
 
@@ -32,10 +32,10 @@ public class UserClientRoleResourcePage extends PagedResource<UserClientRoleReso
      * Create the search link
      *
      * @return Link for roles on a client
-     * @see com.emmisolutions.emmimanager.web.rest.resource.RolesResource#clientRoles(Long, org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler)
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientRolesAdminResource#clientRoles(Long, org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler)
      */
     public static Link createFullSearchLink(Client client) {
-        Link link = linkTo(methodOn(RolesResource.class).clientRoles(client.getId(), null, null)).withRel("roles");
+        Link link = linkTo(methodOn(ClientRolesAdminResource.class).clientRoles(client.getId(), null, null)).withRel("roles");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
