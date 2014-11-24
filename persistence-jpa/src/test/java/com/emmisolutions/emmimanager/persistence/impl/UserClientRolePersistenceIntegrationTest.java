@@ -52,7 +52,9 @@ public class UserClientRolePersistenceIntegrationTest extends BaseIntegrationTes
         Set<UserClientPermission> userClientPermissions = new HashSet<>();
         userClientPermissions.add(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER));
         UserClientRole userClientRole = userClientRolePersistence.save(new UserClientRole("permission save", makeNewRandomClient(), userClientPermissions));
-        assertThat("permission present", userClientRolePersistence.find(userClientRole.getClient().getId(), null).iterator().next().getUserClientPermissions(), hasItem(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER)));
+        assertThat("permission present",
+            userClientRolePersistence.find(userClientRole.getClient().getId(), null).iterator().next().getUserClientPermissions(),
+            hasItem(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER)));
     }
 
 }

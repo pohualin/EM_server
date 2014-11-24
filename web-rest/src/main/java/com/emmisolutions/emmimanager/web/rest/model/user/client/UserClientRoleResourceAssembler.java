@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
-import com.emmisolutions.emmimanager.web.rest.resource.RolesResource;
+import com.emmisolutions.emmimanager.web.rest.resource.ClientRolesAdminResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +17,8 @@ public class UserClientRoleResourceAssembler implements ResourceAssembler<UserCl
     @Override
     public UserClientRoleResource toResource(UserClientRole entity) {
         UserClientRoleResource ret = new UserClientRoleResource(entity);
-        ret.add(linkTo(methodOn(RolesResource.class).get(entity.getId())).withSelfRel());
-        ret.add(linkTo(methodOn(RolesResource.class).rolePermissions(entity.getId())).withRel("permissions"));
+        ret.add(linkTo(methodOn(ClientRolesAdminResource.class).get(entity.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(ClientRolesAdminResource.class).rolePermissions(entity.getId())).withRel("permissions"));
         return ret;
     }
 }

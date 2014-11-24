@@ -14,14 +14,14 @@ import java.util.Set;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 /**
- * A role defined for a specific Client.
+ * A team level role defined for a specific Client.
  */
 @Entity
 @Audited
-@Table(name = "user_client_role",
+@Table(name = "user_client_team_role",
     uniqueConstraints =
-    @UniqueConstraint(columnNames = {"client_id", "name"}, name = "uk_user_client_role_name"))
-public class UserClientRole extends AbstractAuditingEntity implements Serializable {
+    @UniqueConstraint(columnNames = {"client_id", "name"}, name = "uk_user_client_team_role_name"))
+public class UserClientTeamRole extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,16 +33,15 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
     @Size(min = 0, max = 255)
     private String name;
 
-
-    public UserClientRole() {
+    public UserClientTeamRole() {
     }
 
     /**
-     * Create UserClientRole by id
+     * Create UserClientTeamRole by id
      *
      * @param id to use
      */
-    public UserClientRole(Long id) {
+    public UserClientTeamRole(Long id) {
         this.id = id;
     }
 
@@ -53,40 +52,40 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
      * @param client                the client to use
      * @param userClientPermissions the permission set
      */
-    public UserClientRole(String name, Client client, Set<UserClientPermission> userClientPermissions) {
+    public UserClientTeamRole(String name, Client client, Set<UserClientTeamPermission> userClientPermissions) {
         this.name = name;
         this.client = client;
-        this.userClientPermissions = userClientPermissions;
+        this.userClientTeamPermissions = userClientPermissions;
     }
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false,
-        foreignKey = @ForeignKey(name = "fk_user_client_role_client")
+        foreignKey = @ForeignKey(name = "fk_user_client_team_role_client")
     )
     private Client client;
 
     @ManyToMany
     @JoinTable(
-        name = "user_client_role_user_client_permission",
+        name = "user_client_team_role_user_client_team_permission",
         joinColumns = {
             @JoinColumn(name = "role_id", referencedColumnName = "id",
-                foreignKey = @ForeignKey(name = "fk_user_client_role_user_client_permission_role"))
+                foreignKey = @ForeignKey(name = "fk_user_client_team_role_user_client_team_permission_role"))
         },
         inverseJoinColumns = {
             @JoinColumn(name = "permission_name", referencedColumnName = "name",
-                foreignKey = @ForeignKey(name = "fk_user_client_role_user_client_permission_permission"))
+                foreignKey = @ForeignKey(name = "fk_user_client_team_role_user_client_team_permission_permission"))
         }
     )
     @Audited(targetAuditMode = NOT_AUDITED)
-    private Set<UserClientPermission> userClientPermissions;
+    private Set<UserClientTeamPermission> userClientTeamPermissions;
 
     @Version
     @Column(columnDefinition = "int")
     private Integer version;
 
-    @OneToMany(mappedBy = "userClientRole", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "userClientTeamRole", cascade = CascadeType.REMOVE)
     @XmlTransient
-    private Set<UserClientUserClientRole> userClientUserClientRoles;
+    private Set<UserClientUserClientTeamRole> userClientUserClientTeamRoles;
 
     public Long getId() {
         return id;
@@ -120,27 +119,27 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
         this.client = client;
     }
 
-    public Set<UserClientPermission> getUserClientPermissions() {
-        return userClientPermissions;
+    public Set<UserClientTeamPermission> getUserClientTeamPermissions() {
+        return userClientTeamPermissions;
     }
 
-    public void setUserClientPermissions(Set<UserClientPermission> userClientPermissions) {
-        this.userClientPermissions = userClientPermissions;
+    public void setUserClientTeamPermissions(Set<UserClientTeamPermission> userClientTeamPermissions) {
+        this.userClientTeamPermissions = userClientTeamPermissions;
     }
 
-    public Set<UserClientUserClientRole> getUserClientUserClientRoles() {
-        return userClientUserClientRoles;
+    public Set<UserClientUserClientTeamRole> getUserClientUserClientTeamRoles() {
+        return userClientUserClientTeamRoles;
     }
 
-    public void setUserClientUserClientRoles(Set<UserClientUserClientRole> userClientUserClientRoles) {
-        this.userClientUserClientRoles = userClientUserClientRoles;
+    public void setUserClientUserClientTeamRoles(Set<UserClientUserClientTeamRole> userClientUserClientTeamRoles) {
+        this.userClientUserClientTeamRoles = userClientUserClientTeamRoles;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserClientRole role = (UserClientRole) o;
+        UserClientTeamRole role = (UserClientTeamRole) o;
         return !(id != null ? !id.equals(role.id) : role.id != null);
     }
 
@@ -151,7 +150,7 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
 
     @Override
     public String toString() {
-        return "UserClientRole{" +
+        return "UserClientTeamRole{" +
             "id=" + id +
             ", name='" + name + '\'' +
             '}';
