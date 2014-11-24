@@ -8,10 +8,8 @@ import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleResourcePage;
-import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.RolesResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientTeamRoleResourcePage;
+import com.emmisolutions.emmimanager.web.rest.resource.*;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +38,9 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(ClientProviderResourcePage.createAssociationLink(entity));
         ret.add(ProviderPage.createProviderReferenceDataLink());
         ret.add(UserClientRoleResourcePage.createFullSearchLink(entity));
-        ret.add(linkTo(methodOn(RolesResource.class).referenceData()).withRel("rolesReferenceData"));
+        ret.add(linkTo(methodOn(ClientRolesAdminResource.class).referenceData()).withRel("rolesReferenceData"));
+        ret.add(UserClientTeamRoleResourcePage.createFullSearchLink(entity));
+        ret.add(linkTo(methodOn(ClientTeamRolesAdminResource.class).referenceData()).withRel("teamRolesReferenceData"));
         ret.setEntity(entity);
         return ret;
     }

@@ -80,4 +80,6 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_8/db.changelog-em-452.xml"/>
 
+    <include relativeToChangelogFile="true" file="changelog/sprint_8/db.changelog-em-458.xml"/>
+
 </databaseChangeLog>

@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 @RequestMapping(value = "/webapi",
     produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
 )
-public class RolesResource {
+public class ClientRolesAdminResource {
 
     @Resource
     UserClientRoleService userClientRoleService;
@@ -50,8 +50,8 @@ public class RolesResource {
      * @param assembler to make resources
      * @return a page of UserClientRoleResource objects
      */
-    @RequestMapping(value = "/clients/{clientId}/roles", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_ADMINISTER_USER_ROLES"})
+    @RequestMapping(value = "/clients/{clientId}/admin/client-roles", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "finds all existing roles for a client")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -82,8 +82,8 @@ public class RolesResource {
      * @param userClientRole to be created
      * @return the saved UserClientRoleResource or 500 if there's a problem saving
      */
-    @RequestMapping(value = "/clients/{clientId}/roles", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_ADMINISTER_USER_ROLES"})
+    @RequestMapping(value = "/clients/{clientId}/admin/client-roles", method = RequestMethod.POST)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "create a role on a client")
     public ResponseEntity<UserClientRoleResource> createRoleOn(@PathVariable Long clientId, @RequestBody UserClientRole userClientRole) {
         userClientRole.setClient(new Client(clientId));
@@ -101,8 +101,8 @@ public class RolesResource {
      * @param id of the role
      * @return a UserClientRoleResource or NO_CONTENT
      */
-    @RequestMapping(value = "/roles/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_ADMINISTER_USER_ROLES"})
+    @RequestMapping(value = "/admin/client-roles/{id}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load one client role by id")
     public ResponseEntity<UserClientRoleResource> get(@PathVariable Long id) {
         UserClientRole ret = userClientRoleService.reload(new UserClientRole(id));
@@ -121,8 +121,8 @@ public class RolesResource {
      * @param userClientRole the updated role
      * @return the saved UserClientRoleResource after update
      */
-    @RequestMapping(value = "/roles/{id}", method = RequestMethod.PUT)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_ADMINISTER_USER_ROLES"})
+    @RequestMapping(value = "/admin/client-roles/{id}", method = RequestMethod.PUT)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientRole userClientRole) {
         UserClientRole ret = userClientRoleService.save(userClientRole);
@@ -139,8 +139,8 @@ public class RolesResource {
      *
      * @param id to remove
      */
-    @RequestMapping(value = "/roles/{id}", method = RequestMethod.DELETE)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_ADMINISTER_USER_ROLES"})
+    @RequestMapping(value = "/admin/client-roles/{id}", method = RequestMethod.DELETE)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "removes one client role by id")
     public void remove(@PathVariable Long id) {
         userClientRoleService.remove(new UserClientRole(id));
@@ -152,8 +152,8 @@ public class RolesResource {
      * @param id of the role
      * @return Set of UserClientPermission objects
      */
-    @RequestMapping(value = "/roles/{id}/permissions", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_ADMINISTER_USER_ROLES"})
+    @RequestMapping(value = "/admin/client-roles/{id}/permissions", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load permissions for a role")
     public ResponseEntity<Set<UserClientPermission>> rolePermissions(@PathVariable Long id) {
         Set<UserClientPermission> ret = userClientRoleService.loadAll(new UserClientRole(id));
@@ -169,8 +169,8 @@ public class RolesResource {
      *
      * @return the reference data
      */
-    @RequestMapping(value = "/clients/roles/referenceData", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_ADMINISTER_USER_ROLES"})
+    @RequestMapping(value = "/admin/client-roles/referenceData", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load reference data for client role administration")
     public UserClientRoleReferenceData referenceData() {
         return new UserClientRoleReferenceData();
