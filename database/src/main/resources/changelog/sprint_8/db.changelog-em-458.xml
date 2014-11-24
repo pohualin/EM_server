@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    <changeSet id="add team level role tables" author="Matt">
+
+        <!-- TABLES -->
+        <createTable tableName="user_client_team_permission">
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_team_permission"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_team_role">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_team_role"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_team_role_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="name" type="nvarchar(255)"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_team_role_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_team_role_audit"/>
+
+        <createTable tableName="user_client_team_role_user_client_team_permission">
+            <column name="role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="user_client_team_role_user_client_team_permission" columnNames="role_id, permission_name"
+                       constraintName="pk_user_client_team_role_user_client_team_permission"/>
+
+        <createTable tableName="user_client_team_role_user_client_team_permission_audit">
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="user_client_team_role_user_client_team_permission_audit"
+                       columnNames="revision, role_id, permission_name"
+                       constraintName="pk_user_client_team_role_user_client_team_permission_audit"/>
+
+        <createTable tableName="user_client_user_client_team_role">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_user_client_team_role"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="client_team_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_client_team_role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_user_client_team_role_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="client_team_id" type="bigint"/>
+            <column name="users_id" type="bigint"/>
+            <column name="user_client_team_role_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_user_client_team_role_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_user_client_team_role_audit"/>
+
+        <!-- UKs -->
+        <addUniqueConstraint tableName="user_client_team_role" columnNames="client_id, name"
+                             constraintName="uk_user_client_team_role_name"/>
+        <addUniqueConstraint tableName="user_client_user_client_team_role" columnNames="users_id, client_team_id, user_client_team_role_id"
+                             constraintName="uk_user_client_user_client_team_role"/>
+
+        <!-- FKs -->
+        <addForeignKeyConstraint baseTableName="user_client_team_role"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_user_client_team_role_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_team_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_team_role_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_team_role_user_client_team_permission"
+                                 baseColumnNames="permission_name"
+                                 constraintName="fk_user_client_team_role_user_client_team_permission_permission"
+                                 referencedTableName="user_client_team_permission"
+                                 referencedColumnNames="name"/>
+        <addForeignKeyConstraint baseTableName="user_client_team_role_user_client_team_permission"
+                                 baseColumnNames="role_id"
+                                 constraintName="fk_user_client_team_role_user_client_team_permission_role"
+                                 referencedTableName="user_client_team_role"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_team_role_user_client_team_permission_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_team_role_user_client_team_permission_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role"
+                                 baseColumnNames="client_team_id"
+                                 constraintName="fk_user_client_client_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_user_client_user_client_team_role_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role"
+                                 baseColumnNames="user_client_team_role_id"
+                                 constraintName="fk_user_client_user_client_team_role"
+                                 referencedTableName="user_client_team_role"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_user_client_team_role_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-458/team-permissions.csv"
+                  separator=";"
+                  tableName="user_client_team_permission"/>
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-458/team-permission-translations.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
+
+</databaseChangeLog>
