@@ -369,7 +369,6 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         teamLocationTwo.setLocation(locationTwo);
         teamLocationTwo.setTeam(team2);
 
-
         Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
         TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
         req.setLocation(locationOne);
@@ -438,10 +437,16 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         teamLocationTwo.setLocation(locationTwo);
         teamLocationTwo.setTeam(savedTeam);
 
-        Set<Location> locationSet = new HashSet<Location>();
-        locationSet.add(locationOne);
-        locationSet.add(locationTwo);
-        teamLocationService.save(savedTeam, locationSet);
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
+        TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
+        req.setLocation(locationOne);
+        reqs.add(req);
+        
+        req = new TeamLocationTeamProviderSaveRequest();
+        req.setLocation(locationTwo);
+        reqs.add(req);
+        
+        teamLocationService.save(savedTeam, reqs);
         
         TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
         request.setProvider(provider);
