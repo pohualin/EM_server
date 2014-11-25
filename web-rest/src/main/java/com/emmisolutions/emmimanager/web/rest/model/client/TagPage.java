@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.client;
 
+import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
@@ -45,8 +46,8 @@ public class TagPage extends PagedResource<TagResource> {
      * @return Link for tag searches
      * @see com.emmisolutions.emmimanager.web.rest.resource.TagsResource#listTagsByGroupID(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
-    public static Link createFullSearchLink(Long groupId) {
-        Link link = linkTo(methodOn(TagsResource.class).listTagsByGroupID(null, null, null, groupId)).withRel("tags");
+    public static Link createFullSearchLink(Group group) {
+        Link link = linkTo(methodOn(TagsResource.class).listTagsByGroupID(null, null, null, group.getId())).withRel("tags");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
@@ -84,6 +85,15 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
             }
         }
         return 0;
+    }
+
+    @Override
+    public Page<TeamTag> findTeamsWithTag(Tag tag, Pageable page, TeamTagSearchFilter teamTagSearchFilter) {
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        }
+        return teamTagRepository.findTeamsWithTagId(tag.getId(), page);
     }
 
     private void checkTeamTagNull(TeamTag teamTag) {

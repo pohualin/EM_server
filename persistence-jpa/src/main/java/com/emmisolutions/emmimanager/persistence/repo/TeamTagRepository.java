@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
@@ -45,4 +47,12 @@ public interface TeamTagRepository extends JpaRepository<TeamTag, Long>, JpaSpec
      * @return number of TeamTags removed
      */
     long deleteByTeamClientIdEquals(Long forThisClientId);
+
+    /**
+     * Find the teamTags on a client and in a group
+     * @param tagId for the scope of the tags to check
+     * @return list of matching teamTags
+     */
+    @Query("select tt from TeamTag tt where tt.tag.id = :tagId ")
+    Page<TeamTag> findTeamsWithTagId(@Param("tagId") Long tagId, Pageable pageable);
 }

@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
-import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 
@@ -75,8 +73,4 @@ public class TagServiceImpl implements TagService {
 		return tagPersistence.createAll(tagsList);
 	}
 
-    @Override
-    public Set<TeamTag> findTeamsWithTagId(Long tagId) {
-        return tagPersistence.findTeamsWithTagId(tagId);
-    }
 }

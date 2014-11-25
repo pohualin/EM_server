@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -56,4 +57,11 @@ public interface TeamTagService {
      * @throws java.lang.IllegalArgumentException if teamTag is not found
      */
     TeamTag reload(TeamTag teamTag);
+
+    /**
+     * Find team tags with a tag
+     * @param tag to compare
+     * @return matching teamTags
+     */
+    Page<TeamTag> findTeamsWithTag(Tag tag, Pageable pageable, TeamTagSearchFilter teamTagSearchFilter);
 }

@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
+import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.TeamTagService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagPage;
@@ -46,6 +47,9 @@ public class TeamTagsResource {
 
     @Resource
     TeamService teamService;
+
+    @Resource
+    TagService tagService;
 
     /**
      * GET to search for TeamTags
@@ -158,6 +162,37 @@ public class TeamTagsResource {
         toFind = teamTagService.reload(toFind);
         if (toFind != null) {
             return new ResponseEntity<>(teamTagResourceAssembler.toResource(toFind), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
+     * GET teamTags with tag
+     *
+     * @param tagId the client to check
+     * @return List of TeamTag objects or INTERNAL_SERVER_ERROR if the list is empty
+     */
+    @RequestMapping(value = "/tag/{tagId}/teamTags", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="50", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<TeamTagPage> teamTagsWithTagId(@PageableDefault(size = 50) Pageable pageable,
+                                                         @SortDefault(sort = "id") Sort sort,
+                                                         PagedResourcesAssembler<TeamTag> assembler,
+                                                         @PathVariable("tagId") Long tagId) {
+        TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter(tagId);
+        Tag tag = new Tag();
+        tag.setId(tagId);
+        tag = tagService.reload(tag);
+        Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(tag, pageable, teamTagSearchFilter);
+        if (teamTagPage.hasContent()) {
+            PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
+            TeamTagPage teamTagPage1 = new TeamTagPage(teamTagResourceSupports, teamTagPage, teamTagSearchFilter);
+            return new ResponseEntity<>(teamTagPage1, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

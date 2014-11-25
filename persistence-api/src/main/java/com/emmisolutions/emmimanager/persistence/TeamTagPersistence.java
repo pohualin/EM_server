@@ -1,7 +1,9 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -52,5 +54,13 @@ public interface TeamTagPersistence {
      * @return number deleted
      */
     long removeTeamTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep);
+
+    /**
+     * Find TeamTags with tag
+     * @param tag to check teams against
+     * @return set of teamtags
+     */
+
+    Page<TeamTag> findTeamsWithTag(Tag tag, Pageable page, TeamTagSearchFilter teamTagSearchFilter);
 
 }

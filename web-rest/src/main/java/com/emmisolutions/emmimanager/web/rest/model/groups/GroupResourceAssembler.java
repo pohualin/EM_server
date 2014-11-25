@@ -20,7 +20,7 @@ public class GroupResourceAssembler implements
     public GroupResource toResource(Group entity) {
     	GroupResource ret = new GroupResource();
     	ret.add(linkTo(methodOn(GroupsResource.class).getGroupById(entity.getId())).withSelfRel());
-        ret.add(TagPage.createFullSearchLink(entity.getId()));
+        ret.add(TagPage.createFullSearchLink(entity));
         ret.setEntity(entity);
         return ret;
     }
