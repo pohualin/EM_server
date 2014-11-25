@@ -1,13 +1,18 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
-import com.emmisolutions.emmimanager.service.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -16,15 +21,38 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import javax.annotation.Resource;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
+import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.LocationService;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.service.UserService;
 
 public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -98,8 +126,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
 
         provider.setSpecialty(getSpecialty());
@@ -124,8 +151,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setName(clientName);
 		client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
-		client.setSalesForceAccount(new SalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		return client;
 	}
 
@@ -157,8 +183,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Cute Show");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
 
 		Provider provider = new Provider();
@@ -221,8 +246,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -234,7 +258,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setDescription("Test Team description");
 		team2.setActive(false);
 		team2.setClient(client);
-		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		team2.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam2 = teamService.create(team2);
         Set<Provider> providers = new HashSet<>();
         providers.add(provider);
@@ -274,8 +298,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -318,8 +341,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("We sing");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -331,7 +353,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setDescription("In the city");
 		team2.setActive(false);
 		team2.setClient(client);
-		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		team2.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam2 = teamService.create(team2);
         List<Provider> providers = new ArrayList<Provider>();
         providers.add(provider);
