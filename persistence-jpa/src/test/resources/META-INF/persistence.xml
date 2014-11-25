@@ -15,6 +15,9 @@
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientPermission</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientUserClientTeamRole</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission</class>
         <class>com.emmisolutions.emmimanager.model.Client</class>
         <class>com.emmisolutions.emmimanager.model.SalesForce</class>
         <class>com.emmisolutions.emmimanager.model.TeamSalesForce</class>
