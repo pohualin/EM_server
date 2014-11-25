@@ -8,6 +8,9 @@ import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 import com.emmisolutions.emmimanager.service.*;
 
+
+import org.apache.commons.lang3.RandomStringUtils;
+
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -98,8 +101,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
 
         provider.setSpecialty(getSpecialty());
@@ -124,8 +126,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setName(clientName);
 		client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
-		client.setSalesForceAccount(new SalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		return client;
 	}
 
@@ -157,8 +158,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Cute Show");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
 
 		Provider provider = new Provider();
@@ -221,8 +221,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -234,7 +233,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setDescription("Test Team description");
 		team2.setActive(false);
 		team2.setClient(client);
-		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		team2.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam2 = teamService.create(team2);
         Set<Provider> providers = new HashSet<>();
         providers.add(provider);
@@ -274,8 +273,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -318,8 +316,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("We sing");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -331,7 +328,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setDescription("In the city");
 		team2.setActive(false);
 		team2.setClient(client);
-		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		team2.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam2 = teamService.create(team2);
         List<Provider> providers = new ArrayList<Provider>();
         providers.add(provider);
