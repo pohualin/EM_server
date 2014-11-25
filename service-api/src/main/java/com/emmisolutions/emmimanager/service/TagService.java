@@ -3,10 +3,12 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Tag Service API
@@ -47,4 +49,10 @@ public interface TagService {
      */
     List<Tag> saveAllTagsForGroup(List<Tag> tags, Group group);
 
+    /**
+     * Find team tags with a team in the current client and tags in the current group
+     * @param tagId to compare
+     * @return matching teamTags
+     */
+    Set<TeamTag> findTeamsWithTagId(Long tagId);
 }

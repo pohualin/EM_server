@@ -149,6 +149,39 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("found conflicting team",hashSet.size(),is(1));
     }
 
+    /**
+     * should return a set of teamTags
+     */
+    @Test
+    public void findTeamsWithClientAndGroup(){
+//        // create groups
+//        Group groupOne = new Group();
+//        groupOne.setName("TestGroup1");
+//
+//        Group groupTwo = new Group();
+//        groupTwo.setName("TestGroup2");
+//
+//        Client clientOne = makeClient();
+//        clientPersistence.save(clientOne);
+//        groupOne.setClient(clientPersistence.reload(clientOne.getId()));
+//        groupOne = groupPersistence.save(groupOne);
+//        groupTwo.setClient(clientPersistence.reload(clientOne.getId()));
+//        groupTwo = groupPersistence.save(groupTwo);
+//
+//        List<Tag> tagList = createTagList(groupOne, 4);
+//        Team team1 = createTeam(clientOne, 1);
+//        teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(0)));
+//        teamTagPersistence.saveTeamTag(new TeamTag(team1, tagList.get(3)));
+//
+//        List<Tag> tagList2 = createTagList(groupTwo, 4);
+//        Team team2 = createTeam(clientOne, 2);
+//        teamTagPersistence.saveTeamTag(new TeamTag(team2, tagList2.get(0)));
+//        teamTagPersistence.saveTeamTag(new TeamTag(team2, tagList2.get(3)));
+//
+//        Set<TeamTag> hashSet = groupPersistence.findTeamsWithClientAndGroup(clientOne.getId(), groupOne.getId());
+//        assertThat("found team tags",hashSet.size(),is(2));
+    }
+
     private Client makeClient(){
         Client client = new Client();
         client.setTier(new ClientTier(3l));

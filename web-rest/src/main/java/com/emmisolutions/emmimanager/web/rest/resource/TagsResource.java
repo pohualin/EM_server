@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.web.rest.model.client.TagPage;
 import com.emmisolutions.emmimanager.web.rest.model.client.TagResource;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -94,5 +96,23 @@ public class TagsResource {
 			return new ResponseEntity<>(tagResourceAssembler.toResource(tag), HttpStatus.OK);
 		}
 	}
+
+    /**
+     * GET teamTags on client with tags in group
+     *
+     * @param clientId the client to check
+     * @param groupId the group to check
+     * @return List of TeamTag objects or INTERNAL_SERVER_ERROR if the list is empty
+     */
+    @RequestMapping(value = "/tag/{tagId}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
+    public ResponseEntity<Set<TeamTag>> teamTagsWithTagId(@PathVariable("tagId") Long tagId) {
+        Set<TeamTag> teamTags = tagService.findTeamsWithTagId(tagId);
+        if (teamTags == null || teamTags.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(teamTags, HttpStatus.OK);
+        }
+    }
 
 }

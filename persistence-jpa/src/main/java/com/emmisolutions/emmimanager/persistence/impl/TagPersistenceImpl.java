@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.TagRepository;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -60,6 +62,11 @@ public class TagPersistenceImpl implements TagPersistence {
             }
         }
         return 0;
+    }
+
+    @Override
+    public Set<TeamTag> findTeamsWithTagId(Long tagId) {
+        return new HashSet<>(tagRepository.findTeamsWithTagId(tagId));
     }
 
 }
