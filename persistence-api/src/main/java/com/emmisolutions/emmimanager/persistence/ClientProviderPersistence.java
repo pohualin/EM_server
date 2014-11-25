@@ -78,4 +78,12 @@ public interface ClientProviderPersistence {
      * @return saved ClientProvider
      */
     ClientProvider save(ClientProvider clientProvider);
+    
+    /**
+     * Find a client provider
+     * @param clintId to use
+     * @param providerId to use
+     * @return found ClientProvider
+     */
+    ClientProvider findByClientIdProviderId(Long clientId, Long providerId);
 }
