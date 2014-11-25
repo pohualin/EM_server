@@ -158,7 +158,7 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
 		 team.setDescription("Test Team description" + id);
 		 team.setActive(false);
 		 team.setClient(client);
-		 team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		 team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		 return team;
 	 }
 

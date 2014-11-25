@@ -7,6 +7,8 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,12 +50,11 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setContractStart(LocalDate.now());
 		client.setRegion(new ClientRegion(1l));
-		client.setName("Test Client" + System.currentTimeMillis());
+		client.setName("Test Client" + RandomStringUtils.randomAlphanumeric(18));
 		client.setType(new ClientType(3l));
 		client.setActive(false);
 		client.setContractOwner(superAdmin);
-		client.setSalesForceAccount(new SalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		clientService.create(client);
 
 		Group group = new Group();
