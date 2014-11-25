@@ -141,7 +141,7 @@ public class TeamProvidersResource {
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
 	public ResponseEntity<TeamProvider> updateTeamProvider(
 			@RequestBody TeamProviderTeamLocationSaveRequest request) {
-		teamProviderService.update(request);
+		teamProviderService.updateTeamProvider(request);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

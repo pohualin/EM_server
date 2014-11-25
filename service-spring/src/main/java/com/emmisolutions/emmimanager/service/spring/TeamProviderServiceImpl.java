@@ -155,8 +155,75 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         return teamProviderPersistence.delete(dbClient, dbProvider);
     }
     
+	@Override
 	@Transactional
-	public Set<TeamProviderTeamLocation> findTeamProviderTeamLocationsByTeamProvider(
+	public Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(
+			TeamProvider teamProvider, Pageable pageable) {
+		return teamProviderTeamLocationService.findByTeamProvider(teamProvider,
+				pageable);
+	}
+    
+	@Override
+	@Transactional
+	public void updateTeamProvider(TeamProviderTeamLocationSaveRequest request) {
+		// Update existing provider
+		providerService.update(request.getProvider());
+
+		// Reload ClientProvider before we save external id then save it
+		if (request.getClientProvider() != null) {
+			ClientProvider toBeSaved = clientProviderService.reload(request
+					.getClientProvider());
+			toBeSaved
+					.setExternalId(request.getClientProvider().getExternalId());
+			clientProviderService.save(toBeSaved);
+		}
+
+		// Deal with TeamProviderTeamLocation relationship
+		updateTeamProviderTeamLocations(request);
+	}
+
+	@Transactional
+	private void updateTeamProviderTeamLocations(
+			TeamProviderTeamLocationSaveRequest request) {
+		Set<TeamProviderTeamLocation> incomings = request
+				.getTeamProviderTeamLocations();
+
+		Set<TeamProviderTeamLocation> exists = findTeamProviderTeamLocationsByTeamProvider(
+				request.getTeamProvider(), null,
+				new HashSet<TeamProviderTeamLocation>());
+
+		List<TeamProviderTeamLocation> inserts = new ArrayList<TeamProviderTeamLocation>();
+		List<TeamProviderTeamLocation> deletes = new ArrayList<TeamProviderTeamLocation>();
+		if (incomings.size() == 0) {
+			if (exists.size() > 0) {
+				deletes.addAll(exists);
+			}
+		} else {
+			for (TeamProviderTeamLocation incoming : incomings) {
+				if (incoming.getId() == null) {
+					inserts.add(incoming);
+				}
+			}
+			for (TeamProviderTeamLocation exist : exists) {
+				if (!incomings.contains(exist)) {
+					deletes.add(exist);
+				}
+			}
+		}
+
+		if (inserts.size() > 0) {
+			teamProviderTeamLocationService
+					.saveAllTeamProviderTeamLocations(inserts);
+		}
+
+		if (deletes.size() > 0) {
+			teamProviderTeamLocationService
+					.deleteTeamProviderTeamLocations(deletes);
+		}
+	}
+	
+	@Transactional
+	private Set<TeamProviderTeamLocation> findTeamProviderTeamLocationsByTeamProvider(
 			TeamProvider teamProvider, Pageable pageable,
 			Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
 		Page<TeamProviderTeamLocation> tptls = teamProviderTeamLocationService
@@ -168,63 +235,6 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 			}
 		}
 		return teamProviderTeamLocations;
-	}
-	
-	@Override
-	@Transactional
-	public Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(
-			TeamProvider teamProvider, Pageable pageable) {
-		Page<TeamProviderTeamLocation> tptls = teamProviderTeamLocationService
-				.findByTeamProvider(teamProvider, pageable);
-		return teamProviderTeamLocationService.findByTeamProvider(teamProvider,
-				pageable);
-	}
-    
-    @Override
-    @Transactional
-	public void update(TeamProviderTeamLocationSaveRequest request) {
-		providerService.update(request.getProvider());
-		if (request.getClientProvider() != null) {
-			ClientProvider toBeSaved = clientProviderService.reload(request
-					.getClientProvider());
-			toBeSaved
-					.setExternalId(request.getClientProvider().getExternalId());
-			clientProviderService.save(toBeSaved);
-		}
-		TeamProvider tp = teamProviderPersistence.reload(request.getTeamProvider().getId());
-
-		Map<Long, TeamLocation> incoming = new HashMap<Long, TeamLocation>();
-		for (TeamLocation tl : request.getTeamLocations()) {
-			incoming.put(tl.getId(), tl);
-		}
-
-		Set<TeamProviderTeamLocation> exist = findTeamProviderTeamLocationsByTeamProvider(
-				tp, null, new HashSet<TeamProviderTeamLocation>());
-		Map<Long, TeamProviderTeamLocation> existing = new HashMap<Long, TeamProviderTeamLocation>();
-		for (TeamProviderTeamLocation tptl : exist) {
-			existing.put(tptl.getTeamLocation().getId(), tptl);
-		}
-
-		List<TeamProviderTeamLocation> newTptls = new ArrayList<TeamProviderTeamLocation>();
-		for (Long key : incoming.keySet()) {
-			if (!existing.containsKey(key)) {
-				TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
-				tptl.setTeamLocation(incoming.get(key));
-				tptl.setTeamProvider(tp);
-				newTptls.add(tptl);
-			}
-		}
-		teamProviderTeamLocationService
-				.saveAllTeamProviderTeamLocations(newTptls);
-
-		List<TeamProviderTeamLocation> removeTptls = new ArrayList<TeamProviderTeamLocation>();
-		for (Long key : existing.keySet()) {
-			if (!incoming.containsKey(key)) {
-				removeTptls.add(existing.get(key));
-			}
-		}
-		teamProviderTeamLocationService
-				.deleteTeamProviderTeamLocations(removeTptls);
 	}
 
 }

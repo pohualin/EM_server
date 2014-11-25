@@ -50,7 +50,7 @@ public interface TeamProviderService {
 	 * @param  teamProvider to be updated
 	 * @return void
 	 */
-	void update(TeamProviderTeamLocationSaveRequest request);
+	void updateTeamProvider(TeamProviderTeamLocationSaveRequest request);
 	
 	/**
 	 * Associates a list of existing providers to the team passed in

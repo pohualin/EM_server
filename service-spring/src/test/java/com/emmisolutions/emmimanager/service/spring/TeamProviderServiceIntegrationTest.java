@@ -415,7 +415,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
         request.setProvider(provider);
         request.setTeamLocations(new HashSet<TeamLocation>(teamLocationService.findAllTeamLocationsWithTeam(null, savedTeam).getContent()));
-        teamProviderService.update(request);
+        teamProviderService.updateTeamProvider(request);
     }
 
     @Test(expected=InvalidDataAccessApiUsageException.class)

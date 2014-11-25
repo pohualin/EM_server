@@ -34,8 +34,7 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
     @Override
     public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
         if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 5, Sort.Direction.ASC, "id");
+            page = new PageRequest(0, 10, Sort.Direction.ASC, "id");
         }
         return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
     }

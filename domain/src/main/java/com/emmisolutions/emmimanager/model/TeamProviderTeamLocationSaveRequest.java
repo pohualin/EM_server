@@ -16,6 +16,8 @@ public class TeamProviderTeamLocationSaveRequest {
 	private ClientProvider clientProvider;
 
 	private Set<TeamLocation> teamLocations;
+	
+	private Set<TeamProviderTeamLocation> teamProviderTeamLocations;
 
 	public Provider getProvider() {
 		return provider;
@@ -47,6 +49,15 @@ public class TeamProviderTeamLocationSaveRequest {
 
 	public void setTeamProvider(TeamProvider teamProvider) {
 		this.teamProvider = teamProvider;
+	}
+
+	public Set<TeamProviderTeamLocation> getTeamProviderTeamLocations() {
+		return teamProviderTeamLocations;
+	}
+
+	public void setTeamProviderTeamLocations(
+			Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
+		this.teamProviderTeamLocations = teamProviderTeamLocations;
 	}
 
 	@Override

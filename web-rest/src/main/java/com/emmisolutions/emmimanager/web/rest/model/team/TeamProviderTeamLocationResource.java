@@ -18,24 +18,34 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlRootElement(name = "teamProviderTeamLocation")
 public class TeamProviderTeamLocationResource extends ResourceSupport {
 
-	private TeamLocationResource location;
+	private Long teamProviderTeamLocationId;
 
-	private TeamProviderResource provider;
+	private TeamLocationResource teamLocation;
 
-	public TeamLocationResource getLocation() {
-		return location;
+	private TeamProviderResource teamProvider;
+
+	public Long getTeamProviderTeamLocationId() {
+		return teamProviderTeamLocationId;
 	}
 
-	public void setLocation(TeamLocationResource location) {
-		this.location = location;
+	public void setTeamProviderTeamLocationId(Long teamProviderTeamLocationId) {
+		this.teamProviderTeamLocationId = teamProviderTeamLocationId;
 	}
 
-	public TeamProviderResource getProvider() {
-		return provider;
+	public TeamLocationResource getTeamLocation() {
+		return teamLocation;
 	}
 
-	public void setProvider(TeamProviderResource provider) {
-		this.provider = provider;
+	public void setTeamLocation(TeamLocationResource teamLocation) {
+		this.teamLocation = teamLocation;
+	}
+
+	public TeamProviderResource getTeamProvider() {
+		return teamProvider;
+	}
+
+	public void setTeamProvider(TeamProviderResource teamProvider) {
+		this.teamProvider = teamProvider;
 	}
 
 	/**

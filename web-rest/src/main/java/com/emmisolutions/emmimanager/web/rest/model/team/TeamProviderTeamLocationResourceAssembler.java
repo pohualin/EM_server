@@ -23,8 +23,9 @@ public class TeamProviderTeamLocationResourceAssembler implements ResourceAssemb
     @Override
     public TeamProviderTeamLocationResource toResource(TeamProviderTeamLocation entity) {
     	TeamProviderTeamLocationResource ret = new TeamProviderTeamLocationResource();
-    	ret.setLocation(teamLocationResourceAssembler.toResource(entity.getTeamLocation()));
-    	ret.setProvider(teamProviderResourceAssembler.toResource(entity.getTeamProvider()));
+    	ret.setTeamProviderTeamLocationId(entity.getId());
+    	ret.setTeamLocation(teamLocationResourceAssembler.toResource(entity.getTeamLocation()));
+    	ret.setTeamProvider(teamProviderResourceAssembler.toResource(entity.getTeamProvider()));
         return ret;
     }
 }
