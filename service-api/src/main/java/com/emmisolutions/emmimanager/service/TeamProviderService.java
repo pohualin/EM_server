@@ -11,6 +11,7 @@ import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 
 /**
@@ -86,5 +87,5 @@ public interface TeamProviderService {
      * @param page the page specification
      * @return a set of TeamProviderTeamLocation objects
      */
-    Set<TeamLocation> findTeamLocationsByTeamProvider(TeamProvider teamProvider, Pageable pageable);
+    Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(TeamProvider teamProvider, Pageable pageable);
 }

@@ -172,14 +172,12 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 	
 	@Override
 	@Transactional
-	public Set<TeamLocation> findTeamLocationsByTeamProvider(
+	public Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(
 			TeamProvider teamProvider, Pageable pageable) {
-		Set<TeamProviderTeamLocation> tptls = findTeamProviderTeamLocationsByTeamProvider(teamProvider, pageable, new HashSet<TeamProviderTeamLocation>());
-		Set<TeamLocation> tls = new HashSet<TeamLocation>();
-		for(TeamProviderTeamLocation tptl: tptls){
-			tls.add(tptl.getTeamLocation());
-		}
-		return tls;
+		Page<TeamProviderTeamLocation> tptls = teamProviderTeamLocationService
+				.findByTeamProvider(teamProvider, pageable);
+		return teamProviderTeamLocationService.findByTeamProvider(teamProvider,
+				pageable);
 	}
     
     @Override

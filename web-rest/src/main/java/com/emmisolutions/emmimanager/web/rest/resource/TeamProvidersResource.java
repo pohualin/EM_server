@@ -30,6 +30,7 @@ import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
 import com.emmisolutions.emmimanager.web.rest.model.clientprovider.ClientProviderResource;
@@ -39,6 +40,8 @@ import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResourc
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 
@@ -59,6 +62,9 @@ public class TeamProvidersResource {
 
 	@Resource
 	TeamProviderResourceAssembler teamProviderResourceAssembler;
+	
+	@Resource
+	TeamProviderTeamLocationResourceAssembler teamProviderTeamLocationResourceAssembler;
 
 	/**
 	 * GET for a list of all teamProviders for a given team
@@ -156,29 +162,24 @@ public class TeamProvidersResource {
             @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<Set<TeamLocationResource>> findTeamLocationsByTeamProvider(
+    public ResponseEntity<TeamProviderTeamLocationPage> findTeamLocationsByTeamProvider(
             @PathVariable("teamProviderId") Long teamProviderId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
             Sort sort,
             @RequestParam(value = "status", required = false) String status,
-            PagedResourcesAssembler<TeamLocation> assembler,
+            PagedResourcesAssembler<TeamProviderTeamLocation> assembler,
             @RequestParam(value = "name", required = false) String names) {
 
         TeamProvider teamProvider = new TeamProvider();
         teamProvider.setId(teamProviderId);
         teamProvider = teamProviderService.reload(teamProvider);
 
-        Set<TeamLocation> teamLocations = teamProviderService.findTeamLocationsByTeamProvider(teamProvider, pageable);
+        Page<TeamProviderTeamLocation> tptls = teamProviderService.findTeamLocationsByTeamProvider(teamProvider, pageable);
 
-        if (teamLocations == null || teamLocations.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            // convert to resources
-            Set<TeamLocationResource> ret = new HashSet<>();
-            for (TeamLocation teamLocation : teamLocations) {
-                ret.add(teamLocationResourceAssembler.toResource(teamLocation));
-            }
-            return new ResponseEntity<>(ret, HttpStatus.OK);
+        if(tptls.hasContent()){
+        	return new ResponseEntity<>(new TeamProviderTeamLocationPage(assembler.toResource(tptls, teamProviderTeamLocationResourceAssembler), tptls), HttpStatus.OK);
+        }else{
+        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 	
