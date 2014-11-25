@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.*;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,6 +28,15 @@ public interface TeamProviderTeamLocationPersistence {
      * @return page of team provider team location objects
      */
     Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable pageable);
+
+    /**
+     * finds a page of TeamProviderTeamLocations for a given TeamLocation
+     *
+     * @param teamLocation to find by
+     * @param pageable     page specification
+     * @return page of team provider team location objects
+     */
+    Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page) ;
 
     /**
      * removes all TeamProviderTeamLocations for given teamProvider

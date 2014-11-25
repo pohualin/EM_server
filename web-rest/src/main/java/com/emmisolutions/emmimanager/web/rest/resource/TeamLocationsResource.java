@@ -23,16 +23,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationSearchFilter;
 import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationPage;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 
@@ -53,6 +55,9 @@ public class TeamLocationsResource {
 
     @Resource
     TeamService teamService;
+    
+	@Resource
+	TeamProviderTeamLocationService teamProviderTeamLocationService;
 
     /**
      * GET to search for TeamLocations
@@ -95,6 +100,32 @@ public class TeamLocationsResource {
         }
     }
 
+    @RequestMapping(value = "/teams/{teamLocationId}/tptl", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_LIST"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<TeamProviderTeamLocationPage> listTeamProviderTeamLocation(
+            @PathVariable("teamLocationId") Long teamLocationId,
+            @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
+            PagedResourcesAssembler<TeamProviderTeamLocation> assembler) {
+
+        TeamLocation toFind = new TeamLocation();
+        toFind.setId(teamLocationId);
+        toFind = teamLocationService.reload(toFind);
+
+        Page<TeamProviderTeamLocation> tptlPage = teamProviderTeamLocationService.findByTeamLocation(toFind, pageable);
+        
+        if (tptlPage.hasContent()) {
+        	TeamProviderTeamLocationPage teamLocationPage1 = new TeamProviderTeamLocationPage(null, tptlPage);
+            return new ResponseEntity<>(teamLocationPage1,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
     /**
      * POST to create new Team, Location association
      *

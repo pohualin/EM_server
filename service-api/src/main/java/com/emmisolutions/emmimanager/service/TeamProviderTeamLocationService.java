@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 
@@ -22,6 +23,14 @@ public interface TeamProviderTeamLocationService {
 	 */
     Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable pageable);
 	
+	/**
+	 * finds a page of TeamProviderTeamLocations for a given TeamLocation
+	 * @param teamLocation
+	 * @param pageable
+	 * @return
+	 */
+    Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page);
+    
 	/**
 	 * Saves a list if team provider team locations
 	 * @param list of teamProviderTeamLocations

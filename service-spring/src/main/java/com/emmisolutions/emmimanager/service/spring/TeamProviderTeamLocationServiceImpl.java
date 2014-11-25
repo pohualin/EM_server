@@ -7,12 +7,13 @@ import javax.annotation.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
 import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLocationService {
@@ -25,6 +26,11 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 		return teamProviderTeamLocationPersistence.findByTeamProvider(teamProvider, page);
 	}
 
+	@Override
+	public Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page) {
+		return teamProviderTeamLocationPersistence.findByTeamLocation(teamLocation, page);
+	}
+	
 	@Override
     @Transactional
 	public List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> teamProviderTeamLocations) {

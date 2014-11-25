@@ -1,16 +1,23 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderTeamLocationRepository;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderTeamLocationRepository;
 
 /**
  * TeamProviderTeamLocation Persistence Implementation
@@ -33,6 +40,15 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
         return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
+    }
+
+    @Override
+    public Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page) {
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        }
+        return teamProviderTeamLocationRepository.findByTeamLocation(teamLocation, page);
     }
 
     @Override
