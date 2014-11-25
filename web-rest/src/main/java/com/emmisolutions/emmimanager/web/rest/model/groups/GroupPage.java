@@ -5,7 +5,6 @@ import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.GroupsResource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.*;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -45,7 +44,7 @@ public class GroupPage extends PagedResource<GroupResource> {
      * @see com.emmisolutions.emmimanager.web.rest.resource.GroupsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
     public static Link createFullSearchLink(Long clientId) {
-        Link link = linkTo(methodOn(GroupsResource.class).listGroupsByClientID(null, new Sort(Sort.Direction.ASC, "name"), null, clientId)).withRel("groups");
+        Link link = linkTo(methodOn(GroupsResource.class).listGroupsByClientID(null, null, null, clientId)).withRel("groups");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
