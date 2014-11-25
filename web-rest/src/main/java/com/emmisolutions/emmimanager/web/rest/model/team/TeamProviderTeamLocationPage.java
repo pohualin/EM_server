@@ -11,7 +11,7 @@ import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 /**
  * A HATEOAS wrapper for a page of TeamProviderTeamLocationResource objects.
  */
-@XmlRootElement(name = "team-location-page")
+@XmlRootElement(name = "team-provider-team-location-page")
 public class TeamProviderTeamLocationPage extends PagedResource<TeamProviderTeamLocationResource> {
 
     public TeamProviderTeamLocationPage() {
@@ -24,8 +24,9 @@ public class TeamProviderTeamLocationPage extends PagedResource<TeamProviderTeam
      * @param teamLocationPage             true page
      */
 
-    public TeamProviderTeamLocationPage(PagedResources<TeamProviderTeamLocationResource> teamLocationResourceSupports, Page<TeamProviderTeamLocation> teamLocationPage) {
-        pageDefaults(teamLocationResourceSupports, teamLocationPage);
+    public TeamProviderTeamLocationPage(PagedResources<TeamProviderTeamLocationResource> teamProviderTeamLocationResourceSupports, Page<TeamProviderTeamLocation> teamProviderTeamLocationPage) {
+        pageDefaults(teamProviderTeamLocationResourceSupports, teamProviderTeamLocationPage);
+
     }
 
 }

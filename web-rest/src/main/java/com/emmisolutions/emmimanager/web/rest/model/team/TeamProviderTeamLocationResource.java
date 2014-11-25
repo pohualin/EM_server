@@ -10,34 +10,56 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A HATEOAS wrapper for a Tag entity.
  */
-@XmlRootElement(name = "teamLocation")
+
+@XmlRootElement(name = "teamProviderTeamLocation")
 public class TeamProviderTeamLocationResource extends ResourceSupport {
 
-    private TeamLocation entity;
+	private Long teamProviderTeamLocationId;
 
-    public TeamLocation getEntity() {
-        return entity;
-    }
+	private TeamLocationResource teamLocation;
 
-    public void setEntity(TeamLocation entity) {
-        this.entity = entity;
-    }
+	private TeamProviderResource teamProvider;
 
-    /**
-     * Override to change the link property name for serialization
-     *
-     * @return links
-     */
-    @XmlElement(name = "link")
-    @XmlElementWrapper(name = "links")
-    @JsonProperty("link")
-    public List<Link> getLinks(){
-        return super.getLinks();
-    }
+	public Long getTeamProviderTeamLocationId() {
+		return teamProviderTeamLocationId;
+	}
+
+	public void setTeamProviderTeamLocationId(Long teamProviderTeamLocationId) {
+		this.teamProviderTeamLocationId = teamProviderTeamLocationId;
+	}
+
+	public TeamLocationResource getTeamLocation() {
+		return teamLocation;
+	}
+
+	public void setTeamLocation(TeamLocationResource teamLocation) {
+		this.teamLocation = teamLocation;
+	}
+
+	public TeamProviderResource getTeamProvider() {
+		return teamProvider;
+	}
+
+	public void setTeamProvider(TeamProviderResource teamProvider) {
+		this.teamProvider = teamProvider;
+	}
+
+	/**
+	 * Override to change the link property name for serialization
+	 *
+	 * @return links
+	 */
+	@XmlElement(name = "link")
+	@XmlElementWrapper(name = "links")
+	@JsonProperty("link")
+	public List<Link> getLinks() {
+		return super.getLinks();
+	}
+
 }
