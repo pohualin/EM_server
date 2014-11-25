@@ -82,7 +82,7 @@ public class TeamTagServiceImpl implements TeamTagService {
     }
 
     @Override
-    public Page<TeamTag> findTeamsWithTag(Tag tag,Pageable pageable, TeamTagSearchFilter teamTagSearchFilter) {
-        return teamTagPersistence.findTeamsWithTag(tag, pageable, teamTagSearchFilter);
+    public Page<TeamTag> findTeamsWithTag(Pageable pageable, TeamTagSearchFilter teamTagSearchFilter) {
+        return teamTagPersistence.findTeamsWithTag(pageable, teamTagSearchFilter);
     }
 }

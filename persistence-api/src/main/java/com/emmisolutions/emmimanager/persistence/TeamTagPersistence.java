@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
@@ -57,10 +56,11 @@ public interface TeamTagPersistence {
 
     /**
      * Find TeamTags with tag
-     * @param tag to check teams against
-     * @return set of teamtags
+     * @param teamTagSearchFilter to check tags against
+     * @param page page object
+     * @return page of teamtags
      */
 
-    Page<TeamTag> findTeamsWithTag(Tag tag, Pageable page, TeamTagSearchFilter teamTagSearchFilter);
+    Page<TeamTag> findTeamsWithTag(Pageable page, TeamTagSearchFilter teamTagSearchFilter);
 
 }

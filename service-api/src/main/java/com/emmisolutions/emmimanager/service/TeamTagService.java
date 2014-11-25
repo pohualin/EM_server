@@ -60,8 +60,9 @@ public interface TeamTagService {
 
     /**
      * Find team tags with a tag
-     * @param tag to compare
+     * @param teamTagSearchFilter to compare
+     * @param pageable page object
      * @return matching teamTags
      */
-    Page<TeamTag> findTeamsWithTag(Tag tag, Pageable pageable, TeamTagSearchFilter teamTagSearchFilter);
+    Page<TeamTag> findTeamsWithTag(Pageable pageable, TeamTagSearchFilter teamTagSearchFilter);
 }

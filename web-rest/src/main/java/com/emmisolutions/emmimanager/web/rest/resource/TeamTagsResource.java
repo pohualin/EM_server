@@ -184,11 +184,9 @@ public class TeamTagsResource {
                                                          @SortDefault(sort = "id") Sort sort,
                                                          PagedResourcesAssembler<TeamTag> assembler,
                                                          @PathVariable("tagId") Long tagId) {
-        TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter(tagId);
-        Tag tag = new Tag();
-        tag.setId(tagId);
-        tag = tagService.reload(tag);
-        Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(tag, pageable, teamTagSearchFilter);
+        TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter();
+        teamTagSearchFilter.setTagId(tagId);
+        Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(pageable, teamTagSearchFilter);
         if (teamTagPage.hasContent()) {
             PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
             TeamTagPage teamTagPage1 = new TeamTagPage(teamTagResourceSupports, teamTagPage, teamTagSearchFilter);
