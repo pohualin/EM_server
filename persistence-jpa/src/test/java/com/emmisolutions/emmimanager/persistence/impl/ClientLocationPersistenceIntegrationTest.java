@@ -6,6 +6,8 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -109,11 +111,11 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
-        client.setName("clientLocationPersistenceIntegrationTestClient " + System.currentTimeMillis());
+        client.setName("clientLocationPersistenceIntegrationTestClient" + RandomStringUtils.randomAlphanumeric(18));
         client.setType(new ClientType(1l));
         client.setActive(true);
         client.setContractOwner(new UserAdmin(1l, 0));
-        client.setSalesForceAccount(new SalesForce("clpit" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientPersistence.save(client);
     }
 

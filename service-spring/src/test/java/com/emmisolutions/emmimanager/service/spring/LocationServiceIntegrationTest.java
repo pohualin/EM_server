@@ -3,10 +3,12 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +37,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     ClientService clientService;
 
     @Resource
-    UserRepository userService;
+    UserAdminRepository userService;
 
     UserAdmin user;
 
@@ -177,9 +179,9 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
         client.setType(new ClientType(2l));
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
-        client.setName("whatever" + System.currentTimeMillis());
+        client.setName("whatever" + RandomStringUtils.randomAlphanumeric(18));
         client.setContractOwner(user);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 

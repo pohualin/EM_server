@@ -1,6 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -8,8 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.annotation.Resource;
 
 /**
  * Root integration test harness
@@ -21,7 +25,30 @@ import javax.persistence.PersistenceContext;
 @Transactional
 public abstract class BaseIntegrationTest {
 
-    @PersistenceContext(unitName = "EmmiManagerPersistenceUnit")
-    protected EntityManager entityManager;
+    @Resource
+    UserAdminRepository userAdminRepository;
+
+    @Resource
+    ClientPersistence clientPersistence;
+
+    /**
+     * Creates a brand new client that shouldn't already be inserted
+     *
+     * @return random client
+     */
+    protected Client makeNewRandomClient() {
+        Client client = new Client();
+        client.setTier(new ClientTier(3l));
+        client.setContractEnd(LocalDate.now().plusYears(1));
+        client.setContractStart(LocalDate.now());
+        client.setRegion(new ClientRegion(1l));
+        client.setName(RandomStringUtils.randomAlphanumeric(255));
+        client.setType(new ClientType(1l));
+        client.setActive(true);
+        client.setContractOwner(userAdminRepository.save(new UserAdmin(
+            RandomStringUtils.randomAlphabetic(255), RandomStringUtils.randomAlphanumeric(100))));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
+        return clientPersistence.save(client);
+    }
 
 }

@@ -6,6 +6,8 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -59,7 +61,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         client = clientPersistence.save(client);
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
         assertThat("system is the created by", client.getCreatedBy(), is("system"));
@@ -79,7 +81,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
     }
 
@@ -97,7 +99,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
     }
@@ -165,7 +167,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
 	   client.setContractEnd(LocalDate.now().plusYears(2));
-	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
        clientPersistence.save(client);
 
     	client = clientPersistence.findByNormalizedName("demo hospital client 1");
@@ -196,7 +198,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
 
         Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter("woman quinn dr"));
@@ -221,7 +223,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
 	   client.setContractEnd(LocalDate.now().plusYears(2));
-	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
        clientPersistence.save(client);
 
     	client = clientPersistence.findByNormalizedName("Demo-hospital-'=_;:`@#&,.!()client 1");
@@ -237,7 +239,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
  	   client.setContractOwner(superAdmin);
  	   client.setContractStart(LocalDate.now());
  	   client.setContractEnd(LocalDate.now().plusYears(2));
- 	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+ 	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
 
      	client = clientPersistence.findByNormalizedName("Demo hospital '=_;:`@#&,.!()client 2");
@@ -253,7 +255,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
    	   client.setContractOwner(superAdmin);
    	   client.setContractStart(LocalDate.now());
    	   client.setContractEnd(LocalDate.now().plusYears(2));
-   	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+   	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
           clientPersistence.save(client);
 
        	client = clientPersistence.findByNormalizedName("test-client123");
@@ -306,7 +308,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 }

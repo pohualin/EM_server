@@ -12,9 +12,7 @@ import javax.validation.constraints.Size;
 public class UserAdminPermission {
 
     @Id
-    @NotNull
-    @Size(min = 0, max = 100)
-    @Column(length = 100, columnDefinition = "varchar(100)")
+    @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserAdminPermissionName name;
 

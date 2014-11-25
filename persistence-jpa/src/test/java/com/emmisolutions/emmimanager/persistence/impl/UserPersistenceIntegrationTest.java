@@ -6,7 +6,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
@@ -25,7 +25,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     UserPersistence userPersistence;
 
     @Resource
-    UserRepository userRepository;
+    UserAdminRepository userAdminRepository;
 
     /**
      * Invalid user no login
@@ -46,7 +46,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
 
-        UserAdmin user1 = userRepository.findOne(user.getId());
+        UserAdmin user1 = userAdminRepository.findOne(user.getId());
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
     }
 
