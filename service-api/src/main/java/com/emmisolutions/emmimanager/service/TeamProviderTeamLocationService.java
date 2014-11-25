@@ -37,6 +37,12 @@ public interface TeamProviderTeamLocationService {
 	 * @return list of teamProviderTeamLocations
 	 */
 	List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls);
+	
+	/**
+     * delete list of TeamProviderTeamLocation
+     * @param list of TeamProviderTeamLocation to be deleted
+     */
+	void deleteTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls);
 
     /**
      * removes all TeamProviderTeamLocations for given teamProvider

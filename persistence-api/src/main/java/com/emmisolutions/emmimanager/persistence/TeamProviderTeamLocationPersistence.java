@@ -19,6 +19,14 @@ public interface TeamProviderTeamLocationPersistence {
      * @return list of teamProviderTeamLocations
      */
     List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderTeamLocations);
+    
+    
+    /**
+     * delete a list if team provider team locations
+     *
+     * @param list of teamProviderTeamLocations to be deleted
+     */
+    void delete(List<TeamProviderTeamLocation> teamProviderTeamLocations);
 
     /**
      * finds a page of TeamProviderTeamLocations for a given TeamProvider

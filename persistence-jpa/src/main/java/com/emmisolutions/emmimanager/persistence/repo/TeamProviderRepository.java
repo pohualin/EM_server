@@ -44,5 +44,14 @@ public interface TeamProviderRepository extends JpaRepository<TeamProvider, Long
      */
     @Query("select tp.team from TeamProvider tp where tp.team.client = :client and tp.provider = :provider")
     Page<Team> findTeamsByClientAndProvider(@Param("client") Client client, @Param("provider") Provider provider, Pageable page);
+    
+    /**
+     * Finds a TeamProvider for a team and provider
+     *
+     * @param team to use
+     * @param provider to use
+     * @return TeamProvider found
+     */
+    TeamProvider findTeamProviderByTeamAndProvider(Team team, Provider provider);
 
 }

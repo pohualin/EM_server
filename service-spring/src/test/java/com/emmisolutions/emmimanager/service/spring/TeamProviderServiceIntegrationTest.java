@@ -369,6 +369,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         teamLocationTwo.setLocation(locationTwo);
         teamLocationTwo.setTeam(team2);
 
+
         Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
         TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
         req.setLocation(locationOne);
@@ -397,7 +398,55 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
         assertThat("Two teamProviderTeamLocations were saved", tptl.getContent().size(), is(2));
+        
+        Page<TeamProvider> foundTeamProvider = teamProviderService.findTeamProvidersByTeam(null, team2);
+        assertThat("Two teamProviderTeamLocation Found", foundTeamProvider.getContent().iterator().next().getTeamProviderTeamLocations().size(), is(2));
 
+    }
+    
+    @Test
+    public void updateTeamProvider(){
+    	Client client = makeClient("Real", "Matron Morton");
+		clientService.create(client);
+
+		Team team = new Team();
+		team.setName("Real");
+		team.setDescription("We sing");
+		team.setActive(false);
+		team.setClient(client);
+		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
+				+ System.currentTimeMillis()));
+        Team savedTeam = teamService.create(team);
+        
+        Provider provider = new Provider();
+		provider.setFirstName("Real");
+		provider.setMiddleName("Invisible");
+		provider.setLastName("Hart");
+		provider.setEmail("amosHart@fourtysecondstreet.com");
+		provider.setActive(true);
+        provider.setSpecialty(getSpecialty());
+		provider = providerService.create(provider, savedTeam);
+		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
+
+        Location locationOne = locationService.create( makeLocation("Real Location One", "1") );
+        TeamLocation teamLocationOne = new TeamLocation();
+        teamLocationOne.setLocation(locationOne);
+        teamLocationOne.setTeam(savedTeam);
+
+        Location locationTwo = locationService.create( makeLocation("Real Location Two", "2") );
+        TeamLocation teamLocationTwo = new TeamLocation();
+        teamLocationTwo.setLocation(locationTwo);
+        teamLocationTwo.setTeam(savedTeam);
+
+        Set<Location> locationSet = new HashSet<Location>();
+        locationSet.add(locationOne);
+        locationSet.add(locationTwo);
+        teamLocationService.save(savedTeam, locationSet);
+        
+        TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
+        request.setProvider(provider);
+        request.setTeamLocations(new HashSet<TeamLocation>(teamLocationService.findAllTeamLocationsWithTeam(null, savedTeam).getContent()));
+        teamProviderService.updateTeamProvider(request);
     }
 
     @Test(expected=InvalidDataAccessApiUsageException.class)
@@ -413,6 +462,11 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void invalidDeleteByClientAndProvider(){
         teamProviderService.delete(null, null);
+    }
+    
+    @Test
+    public void testTeamProviderTeamLocationRelationship(){
+    	
     }
 
     private Location makeLocation(String name, String i) {
