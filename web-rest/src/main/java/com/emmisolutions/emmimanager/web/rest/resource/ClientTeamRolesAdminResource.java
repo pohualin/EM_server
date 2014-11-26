@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientTeamRoleReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientTeamRoleResource;
@@ -173,8 +173,7 @@ public class ClientTeamRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load reference data for client role administration")
     public UserClientTeamRoleReferenceData referenceData() {
-        return new UserClientTeamRoleReferenceData();
+        return new UserClientTeamRoleReferenceData(userClientTeamRoleService.loadPossiblePermissions());
     }
-
 
 }

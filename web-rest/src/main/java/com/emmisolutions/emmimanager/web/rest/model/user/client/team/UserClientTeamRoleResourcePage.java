@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client.team;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientTeamRolesAdminResource;
 import org.springframework.data.domain.Page;

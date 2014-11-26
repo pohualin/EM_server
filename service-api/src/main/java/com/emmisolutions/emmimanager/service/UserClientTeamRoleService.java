@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -59,4 +59,12 @@ public interface UserClientTeamRoleService {
      * @param userClientTeamRole to be removed
      */
     void remove(UserClientTeamRole userClientTeamRole);
+
+    /**
+     * load all possible team level permissions
+     *
+     * @return the set of permissions
+     */
+    Set<UserClientTeamPermission> loadPossiblePermissions();
+
 }

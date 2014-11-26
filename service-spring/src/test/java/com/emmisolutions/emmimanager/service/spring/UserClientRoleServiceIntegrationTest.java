@@ -47,6 +47,14 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
+     * Make sure possible permissions can load
+     */
+    @Test
+    public void permissionsLoad(){
+        assertThat("permissions load", userClientRoleService.loadPossiblePermissions().isEmpty(), is(false));
+    }
+
+    /**
      * Invalid role creation should lead to InvalidDataAccessApiUsageException
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
