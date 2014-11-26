@@ -89,7 +89,11 @@ public class ClientRolesAdminResource {
      * @param userClientRole to be created
      * @return the saved UserClientRoleResource or 500 if there's a problem saving
      */
-    @RequestMapping(value = "/clients/{clientId}/admin/client-roles", method = RequestMethod.POST)
+    @RequestMapping(
+        value = "/clients/{clientId}/admin/client-roles",
+        method = RequestMethod.POST,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "create a role on a client")
     public ResponseEntity<UserClientRoleResource> createRoleOn(@PathVariable Long clientId, @RequestBody UserClientRole userClientRole) {
@@ -132,7 +136,7 @@ public class ClientRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientRole userClientRole) {
-        UserClientRole ret = userClientRoleService.save(userClientRole);
+        UserClientRole ret = userClientRoleService.update(userClientRole);
         if (ret != null) {
             return new ResponseEntity<>(
                 userClientRoleResourceAssembler.toResource(ret), HttpStatus.OK);
@@ -200,8 +204,8 @@ public class ClientRolesAdminResource {
         @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<UserClientReferenceRolePage> referenceRoles(@PageableDefault(size = 50) Pageable pageable,
-                                                                    @SortDefault(sort = "id") Sort sort,
-                                                                    PagedResourcesAssembler<UserClientReferenceRole> assembler) {
+                                                                      @SortDefault(sort = "id") Sort sort,
+                                                                      PagedResourcesAssembler<UserClientReferenceRole> assembler) {
         Page<UserClientReferenceRole> referenceRolePage = userClientRoleService.loadReferenceRoles(pageable);
         if (referenceRolePage.hasContent()) {
             return new ResponseEntity<>(
