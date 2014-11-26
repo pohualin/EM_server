@@ -42,7 +42,12 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
 
     @Override
     @Transactional
-    public UserClientRole save(UserClientRole userClientRole) {
+    public UserClientRole update(UserClientRole userClientRole) {
+        UserClientRole inDb = userClientRolePersistence.reload(userClientRole);
+        if (inDb == null){
+            throw new InvalidDataAccessApiUsageException("This method is only to be used with existing UserClientRole objects");
+        }
+        userClientRole.setType(inDb.getType());
         return userClientRolePersistence.save(userClientRole);
     }
 
@@ -80,6 +85,7 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UserClientReferenceRole> loadReferenceRoles(Pageable page) {
         return userClientReferenceRolePersistence.loadReferenceRoles(page);
     }

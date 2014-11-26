@@ -1,11 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client.reference;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,6 +27,18 @@ public class UserClientRoleReferenceData extends ResourceSupport {
     public UserClientRoleReferenceData(Set<UserClientPermission> possiblePermissions) {
         this.userClientPermissions = possiblePermissions;
         add(UserClientReferenceRolePage.createReferenceRolesLink());
+    }
+
+    /**
+     * Override to change the link property name for serialization
+     *
+     * @return links
+     */
+    @XmlElement(name = "link")
+    @XmlElementWrapper(name = "links")
+    @JsonProperty("link")
+    public List<Link> getLinks() {
+        return super.getLinks();
     }
 
 }
