@@ -3,11 +3,14 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRole;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleResourcePage;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.reference.UserClientReferenceRolePage;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.reference.UserClientReferenceRoleResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.reference.UserClientRoleReferenceData;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +45,9 @@ public class ClientRolesAdminResource {
 
     @Resource
     UserClientRoleResourceAssembler userClientRoleResourceAssembler;
+
+    @Resource
+    UserClientReferenceRoleResourceAssembler userClientReferenceRoleResourceAssembler;
 
     /**
      * Fetch all existing roles for a client.
@@ -169,12 +176,40 @@ public class ClientRolesAdminResource {
      *
      * @return the reference data
      */
-    @RequestMapping(value = "/admin/client-roles/referenceData", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/client-roles/reference", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load reference data for client role administration")
-    public UserClientRoleReferenceData referenceData() {
+    public UserClientRoleReferenceData reference() {
         return new UserClientRoleReferenceData();
     }
 
+    /**
+     * GET to retrieve UserClientReferenceRolePage data.
+     *
+     * @param pageable  paged request
+     * @param sort      sorting request
+     * @param assembler used to create PagedResources
+     * @return a page of template roles matching the search request
+     */
+    @RequestMapping(value = "/admin/client-roles/reference/roles", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @ApiOperation(value = "finds all existing roles for a client")
+    @ApiImplicitParams(value = {
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<UserClientReferenceRolePage> referenceRoles(@PageableDefault(size = 50) Pageable pageable,
+                                                                    @SortDefault(sort = "id") Sort sort,
+                                                                    PagedResourcesAssembler<UserClientReferenceRole> assembler) {
+        Page<UserClientReferenceRole> referenceRolePage = userClientRoleService.loadReferenceRoles(pageable);
+        if (referenceRolePage.hasContent()) {
+            return new ResponseEntity<>(
+                new UserClientReferenceRolePage(assembler.toResource(referenceRolePage,
+                    userClientReferenceRoleResourceAssembler), referenceRolePage), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 
 }

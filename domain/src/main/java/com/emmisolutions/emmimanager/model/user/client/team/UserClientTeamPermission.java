@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model.user.client;
+package com.emmisolutions.emmimanager.model.user.client.team;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;

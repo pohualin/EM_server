@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRole;
+import com.emmisolutions.emmimanager.persistence.UserClientReferenceRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientRolePersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
@@ -23,6 +25,9 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
 
     @Resource
     UserClientRolePersistence userClientRolePersistence;
+
+    @Resource
+    UserClientReferenceRolePersistence userClientReferenceRolePersistence;
 
     @Resource
     ClientService clientService;
@@ -72,6 +77,11 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
             throw new InvalidDataAccessApiUsageException("UserClientRole cannot be null");
         }
         userClientRolePersistence.remove(toRemove.getId());
+    }
+
+    @Override
+    public Page<UserClientReferenceRole> loadReferenceRoles(Pageable page) {
+        return userClientReferenceRolePersistence.loadReferenceRoles(page);
     }
 
 }

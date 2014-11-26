@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

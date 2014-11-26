@@ -1,9 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermissionName;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
 import org.junit.Test;

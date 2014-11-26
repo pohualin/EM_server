@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
