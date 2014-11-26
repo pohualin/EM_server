@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 /**
@@ -86,8 +87,15 @@ public class TeamProviderTeamLocation extends AbstractAuditingEntity {
 			return false;
 		TeamProviderTeamLocation other = (TeamProviderTeamLocation) obj;
 		if (id == null) {
-			if (other.id != null)
+			if (other.id != null){
 				return false;
+			} else {
+				return new EqualsBuilder()
+						.append(teamLocation.getId(),
+								other.getTeamLocation().getId())
+						.append(teamProvider.getId(),
+								other.getTeamProvider().getId()).isEquals();
+			}
 		} else if (!id.equals(other.id))
 			return false;
 		return true;

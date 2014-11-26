@@ -56,4 +56,9 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
     public Page<Team> findTeamsBy(Client client, Provider provider, Pageable page) {
         return teamProviderRepository.findTeamsByClientAndProvider(client, provider, page);
     }
+    
+    @Override
+    public TeamProvider findTeamProvider(Team team, Provider provider){
+    	return teamProviderRepository.findTeamProviderByTeamAndProvider(team, provider);
+    }
 }

@@ -71,4 +71,12 @@ public interface TeamProviderPersistence {
      * @return a page of TeamProvider objects
      */
     Page<Team> findTeamsBy(Client client, Provider provider, Pageable page);
+    
+    /**
+     * Find a TeamProvider
+     * @param team to use
+     * @param provider to use
+     * @return a TeamProvider object
+     */
+    TeamProvider findTeamProvider(Team team, Provider provider);
 }

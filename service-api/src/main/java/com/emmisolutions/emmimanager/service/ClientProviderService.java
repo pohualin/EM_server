@@ -81,4 +81,21 @@ public interface ClientProviderService {
      * @return the updated ClientProvider
      */
     ClientProvider update(ClientProvider clientProvider);
+    
+    /**
+     * Find a ClientProvider
+     *
+     * @param clientId to use
+     * @param providerId to use
+     * @return clientProvider found
+     */
+    ClientProvider findByClientIdProviderId (Long clientId, Long providerId);
+    
+    /**
+     * save a ClientProvider
+     *
+     * @param clientProvider to be saved
+     * @return saved clientProvider
+     */
+    ClientProvider save(ClientProvider clientProvider);
 }

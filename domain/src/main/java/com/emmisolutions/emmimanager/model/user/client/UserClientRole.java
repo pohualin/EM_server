@@ -7,6 +7,7 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -83,6 +84,10 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
     @Column(columnDefinition = "int")
     private Integer version;
 
+    @OneToMany(mappedBy = "userClientRole", cascade = CascadeType.REMOVE)
+    @XmlTransient
+    private Set<UserClientUserClientRole> userClientUserClientRoles;
+
     public Long getId() {
         return id;
     }
@@ -121,6 +126,14 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
 
     public void setUserClientPermissions(Set<UserClientPermission> userClientPermissions) {
         this.userClientPermissions = userClientPermissions;
+    }
+
+    public Set<UserClientUserClientRole> getUserClientUserClientRoles() {
+        return userClientUserClientRoles;
+    }
+
+    public void setUserClientUserClientRoles(Set<UserClientUserClientRole> userClientUserClientRoles) {
+        this.userClientUserClientRoles = userClientUserClientRoles;
     }
 
     @Override
