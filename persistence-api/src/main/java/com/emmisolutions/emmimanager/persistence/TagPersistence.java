@@ -54,4 +54,5 @@ public interface TagPersistence {
      * @return number deleted
      */
     long removeTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep);
+
 }
