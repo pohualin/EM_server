@@ -89,6 +89,10 @@ public class ClientProviderPersistenceImpl implements ClientProviderPersistence 
     public ClientProvider save(ClientProvider clientProvider) {
         return clientProviderRepository.save(clientProvider);
     }
-
+    
+    @Override
+    public ClientProvider findByClientIdProviderId(Long clientId, Long providerId){
+    	return clientProviderRepository.findByClientIdAndProviderId(clientId, providerId);
+    }
 
 }

@@ -142,4 +142,16 @@ public class ClientProviderServiceImpl implements ClientProviderService {
         providerService.update(clientProvider.getProvider());
         return clientProviderPersistence.save(clientProvider);
     }
+    
+    @Override
+    @Transactional
+    public ClientProvider findByClientIdProviderId(Long clientId, Long providerId){
+    	return clientProviderPersistence.findByClientIdProviderId(clientId, providerId);
+    }
+    
+    @Override
+    @Transactional
+    public ClientProvider save(ClientProvider clientProvider){
+    	return clientProviderPersistence.save(clientProvider);
+    }
 }

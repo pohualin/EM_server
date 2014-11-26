@@ -94,5 +94,4 @@ public class TagsResource {
 			return new ResponseEntity<>(tagResourceAssembler.toResource(tag), HttpStatus.OK);
 		}
 	}
-
 }

@@ -30,6 +30,12 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 	public List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> teamProviderTeamLocations) {
 		return teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocations);
 	}
+	
+	@Override
+	@Transactional
+	public void deleteTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls){
+		teamProviderTeamLocationPersistence.delete(tptls);
+	}
 
 	@Override
     @Transactional

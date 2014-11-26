@@ -1,20 +1,37 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import com.emmisolutions.emmimanager.service.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamService;
 
 /**
  * Implementation of the TeamProviderService
@@ -137,5 +154,87 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         teamProviderTeamLocationPersistence.removeAllByClientProvider(client, provider);
         return teamProviderPersistence.delete(dbClient, dbProvider);
     }
+    
+	@Override
+	@Transactional
+	public Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(
+			TeamProvider teamProvider, Pageable pageable) {
+		return teamProviderTeamLocationService.findByTeamProvider(teamProvider,
+				pageable);
+	}
+    
+	@Override
+	@Transactional
+	public void updateTeamProvider(TeamProviderTeamLocationSaveRequest request) {
+		// Update existing provider
+		providerService.update(request.getProvider());
+
+		// Reload ClientProvider before we save external id then save it
+		if (request.getClientProvider() != null) {
+			ClientProvider toBeSaved = clientProviderService.reload(request
+					.getClientProvider());
+			toBeSaved
+					.setExternalId(request.getClientProvider().getExternalId());
+			clientProviderService.save(toBeSaved);
+		}
+
+		// Deal with TeamProviderTeamLocation relationship
+		updateTeamProviderTeamLocations(request);
+	}
+
+	@Transactional
+	private void updateTeamProviderTeamLocations(
+			TeamProviderTeamLocationSaveRequest request) {
+		Set<TeamProviderTeamLocation> incomings = request
+				.getTeamProviderTeamLocations();
+
+		Set<TeamProviderTeamLocation> exists = findTeamProviderTeamLocationsByTeamProvider(
+				request.getTeamProvider(), null,
+				new HashSet<TeamProviderTeamLocation>());
+
+		List<TeamProviderTeamLocation> inserts = new ArrayList<TeamProviderTeamLocation>();
+		List<TeamProviderTeamLocation> deletes = new ArrayList<TeamProviderTeamLocation>();
+		if (incomings.size() == 0) {
+			if (exists.size() > 0) {
+				deletes.addAll(exists);
+			}
+		} else {
+			for (TeamProviderTeamLocation incoming : incomings) {
+				if (incoming.getId() == null) {
+					inserts.add(incoming);
+				}
+			}
+			for (TeamProviderTeamLocation exist : exists) {
+				if (!incomings.contains(exist)) {
+					deletes.add(exist);
+				}
+			}
+		}
+
+		if (inserts.size() > 0) {
+			teamProviderTeamLocationService
+					.saveAllTeamProviderTeamLocations(inserts);
+		}
+
+		if (deletes.size() > 0) {
+			teamProviderTeamLocationService
+					.deleteTeamProviderTeamLocations(deletes);
+		}
+	}
+	
+	@Transactional
+	private Set<TeamProviderTeamLocation> findTeamProviderTeamLocationsByTeamProvider(
+			TeamProvider teamProvider, Pageable pageable,
+			Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
+		Page<TeamProviderTeamLocation> tptls = teamProviderTeamLocationService
+				.findByTeamProvider(teamProvider, pageable);
+		if (tptls.hasContent()) {
+			teamProviderTeamLocations.addAll(tptls.getContent());
+			if (tptls.hasNext()) {
+				findTeamProviderTeamLocationsByTeamProvider(teamProvider, tptls.nextPageable(), teamProviderTeamLocations);
+			}
+		}
+		return teamProviderTeamLocations;
+	}
 
 }

@@ -345,7 +345,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         locationSet.add(locationOne);
         locationSet.add(locationTwo);
         teamLocationService.save(team2, locationSet);
-
+        
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team2);
 
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
@@ -356,16 +356,22 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     		add(request);
     	}}, savedTeam2);
 
-        Page<TeamProviderTeamLocation> tptl = teamProviderTeamLocationService.findByTeamProvider(teamProviders.iterator().next(), null);
-
         Page<ClientProvider> clientProviders = clientProviderService.findByClient(client, null);
 
         assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
-        assertThat("Two teamProviderTeamLocations were saved", tptl.getContent().size(), is(2));
+        
+        Set<TeamProviderTeamLocation> tptls = new HashSet<TeamProviderTeamLocation>();
+        provider.setFirstName("New First Name");
+        request.setTeamProviderTeamLocations(tptls);
+        teamProviderService.updateTeamProvider(request);
+        
+        Page<TeamProvider> foundTeamProvider = teamProviderService.findTeamProvidersByTeam(null, team2);
+        assertThat("TeamProvider found", foundTeamProvider.hasContent(), is(true));
+        assertThat("Updated provider first name", foundTeamProvider.getContent().get(0).getProvider().getFirstName(), is("New First Name"));
 
     }
-
+    
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void invalidFindByClientAndProvider(){
         teamProviderService.findTeamsBy(null, null, null);
@@ -379,6 +385,11 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void invalidDeleteByClientAndProvider(){
         teamProviderService.delete(null, null);
+    }
+    
+    @Test
+    public void testTeamProviderTeamLocationRelationship(){
+    	
     }
 
     private Location makeLocation(String name, String i) {
