@@ -1,9 +1,8 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
 
 /**
  * Reference Group Persistence
@@ -12,8 +11,8 @@ public interface ReferenceGroupPersistence {
 
 	/**
 	 * loads reference groups
-	 * 
-	 * @param Pageable
+	 *
+	 * @param page specification
 	 * @return Page<ReferenceGroup>
 	 */
 	Page<ReferenceGroup> loadReferenceGroups(Pageable page);

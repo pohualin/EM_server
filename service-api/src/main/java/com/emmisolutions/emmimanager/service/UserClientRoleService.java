@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -59,4 +60,20 @@ public interface UserClientRoleService {
      * @param userClientRole to be removed
      */
     void remove(UserClientRole userClientRole);
+
+    /**
+     * loads reference groups
+     *
+     * @param page specification
+     * @return a page of UserClientReferenceRole objects
+     */
+    Page<UserClientReferenceRole> loadReferenceRoles(Pageable page);
+
+    /**
+     * load all possible client level permissions
+     *
+     * @return the set of permissions
+     */
+    Set<UserClientPermission> loadPossiblePermissions();
+
 }

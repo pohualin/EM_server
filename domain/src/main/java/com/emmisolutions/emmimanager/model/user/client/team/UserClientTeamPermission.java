@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model.user.client;
+package com.emmisolutions.emmimanager.model.user.client.team;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,6 +18,9 @@ public class UserClientTeamPermission {
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserClientTeamPermissionName name;
+
+    @Column(name ="rank", columnDefinition = "int", nullable = false)
+    private int rank;
 
     public UserClientTeamPermission() {
     }
@@ -55,7 +58,7 @@ public class UserClientTeamPermission {
     public String toString() {
         return "UserClientTeamPermission{" +
             "name=" + name +
+            ", rank=" + rank +
             '}';
     }
-
 }

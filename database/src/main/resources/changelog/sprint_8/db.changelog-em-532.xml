@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add client role permission ranking" author="Matt">
+
+        <addColumn tableName="user_client_permission">
+            <column name="rank" type="int"/>
+        </addColumn>
+
+        <loadUpdateData file="changelog/sprint_8/data/em-532/client-permission-rank.csv"
+                        separator=";"
+                        tableName="user_client_permission"
+                        primaryKey="name">
+            <column name="rank" type="numeric"/>
+        </loadUpdateData>
+
+        <addNotNullConstraint tableName="user_client_permission" columnName="rank" columnDataType="int"/>
+
+    </changeSet>
+
+    <changeSet id="add team role permission ranking" author="Matt">
+
+        <addColumn tableName="user_client_team_permission">
+            <column name="rank" type="int"/>
+        </addColumn>
+
+        <loadUpdateData file="changelog/sprint_8/data/em-532/team-permission-rank.csv"
+                        separator=";"
+                        tableName="user_client_team_permission"
+                        primaryKey="name">
+            <column name="rank" type="numeric"/>
+        </loadUpdateData>
+
+        <addNotNullConstraint tableName="user_client_team_permission" columnName="rank" columnDataType="int"/>
+
+    </changeSet>
+
+</databaseChangeLog>

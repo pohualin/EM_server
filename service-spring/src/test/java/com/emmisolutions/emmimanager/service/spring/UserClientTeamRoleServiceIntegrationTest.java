@@ -1,9 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermissionName;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
 import org.junit.Test;
@@ -44,6 +44,14 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
             userClientTeamRoleService.find(userClientTeamRole.getClient(), null),
             hasItem(userClientTeamRole));
         assertThat("we can reload it now", userClientTeamRoleService.reload(new UserClientTeamRole(userClientTeamRole.getId())), is(userClientTeamRole));
+    }
+
+    /**
+     * Make sure possible permissions can load
+     */
+    @Test
+    public void permissionsLoad(){
+        assertThat("permissions load", userClientTeamRoleService.loadPossiblePermissions().isEmpty(), is(false));
     }
 
     /**

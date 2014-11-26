@@ -19,6 +19,9 @@ public class UserClientPermission {
     @Enumerated(EnumType.STRING)
     private UserClientPermissionName name;
 
+    @Column(name ="rank", columnDefinition = "int", nullable = false)
+    private int rank;
+
     public UserClientPermission() {
     }
 
@@ -55,7 +58,15 @@ public class UserClientPermission {
     public String toString() {
         return "UserClientPermission{" +
             "name=" + name +
+            ", rank=" + rank +
             '}';
     }
 
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
 }
