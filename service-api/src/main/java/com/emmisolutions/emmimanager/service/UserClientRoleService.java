@@ -68,4 +68,12 @@ public interface UserClientRoleService {
      * @return a page of UserClientReferenceRole objects
      */
     Page<UserClientReferenceRole> loadReferenceRoles(Pageable page);
+
+    /**
+     * load all possible client level permissions
+     *
+     * @return the set of permissions
+     */
+    Set<UserClientPermission> loadPossiblePermissions();
+
 }

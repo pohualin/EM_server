@@ -1,8 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Set;
 
 /**
  * Persistence API for UserClient roles and permissions.
@@ -39,4 +42,12 @@ public interface UserClientTeamRolePersistence {
      * @param id to remove
      */
     void remove(Long id);
+
+    /**
+     * load all possible team level permissions
+     *
+     * @return the set of permissions
+     */
+    Set<UserClientTeamPermission> loadPossiblePermissions();
+
 }

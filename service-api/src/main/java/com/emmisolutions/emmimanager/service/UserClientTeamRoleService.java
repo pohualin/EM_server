@@ -59,4 +59,12 @@ public interface UserClientTeamRoleService {
      * @param userClientTeamRole to be removed
      */
     void remove(UserClientTeamRole userClientTeamRole);
+
+    /**
+     * load all possible team level permissions
+     *
+     * @return the set of permissions
+     */
+    Set<UserClientTeamPermission> loadPossiblePermissions();
+
 }

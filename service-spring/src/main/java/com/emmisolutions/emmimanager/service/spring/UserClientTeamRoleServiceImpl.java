@@ -74,4 +74,9 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
         userClientTeamRolePersistence.remove(toRemove.getId());
     }
 
+    @Override
+    public Set<UserClientTeamPermission> loadPossiblePermissions() {
+        return userClientTeamRolePersistence.loadPossiblePermissions();
+    }
+
 }

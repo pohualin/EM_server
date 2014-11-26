@@ -180,7 +180,7 @@ public class ClientRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load reference data for client role administration")
     public UserClientRoleReferenceData reference() {
-        return new UserClientRoleReferenceData();
+        return new UserClientRoleReferenceData(userClientRoleService.loadPossiblePermissions());
     }
 
     /**

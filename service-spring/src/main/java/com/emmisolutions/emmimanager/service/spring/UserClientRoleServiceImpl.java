@@ -84,4 +84,9 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
         return userClientReferenceRolePersistence.loadReferenceRoles(page);
     }
 
+    @Override
+    public Set<UserClientPermission> loadPossiblePermissions() {
+        return userClientRolePersistence.loadPossiblePermissions();
+    }
+
 }
