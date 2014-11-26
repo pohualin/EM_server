@@ -72,4 +72,5 @@ public class TagServiceImpl implements TagService {
 		}
 		return tagPersistence.createAll(tagsList);
 	}
+
 }

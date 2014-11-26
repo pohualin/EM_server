@@ -48,6 +48,9 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
 
         Page<ClientProvider> clientProviderPage = clientProviderPersistence.findByClientId(client.getId(), null);
         assertThat("client provider is on the page", clientProviderPage, hasItem(clientProvider));
+        
+        ClientProvider cp = clientProviderPersistence.findByClientIdProviderId(client.getId(), provider.getId());
+        assertThat("client provider is on the page", cp, is(notNullValue()));
 
         clientProviderPersistence.remove(clientProvider.getId());
         assertThat("client provider has been removed", clientProviderPersistence.reload(clientProvider.getId()), is(nullValue()));

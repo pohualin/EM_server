@@ -267,4 +267,23 @@ public class ClientProvidersResource {
             return new ResponseEntity<>(clientProviderResourceAssembler.toResource(clientProvider), HttpStatus.OK);
         }
     }
+    
+    /**
+     * GET to find a ClientProvider by client id and provider id
+     *
+     * @param clientId the client id
+     * @param providerId the provider id
+     * @return the found ClientProviderResource 
+     */
+    @RequestMapping(value = "/clients/{clientId}/providers/{providerId}", method = RequestMethod.GET)
+    @ApiOperation(value = "find ClientProvider by client id and provider id")
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_CREATE"})
+    public ResponseEntity<ClientProviderResource> findByClientIdProviderId(@PathVariable Long clientId, @PathVariable Long providerId) {
+        ClientProvider clientProvider = clientProviderService.findByClientIdProviderId(clientId, providerId);
+        if (clientProvider == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(clientProviderResourceAssembler.toResource(clientProvider), HttpStatus.OK);
+        }
+    }
 }
