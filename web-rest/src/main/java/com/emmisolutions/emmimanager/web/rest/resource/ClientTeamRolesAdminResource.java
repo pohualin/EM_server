@@ -132,7 +132,7 @@ public class ClientTeamRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientTeamRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientTeamRole userClientTeamRole) {
-        UserClientTeamRole ret = userClientTeamRoleService.save(userClientTeamRole);
+        UserClientTeamRole ret = userClientTeamRoleService.update(userClientTeamRole);
         if (ret != null) {
             return new ResponseEntity<>(
                 userClientTeamRoleResourceAssembler.toResource(ret), HttpStatus.OK);
