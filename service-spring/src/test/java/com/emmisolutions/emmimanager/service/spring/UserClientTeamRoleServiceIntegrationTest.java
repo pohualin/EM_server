@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRoleType;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
 import org.junit.Test;
@@ -103,7 +104,10 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
             hasItem(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MODIFY_USER_ROLE)));
 
         userClientTeamRole.setName("updated name");
-        assertThat("updates work", userClientTeamRoleService.update(userClientTeamRole).getVersion(), is(not(userClientTeamRole.getVersion())));
+        UserClientTeamRole savedUserClientTeamRole = userClientTeamRoleService.update(userClientTeamRole);
+        assertThat("updates work", savedUserClientTeamRole.getVersion(), is(not(userClientTeamRole.getVersion())));
+        savedUserClientTeamRole.setType(new UserClientReferenceTeamRoleType(1l));
+        assertThat("type should not change on update", userClientTeamRoleService.update(savedUserClientTeamRole).getType(), is(nullValue()));
 
         userClientTeamRoleService.remove(userClientTeamRole);
 
