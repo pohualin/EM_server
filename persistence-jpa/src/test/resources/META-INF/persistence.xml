@@ -21,6 +21,9 @@
         <class>com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRoleType</class>
         <class>com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRolePermission</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRole</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRoleType</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRolePermission</class>
         <class>com.emmisolutions.emmimanager.model.Client</class>
         <class>com.emmisolutions.emmimanager.model.SalesForce</class>
         <class>com.emmisolutions.emmimanager.model.TeamSalesForce</class>

@@ -116,6 +116,11 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
         userClientRoleService.remove(userClientRole);
 
         assertThat("client role should have been deleted", userClientRoleService.reload(userClientRole), is(nullValue()));
+    }
 
+    @Test
+    public void load() {
+        assertThat("Reference Roles are loaded",
+            userClientRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
     }
 }
