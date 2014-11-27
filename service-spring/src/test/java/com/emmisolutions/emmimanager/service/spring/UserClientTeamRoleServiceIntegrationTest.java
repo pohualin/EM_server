@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,9 +27,9 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
     /**
      * Attempts to save incomplete roles should fail
      */
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = InvalidDataAccessApiUsageException.class)
     public void createIncomplete() {
-        userClientTeamRoleService.save(new UserClientTeamRole());
+        userClientTeamRoleService.create(new UserClientTeamRole());
     }
 
     /**
@@ -38,7 +37,7 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
      */
     @Test
     public void createFindAndReload() {
-        UserClientTeamRole userClientTeamRole = userClientTeamRoleService.save(new UserClientTeamRole("a name", makeNewRandomClient(), null));
+        UserClientTeamRole userClientTeamRole = userClientTeamRoleService.create(new UserClientTeamRole("a name", makeNewRandomClient(), null));
         assertThat("new role is saved", userClientTeamRole.getId(), is(notNullValue()));
         assertThat("we can find the new role by client",
             userClientTeamRoleService.find(userClientTeamRole.getClient(), null),
@@ -92,7 +91,7 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
      * the role and ensures that it can't be reloaded again.
      */
     @Test
-    public void permissionSave() {
+    public void fullStackSave() {
         // save a role with permissions
         Set<UserClientTeamPermission> userClientTeamPermissions = new HashSet<>();
         userClientTeamPermissions.add(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MODIFY_USER_ROLE));
@@ -102,6 +101,9 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
         assertThat("permission should be present after a find for the role and then a fetch for the permissions",
             userClientTeamRoleService.loadAll(userClientTeamRoleService.find(userClientTeamRole.getClient(), null).iterator().next()),
             hasItem(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MODIFY_USER_ROLE)));
+
+        userClientTeamRole.setName("updated name");
+        assertThat("updates work", userClientTeamRoleService.update(userClientTeamRole).getVersion(), is(not(userClientTeamRole.getVersion())));
 
         userClientTeamRoleService.remove(userClientTeamRole);
 

@@ -42,8 +42,13 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
 
     @Override
     @Transactional
-    public UserClientTeamRole save(UserClientTeamRole userClientTeamRole) {
-        return userClientTeamRolePersistence.save(userClientTeamRole);
+    public UserClientTeamRole update(UserClientTeamRole userClientRole) {
+        UserClientTeamRole inDb = userClientTeamRolePersistence.reload(userClientRole);
+        if (inDb == null){
+            throw new InvalidDataAccessApiUsageException("This method is only to be used with existing UserClientTeamRole objects");
+        }
+        userClientRole.setType(inDb.getType());
+        return userClientTeamRolePersistence.save(userClientRole);
     }
 
     @Override
