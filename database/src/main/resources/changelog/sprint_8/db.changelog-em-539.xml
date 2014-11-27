@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create team role reference tables" author="Matt">
+        <createTable tableName="user_client_reference_team_role_permission">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_user_client_reference_team_role_permission"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_reference_team_role_permission_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="name" type="varchar(100)"/>
+            <column name="reference_role_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_reference_team_role_permission_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_reference_team_role_permission_audit"/>
+
+        <createTable tableName="user_client_reference_team_role">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_reference_team_role"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_role_type_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_reference_team_role_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="name" type="nvarchar(255)"/>
+            <column name="reference_role_type_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_reference_team_role_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_reference_team_role_audit"/>
+
+        <createTable tableName="user_client_reference_team_role_type">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_user_client_reference_team_role_type"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_reference_team_role_type_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="name" type="nvarchar(255)"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_reference_team_role_type_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_reference_team_role_type_audit"/>
+
+        <addUniqueConstraint tableName="user_client_reference_team_role_permission"
+                             columnNames="name, reference_role_id"
+                             constraintName="uk_user_client_reference_team_role_permission"/>
+
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_permission"
+                                 baseColumnNames="reference_role_id"
+                                 constraintName="fk_user_client_reference_team_role_permission_role"
+                                 referencedTableName="user_client_reference_team_role"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_permission_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_reference_team_role_permission_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role"
+                                 baseColumnNames="reference_role_type_id"
+                                 constraintName="fk_user_client_reference_team_role_type"
+                                 referencedTableName="user_client_reference_team_role_type"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_reference_team_role_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_type_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_reference_team_role_type_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="load default team role reference data" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-539/types.csv"
+                  separator=";"
+                  tableName="user_client_reference_team_role_type"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-539/roles.csv"
+                  separator=";"
+                  tableName="user_client_reference_team_role"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-539/role_permissions.csv"
+                  separator=";"
+                  tableName="user_client_reference_team_role_permission"/>
+    </changeSet>
+
+    <changeSet id="add type to reference team role" author="Matt">
+        <addColumn tableName="user_client_team_role">
+            <column name="user_client_reference_team_role_type_id" type="bigint"/>
+        </addColumn>
+        <addColumn tableName="user_client_team_role_audit">
+            <column name="user_client_reference_team_role_type_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="user_client_team_role"
+                                 baseColumnNames="user_client_reference_team_role_type_id"
+                                 constraintName="fk_user_client_role_reference_team_role_type"
+                                 referencedTableName="user_client_reference_team_role_type"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- Fix up client level reference role permission tables to use autoincrement id instead of name -->
+
+    <changeSet id="drop pk" author="Matt" dbms="h2">
+        <dropUniqueConstraint tableName="user_client_reference_role_permission"
+                              constraintName="pk_user_client_reference_role_permission"/>
+        <dropUniqueConstraint tableName="user_client_reference_role_permission_audit"
+                              constraintName="pk_user_client_reference_role_permission_audit"/>
+    </changeSet>
+
+    <changeSet id="drop user_client_reference_role_permission pk" author="Matt" dbms="mssql, postgresql">
+        <dropPrimaryKey tableName="user_client_reference_role_permission"
+                        constraintName="pk_user_client_reference_role_permission"/>
+        <dropPrimaryKey tableName="user_client_reference_role_permission_audit"
+                        constraintName="pk_user_client_reference_role_permission_audit"/>
+    </changeSet>
+
+    <changeSet id="add user_client_reference_role_permission identity column" author="Matt" dbms="postgresql,h2">
+        <addColumn tableName="user_client_reference_role_permission">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addPrimaryKey tableName="user_client_reference_role_permission"
+                       columnNames="id"
+                       constraintName="pk_user_client_reference_role_permission"/>
+    </changeSet>
+
+    <changeSet id="add user_client_reference_role_permission identity column (mssql)" author="Matt" dbms="mssql">
+        <sql>
+            <![CDATA[
+                ALTER TABLE user_client_reference_role_permission ADD id BIGINT IDENTITY
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="add id column to audit, fix keys" author="Matt">
+        <addColumn tableName="user_client_reference_role_permission_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <dropNotNullConstraint
+            tableName="user_client_reference_role_permission_audit"
+            columnName="name"
+            columnDataType="varchar(100)"/>
+
+        <addPrimaryKey tableName="user_client_reference_role_permission_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_reference_role_permission_audit"/>
+
+        <addUniqueConstraint tableName="user_client_reference_role_permission"
+                             columnNames="name, reference_role_id"
+                             constraintName="uk_user_client_reference_role_permission"/>
+
+    </changeSet>
+
+</databaseChangeLog>

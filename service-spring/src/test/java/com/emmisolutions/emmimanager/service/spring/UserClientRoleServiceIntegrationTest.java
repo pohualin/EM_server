@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRoleType;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
 import org.junit.Test;
@@ -111,11 +112,19 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
             hasItem(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER)));
 
         userClientRole.setName("updated name");
-        assertThat("updates work", userClientRoleService.update(userClientRole).getVersion(), is(not(userClientRole.getVersion())));
+        UserClientRole savedUserClientRole = userClientRoleService.update(userClientRole);
+        assertThat("updates work", savedUserClientRole.getVersion(), is(not(userClientRole.getVersion())));
+        savedUserClientRole.setType(new UserClientReferenceRoleType(1l));
+        assertThat("type should not change on update", userClientRoleService.update(savedUserClientRole).getType(), is(nullValue()));
 
         userClientRoleService.remove(userClientRole);
 
         assertThat("client role should have been deleted", userClientRoleService.reload(userClientRole), is(nullValue()));
+    }
 
+    @Test
+    public void load() {
+        assertThat("Reference Roles are loaded",
+            userClientRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
     }
 }
