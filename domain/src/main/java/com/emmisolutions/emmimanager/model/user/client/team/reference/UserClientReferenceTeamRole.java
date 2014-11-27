@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model.user.client.reference;
+package com.emmisolutions.emmimanager.model.user.client.team.reference;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -16,13 +16,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A Reference Role.
+ * A Team Level Reference Role.
  */
 @Audited
 @Entity
 @XmlRootElement(name = "reference_role")
-@Table(name = "user_client_reference_role")
-public class UserClientReferenceRole extends AbstractAuditingEntity implements Serializable {
+@Table(name = "user_client_reference_team_role")
+public class UserClientReferenceTeamRole extends AbstractAuditingEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -33,16 +33,16 @@ public class UserClientReferenceRole extends AbstractAuditingEntity implements S
 	private String name;
 
 	@JsonManagedReference
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userClientReferenceRole")
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userClientReferenceTeamRole")
 	@XmlElement(name = "permission")
 	@XmlElementWrapper(name = "permissions")
 	@JsonProperty("permission")
-	private Set<UserClientReferenceRolePermission> permissions = new HashSet<>();
+	private Set<UserClientReferenceTeamRolePermission> permissions = new HashSet<>();
 
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name ="reference_role_type_id", nullable = false)
-    private UserClientReferenceRoleType type;
+    private UserClientReferenceTeamRoleType type;
 
     @Version
     private Integer version;
@@ -63,11 +63,11 @@ public class UserClientReferenceRole extends AbstractAuditingEntity implements S
 		this.name = name;
 	}
 
-	public UserClientReferenceRoleType getType() {
+	public UserClientReferenceTeamRoleType getType() {
 		return type;
 	}
 
-	public void setType(UserClientReferenceRoleType type) {
+	public void setType(UserClientReferenceTeamRoleType type) {
 		this.type = type;
 	}
 
@@ -77,7 +77,7 @@ public class UserClientReferenceRole extends AbstractAuditingEntity implements S
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		UserClientReferenceRole group = (UserClientReferenceRole) o;
+		UserClientReferenceTeamRole group = (UserClientReferenceTeamRole) o;
 		return !(getId() != null ? !getId().equals(group.getId()) : group
 				.getId() != null);
 	}
@@ -91,14 +91,14 @@ public class UserClientReferenceRole extends AbstractAuditingEntity implements S
 
 	@Override
 	public String toString() {
-		return "UserClientReferenceRole{" + "id=" + getId() + ", name='" + getName() + '\'' + '}';
+		return "UserClientReferenceTeamRole{" + "id=" + getId() + ", name='" + getName() + '\'' + '}';
 	}
 
-    public Set<UserClientReferenceRolePermission> getPermissions() {
+    public Set<UserClientReferenceTeamRolePermission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(Set<UserClientReferenceRolePermission> permissions) {
+    public void setPermissions(Set<UserClientReferenceTeamRolePermission> permissions) {
         this.permissions = permissions;
     }
 

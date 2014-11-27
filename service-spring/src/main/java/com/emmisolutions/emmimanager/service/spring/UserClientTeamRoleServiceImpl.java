@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRole;
+import com.emmisolutions.emmimanager.persistence.UserClientReferenceTeamRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
@@ -26,6 +28,9 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
 
     @Resource
     ClientService clientService;
+
+    @Resource
+    UserClientReferenceTeamRolePersistence referenceGroupPersistence;
 
     @Override
     public Page<UserClientTeamRole> find(Client client, Pageable page) {
@@ -77,6 +82,12 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
     @Override
     public Set<UserClientTeamPermission> loadPossiblePermissions() {
         return userClientTeamRolePersistence.loadPossiblePermissions();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserClientReferenceTeamRole> loadReferenceRoles(Pageable page) {
+        return referenceGroupPersistence.loadReferenceTeamRoles(page);
     }
 
 }
