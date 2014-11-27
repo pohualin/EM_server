@@ -106,6 +106,14 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
         userClientTeamRoleService.remove(userClientTeamRole);
 
         assertThat("client role should have been deleted", userClientTeamRoleService.reload(userClientTeamRole), is(nullValue()));
-
     }
+    /**
+     * Make sure we can load a page
+     */
+    @Test
+    public void load() {
+        assertThat("Reference Roles are loaded",
+            userClientTeamRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
+    }
+
 }
