@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRole;
+import com.emmisolutions.emmimanager.persistence.UserClientReferenceRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientRolePersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
@@ -25,6 +27,9 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     UserClientRolePersistence userClientRolePersistence;
 
     @Resource
+    UserClientReferenceRolePersistence userClientReferenceRolePersistence;
+
+    @Resource
     ClientService clientService;
 
     @Override
@@ -37,7 +42,12 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
 
     @Override
     @Transactional
-    public UserClientRole save(UserClientRole userClientRole) {
+    public UserClientRole update(UserClientRole userClientRole) {
+        UserClientRole inDb = userClientRolePersistence.reload(userClientRole);
+        if (inDb == null){
+            throw new InvalidDataAccessApiUsageException("This method is only to be used with existing UserClientRole objects");
+        }
+        userClientRole.setType(inDb.getType());
         return userClientRolePersistence.save(userClientRole);
     }
 
@@ -72,6 +82,17 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
             throw new InvalidDataAccessApiUsageException("UserClientRole cannot be null");
         }
         userClientRolePersistence.remove(toRemove.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserClientReferenceRole> loadReferenceRoles(Pageable page) {
+        return userClientReferenceRolePersistence.loadReferenceRoles(page);
+    }
+
+    @Override
+    public Set<UserClientPermission> loadPossiblePermissions() {
+        return userClientRolePersistence.loadPossiblePermissions();
     }
 
 }

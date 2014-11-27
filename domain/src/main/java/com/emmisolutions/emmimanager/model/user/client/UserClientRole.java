@@ -2,6 +2,8 @@ package com.emmisolutions.emmimanager.model.user.client;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
+import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRoleType;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -33,6 +35,9 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
     @Size(min = 0, max = 255)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "user_client_reference_role_type_id", columnDefinition = "bigint")
+    private UserClientReferenceRoleType type;
 
     public UserClientRole() {
     }
@@ -134,6 +139,14 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
 
     public void setUserClientUserClientRoles(Set<UserClientUserClientRole> userClientUserClientRoles) {
         this.userClientUserClientRoles = userClientUserClientRoles;
+    }
+
+    public UserClientReferenceRoleType getType() {
+        return type;
+    }
+
+    public void setType(UserClientReferenceRoleType type) {
+        this.type = type;
     }
 
     @Override

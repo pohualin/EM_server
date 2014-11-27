@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,9 +27,9 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
     /**
      * Attempts to save incomplete roles should fail
      */
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = InvalidDataAccessApiUsageException.class)
     public void createIncomplete() {
-        userClientRoleService.save(new UserClientRole());
+        userClientRoleService.create(new UserClientRole());
     }
 
     /**
@@ -38,12 +37,28 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void createFindAndReload() {
-        UserClientRole userClientRole = userClientRoleService.save(new UserClientRole("a name", makeNewRandomClient(), null));
+        UserClientRole userClientRole = userClientRoleService.create(new UserClientRole("a name", makeNewRandomClient(), null));
         assertThat("new role is saved", userClientRole.getId(), is(notNullValue()));
         assertThat("we can find the new role by client",
             userClientRoleService.find(userClientRole.getClient(), null),
             hasItem(userClientRole));
         assertThat("we can reload it now", userClientRoleService.reload(new UserClientRole(userClientRole.getId())), is(userClientRole));
+    }
+
+    /**
+     * Make sure possible permissions can load
+     */
+    @Test
+    public void permissionsLoad(){
+        assertThat("permissions load", userClientRoleService.loadPossiblePermissions().isEmpty(), is(false));
+    }
+
+    /**
+     * Load reference data
+     */
+    @Test
+    public void roleLibrary(){
+        assertThat("role library loads", userClientRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
     }
 
     /**
@@ -84,7 +99,7 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
      * the role and ensures that it can't be reloaded again.
      */
     @Test
-    public void permissionSave() {
+    public void fullStackWithPermissions() {
         // save a role with permissions
         Set<UserClientPermission> userClientPermissions = new HashSet<>();
         userClientPermissions.add(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER));
@@ -95,9 +110,17 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
             userClientRoleService.loadAll(userClientRoleService.find(userClientRole.getClient(), null).iterator().next()),
             hasItem(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER)));
 
+        userClientRole.setName("updated name");
+        assertThat("updates work", userClientRoleService.update(userClientRole).getVersion(), is(not(userClientRole.getVersion())));
+
         userClientRoleService.remove(userClientRole);
 
         assertThat("client role should have been deleted", userClientRoleService.reload(userClientRole), is(nullValue()));
+    }
 
+    @Test
+    public void load() {
+        assertThat("Reference Roles are loaded",
+            userClientRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
     }
 }
