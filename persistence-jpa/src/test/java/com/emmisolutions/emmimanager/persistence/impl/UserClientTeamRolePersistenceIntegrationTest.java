@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRoleType;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import org.junit.Test;
@@ -36,7 +37,10 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
      */
     @Test
     public void createFindAndReload() {
-        UserClientTeamRole userClientTeamRole = userClientTeamRolePersistence.save(new UserClientTeamRole("a name", makeNewRandomClient(), null));
+        UserClientTeamRole toBeSaved = new UserClientTeamRole("a name", makeNewRandomClient(), null);
+        toBeSaved.setType(new UserClientReferenceTeamRoleType(1l));
+        UserClientTeamRole userClientTeamRole = userClientTeamRolePersistence.save(toBeSaved);
+
         assertThat("new role is saved", userClientTeamRole.getId(), is(notNullValue()));
         assertThat("we can find the new role by client",
             userClientTeamRolePersistence.find(userClientTeamRole.getClient().getId(), null),

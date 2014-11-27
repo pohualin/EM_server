@@ -2,9 +2,11 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.persistence.UserClientReferenceTeamRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamPermissionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamRoleRepository;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -25,6 +27,9 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
     @Resource
     UserClientTeamPermissionRepository userClientTeamPermissionRepository;
 
+    @Resource
+    UserClientReferenceTeamRolePersistence userClientReferenceTeamRolePersistence;
+
     @Override
     public Page<UserClientTeamRole> find(long clientId, Pageable page) {
         return userClientTeamRoleRepository.findByClientId(clientId, page);
@@ -32,6 +37,11 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
 
     @Override
     public UserClientTeamRole save(UserClientTeamRole userClientTeamRole) {
+        if (userClientTeamRole == null){
+            throw new InvalidDataAccessApiUsageException("UserClientTeamRole cannot be null");
+        }
+        // reload the type because the version may have changed
+        userClientTeamRole.setType(userClientReferenceTeamRolePersistence.reload(userClientTeamRole.getType()));
         return userClientTeamRoleRepository.save(userClientTeamRole);
     }
 
