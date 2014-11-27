@@ -9,6 +9,8 @@ import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserService;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -87,7 +89,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
         client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 

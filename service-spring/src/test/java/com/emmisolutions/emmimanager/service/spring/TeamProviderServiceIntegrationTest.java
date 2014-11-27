@@ -7,6 +7,8 @@ import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeReposito
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 import com.emmisolutions.emmimanager.service.*;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -96,8 +98,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
 
         provider.setSpecialty(getSpecialty());
@@ -122,8 +123,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setName(clientName);
 		client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
-		client.setSalesForceAccount(new SalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		return client;
 	}
 
@@ -155,8 +155,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Cute Show");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
 
 		Provider provider = new Provider();
@@ -219,8 +218,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -232,7 +230,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setDescription("Test Team description");
 		team2.setActive(false);
 		team2.setClient(client);
-		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		team2.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam2 = teamService.create(team2);
         Set<Provider> providers = new HashSet<>();
         providers.add(provider);
@@ -272,8 +270,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("Test Team description");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -316,8 +313,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team.setDescription("We sing");
 		team.setActive(false);
 		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam = teamService.create(team);
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
@@ -329,7 +325,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		team2.setDescription("In the city");
 		team2.setActive(false);
 		team2.setClient(client);
-		team2.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		team2.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         Team savedTeam2 = teamService.create(team2);
         List<Provider> providers = new ArrayList<Provider>();
         providers.add(provider);
@@ -349,7 +345,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         locationSet.add(locationOne);
         locationSet.add(locationTwo);
         teamLocationService.save(team2, locationSet);
-
+        
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team2);
 
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
@@ -360,16 +356,22 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     		add(request);
     	}}, savedTeam2);
 
-        Page<TeamProviderTeamLocation> tptl = teamProviderTeamLocationService.findByTeamProvider(teamProviders.iterator().next(), null);
-
         Page<ClientProvider> clientProviders = clientProviderService.findByClient(client, null);
 
         assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
-        assertThat("Two teamProviderTeamLocations were saved", tptl.getContent().size(), is(2));
+        
+        Set<TeamProviderTeamLocation> tptls = new HashSet<TeamProviderTeamLocation>();
+        provider.setFirstName("New First Name");
+        request.setTeamProviderTeamLocations(tptls);
+        teamProviderService.updateTeamProvider(request);
+        
+        Page<TeamProvider> foundTeamProvider = teamProviderService.findTeamProvidersByTeam(null, team2);
+        assertThat("TeamProvider found", foundTeamProvider.hasContent(), is(true));
+        assertThat("Updated provider first name", foundTeamProvider.getContent().get(0).getProvider().getFirstName(), is("New First Name"));
 
     }
-
+    
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void invalidFindByClientAndProvider(){
         teamProviderService.findTeamsBy(null, null, null);
@@ -383,6 +385,11 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void invalidDeleteByClientAndProvider(){
         teamProviderService.delete(null, null);
+    }
+    
+    @Test
+    public void testTeamProviderTeamLocationRelationship(){
+    	
     }
 
     private Location makeLocation(String name, String i) {

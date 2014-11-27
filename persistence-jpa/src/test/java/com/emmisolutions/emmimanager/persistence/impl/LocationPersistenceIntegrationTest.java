@@ -5,6 +5,8 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -159,11 +161,11 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
-        client.setName("client" + System.currentTimeMillis());
+        client.setName("client" + RandomStringUtils.randomAlphanumeric(18));
         client.setType(clientType);
         client.setActive(true);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientPersistence.save(client);
     }
 

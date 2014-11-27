@@ -1,7 +1,8 @@
-package com.emmisolutions.emmimanager.model.user.client;
+package com.emmisolutions.emmimanager.model.user.client.team;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
