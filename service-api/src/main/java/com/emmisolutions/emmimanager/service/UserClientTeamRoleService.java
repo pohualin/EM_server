@@ -23,12 +23,12 @@ public interface UserClientTeamRoleService {
     Page<UserClientTeamRole> find(Client client, Pageable page);
 
     /**
-     * Create/Update a user client role
+     * Update a user client role
      *
      * @param userClientTeamRole to be saved
      * @return the saved user client role
      */
-    UserClientTeamRole save(UserClientTeamRole userClientTeamRole);
+    UserClientTeamRole update(UserClientTeamRole userClientTeamRole);
 
     /**
      * Reloads a UserClientTeamRole from persistence

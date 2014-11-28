@@ -189,10 +189,12 @@
     <changeSet id="add user_client_reference_role_permission identity column" author="Matt" dbms="postgresql,h2">
         <addColumn tableName="user_client_reference_role_permission">
             <column name="id" autoIncrement="true" type="BIGINT">
-                <constraints nullable="false" primaryKey="true"
-                             primaryKeyName="pk_user_client_reference_role_permission"/>
+                <constraints nullable="false"/>
             </column>
         </addColumn>
+        <addPrimaryKey tableName="user_client_reference_role_permission"
+                       columnNames="id"
+                       constraintName="pk_user_client_reference_role_permission"/>
     </changeSet>
 
     <changeSet id="add user_client_reference_role_permission identity column (mssql)" author="Matt" dbms="mssql">
