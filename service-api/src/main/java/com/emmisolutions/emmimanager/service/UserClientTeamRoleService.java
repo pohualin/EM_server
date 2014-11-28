@@ -1,8 +1,9 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,12 +23,12 @@ public interface UserClientTeamRoleService {
     Page<UserClientTeamRole> find(Client client, Pageable page);
 
     /**
-     * Create/Update a user client role
+     * Update a user client role
      *
      * @param userClientTeamRole to be saved
      * @return the saved user client role
      */
-    UserClientTeamRole save(UserClientTeamRole userClientTeamRole);
+    UserClientTeamRole update(UserClientTeamRole userClientTeamRole);
 
     /**
      * Reloads a UserClientTeamRole from persistence
@@ -59,4 +60,20 @@ public interface UserClientTeamRoleService {
      * @param userClientTeamRole to be removed
      */
     void remove(UserClientTeamRole userClientTeamRole);
+
+    /**
+     * loads reference groups
+     *
+     * @param page specification
+     * @return a page of UserClientReferenceRole objects
+     */
+    Page<UserClientReferenceTeamRole> loadReferenceRoles(Pageable page);
+
+    /**
+     * load all possible team level permissions
+     *
+     * @return the set of permissions
+     */
+    Set<UserClientTeamPermission> loadPossiblePermissions();
+
 }

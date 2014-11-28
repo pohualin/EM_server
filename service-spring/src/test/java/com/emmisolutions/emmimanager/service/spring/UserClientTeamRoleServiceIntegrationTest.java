@@ -1,16 +1,16 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamPermissionName;
-import com.emmisolutions.emmimanager.model.user.client.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRoleType;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,9 +28,9 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
     /**
      * Attempts to save incomplete roles should fail
      */
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = InvalidDataAccessApiUsageException.class)
     public void createIncomplete() {
-        userClientTeamRoleService.save(new UserClientTeamRole());
+        userClientTeamRoleService.create(new UserClientTeamRole());
     }
 
     /**
@@ -38,12 +38,20 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
      */
     @Test
     public void createFindAndReload() {
-        UserClientTeamRole userClientTeamRole = userClientTeamRoleService.save(new UserClientTeamRole("a name", makeNewRandomClient(), null));
+        UserClientTeamRole userClientTeamRole = userClientTeamRoleService.create(new UserClientTeamRole("a name", makeNewRandomClient(), null));
         assertThat("new role is saved", userClientTeamRole.getId(), is(notNullValue()));
         assertThat("we can find the new role by client",
             userClientTeamRoleService.find(userClientTeamRole.getClient(), null),
             hasItem(userClientTeamRole));
         assertThat("we can reload it now", userClientTeamRoleService.reload(new UserClientTeamRole(userClientTeamRole.getId())), is(userClientTeamRole));
+    }
+
+    /**
+     * Make sure possible permissions can load
+     */
+    @Test
+    public void permissionsLoad(){
+        assertThat("permissions load", userClientTeamRoleService.loadPossiblePermissions().isEmpty(), is(false));
     }
 
     /**
@@ -84,7 +92,7 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
      * the role and ensures that it can't be reloaded again.
      */
     @Test
-    public void permissionSave() {
+    public void fullStackSave() {
         // save a role with permissions
         Set<UserClientTeamPermission> userClientTeamPermissions = new HashSet<>();
         userClientTeamPermissions.add(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MODIFY_USER_ROLE));
@@ -95,9 +103,23 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
             userClientTeamRoleService.loadAll(userClientTeamRoleService.find(userClientTeamRole.getClient(), null).iterator().next()),
             hasItem(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MODIFY_USER_ROLE)));
 
+        userClientTeamRole.setName("updated name");
+        UserClientTeamRole savedUserClientTeamRole = userClientTeamRoleService.update(userClientTeamRole);
+        assertThat("updates work", savedUserClientTeamRole.getVersion(), is(not(userClientTeamRole.getVersion())));
+        savedUserClientTeamRole.setType(new UserClientReferenceTeamRoleType(1l));
+        assertThat("type should not change on update", userClientTeamRoleService.update(savedUserClientTeamRole).getType(), is(nullValue()));
+
         userClientTeamRoleService.remove(userClientTeamRole);
 
         assertThat("client role should have been deleted", userClientTeamRoleService.reload(userClientTeamRole), is(nullValue()));
-
     }
+    /**
+     * Make sure we can load a page
+     */
+    @Test
+    public void load() {
+        assertThat("Reference Roles are loaded",
+            userClientTeamRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
+    }
+
 }

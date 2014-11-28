@@ -12,9 +12,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TeamTagSearchFilter {
 
     private Long teamTagId;
+    private Long tagId;
 
     public TeamTagSearchFilter(Long teamTagId) {
         this.teamTagId = teamTagId;
+    }
+    public TeamTagSearchFilter() {
     }
 
     public Long getTeamTagId() {
@@ -28,5 +31,13 @@ public class TeamTagSearchFilter {
     @Override
     public String toString() {
         return "TeamTagSearchFilter{" + "teamTagId=" + teamTagId + '}';
+    }
+
+    public Long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 }
