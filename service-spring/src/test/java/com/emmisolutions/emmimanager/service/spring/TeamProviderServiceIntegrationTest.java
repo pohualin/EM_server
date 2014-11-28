@@ -1,16 +1,18 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
-import com.emmisolutions.emmimanager.service.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.RandomStringUtils;
-
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -19,15 +21,38 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import javax.annotation.Resource;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
+import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.LocationService;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.service.UserService;
 
 public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -381,57 +406,6 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
     }
     
-    @Test
-    public void updateTeamProvider(){
-    	Client client = makeClient("Real", "Matron Morton");
-		clientService.create(client);
-
-		Team team = new Team();
-		team.setName("Real");
-		team.setDescription("We sing");
-		team.setActive(false);
-		team.setClient(client);
-		team.setSalesForceAccount(new TeamSalesForce("xxxWW"
-				+ System.currentTimeMillis()));
-        Team savedTeam = teamService.create(team);
-        
-        Provider provider = new Provider();
-		provider.setFirstName("Real");
-		provider.setMiddleName("Invisible");
-		provider.setLastName("Hart");
-		provider.setEmail("amosHart@fourtysecondstreet.com");
-		provider.setActive(true);
-        provider.setSpecialty(getSpecialty());
-		provider = providerService.create(provider, savedTeam);
-		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
-
-        Location locationOne = locationService.create( makeLocation("Real Location One", "1") );
-        TeamLocation teamLocationOne = new TeamLocation();
-        teamLocationOne.setLocation(locationOne);
-        teamLocationOne.setTeam(savedTeam);
-
-        Location locationTwo = locationService.create( makeLocation("Real Location Two", "2") );
-        TeamLocation teamLocationTwo = new TeamLocation();
-        teamLocationTwo.setLocation(locationTwo);
-        teamLocationTwo.setTeam(savedTeam);
-
-        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
-        TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
-        req.setLocation(locationOne);
-        reqs.add(req);
-        
-        req = new TeamLocationTeamProviderSaveRequest();
-        req.setLocation(locationTwo);
-        reqs.add(req);
-        
-        teamLocationService.save(savedTeam, reqs);
-        
-        TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
-        request.setProvider(provider);
-        request.setTeamLocations(new HashSet<TeamLocation>(teamLocationService.findAllTeamLocationsWithTeam(null, savedTeam).getContent()));
-        teamProviderService.updateTeamProvider(request);
-    }
-
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void invalidFindByClientAndProvider(){
         teamProviderService.findTeamsBy(null, null, null);
