@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.web.rest.resource;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -35,6 +37,8 @@ import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResource;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationResource;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 
@@ -53,6 +57,9 @@ public class TeamLocationsResource {
     @Resource
     TeamLocationResourceAssembler teamLocationResourceAssembler;
 
+    @Resource
+    TeamProviderTeamLocationResourceAssembler teamProviderTeamLocationResourceAssembler;
+    
     @Resource
     TeamService teamService;
     
@@ -109,7 +116,7 @@ public class TeamLocationsResource {
     })
     public ResponseEntity<TeamProviderTeamLocationPage> listTeamProviderTeamLocation(
             @PathVariable("teamLocationId") Long teamLocationId,
-            @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 10, sort = "teamProvider.provider.lastName", direction = Sort.Direction.ASC) Pageable pageable,
             PagedResourcesAssembler<TeamProviderTeamLocation> assembler) {
 
         TeamLocation toFind = new TeamLocation();
@@ -119,10 +126,25 @@ public class TeamLocationsResource {
         Page<TeamProviderTeamLocation> tptlPage = teamProviderTeamLocationService.findByTeamLocation(toFind, pageable);
         
         if (tptlPage.hasContent()) {
-        	TeamProviderTeamLocationPage teamLocationPage1 = new TeamProviderTeamLocationPage(null, tptlPage);
+            PagedResources<TeamProviderTeamLocationResource> tptlResourceSupports = assembler.toResource(tptlPage, teamProviderTeamLocationResourceAssembler);
+        	TeamProviderTeamLocationPage teamLocationPage1 = new TeamProviderTeamLocationPage(tptlResourceSupports, tptlPage);
             return new ResponseEntity<>(teamLocationPage1,HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
+    @RequestMapping(value = "/teams/{teamLocationId}/tptl", method = RequestMethod.POST,
+    		consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_LIST"})
+    public void updateTeamProviderTeamLocation(
+            @PathVariable("teamLocationId") Long teamLocationId, @RequestBody TeamLocationTeamProviderSaveRequest req) {
+
+        TeamLocation toFind = new TeamLocation();
+        toFind.setId(teamLocationId);
+        if (req.getProviders().size() > 0) { //when not providers informed nothing happen
+        	teamProviderTeamLocationService.removeAllByTeamLocataion(toFind);
+        	teamProviderTeamLocationService.updateTeamProviderTeamLocations(toFind, req);
         }
     }
     
@@ -137,10 +159,20 @@ public class TeamLocationsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_CREATE"})
-    public void create(@PathVariable("teamId") Long teamId,@RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs) {
+    public ResponseEntity<Set<TeamProviderTeamLocationResource>> create(@PathVariable("teamId") Long teamId,@RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs) {
         Team toFind = new Team();
         toFind.setId(teamId);
-        teamLocationService.save(toFind,reqs);
+        List<TeamProviderTeamLocation> saved = teamLocationService.save(toFind,reqs);
+        
+        if (saved != null) {
+        	Set<TeamProviderTeamLocationResource> res = new HashSet<TeamProviderTeamLocationResource>();
+        	for (TeamProviderTeamLocation teamProviderTeamLocationResource : saved) {
+				res.add(teamProviderTeamLocationResourceAssembler.toResource(teamProviderTeamLocationResource));
+			}
+            return new ResponseEntity<>(res, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     /**

@@ -45,12 +45,11 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
         }
         return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
     }
-
+    
     @Override
     public Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page) {
         if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+            page = new PageRequest(0, 10, Sort.Direction.ASC, "id");
         }
         return teamProviderTeamLocationRepository.findByTeamLocation(teamLocation, page);
     }
@@ -60,6 +59,11 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
         teamProviderTeamLocationRepository.removeAllByTeamProvider(teamProvider);
     }
 
+    @Override
+    public long removeAllByTeamLocation(TeamLocation teamLocation) {
+        return teamProviderTeamLocationRepository.deleteByTeamLocation(teamLocation);
+    }
+    
     @Override
     public void removeAllByClientLocation(Client client, Location location) {
         teamProviderTeamLocationRepository.deleteByTeamProviderTeamClientAndTeamLocationLocation(client, location);

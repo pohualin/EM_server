@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 
@@ -22,15 +24,15 @@ public interface TeamProviderTeamLocationService {
 	 * @return
 	 */
     Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable pageable);
-	
+
 	/**
 	 * finds a page of TeamProviderTeamLocations for a given TeamLocation
 	 * @param teamLocation
 	 * @param pageable
 	 * @return
 	 */
-    Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page);
-    
+    Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable pageable);
+
 	/**
 	 * Saves a list if team provider team locations
 	 * @param list of teamProviderTeamLocations
@@ -49,5 +51,20 @@ public interface TeamProviderTeamLocationService {
      * @param teamProvider
      */
 	void removeAllByTeamProvider(TeamProvider teamProvider);
+
+	/**
+	 * update the TeamProviderTeamLocation for teamLocation
+	 * 
+	 * @param teamLocation
+	 * @param request
+	 */
+	void updateTeamProviderTeamLocations(TeamLocation teamLocation,
+			TeamLocationTeamProviderSaveRequest request);
+
+    /**
+     * removes all TeamProviderTeamLocations for given teamLocation
+     * @param teamLocation
+     */
+	void removeAllByTeamLocataion(TeamLocation teamLocation);
 
 }

@@ -22,6 +22,7 @@ import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
@@ -55,8 +56,9 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     @Transactional
-    public void save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
-        Team teamToFind = teamPersistence.reload(team);
+    public List<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
+    	List<TeamProviderTeamLocation> savedTptls = new ArrayList<TeamProviderTeamLocation>();
+    	Team teamToFind = teamPersistence.reload(team);
         if(teamToFind != null && request != null) {
             for (TeamLocationTeamProviderSaveRequest req : request) {
             	Location location = req.getLocation();
@@ -73,12 +75,14 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 				}
                 
 				if (teamProviderTeamLocationsToSave.size() > 0 ){
-					List<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
+					savedTptls = teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
 				}
                 // add to client location as well
                 clientLocationPersistence.create(location.getId(), teamToFind.getClient().getId());
             }
         }
+        
+        return savedTptls;
     }
 
     @Override

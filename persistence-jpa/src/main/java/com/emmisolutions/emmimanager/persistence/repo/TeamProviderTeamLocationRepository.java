@@ -27,7 +27,7 @@ public interface TeamProviderTeamLocationRepository extends JpaRepository<TeamPr
      * @param pageable     specification
      * @return page of TPTL objects
      */
-    Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamProvider, Pageable page);
+    Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page);
     
     /**
      * Deletes all TeamProviderTeamLocations for a give teamProvider
@@ -36,6 +36,14 @@ public interface TeamProviderTeamLocationRepository extends JpaRepository<TeamPr
      * @return the number deleted
      */
     long removeAllByTeamProvider(TeamProvider teamProvider);
+
+    /**
+     * Deletes all TeamProviderTeamLocations for a give teamLocation
+     *
+     * @param teamLocation to delete
+     * @return the number deleted
+     */
+    long deleteByTeamLocation(TeamLocation teamLocation);
 
     /**
      * Delete all TPTL objects for a Client and Location
