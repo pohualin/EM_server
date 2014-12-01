@@ -15,11 +15,11 @@ import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
 public class UserClientPersistenceImpl implements UserClientPersistence {
 
     @Resource
-    UserClientRepository userAdminRepository;
+    UserClientRepository userClientRepository;
 
     @Override
     public UserClient saveOrUpdate(UserClient user) {
-        return userAdminRepository.save(user);
+        return userClientRepository.save(user);
     }
 
 }
