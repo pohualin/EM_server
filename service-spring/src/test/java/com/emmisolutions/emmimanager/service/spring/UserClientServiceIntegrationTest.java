@@ -49,7 +49,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 	 */
 	@Test
 	public void testUserCreate() {
-		Client client = makeClient("clientTeam", "teamUser");
+		Client client = makeClient("UserClientService", "UserClientService");
 		clientService.create(client);
 
 		UserClient user = new UserClient();

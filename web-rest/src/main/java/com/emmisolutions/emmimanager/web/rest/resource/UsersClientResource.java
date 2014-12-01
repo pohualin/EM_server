@@ -37,6 +37,14 @@ public class UsersClientResource {
 
 	@Resource
 	UserClientResourceAssembler userClientResourceAssembler;
+	
+	@RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.GET, consumes = {
+			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+	@RolesAllowed({ "PERM_GOD", "PERM_USER_CREATE" })
+	public ResponseEntity<UserClientResource> getUsers(
+			@PathVariable Long clientId) {
+		return null;
+	}
 
 	/**
 	 * POST to create a new UserClient
@@ -51,7 +59,7 @@ public class UsersClientResource {
 	 */
 	@RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.POST, consumes = {
 			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_CREATE" })
+	@RolesAllowed({ "PERM_GOD", "PERM_USER_CREATE" })
 	public ResponseEntity<UserClientResource> createUser(
 			@PathVariable Long clientId, @RequestBody UserClient userClient) {
 		Client client = new Client();

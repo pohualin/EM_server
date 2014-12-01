@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,9 @@ public class UserClientServiceImpl implements UserClientService {
     @Override
     @Transactional
     public UserClient save(UserClient user) {
+    	if(StringUtils.isBlank(user.getLogin()) && StringUtils.isNotBlank(user.getEmail())){
+    		user.setLogin(user.getEmail());
+    	}
         return userClientPersistence.saveOrUpdate(user);
     }
 }
