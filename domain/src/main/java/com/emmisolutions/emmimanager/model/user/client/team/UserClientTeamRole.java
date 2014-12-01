@@ -1,7 +1,8 @@
-package com.emmisolutions.emmimanager.model.user.client;
+package com.emmisolutions.emmimanager.model.user.client.team;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRoleType;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -32,6 +33,10 @@ public class UserClientTeamRole extends AbstractAuditingEntity implements Serial
     @Column(length = 255, columnDefinition = "nvarchar(255)", nullable = false)
     @Size(min = 0, max = 255)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "user_client_reference_team_role_type_id", columnDefinition = "bigint")
+    private UserClientReferenceTeamRoleType type;
 
     public UserClientTeamRole() {
     }
@@ -156,4 +161,11 @@ public class UserClientTeamRole extends AbstractAuditingEntity implements Serial
             '}';
     }
 
+    public UserClientReferenceTeamRoleType getType() {
+        return type;
+    }
+
+    public void setType(UserClientReferenceTeamRoleType type) {
+        this.type = type;
+    }
 }
