@@ -1,15 +1,17 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamTagsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderPage;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamTagsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
 
 /**
  *
@@ -28,7 +30,8 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
          ret.add(ProviderPage.createProviderLink(entity.getClient().getId(), entity.getId()).withRel("provider"));
          ret.add(linkTo(methodOn(TeamTagsResource.class).list(entity.getId(), null, null, null, null, null)).withRel("tags"));
          ret.add(TeamLocationPage.createFullSearchLink(entity));
-         ret.add(linkTo(methodOn(TeamProvidersResource.class).list(entity.getId(), null, null, null, null, null)).withRel("teamProviders"));
+         ret.add(linkTo(methodOn(TeamProvidersResource.class).list(entity.getId(), null, null, null, null)).withRel("teamProviders"));
+         ret.add(TeamProviderPage.createAssociationLink(entity));
          ret.setEntity(entity);
 	     return ret;
 	 }

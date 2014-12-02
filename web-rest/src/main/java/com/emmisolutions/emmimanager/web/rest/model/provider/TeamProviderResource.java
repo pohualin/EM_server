@@ -15,15 +15,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlRootElement(name = "team-provider")
 public class TeamProviderResource extends ResourceSupport {
 
-	private TeamProvider entity;
+    private ProviderResource provider;
 
-	public TeamProvider getEntity() {
+//    private String externalId;
+
+    private TeamProvider entity;
+
+	private Long id;
+
+    private Integer version;
+
+    public TeamProvider getEntity() {
 		return entity;
 	}
 
 	public void setEntity(TeamProvider entity) {
 		this.entity = entity;
 	}
+	
+    public ProviderResource getProvider() {
+		return provider;
+	}
+
+	public void setProvider(ProviderResource provider) {
+		this.provider = provider;
+	}
+
+	public TeamProviderResource() {
+    }
+
+    public TeamProviderResource(TeamProvider entity, ProviderResource providerResource) {
+//        this.externalId = entity.getExternalId();
+        this.id = entity.getId();
+        this.version = entity.getVersion();
+        this.provider = providerResource;
+    }
 
 	/**
 	 * Override to change the link property name for serialization

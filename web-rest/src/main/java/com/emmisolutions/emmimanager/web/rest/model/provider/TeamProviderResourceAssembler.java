@@ -23,7 +23,9 @@ public class TeamProviderResourceAssembler implements ResourceAssembler<TeamProv
 		ret.add(linkTo(methodOn(TeamProvidersResource.class).updateTeamProvider(new TeamProviderTeamLocationSaveRequest())).withRel("updateTeamProvider"));
 		ret.add(linkTo(methodOn(TeamProvidersResource.class).findTeamLocationsByTeamProvider(entity.getProvider().getId(), null, null, null, null, null)).withRel("findTeamLocationsByTeamProvider"));
 		ret.add(linkTo(methodOn(ClientProvidersResource.class).findByClientIdProviderId(entity.getTeam().getClient().getId(), entity.getProvider().getId())).withRel("findClientProviderByClientIdProviderId"));
+        ret.add(linkTo(methodOn(TeamProvidersResource.class).getById(entity.getId())).withSelfRel());
 		ret.setEntity(entity);
+		ret.setProvider(new ProviderResource(entity.getProvider()));
 		return ret;
 	}
 }

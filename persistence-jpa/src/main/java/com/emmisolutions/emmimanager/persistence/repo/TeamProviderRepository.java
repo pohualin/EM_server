@@ -1,15 +1,19 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
 
 /**
  * TeamProvider repository
@@ -54,4 +58,14 @@ public interface TeamProviderRepository extends JpaRepository<TeamProvider, Long
      */
     TeamProvider findTeamProviderByTeamAndProvider(Team team, Provider provider);
 
+
+    /**
+     * Finds a full list of TeamProvider objects for a single team for a
+     * discrete list of providers
+     *
+     * @param teamId  to narrow by
+     * @param providers the discrete list of providers we are interested in
+     * @return a List of TeamProvider objects
+     */
+    List<TeamProvider> findByTeamIdAndProviderIn(Long teamId, Collection<Provider> providers);
 }

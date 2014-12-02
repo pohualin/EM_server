@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
@@ -88,4 +89,13 @@ public interface TeamProviderService {
      * @return a set of TeamProviderTeamLocation objects
      */
     Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(TeamProvider teamProvider, Pageable pageable);
+     /** Finds a full list of TeamProvider objects for a single team for a
+     * discrete list of providers
+     *
+     * @param teamId  to narrow by
+     * @param providers the discrete list of providers we are interested in
+     * @return a List of TeamProvider objects
+     */
+    Page<TeamProvider> findPossibleProvidersToAdd(Team team, ProviderSearchFilter providerSearchFilter, Pageable pageable);
+
 }
