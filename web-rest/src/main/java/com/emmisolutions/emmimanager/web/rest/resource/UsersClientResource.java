@@ -70,7 +70,7 @@ public class UsersClientResource {
 			@ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
 			@ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
 	public ResponseEntity<UserClientResource> getUsers(
-			@RequestParam(value = "clientId", required = true) Long id,
+			@PathVariable(value = "clientId") Long id,
 			@RequestParam(value = "status", required = false) String status,
 			@RequestParam(value = "name", required = false) String lastName,
 			@PageableDefault(size = 10, sort = "lastName", direction = Direction.ASC) Pageable pageable,
