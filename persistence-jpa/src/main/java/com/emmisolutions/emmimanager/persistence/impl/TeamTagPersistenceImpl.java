@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.TeamTagSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.TeamTagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.Resource;
 import java.util.Set;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.TeamTagSpecifications.byTagId;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
@@ -33,6 +33,9 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
 
     @Resource
     TagPersistence tagPersistence;
+
+    @Resource
+    TeamTagSpecifications teamTagSpecifications;
 
     @Override
     public TeamTag saveTeamTag(TeamTag teamTag) {
@@ -96,7 +99,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return teamTagRepository.findAll(where(byTagId(teamTagSearchFilter)),page);
+        return teamTagRepository.findAll(where(teamTagSpecifications.byTagId(teamTagSearchFilter)),page);
     }
 
     private void checkTeamTagNull(TeamTag teamTag) {

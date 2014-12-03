@@ -7,7 +7,6 @@ import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -43,6 +42,9 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
 
     ClientType clientType;
 
+    /**
+     * Initialization method
+     */
     @Before
     public void init() {
         superAdmin = userPersistence.reload("super_admin");
@@ -100,7 +102,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("we are on page 0", teamPage.getNumber(), is(0));
 
         // request a page out of bounds
-        teamPage = teamPersistence.list(new PageRequest(10, 100), new TeamSearchFilter(ACTIVE_ONLY, "team5", "team9"));
+        teamPage = teamPersistence.list(new PageRequest(10, 100), new TeamSearchFilter(client.getId(), ACTIVE_ONLY, "team5", "team9"));
         assertThat("only teams starting with 5 or 9 should come back", teamPage.getTotalElements(), is(10l));
         assertThat("there is 1 page", teamPage.getTotalPages(), is(1));
         assertThat("there is nothing on this page", teamPage.getNumberOfElements(), is(0));

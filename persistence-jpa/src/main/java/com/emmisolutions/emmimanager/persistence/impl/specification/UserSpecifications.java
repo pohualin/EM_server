@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 
 import com.emmisolutions.emmimanager.model.user.admin.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 
@@ -10,17 +11,15 @@ import static com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission
 /**
  * Specifications for a User.
  */
+@Component
 public class UserSpecifications {
-
-    private UserSpecifications() {
-    }
 
     /**
      * Filter to ensure User is a contract owner
      *
-     * @return he specification as a filter predicate
+     * @return the specification as a filter predicate
      */
-    public static Specification<UserAdmin> isContractOwner() {
+    public Specification<UserAdmin> isContractOwner() {
 
         return new Specification<UserAdmin>() {
             @Override

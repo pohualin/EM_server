@@ -5,7 +5,6 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -146,12 +145,12 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         clientLocationPersistence.create(location.getId(), client.getId());
         clientLocationPersistence.create(location.getId(), client2.getId());
 
-        LocationSearchFilter filter = new LocationSearchFilter();
+        LocationSearchFilter filter = new LocationSearchFilter(LocationSearchFilter.StatusFilter.INACTIVE_ONLY, (String[]) null);
         filter.setNotUsingThisClient(client);
         Page<Location> locationPage = locationPersistence.list(null, filter);
         assertThat("location2 is in the result page", locationPage.getContent(), hasItem(location2));
         assertThat("only one element", locationPage.getNumberOfElements(), is(1));
-        
+
 
     }
 

@@ -41,6 +41,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testCreate() {
+        login("some user");
         UserAdmin user = new UserAdmin("login", "pw");
         user.setFirstName("firstName");
         user.setLastName("lastName");
@@ -50,6 +51,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
 
         UserAdmin user1 = userAdminRepository.findOne(user.getId());
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
+        assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
     }
 
     /**
