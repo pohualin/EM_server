@@ -19,7 +19,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -48,7 +47,6 @@ public class TeamProviderTeamLocation extends AbstractAuditingEntity {
 
 	@NotNull
 	@ManyToOne
-	@JsonManagedReference
 	@JoinColumn(name = "team_location_id", nullable = false)
 	@XmlElement(name = "teamLocation")
 	@XmlElementWrapper(name = "teamLocation")
