@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -16,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import javax.annotation.Resource;
+
 import java.util.List;
 
 /**
@@ -33,9 +35,15 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     UserService userService;
+    
+    @Resource
+    LocationService locationService;
 
     @Resource
     ProviderService providerService;
+    
+    @Resource
+    TeamService teamService;
 
     /**
      * Login as a user
@@ -80,6 +88,21 @@ public abstract class BaseIntegrationTest {
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientService.create(client);
     }
+    
+    /**
+     * Creates a brand new location that shouldn't already be inserted
+     *
+     * @return random location
+     */
+    protected Location makeNewRandomLocation() {
+        Location location = new Location();
+        location.setName(RandomStringUtils.randomAlphabetic(50));
+        location.setCity(RandomStringUtils.randomAlphabetic(50));
+        location.setActive(true);
+        location.setPhone("555-422-1212");
+        location.setState(State.IL);
+        return locationService.create(location);
+    }
 
     /**
      * Make a new randomized Provider
@@ -92,6 +115,21 @@ public abstract class BaseIntegrationTest {
         provider.setLastName(RandomStringUtils.randomAlphabetic(255));
         provider.setActive(true);
         return providerService.create(provider);
+    }
+    
+    /**
+     * Creates a brand new team that shouldn't already be inserted
+     *
+     * @return random team
+     */
+    protected Team makeNewRandomTeam(){
+    	Team team = new Team();
+		team.setName(RandomStringUtils.randomAlphabetic(50));
+		team.setDescription(RandomStringUtils.randomAlphabetic(50));
+		team.setActive(false);
+		team.setClient(makeNewRandomClient());
+		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
+		return teamService.create(team);
     }
 
     /**
