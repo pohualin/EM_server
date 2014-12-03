@@ -1,13 +1,15 @@
 package com.emmisolutions.emmimanager.model.user.client.team.reference;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 /**
  * A team level reference permission.
@@ -30,9 +32,11 @@ public class UserClientReferenceTeamRolePermission extends AbstractAuditingEntit
     @Column(columnDefinition = "bigint")
     private Long id;
 
-    @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private UserClientTeamPermissionName name;
+    @ManyToOne
+    @JoinColumn(name="name", columnDefinition = "varchar(100)", nullable = false)
+    @NotNull
+    @Audited(targetAuditMode = NOT_AUDITED)
+    private UserClientTeamPermission permission;
 
     @ManyToOne
     @JoinColumn(name = "reference_role_id")
@@ -49,10 +53,10 @@ public class UserClientReferenceTeamRolePermission extends AbstractAuditingEntit
     /**
      * Make a permission by name
      *
-     * @param name to use
+     * @param permission to use
      */
-    public UserClientReferenceTeamRolePermission(UserClientTeamPermissionName name) {
-        this.setName(name);
+    public UserClientReferenceTeamRolePermission(UserClientTeamPermission permission) {
+        this.setPermission(permission);
     }
 
     public UserClientReferenceTeamRole getUserClientReferenceTeamRole() {
@@ -63,12 +67,20 @@ public class UserClientReferenceTeamRolePermission extends AbstractAuditingEntit
         this.userClientReferenceTeamRole = userClientReferenceTeamRole;
     }
 
-    public UserClientTeamPermissionName getName() {
-        return name;
+    public UserClientTeamPermission getPermission() {
+        return permission;
     }
 
-    public void setName(UserClientTeamPermissionName name) {
-        this.name = name;
+    public void setPermission(UserClientTeamPermission name) {
+        this.permission = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
@@ -76,18 +88,19 @@ public class UserClientReferenceTeamRolePermission extends AbstractAuditingEntit
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserClientReferenceTeamRolePermission that = (UserClientReferenceTeamRolePermission) o;
-        return name == that.name;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         return "UserClientReferenceTeamRolePermission{" +
-            "name=" + name +
+            "id=" + id +
+            ", permission=" + permission +
             ", userClientReferenceTeamRole=" + userClientReferenceTeamRole +
             '}';
     }
