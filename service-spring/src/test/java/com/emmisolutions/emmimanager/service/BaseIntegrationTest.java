@@ -6,12 +6,17 @@ import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Root integration test harness
@@ -28,6 +33,27 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     UserService userService;
+
+    @Resource
+    ProviderService providerService;
+
+    /**
+     * Login as a user
+     * @param login to login as
+     */
+    protected void login(String login) {
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken(login, "******"));
+    }
+
+    /**
+     * Makes a UserDetails object with authorities
+     * @param login to use
+     */
+    protected void login(String login, List<GrantedAuthority> authorityList){
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken(new User(login, "****", authorityList), "******"));
+    }
 
     /**
      * Creates a brand new client that shouldn't already be inserted
@@ -47,13 +73,31 @@ public abstract class BaseIntegrationTest {
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientService.create(client);
     }
-    
-	protected UserAdmin makeNewRandomUserAdmin() {
-		UserAdmin userAdmin = new UserAdmin(RandomStringUtils
-				.randomAlphabetic(255), RandomStringUtils
-				.randomAlphanumeric(100));
-		userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
-		userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
-		return userService.save(userAdmin);
-	}
+
+    /**
+     * Make a new randomized Provider
+     *
+     * @return random provider
+     */
+    protected Provider makeNewRandomProvider() {
+        Provider provider = new Provider();
+        provider.setFirstName(RandomStringUtils.randomAlphabetic(255));
+        provider.setLastName(RandomStringUtils.randomAlphabetic(255));
+        provider.setActive(true);
+        return providerService.create(provider);
+    }
+
+    /**
+     * Make new random UserAdmin
+     *
+     * @return new UserAdmin
+     */
+    protected UserAdmin makeNewRandomUserAdmin() {
+        UserAdmin userAdmin = new UserAdmin(RandomStringUtils
+            .randomAlphabetic(255), RandomStringUtils
+            .randomAlphanumeric(100));
+        userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
+        userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
+        return userService.save(userAdmin);
+    }
 }

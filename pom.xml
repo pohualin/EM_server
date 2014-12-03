@@ -89,6 +89,7 @@
                                     <element>CLASS</element>
                                     <excludes>
                                         <exclude>*.logging.*</exclude>
+                                        <exclude>com.emmisolutions.emmimanager.web.rest.*</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>

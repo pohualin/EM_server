@@ -33,7 +33,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Page<Client> list(ClientSearchFilter searchFilter) {
-        return clientPersistence.list(null, searchFilter);
+        return list(null, searchFilter);
     }
 
     @Override

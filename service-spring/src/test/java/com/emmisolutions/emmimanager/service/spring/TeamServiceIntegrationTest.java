@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.UserService;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -14,8 +13,7 @@ import org.junit.Test;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -52,6 +50,14 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     	Team team = makeTeamForClient(client);
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
+
+        assertThat("Can find the saved team",teamService.list(new TeamSearchFilter(client.getId(),
+            TeamSearchFilter.StatusFilter.INACTIVE_ONLY, "Test Team")),
+            hasItem(savedTeam));
+
+        assertThat("Can find the saved team via normalized name",
+            teamService.findByNormalizedNameAndClientId(team.getNormalizedTeamName(), client.getId()),
+            is(savedTeam));
     }
 
     @Test

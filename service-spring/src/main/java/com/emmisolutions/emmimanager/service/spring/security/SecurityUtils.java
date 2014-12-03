@@ -4,19 +4,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 /**
  * Utility class for Spring Security.
  */
-public final class SecurityUtils {
-
-    private SecurityUtils() {
-    }
+@Component
+public class SecurityUtils {
 
     /**
      * Get the login of the current user.
      */
-    public static String getCurrentLogin() {
+    public String getCurrentLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         String userName = null;

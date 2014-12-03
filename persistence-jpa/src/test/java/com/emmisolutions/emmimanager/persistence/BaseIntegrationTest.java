@@ -41,6 +41,10 @@ public abstract class BaseIntegrationTest {
     @Resource
     LocationPersistence locationPersistence;
 
+    /**
+     * Login as a user
+     * @param login to login as
+     */
     protected void login(String login) {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(login, "******"));
     }
