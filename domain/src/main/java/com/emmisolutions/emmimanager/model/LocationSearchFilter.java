@@ -92,7 +92,7 @@ public class LocationSearchFilter {
          * Create a StatusFilter from a string
          *
          * @param status to convert
-         * @return one of the enums or ALL if nothing matches
+         * @return one of the enums or ACTIVE_ONLY if nothing matches
          */
         public static StatusFilter fromStringOrActive(String status) {
             if (StringUtils.isNotBlank(status)) {
