@@ -52,6 +52,8 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         UserAdmin user1 = userAdminRepository.findOne(user.getId());
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
+        logout();
+
     }
 
     /**

@@ -49,6 +49,10 @@ public abstract class BaseIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(login, "******"));
     }
 
+    protected void logout(){
+        SecurityContextHolder.clearContext();
+    }
+
     /**
      * Creates a brand new client that shouldn't already be inserted
      *
