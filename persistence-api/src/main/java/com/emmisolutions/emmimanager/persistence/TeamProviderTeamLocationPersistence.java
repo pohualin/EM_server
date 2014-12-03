@@ -1,10 +1,16 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.*;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 
 /**
  * TeamProviderTeamLocation persistence class
@@ -18,7 +24,6 @@ public interface TeamProviderTeamLocationPersistence {
      * @return list of teamProviderTeamLocations
      */
     List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderTeamLocations);
-    
     
     /**
      * delete a list if team provider team locations
@@ -35,6 +40,15 @@ public interface TeamProviderTeamLocationPersistence {
      * @return page of team provider team location objects
      */
     Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable pageable);
+
+    /**
+     * finds a page of TeamProviderTeamLocations for a given teamLocation
+     *
+     * @param teamLocation to find by
+     * @param pageable     page specification
+     * @return page of team provider team location objects
+     */
+    Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable pageable);
 
     /**
      * removes all TeamProviderTeamLocations for given teamProvider
@@ -59,4 +73,11 @@ public interface TeamProviderTeamLocationPersistence {
      * @param provider to use
      */
     void removeAllByClientProvider(Client client, Provider provider);
+
+    /**
+     * removes all TeamProviderTeamLocations for given teamLocation
+     *
+     * @param teamLocation to remove
+     */
+	long removeAllByTeamLocation(TeamLocation teamLocation);
 }

@@ -9,9 +9,10 @@ import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 
 /**
- * A HATEOAS wrapper for a page of TeamLocationsResource objects.
+ * A HATEOAS wrapper for a page of TeamProviderTeamLocationResource objects.
  */
 @XmlRootElement(name = "team-provider-team-location-page")
+
 public class TeamProviderTeamLocationPage extends PagedResource<TeamProviderTeamLocationResource> {
 
     public TeamProviderTeamLocationPage() {

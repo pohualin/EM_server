@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A HATEOAS wrapper for a Tag entity.
  */
+
 @XmlRootElement(name = "teamProviderTeamLocation")
 public class TeamProviderTeamLocationResource extends ResourceSupport {
 
@@ -59,4 +60,5 @@ public class TeamProviderTeamLocationResource extends ResourceSupport {
 	public List<Link> getLinks() {
 		return super.getLinks();
 	}
+
 }
