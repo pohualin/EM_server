@@ -56,6 +56,13 @@ public abstract class BaseIntegrationTest {
     }
 
     /**
+     * Logout of the system
+     */
+    protected void logout(){
+        SecurityContextHolder.clearContext();
+    }
+
+    /**
      * Creates a brand new client that shouldn't already be inserted
      *
      * @return random client

@@ -49,6 +49,9 @@ public abstract class BaseIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(login, "******"));
     }
 
+    /**
+     * Logout of the system..
+     */
     protected void logout(){
         SecurityContextHolder.clearContext();
     }
