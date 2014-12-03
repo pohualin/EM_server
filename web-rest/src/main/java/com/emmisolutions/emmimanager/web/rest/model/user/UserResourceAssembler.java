@@ -55,6 +55,8 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
         ret.add(createClientByIdLink());
+        ret.add(createProviderByIdLink());
+        ret.add(createLocationByIdLink());
         ret.add(ClientPage.createReferenceDataLink());
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
@@ -64,8 +66,6 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());
         ret.add(linkTo(methodOn(ProvidersResource.class).getReferenceData()).withRel("providersReferenceData"));
-        ret.add(createProviderByIdLink());
-        ret.add(createLocationByIdLink());
         return ret;
     }
 
