@@ -8,22 +8,16 @@ import javax.annotation.Resource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
-import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.clientprovider.ClientProviderResource;
-import com.emmisolutions.emmimanager.web.rest.resource.ClientProvidersResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource;
 
 /**
- * Responsible for creating a ClientProviderResource from a sparse ClientProvider. This
+ * Responsible for creating a TeamProviderResource from a sparse TeamProvider. This
  * ResourceAssembler does not accept entities with null providers but does accept a null
  * entity id.
  */
 @Component
 public class TeamProviderFinderResourceAssembler implements ResourceAssembler<TeamProvider, TeamProviderResource> {
-
-    @Resource
-    ClientResourceAssembler clientResourceAssembler;
 
     @Resource
     ProviderResourceAssembler providerResourceAssembler;
@@ -32,7 +26,7 @@ public class TeamProviderFinderResourceAssembler implements ResourceAssembler<Te
     public TeamProviderResource toResource(TeamProvider entity) {
     	TeamProviderResource ret = new TeamProviderResource(entity, providerResourceAssembler.toResource(entity.getProvider()));
         if (entity.getId() != null) {
-            ret.add(linkTo(methodOn(ClientProvidersResource.class).view(entity.getId())).withSelfRel());
+            ret.add(linkTo(methodOn(TeamProvidersResource.class).getById(entity.getId())).withSelfRel());
         }
         return ret;
     }
