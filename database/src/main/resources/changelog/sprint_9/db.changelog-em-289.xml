@@ -6,10 +6,14 @@
 
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
-
-    <changeSet id="alter user tables" author="Paul">
-		<addNotNullConstraint tableName="users" columnName="first_name" columnDataType="nvarchar(50)" defaultNullValue="First" />
-		<addNotNullConstraint tableName="users" columnName="last_name" columnDataType="nvarchar(50)" defaultNullValue="Last" />
+    
+    <changeSet id="alter user table" author="Paul">
+    	<update tableName="users">
+    		<column name="first_name">First</column>
+    		<where>first_name is null</where>
+    	</update>
+		<addNotNullConstraint tableName="users" columnName="first_name" columnDataType="nvarchar(50)" />
+		<addNotNullConstraint tableName="users" columnName="last_name" columnDataType="nvarchar(50)" />
     </changeSet>
 
 </databaseChangeLog>
