@@ -1,13 +1,15 @@
 package com.emmisolutions.emmimanager.model.user.client.reference;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
+import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 /**
  * A client level reference permission.
@@ -19,9 +21,15 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
 		Serializable {
 
     @Id
-    @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private UserClientPermissionName name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "bigint")
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name="name", columnDefinition = "varchar(100)", nullable = false)
+    @NotNull
+    @Audited(targetAuditMode = NOT_AUDITED)
+    private UserClientPermission permission;
 
 	@ManyToOne
 	@JoinColumn(name = "reference_role_id")
@@ -37,10 +45,10 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
 
     /**
      * Make a permission by name
-     * @param name to use
+     * @param permission to use
      */
-    public UserClientReferenceRolePermission(UserClientPermissionName name) {
-        this.setName(name);
+    public UserClientReferenceRolePermission(UserClientPermission permission) {
+        this.setPermission(permission);
     }
 
 	public UserClientReferenceRole getUserClientReferenceRole() {
@@ -51,12 +59,12 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
 		this.userClientReferenceRole = userClientReferenceRole;
 	}
 
-    public UserClientPermissionName getName() {
-        return name;
+    public UserClientPermission getPermission() {
+        return permission;
     }
 
-    public void setName(UserClientPermissionName name) {
-        this.name = name;
+    public void setPermission(UserClientPermission name) {
+        this.permission = name;
     }
 
     @Override
@@ -64,11 +72,20 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserClientReferenceRolePermission that = (UserClientReferenceRolePermission) o;
-        return name == that.name;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "UserClientReferenceRolePermission{" +
+            "id=" + id +
+            ", permission=" + permission +
+            ", userClientReferenceRole=" + userClientReferenceRole +
+            '}';
     }
 }
