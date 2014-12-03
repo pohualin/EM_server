@@ -4,6 +4,8 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 /**
@@ -55,4 +57,5 @@ public interface TeamLocationPersistence {
      * @return the number deleted
      */
     long delete(Client client, Location location);
+
 }

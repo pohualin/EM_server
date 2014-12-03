@@ -42,6 +42,8 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void testCreate() {
         UserAdmin user = new UserAdmin("login", "pw");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
         user = userPersistence.saveOrUpdate(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
@@ -57,6 +59,8 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     public void testLoad() {
         String login = "aLogin";
         UserAdmin user = new UserAdmin(login, "pw");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
         user = userPersistence.saveOrUpdate(user);
         assertThat("the user should get an id after persistence", user.getId(), is(notNullValue()));
         assertThat("the user should get a version after persistence", user.getVersion(), is(notNullValue()));

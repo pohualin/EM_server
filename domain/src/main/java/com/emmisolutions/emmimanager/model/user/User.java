@@ -33,7 +33,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @Size(min = 0, max = 255)
     @Column(length = 255, nullable = false, columnDefinition = "nvarchar(255)")
-    @XmlTransient
     private String login;
 
     @Version
@@ -45,12 +44,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @XmlTransient
     private String password;
 
+    @NotNull
     @Size(min = 0, max = 50)
-    @Column(name = "first_name", length = 50, columnDefinition = "nvarchar(50)")
+    @Column(name = "first_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String firstName;
 
+    @NotNull
     @Size(min = 0, max = 50)
-    @Column(name = "last_name", length = 50, columnDefinition = "nvarchar(50)")
+    @Column(name = "last_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String lastName;
 
     @Email

@@ -40,7 +40,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
 
     private Client createClient() {
-        UserAdmin user = userService.save(new UserAdmin("login " + RandomStringUtils.randomAlphanumeric(18), "pw"));
+        UserAdmin user = new UserAdmin(1l, 0);
 
         Client client = new Client();
         client.setTier(new ClientTier(3l));
