@@ -83,7 +83,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         return null;
     }
     
-    public Link createLocationByIdLink() {
+    public Link createProviderByIdLink() {
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ProvidersResource.class).getById(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("providerById");
@@ -97,7 +97,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         return null;
     }
 
-    public Link createProviderByIdLink() {
+    public Link createLocationByIdLink() {
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(LocationsResource.class).get(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("locationById");
