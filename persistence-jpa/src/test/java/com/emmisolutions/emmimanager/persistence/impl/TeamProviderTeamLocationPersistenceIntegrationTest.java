@@ -31,6 +31,11 @@ public class TeamProviderTeamLocationPersistenceIntegrationTest extends BaseInte
     @Resource
     TeamLocationPersistence teamLocationPersistence;
 
+    /**
+     * Test save and the first delete properly.. the rest of
+     * the deletes are in there just to make sure that
+     * the db queries successfully complete..
+     */
     @Test
     public void save() {
         Team team = makeNewRandomTeam();
