@@ -81,7 +81,7 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 			}
             
 			if (teamProviderTeamLocationsToSave.size() > 0 ){
-				//teamProviderTeamLocationPersistence.removeAllByTeamLocation(teamLocation);
+				teamProviderTeamLocationPersistence.removeAllByTeamLocation(teamLocation);
 				teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
 			}
         }

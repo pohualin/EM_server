@@ -61,7 +61,9 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
 
     @Override
     public long removeAllByTeamLocation(TeamLocation teamLocation) {
-        return teamProviderTeamLocationRepository.deleteByTeamLocation(teamLocation);
+        long ret = teamProviderTeamLocationRepository.deleteByTeamLocation(teamLocation);
+        teamProviderTeamLocationRepository.flush();
+        return ret;
     }
     
     @Override

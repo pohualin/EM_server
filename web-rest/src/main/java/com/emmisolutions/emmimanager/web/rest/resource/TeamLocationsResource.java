@@ -142,10 +142,7 @@ public class TeamLocationsResource {
 
         TeamLocation toFind = new TeamLocation();
         toFind.setId(teamLocationId);
-        if (req.getProviders().size() > 0) { //when not providers informed nothing happen
-        	teamProviderTeamLocationService.removeAllByTeamLocataion(toFind);
-        	teamProviderTeamLocationService.updateTeamProviderTeamLocations(toFind, req);
-        }
+        teamProviderTeamLocationService.updateTeamProviderTeamLocations(toFind, req);
     }
     
     /**
@@ -159,17 +156,17 @@ public class TeamLocationsResource {
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_CREATE"})
-    public ResponseEntity<Set<TeamProviderTeamLocationResource>> create(@PathVariable("teamId") Long teamId,@RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs) {
+    public ResponseEntity<TeamProviderTeamLocationPage> create(
+    		@PathVariable("teamId") Long teamId, @RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs,
+            PagedResourcesAssembler<TeamProviderTeamLocation> assembler) {
         Team toFind = new Team();
         toFind.setId(teamId);
-        List<TeamProviderTeamLocation> saved = teamLocationService.save(toFind,reqs);
+        Page<TeamProviderTeamLocation> saved = teamLocationService.save(toFind,reqs);
         
-        if (saved != null) {
-        	Set<TeamProviderTeamLocationResource> res = new HashSet<TeamProviderTeamLocationResource>();
-        	for (TeamProviderTeamLocation teamProviderTeamLocationResource : saved) {
-				res.add(teamProviderTeamLocationResourceAssembler.toResource(teamProviderTeamLocationResource));
-			}
-            return new ResponseEntity<>(res, HttpStatus.CREATED);
+        if (saved.hasContent()) {
+            PagedResources<TeamProviderTeamLocationResource> tptlResourceSupports = assembler.toResource(saved, teamProviderTeamLocationResourceAssembler);
+        	TeamProviderTeamLocationPage teamLocationPage1 = new TeamProviderTeamLocationPage(tptlResourceSupports, saved);
+            return new ResponseEntity<>(teamLocationPage1,HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

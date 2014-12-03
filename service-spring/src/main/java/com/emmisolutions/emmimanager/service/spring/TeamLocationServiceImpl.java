@@ -8,7 +8,10 @@ import javax.annotation.Resource;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +59,7 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     @Transactional
-    public List<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
+    public Page<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
     	List<TeamProviderTeamLocation> savedTptls = new ArrayList<TeamProviderTeamLocation>();
     	Team teamToFind = teamPersistence.reload(team);
         if(teamToFind != null && request != null) {
@@ -82,7 +85,8 @@ public class TeamLocationServiceImpl implements TeamLocationService {
             }
         }
         
-        return savedTptls;
+        return new PageImpl<>(savedTptls, new PageRequest(0, 10), savedTptls.size());
+        //return savedTptls;
     }
 
     @Override

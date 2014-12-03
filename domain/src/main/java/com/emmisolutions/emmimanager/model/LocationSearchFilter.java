@@ -102,7 +102,7 @@ public class LocationSearchFilter {
                     }
                 }
             }
-            return ALL;
+            return ACTIVE_ONLY;
         }
     }
 
