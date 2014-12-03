@@ -45,10 +45,18 @@ public abstract class BaseIntegrationTest {
         client.setName(RandomStringUtils.randomAlphanumeric(255));
         client.setType(new ClientType(1l));
         client.setActive(true);
-        client.setContractOwner(userAdminRepository.save(new UserAdmin(
-            RandomStringUtils.randomAlphabetic(255), RandomStringUtils.randomAlphanumeric(100))));
+        client.setContractOwner(makeNewRandomUserAdmin());
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientPersistence.save(client);
     }
+    
+    protected UserAdmin makeNewRandomUserAdmin() {
+		UserAdmin userAdmin = new UserAdmin(RandomStringUtils
+				.randomAlphabetic(255), RandomStringUtils
+				.randomAlphanumeric(100));
+		userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
+		userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
+		return userAdminRepository.save(userAdmin);
+	}
 
 }

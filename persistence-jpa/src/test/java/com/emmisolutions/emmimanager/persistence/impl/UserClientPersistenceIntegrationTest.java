@@ -65,6 +65,8 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
 		UserClient user = new UserClient();
 		user.setClient(client);
+		user.setFirstName("firstName");
+		user.setLastName("lastName");
 		user.setLogin("flast@mail.com");
 		user = userClientPersistence.saveOrUpdate(user);
 		assertThat(user.getId(), is(notNullValue()));
