@@ -94,13 +94,8 @@ public class UsersClientResource {
 			APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
 	@RolesAllowed({ "PERM_GOD", "PERM_USER_CREATE" })
 	public ResponseEntity<UserClientResource> createUser(
-			@PathVariable Long clientId, @RequestBody UserClient userClient) {
-		Client client = new Client();
-		client.setId(clientId);
-		client = clientService.reload(client);
-
-		userClient.setClient(client);
-		userClient = userClientService.save(userClient);
+			@RequestBody UserClient userClient) {
+		userClient = userClientService.create(userClient);
 		if (userClient == null) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {

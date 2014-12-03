@@ -39,9 +39,8 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 	 * Create without client and login
 	 */
 	@Test(expected = ConstraintViolationException.class)
-	public void testUserCreateWithoutLogin() {
-		userClientService
-				.save(new UserClient());
+	public void testUserCreateWithoutClient() {
+		userClientService.create(new UserClient());
 	}
 
 	/**
@@ -54,8 +53,11 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
 		UserClient user = new UserClient();
 		user.setClient(client);
+		user.setFirstName("first");
+		user.setLastName("last");
+		user.setEmail("flast@mail.com");
 		user.setLogin("flast@mail.com");
-		user = userClientService.save(user);
+		user = userClientService.create(user);
 		assertThat(user.getId(), is(notNullValue()));
 		assertThat(user.getVersion(), is(notNullValue()));
 	}
@@ -66,7 +68,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractStart(LocalDate.now());
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setName(clientName);
-		client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
+		client.setContractOwner(new UserAdmin(1l, 0));
 		client.setSalesForceAccount(new SalesForce(RandomStringUtils
 				.randomAlphanumeric(18)));
 		return client;

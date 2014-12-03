@@ -8,11 +8,19 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 public interface UserClientService {
 
     /**
-     * Creates a new user client or updates an existing user client with the passed UserClient object.
+     * Creates a new user client user with the passed UserClient object.
      *
-     * @param user to save
-     * @return the saved user
+     * @param user to create
+     * @return the created user
      */
-    UserClient save(UserClient user);
+    UserClient create(UserClient user);
+    
+    /**
+     * Update an existing client user with the passed UserClient object.
+     *
+     * @param user to update
+     * @return the created user
+     */
+    UserClient update(UserClient user);
 
 }

@@ -34,6 +34,8 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void testUserCreate() {
         UserAdmin user = new UserAdmin("login", "pw");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
         user = userService.save(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
