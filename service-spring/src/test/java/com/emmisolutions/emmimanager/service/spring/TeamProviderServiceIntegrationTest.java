@@ -1,17 +1,12 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
+import com.emmisolutions.emmimanager.service.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -21,38 +16,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientProvider;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.State;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
-import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
-import com.emmisolutions.emmimanager.model.TeamSalesForce;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientProviderService;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.LocationService;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.service.TeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamService;
-import com.emmisolutions.emmimanager.service.UserService;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -110,6 +81,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 	 */
 	@Test
 	public void testProviderSave() {
+        logout(); // making default of 'system' the user
 
 		Client client = makeClient("TeamProviFirst", "teamProUserTestOne");
 		clientService.create(client);
@@ -373,11 +345,11 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
         req.setLocation(locationOne);
         reqs.add(req);
-        
+
         req = new TeamLocationTeamProviderSaveRequest();
         req.setLocation(locationTwo);
         reqs.add(req);
-        
+
         teamLocationService.save(team2, reqs);
 
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team2);
@@ -394,12 +366,12 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
         assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
-        
+
         Set<TeamLocation> tls = new HashSet<TeamLocation>();
         provider.setFirstName("New First Name");
         request.setTeamLocations(tls);
         teamProviderService.updateTeamProvider(request);
-        
+
         Page<TeamProvider> foundTeamProvider = teamProviderService.findTeamProvidersByTeam(null, team2);
         assertThat("TeamProvider found", foundTeamProvider.hasContent(), is(true));
         assertThat("Updated provider first name", foundTeamProvider.getContent().get(0).getProvider().getFirstName(), is("New First Name"));
@@ -420,10 +392,10 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     public void invalidDeleteByClientAndProvider(){
         teamProviderService.delete(null, null);
     }
-    
+
     @Test
     public void testTeamProviderTeamLocationRelationship(){
-    	
+
     }
 
     private Location makeLocation(String name, String i) {
