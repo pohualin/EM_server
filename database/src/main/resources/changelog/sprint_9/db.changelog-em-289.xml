@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="alter user tables" author="Paul">
+		<addNotNullConstraint tableName="users" columnName="first_name" columnDataType="nvarchar(50)" defaultNullValue="First" />
+		<addNotNullConstraint tableName="users" columnName="last_name" columnDataType="nvarchar(50)" defaultNullValue="Last" />
+    </changeSet>
+
+</databaseChangeLog>
