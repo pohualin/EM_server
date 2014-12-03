@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClient
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
@@ -46,6 +47,10 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
             userClientTeamRolePersistence.find(userClientTeamRole.getClient().getId(), null),
             hasItem(userClientTeamRole));
         assertThat("we can reload it now", userClientTeamRolePersistence.reload(new UserClientTeamRole(userClientTeamRole.getId())), is(userClientTeamRole));
+
+        userClientTeamRolePersistence.remove(userClientTeamRole.getId());
+
+        assertThat("should be removed", userClientTeamRolePersistence.reload(new UserClientTeamRole(userClientTeamRole.getId())), is(nullValue()));
     }
 
     /**
@@ -59,6 +64,30 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
         assertThat("permission present",
             userClientTeamRolePersistence.find(userClientTeamRole.getClient().getId(), null).iterator().next().getUserClientTeamPermissions(),
             hasItem(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI)));
+    }
+
+    /**
+     * Save of a null should fail
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badSave(){
+        userClientTeamRolePersistence.save(null);
+    }
+
+    /**
+     * Load all possible permissions
+     */
+    @Test
+    public void loadPossible(){
+        assertThat("load all possible works", userClientTeamRolePersistence.loadPossiblePermissions().isEmpty(), is(false)) ;
+    }
+
+    /**
+     * Reload of a null should result in null
+     */
+    @Test
+    public void nullReload(){
+        assertThat("null reload returns null", userClientTeamRolePersistence.reload(null), is(nullValue()));
     }
 
 }
