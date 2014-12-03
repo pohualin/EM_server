@@ -1,7 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -138,6 +140,7 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 	public void updateTeamProviderTeamLocationsByTeamLocation() {
 		Team team = makeNewRandomTeam();
 		Provider provider = makeNewRandomProvider();
+		Provider providerA = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 
 		TeamLocation teamLocation = new TeamLocation(location, team);
@@ -147,6 +150,11 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProvider.setTeam(team);
 		teamProvider.setProvider(provider);
 		teamProviderPersistence.save(teamProvider);
+		
+		TeamProvider teamProviderA = new TeamProvider();
+		teamProviderA.setTeam(team);
+		teamProviderA.setProvider(providerA);
+		teamProviderPersistence.save(teamProviderA);
 
 		TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
 		tptl.setTeamLocation(teamLocation);
@@ -156,6 +164,10 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProviderTeamLocationPersistence.saveAll(tptls);
 		
 		TeamLocationTeamProviderSaveRequest request = new TeamLocationTeamProviderSaveRequest();
+		Set<TeamProvider> providers = new HashSet<TeamProvider>();
+		providers.add(teamProvider);
+		providers.add(teamProviderA);
+		request.setProviders(providers);
 		teamProviderTeamLocationService.updateTeamProviderTeamLocations(teamLocation, request);
 	}
 
@@ -164,9 +176,13 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		Team team = makeNewRandomTeam();
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
+		Location locationA = makeNewRandomLocation();
 
 		TeamLocation teamLocation = new TeamLocation(location, team);
 		teamLocationPersistence.saveTeamLocation(teamLocation);
+		
+		TeamLocation teamLocationA = new TeamLocation(locationA, team);
+		teamLocationPersistence.saveTeamLocation(teamLocationA);
 
 		TeamProvider teamProvider = new TeamProvider();
 		teamProvider.setTeam(team);
@@ -181,6 +197,10 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProviderTeamLocationPersistence.saveAll(tptls);
 		
 		TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
+		Set<TeamLocation> teamLocations = new HashSet<TeamLocation>();
+		teamLocations.add(teamLocation);
+		teamLocations.add(teamLocationA);
+		request.setTeamLocations(teamLocations);
 		teamProviderTeamLocationService.updateTeamProviderTeamLocations(teamProvider, request);
 	}
 	
