@@ -33,9 +33,8 @@ public interface TeamProviderTeamLocationRepository extends JpaRepository<TeamPr
      * Deletes all TeamProviderTeamLocations for a give teamProvider
      *
      * @param teamProvider to delete
-     * @return the number deleted
      */
-    long removeAllByTeamProvider(TeamProvider teamProvider);
+    void deleteAllByTeamProvider(TeamProvider teamProvider);
 
     /**
      * Deletes all TeamProviderTeamLocations for a give teamLocation

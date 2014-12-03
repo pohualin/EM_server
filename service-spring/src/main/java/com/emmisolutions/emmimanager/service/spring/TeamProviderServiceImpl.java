@@ -179,62 +179,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		}
 
 		// Deal with TeamProviderTeamLocation relationship
-		updateTeamProviderTeamLocations(request);
-	}
-
-	@Transactional
-	private void updateTeamProviderTeamLocations(
-			TeamProviderTeamLocationSaveRequest request) {
-		Set<TeamProviderTeamLocation> incomings = request
-				.getTeamProviderTeamLocations();
-
-		Set<TeamProviderTeamLocation> exists = findTeamProviderTeamLocationsByTeamProvider(
-				request.getTeamProvider(), null,
-				new HashSet<TeamProviderTeamLocation>());
-
-		List<TeamProviderTeamLocation> inserts = new ArrayList<TeamProviderTeamLocation>();
-		List<TeamProviderTeamLocation> deletes = new ArrayList<TeamProviderTeamLocation>();
-		if (incomings.size() == 0) {
-			if (exists.size() > 0) {
-				deletes.addAll(exists);
-			}
-		} else {
-			for (TeamProviderTeamLocation incoming : incomings) {
-				if (incoming.getId() == null) {
-					inserts.add(incoming);
-				}
-			}
-			for (TeamProviderTeamLocation exist : exists) {
-				if (!incomings.contains(exist)) {
-					deletes.add(exist);
-				}
-			}
-		}
-
-		if (inserts.size() > 0) {
-			teamProviderTeamLocationService
-					.saveAllTeamProviderTeamLocations(inserts);
-		}
-
-		if (deletes.size() > 0) {
-			teamProviderTeamLocationService
-					.deleteTeamProviderTeamLocations(deletes);
-		}
-	}
-	
-	@Transactional
-	private Set<TeamProviderTeamLocation> findTeamProviderTeamLocationsByTeamProvider(
-			TeamProvider teamProvider, Pageable pageable,
-			Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
-		Page<TeamProviderTeamLocation> tptls = teamProviderTeamLocationService
-				.findByTeamProvider(teamProvider, pageable);
-		if (tptls.hasContent()) {
-			teamProviderTeamLocations.addAll(tptls.getContent());
-			if (tptls.hasNext()) {
-				findTeamProviderTeamLocationsByTeamProvider(teamProvider, tptls.nextPageable(), teamProviderTeamLocations);
-			}
-		}
-		return teamProviderTeamLocations;
+		teamProviderTeamLocationService.updateTeamProviderTeamLocations(request.getTeamProvider(), request);
 	}
 
 }

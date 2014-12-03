@@ -56,7 +56,8 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
 
     @Override
     public void removeAllByTeamProvider(TeamProvider teamProvider) {
-        teamProviderTeamLocationRepository.removeAllByTeamProvider(teamProvider);
+        teamProviderTeamLocationRepository.deleteAllByTeamProvider(teamProvider);
+        teamProviderTeamLocationRepository.flush();
     }
 
     @Override
