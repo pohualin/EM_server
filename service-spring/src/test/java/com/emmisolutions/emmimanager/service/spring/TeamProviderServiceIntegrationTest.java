@@ -150,7 +150,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractStart(LocalDate.now());
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setName(clientName);
-		client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
+		client.setContractOwner(new UserAdmin(1l, 0));
 		client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		return client;
 	}

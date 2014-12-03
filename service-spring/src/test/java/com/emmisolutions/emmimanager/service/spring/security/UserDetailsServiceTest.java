@@ -30,6 +30,8 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
     public void testLoad() {
         String login = "aUser";
         UserAdmin aUser = new UserAdmin(login, "pw");
+        aUser.setFirstName("firstName");
+        aUser.setLastName("lastName");
         userService.save(aUser);
 
         UserDetails details = userDetailsService.loadUserByUsername(login);
