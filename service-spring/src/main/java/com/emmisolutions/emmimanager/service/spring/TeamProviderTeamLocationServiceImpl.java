@@ -91,18 +91,21 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
     @Override
     @Transactional
     public void updateTeamProviderTeamLocations(TeamProvider teamProvider, TeamProviderTeamLocationSaveRequest request) {
-    	List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
-        
-		for (TeamLocation teamLocation : request.getTeamLocations()) {
-			TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
-			tptl.setTeamProvider(teamProvider);
-			tptl.setTeamLocation(teamLocation);
-			teamProviderTeamLocationsToSave.add(tptl);
-		}
-        
-		if (teamProviderTeamLocationsToSave.size() > 0 ){
+    	
+    	if(request.getTeamLocations().size() > 0){
+    		List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
+            
+    		for (TeamLocation teamLocation : request.getTeamLocations()) {
+    			TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
+    			tptl.setTeamProvider(teamProvider);
+    			tptl.setTeamLocation(teamLocation);
+    			teamProviderTeamLocationsToSave.add(tptl);
+    		}
+            
 			teamProviderTeamLocationPersistence.removeAllByTeamProvider(teamProvider);
 			teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
-		}
+    	} else {
+    		teamProviderTeamLocationPersistence.removeAllByTeamProvider(teamProvider);
+    	}
     }
 }
