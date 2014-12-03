@@ -11,6 +11,7 @@ import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 
 /**
  * TeamProviderTeamLocation Service API
@@ -66,5 +67,14 @@ public interface TeamProviderTeamLocationService {
      * @param teamLocation
      */
 	void removeAllByTeamLocataion(TeamLocation teamLocation);
+	
+	/**
+	 * update the TeamProviderTeamLocation for teamProvider
+	 * 
+	 * @param teamProvider
+	 * @param request
+	 */
+	void updateTeamProviderTeamLocations(TeamProvider teamProvider,
+			TeamProviderTeamLocationSaveRequest request);
 
 }
