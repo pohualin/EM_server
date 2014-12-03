@@ -15,6 +15,7 @@ import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
@@ -85,5 +86,23 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 				teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
 			}
         }
+    }
+    
+    @Override
+    @Transactional
+    public void updateTeamProviderTeamLocations(TeamProvider teamProvider, TeamProviderTeamLocationSaveRequest request) {
+    	List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
+        
+		for (TeamLocation teamLocation : request.getTeamLocations()) {
+			TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
+			tptl.setTeamProvider(teamProvider);
+			tptl.setTeamLocation(teamLocation);
+			teamProviderTeamLocationsToSave.add(tptl);
+		}
+        
+		if (teamProviderTeamLocationsToSave.size() > 0 ){
+			teamProviderTeamLocationPersistence.removeAllByTeamProvider(teamProvider);
+			teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
+		}
     }
 }

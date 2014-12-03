@@ -395,9 +395,9 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
         
-        Set<TeamProviderTeamLocation> tptls = new HashSet<TeamProviderTeamLocation>();
+        Set<TeamLocation> tls = new HashSet<TeamLocation>();
         provider.setFirstName("New First Name");
-        request.setTeamProviderTeamLocations(tptls);
+        request.setTeamLocations(tls);
         teamProviderService.updateTeamProvider(request);
         
         Page<TeamProvider> foundTeamProvider = teamProviderService.findTeamProvidersByTeam(null, team2);
