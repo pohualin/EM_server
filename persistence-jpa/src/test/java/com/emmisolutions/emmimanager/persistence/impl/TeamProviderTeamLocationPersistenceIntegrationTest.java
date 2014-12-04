@@ -1,5 +1,17 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.junit.Test;
+
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
@@ -8,14 +20,6 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import org.junit.Test;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
 
 /**
  * TeamProviderTeamLocationPersistence integration test
@@ -58,7 +62,7 @@ public class TeamProviderTeamLocationPersistenceIntegrationTest extends BaseInte
         }};
 
         TeamProviderTeamLocation saved = teamProviderTeamLocationPersistence
-            .saveAll(tptls).get(0);
+            .saveAll(tptls).iterator().next();
 
         assertThat("Save should have worked", saved.getId(), is(notNullValue()));
 

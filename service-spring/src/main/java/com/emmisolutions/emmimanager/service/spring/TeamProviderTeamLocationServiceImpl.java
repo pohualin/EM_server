@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -44,7 +45,7 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 	
 	@Override
     @Transactional
-	public List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> teamProviderTeamLocations) {
+	public Set<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> teamProviderTeamLocations) {
 		return teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocations);
 	}
 	

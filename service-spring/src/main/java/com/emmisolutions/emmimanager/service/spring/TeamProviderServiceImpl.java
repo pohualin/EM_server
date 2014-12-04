@@ -1,10 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -138,7 +136,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		// create ClientProviders from new TeamProvider associations
     	clientProviderService.create(teamFromDb.getClient(), providers);
 
-		List<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
+		Set<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
 		return savedProviders;
 	}
 
