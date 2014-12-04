@@ -1,7 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.*;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -37,18 +40,18 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
 
     private Client createClient() {
-        User user = userService.save(new User("login " + System.currentTimeMillis(), "pw"));
+        UserAdmin user = new UserAdmin(1l, 0);
 
         Client client = new Client();
         client.setTier(new ClientTier(3l));
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
-        client.setName("Test Client " + System.currentTimeMillis());
+        client.setName("Test Client " + RandomStringUtils.randomAlphanumeric(18));
         client.setType(new ClientType(1l));
         client.setContractOwner(user);
         client.setActive(false);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 
@@ -61,18 +64,18 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
     private Tag createTag(Group group) {
         Tag tag = new Tag();
-        tag.setName("Test Tag " + System.currentTimeMillis());
+        tag.setName("Test Tag " + RandomStringUtils.randomAlphanumeric(18));
         tag.setGroup(group);
         return tag;
     }
 
     private Team createTeam(Client client) {
         Team team = new Team();
-        team.setName("Test Team" + System.currentTimeMillis());
+        team.setName("Test Team" + RandomStringUtils.randomAlphanumeric(18));
         team.setDescription("Test Team description");
         team.setActive(true);
         team.setClient(client);
-        team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
 
         return team;
     }
@@ -203,7 +206,6 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testDeleteSingleTeamTag() {
-        long uniqueId = System.currentTimeMillis();
         Client client = clientService.create(createClient());
         Group group = groupService.save(createGroup(client));
         List<Tag> tagList = createTagList(group, 1);

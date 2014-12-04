@@ -1,5 +1,6 @@
-package com.emmisolutions.emmimanager.model;
+package com.emmisolutions.emmimanager.model.user;
 
+import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
 
@@ -9,56 +10,53 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * A user represents a person who logs in to the system and uses it.
  */
-@Audited
 @Entity
-@Table(name = "app_user",
+@Audited
+@Table(name = "users",
         uniqueConstraints =
-        @UniqueConstraint(columnNames = {"login"}))
+        @UniqueConstraint(columnNames = {"login"}, name = "uk_users_login"))
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+    name="user_type", discriminatorType=DiscriminatorType.STRING)
 @XmlRootElement(name = "user")
 public class User extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "bigint")
     private Long id;
 
     @NotNull
-    @Size(min = 0, max = 50)
-    @Column(length = 50, nullable = false)
-    @XmlTransient
+    @Size(min = 0, max = 255)
+    @Column(length = 255, nullable = false, columnDefinition = "nvarchar(255)")
     private String login;
 
-    @ManyToMany
-    @JoinTable(
-            name = "app_user_role",
-            joinColumns = {@JoinColumn(name = "app_user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "roles_id", referencedColumnName = "id")})
-    @XmlTransient
-    private Set<Role> roles;
-
     @Version
+    @Column(columnDefinition = "int")
     private Integer version;
 
-    @Column(length = 100)
+    @Column(length = 100, columnDefinition = "nvarchar(100)")
     @Size(min = 0, max = 100)
     @XmlTransient
     private String password;
 
+    @NotNull
     @Size(min = 0, max = 50)
-    @Column(name = "first_name", length = 50)
+    @Column(name = "first_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String firstName;
 
+    @NotNull
     @Size(min = 0, max = 50)
-    @Column(name = "last_name", length = 50)
+    @Column(name = "last_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String lastName;
 
     @Email
-    @Size(min = 0, max = 100)
-    @Column(length = 100)
+    @Size(min = 0, max = 255)
+    @Column(length = 255, columnDefinition = "nvarchar(255)")
     private String email;
 
     public User() {
@@ -113,7 +111,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
+        return getClass().getSimpleName()+"{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", version=" + version +
@@ -165,11 +163,4 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.email = email;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
 }

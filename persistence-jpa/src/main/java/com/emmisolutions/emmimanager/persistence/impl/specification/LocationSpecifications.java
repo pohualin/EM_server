@@ -1,19 +1,14 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.model.Location_;
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +18,11 @@ import java.util.List;
 @Component
 public class LocationSpecifications {
 
-	@Resource
-	MatchingCriteriaBean matchCriteria;
+    @Resource
+    MatchingCriteriaBean matchCriteria;
+
+    @Resource
+    ClientPersistence clientPersistence;
 
     /**
      * Case insensitive name anywhere match
@@ -51,7 +49,7 @@ public class LocationSpecifications {
                                 }
                             }
                         }
-                        for (String searchTerm: searchTerms){
+                        for (String searchTerm : searchTerms) {
                             if (StringUtils.isNotBlank(searchTerm)) {
                                 addedANameFilter = true;
                                 predicates.add(cb.like(cb.lower(root.get(Location_.name)), "%" + searchTerm.toLowerCase() + "%"));
@@ -86,19 +84,50 @@ public class LocationSpecifications {
     /**
      * Ensures that the location belongs to a client
      *
-     * @param client to use
+     * @param filter to use to find the belongs to client
      * @return the specification
      */
-    public Specification<Location> belongsTo(final Client client) {
+    public Specification<Location> belongsTo(final LocationSearchFilter filter) {
         return new Specification<Location>() {
             @Override
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (client != null) {
-                    return cb.equal(root.get(Location_.belongsTo), client);
+                Client belongsToClient = null;
+                if (filter != null && filter.getBelongsToClient() != null) {
+                    belongsToClient = clientPersistence.reload(filter.getBelongsToClient().getId());
+                }
+                if (belongsToClient != null) {
+                    return cb.equal(root.get(Location_.belongsTo), belongsToClient);
                 }
                 return null;
             }
         };
     }
 
+    /**
+     * Ensures that the location is not in use by the client on the filter
+     *
+     * @param filter to find the client not to use
+     * @return the specification
+     */
+    public Specification<Location> notUsedBy(final LocationSearchFilter filter) {
+        return new Specification<Location>() {
+            @Override
+            public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Client notUsedByClient = null;
+                if (filter != null && filter.getNotUsingThisClient() != null) {
+                    notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient().getId());
+                }
+                if (notUsedByClient != null) {
+                	
+                	Subquery<Location> locationSubquery = query.subquery(Location.class);
+                	Root<ClientLocation> clientLocationRoot = locationSubquery.from(ClientLocation.class);
+                	locationSubquery
+                	    .select(clientLocationRoot.get(ClientLocation_.location))
+                	    .where(cb.equal(clientLocationRoot.get(ClientLocation_.client), notUsedByClient));
+                	return cb.not(cb.in(root).value(locationSubquery));
+                }
+                return null;
+            }
+        };
+    }
 }

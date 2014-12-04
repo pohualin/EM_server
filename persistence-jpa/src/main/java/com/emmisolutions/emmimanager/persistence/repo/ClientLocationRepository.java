@@ -22,6 +22,15 @@ public interface ClientLocationRepository extends JpaRepository<ClientLocation, 
      * @return a page of matching ClientLocation objects
      */
     Page<ClientLocation> findByClientId(Long clientId, Pageable page);
+    
+    /**
+     * Finds a page of clients by location id
+     *
+     * @param locationId to narrow by
+     * @param page     the page specification
+     * @return a page of matching ClientLocation objects
+     */
+    Page<ClientLocation> findByLocationId(Long locationId, Pageable page);
 
     /**
      * Finds a full list of ClientLocation objects for a single client for a

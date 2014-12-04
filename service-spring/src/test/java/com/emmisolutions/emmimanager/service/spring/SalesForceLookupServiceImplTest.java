@@ -1,6 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.SalesForceService;
@@ -69,7 +73,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        client.setContractOwner(userService.save(new User(username, "pw")));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce(accountNumber));
         return client;
     }

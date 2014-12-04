@@ -1,10 +1,13 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,16 +30,16 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientPersistence clientPersistence;
-    
+
     @Resource
     GroupPersistence groupPersistence;
-    
+
 	@Resource
 	UserPersistence userPersistence;
-	
+
 	@Resource
 	GroupRepository groupRepository;
-	
+
 	@Resource
 	ClientRepository clientRepository;
 
@@ -52,7 +55,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamTagPersistence teamTagPersistence;
 
-	User superAdmin;
+	UserAdmin superAdmin;
 
     ClientType clientType;
 
@@ -63,7 +66,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 	    superAdmin = userPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
 	}
-	
+
 	/**
 	 * 	Big method.. save some groups, search for em, remove groups,
 	 */
@@ -159,7 +162,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 
@@ -176,7 +179,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private Tag createTag(Group group) {
         Tag tag = new Tag();
-        tag.setName("Test Tag " + System.currentTimeMillis());
+        tag.setName("Test Tag " + RandomStringUtils.randomAlphanumeric(18));
         tag.setGroup(group);
         return tag;
     }
@@ -187,7 +190,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);
-        team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         team = teamPersistence.save(team);
         return team;
     }

@@ -7,7 +7,6 @@ import com.emmisolutions.emmimanager.model.TeamTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +18,7 @@ public interface GroupPersistence {
     /**
      * Saves a group
      *
-     * @param Group
+     * @param group Group
      * @return Group
      */
     Group save(Group group);
@@ -27,8 +26,8 @@ public interface GroupPersistence {
     /**
      * Lists groups by groupSearchFilter
      *
-     * @param Pageable
-     * @param GroupSearchFilter
+     * @param page         specification
+     * @param searchFilter GroupSearchFilter
      * @return Page<Group>
      */
     Page<Group> list(Pageable page, GroupSearchFilter searchFilter);
@@ -36,7 +35,7 @@ public interface GroupPersistence {
     /**
      * Reloads a group given the id
      *
-     * @param Long group id
+     * @param id group id
      * @return Group
      */
     Group reload(Long id);
@@ -53,8 +52,9 @@ public interface GroupPersistence {
     /**
      * Find the set of Teams that are already mapped to tags not present in the
      * save request.
+     *
      * @param groupSaveRequests to check
-     * @param clientId for the scope of the tags to check
+     * @param clientId          for the scope of the tags to check
      * @return set of conflicting teams
      */
     Set<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);

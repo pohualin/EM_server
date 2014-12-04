@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.UserService;
 import com.emmisolutions.emmimanager.service.spring.security.SecurityUtils;
@@ -24,15 +24,18 @@ public class UserServiceImpl implements UserService {
     @Resource
     UserPersistence userPersistence;
 
+    @Resource
+    SecurityUtils securityUtils;
+
     @Override
     @Transactional
-    public User save(User user) {
+    public UserAdmin save(UserAdmin user) {
         return userPersistence.saveOrUpdate(user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public User loggedIn() {
-        return userPersistence.fetchUserWillFullPermissions(SecurityUtils.getCurrentLogin());
+    public UserAdmin loggedIn() {
+        return userPersistence.fetchUserWillFullPermissions(securityUtils.getCurrentLogin());
     }
 }

@@ -1,18 +1,23 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.springframework.data.domain.Page;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.TemplateVariable;
+import org.springframework.hateoas.TemplateVariables;
+import org.springframework.hateoas.UriTemplate;
+
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamLocationsResource;
-import org.springframework.data.domain.Page;
-import org.springframework.hateoas.*;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * A HATEOAS wrapper for a page of TeamLocationsResource objects.
@@ -54,7 +59,7 @@ public class TeamLocationPage extends PagedResource<TeamLocationResource> {
                         new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
-
+    
     private void addFilterToLinks(TeamLocationSearchFilter filter) {
         this.searchFilter = filter;
     }

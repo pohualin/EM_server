@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model;
+package com.emmisolutions.emmimanager.model.user.admin;
 
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -7,12 +7,8 @@ import javax.xml.bind.annotation.XmlEnum;
  * on the other hand are created by clients themselves.
  */
 @XmlEnum(String.class)
-public enum PermissionName {
+public enum UserAdminPermissionName {
     PERM_GOD,
-    PERM_USER,
-    PERM_CLIENT_LIST,
-    PERM_CLIENT_VIEW,
-    PERM_CLIENT_EDIT,
-    PERM_CLIENT_CREATE,
-    PERM_CONTRACT_OWNER;
+    PERM_ADMIN_USER,
+    PERM_ADMIN_CONTRACT_OWNER
 }

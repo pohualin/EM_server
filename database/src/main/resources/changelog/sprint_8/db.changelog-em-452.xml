@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="drop old user tables" author="Matt">
+        <dropForeignKeyConstraint baseTableName="client" constraintName="fk_client_user_id"/>
+        <dropForeignKeyConstraint baseTableName="app_user_audit" constraintName="fk_app_user_audit_revision"/>
+        <dropForeignKeyConstraint baseTableName="app_user_role" constraintName="fk_app_user_role_role_id"/>
+        <dropForeignKeyConstraint baseTableName="app_user_role" constraintName="fk_app_user_role_user_id"/>
+        <dropForeignKeyConstraint baseTableName="app_user_role_audit"
+                                  constraintName="fk_app_user_role_audit_revision_info"/>
+        <dropForeignKeyConstraint baseTableName="role_audit" constraintName="fk_role_audit_revision_info"/>
+        <dropForeignKeyConstraint baseTableName="role_permission" constraintName="fk_role_permission_permission_name"/>
+        <dropForeignKeyConstraint baseTableName="role_permission_audit"
+                                  constraintName="fk_role_permission_audit_permission_name"/>
+        <dropUniqueConstraint tableName="app_user" constraintName="uk_app_user_login"/>
+        <dropUniqueConstraint tableName="role" constraintName="uk_role_name"/>
+        <dropUniqueConstraint tableName="role_permission" constraintName="uk_role_permission_permissions_name"/>
+        <dropPrimaryKey tableName="app_user" constraintName="pk_app_user"/>
+        <dropPrimaryKey tableName="app_user_audit" constraintName="pk_user_audit"/>
+        <dropPrimaryKey tableName="app_user_role" constraintName="pk_app_user_role"/>
+        <dropPrimaryKey tableName="app_user_role_audit" constraintName="pk_app_user_role_audit"/>
+        <dropPrimaryKey tableName="role" constraintName="pk_role"/>
+        <dropPrimaryKey tableName="role_audit" constraintName="pk_role_audit"/>
+        <dropPrimaryKey tableName="role_permission" constraintName="pk_role_permission"/>
+        <dropPrimaryKey tableName="role_permission_audit" constraintName="pk_role_permission_audit"/>
+        <dropTable tableName="app_user"/>
+        <dropTable tableName="app_user_audit"/>
+        <dropTable tableName="app_user_role"/>
+        <dropTable tableName="app_user_role_audit"/>
+        <dropTable tableName="role"/>
+        <dropTable tableName="role_audit"/>
+        <dropTable tableName="role_permission"/>
+        <dropTable tableName="role_permission_audit"/>
+    </changeSet>
+
+    <changeSet id="create new user tables" author="Matt">
+
+        <!-- TABLES -->
+        <createTable tableName="user_admin_permission">
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_admin_permission"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_admin_role">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_admin_role"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="system_role" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_admin_role_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="name" type="nvarchar(255)"/>
+            <column name="system_role" type="boolean"/>
+        </createTable>
+        <addPrimaryKey tableName="user_admin_role_audit" columnNames="id, revision"
+                       constraintName="pk_user_admin_role_audit"/>
+
+        <createTable tableName="user_admin_role_user_admin_permission">
+            <column name="role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="user_admin_role_user_admin_permission" columnNames="role_id, permission_name"
+                       constraintName="pk_user_admin_role_user_admin_permission"/>
+
+        <createTable tableName="user_admin_role_user_admin_permission_audit">
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="user_admin_role_user_admin_permission_audit"
+                       columnNames="revision, role_id, permission_name"
+                       constraintName="pk_user_admin_role_user_admin_permission_audit"/>
+
+        <createTable tableName="user_admin_user_admin_role">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_admin_user_admin_role"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="users_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_admin_role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_admin_user_admin_role_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="users_id" type="bigint"/>
+            <column name="user_admin_role_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_admin_user_admin_role_audit" columnNames="id, revision"
+                       constraintName="pk_user_admin_user_admin_role_audit"/>
+
+        <createTable tableName="users">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="user_type" type="varchar(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="nvarchar(255)"/>
+            <column name="first_name" type="nvarchar(50)"/>
+            <column name="last_name" type="nvarchar(50)"/>
+            <column name="password" type="nvarchar(100)"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="users_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="user_type" type="varchar(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login" type="nvarchar(255)"/>
+            <column name="email" type="nvarchar(255)"/>
+            <column name="first_name" type="nvarchar(50)"/>
+            <column name="last_name" type="nvarchar(50)"/>
+            <column name="password" type="nvarchar(100)"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="users_audit" columnNames="id, revision"
+                       constraintName="pk_users_audit"/>
+
+        <!-- UKs -->
+        <addUniqueConstraint tableName="user_admin_role" columnNames="name"
+                             constraintName="uk_user_admin_role_name"/>
+        <addUniqueConstraint tableName="user_admin_user_admin_role" columnNames="users_id, user_admin_role_id"
+                             constraintName="uk_user_admin_user_admin_role_role"/>
+        <addUniqueConstraint tableName="users" columnNames="login"
+                             constraintName="uk_users_login"/>
+
+        <!-- FKs -->
+        <addForeignKeyConstraint baseTableName="user_admin_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_admin_role_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="user_admin_role_user_admin_permission"
+                                 baseColumnNames="permission_name"
+                                 constraintName="fk_user_admin_role_user_admin_permission_permission"
+                                 referencedTableName="user_admin_permission"
+                                 referencedColumnNames="name"/>
+        <addForeignKeyConstraint baseTableName="user_admin_role_user_admin_permission"
+                                 baseColumnNames="role_id"
+                                 constraintName="fk_user_admin_role_user_admin_permission_role"
+                                 referencedTableName="user_admin_role"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_admin_role_user_admin_permission_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_admin_role_user_admin_permission_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="user_admin_user_admin_role"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_user_admin_user_admin_role_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_admin_user_admin_role"
+                                 baseColumnNames="user_admin_role_id"
+                                 constraintName="fk_user_admin_user_admin_role_role"
+                                 referencedTableName="user_admin_role"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_admin_user_admin_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_admin_user_admin_role_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_users_client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="users_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_users_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="admin user data" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/admin-users.csv"
+                  separator=";"
+                  tableName="users"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/admin-roles.csv"
+                  separator=";"
+                  tableName="user_admin_role"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/admin-user-roles.csv"
+                  separator=";"
+                  tableName="user_admin_user_admin_role"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/admin-permissions.csv"
+                  separator=";"
+                  tableName="user_admin_permission"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/admin-role-permissions.csv"
+                  separator=";"
+                  tableName="user_admin_role_user_admin_permission"/>
+    </changeSet>
+
+    <changeSet id="fix client contract owner" author="Matt">
+        <update tableName="client">
+            <column name="contract_owner_id" valueNumeric="3"/>
+        </update>
+        <addForeignKeyConstraint baseTableName="client" baseColumnNames="contract_owner_id"
+                                 constraintName="fk_client_users_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
+    <changeSet id="add client level user tables" author="Matt">
+
+        <!-- TABLES -->
+        <createTable tableName="user_client_permission">
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_permission"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_role">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_role"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_role_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="name" type="nvarchar(255)"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_role_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_role_audit"/>
+
+        <createTable tableName="user_client_role_user_client_permission">
+            <column name="role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="user_client_role_user_client_permission" columnNames="role_id, permission_name"
+                       constraintName="pk_user_client_role_user_client_permission"/>
+
+        <createTable tableName="user_client_role_user_client_permission_audit">
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="user_client_role_user_client_permission_audit"
+                       columnNames="revision, role_id, permission_name"
+                       constraintName="pk_user_client_role_user_client_permission_audit"/>
+
+        <createTable tableName="user_client_user_client_role">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_user_client_role"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="users_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_client_role_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_client_user_client_role_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="users_id" type="bigint"/>
+            <column name="user_admin_role_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_user_client_role_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_user_client_role_audit"/>
+
+        <!-- UKs -->
+        <addUniqueConstraint tableName="user_client_role" columnNames="client_id, name"
+                             constraintName="uk_user_client_role_name"/>
+        <addUniqueConstraint tableName="user_client_user_client_role" columnNames="users_id, user_client_role_id"
+                             constraintName="uk_user_client_user_client_role_role"/>
+
+        <!-- FKs -->
+        <addForeignKeyConstraint baseTableName="user_client_role"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_user_client_role_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_role_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_role_user_client_permission"
+                                 baseColumnNames="permission_name"
+                                 constraintName="fk_user_client_role_user_client_permission_permission"
+                                 referencedTableName="user_client_permission"
+                                 referencedColumnNames="name"/>
+        <addForeignKeyConstraint baseTableName="user_client_role_user_client_permission"
+                                 baseColumnNames="role_id"
+                                 constraintName="fk_user_client_role_user_client_permission_role"
+                                 referencedTableName="user_client_role"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_role_user_client_permission_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_role_user_client_permission_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_role"
+                                 baseColumnNames="user_client_role_id"
+                                 constraintName="fk_user_client_user_client_role"
+                                 referencedTableName="user_client_role"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_role_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_user_client_role_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/client-permissions.csv"
+                  separator=";"
+                  tableName="user_client_permission"/>
+    </changeSet>
+
+    <changeSet id="client permission translations" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_8/data/em-452/client-permission-translations.csv"
+                  separator=";"
+                  tableName="strings"/>
+    </changeSet>
+
+</databaseChangeLog>

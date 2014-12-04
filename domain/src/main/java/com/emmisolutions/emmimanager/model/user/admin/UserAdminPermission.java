@@ -1,32 +1,26 @@
-package com.emmisolutions.emmimanager.model;
+package com.emmisolutions.emmimanager.model.user.admin;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This is an application permission.
  */
 @Entity
-@Table(name = "permission")
-@XmlRootElement(name = "permission")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Permission {
+@Table(name = "user_admin_permission")
+public class UserAdminPermission {
 
     @Id
-    @NotNull
-    @Size(min = 0, max = 100)
+    @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
     @Enumerated(EnumType.STRING)
-    private PermissionName name;
+    private UserAdminPermissionName name;
 
-    public PermissionName getName() {
+    public UserAdminPermissionName getName() {
         return name;
     }
 
-    public void setName(PermissionName name) {
+    public void setName(UserAdminPermissionName name) {
         this.name = name;
     }
 
@@ -34,7 +28,7 @@ public class Permission {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Permission that = (Permission) o;
+        UserAdminPermission that = (UserAdminPermission) o;
         return name == that.name;
     }
 
@@ -45,7 +39,7 @@ public class Permission {
 
     @Override
     public String toString() {
-        return "Permission{" +
+        return "UserAdminPermission{" +
                 "name=" + name +
                 '}';
     }

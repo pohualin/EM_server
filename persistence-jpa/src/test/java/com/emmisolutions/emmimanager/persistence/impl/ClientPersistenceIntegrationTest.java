@@ -1,10 +1,13 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -31,7 +34,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserPersistence userPersistence;
 
-    User superAdmin;
+    UserAdmin superAdmin;
 
     @Resource
     ClientTypeRepository clientTypeRepository;
@@ -58,7 +61,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         client = clientPersistence.save(client);
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
         assertThat("system is the created by", client.getCreatedBy(), is("system"));
@@ -78,7 +81,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
     }
 
@@ -96,7 +99,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
     }
@@ -148,13 +151,13 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("there are 100 items in the page", clientPage.getSize(), is(100));
         assertThat("we are on page 10", clientPage.getNumber(), is(10));
     }
-    
+
     /**
      * search by normalized name test
      */
     @Test
     public void search() {
-    
+
 	   Client client = new Client();
 	   client.setActive(true);
 	   client.setName("Demo hospital client 1" );
@@ -164,20 +167,20 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
 	   client.setContractEnd(LocalDate.now().plusYears(2));
-	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
        clientPersistence.save(client);
-	 
+
     	client = clientPersistence.findByNormalizedName("demo hospital client 1");
         assertThat("Client exists", client.getName(), is("Demo hospital client 1"));
         assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient1"));
-        
+
         client = clientPersistence.findByNormalizedName("demo hospital cloient");
         Client c = null;
         assertThat("Client do not exists", client, is(c));
-        
+
         client = clientPersistence.findByNormalizedName(null);
-        assertThat("Client do not exists", client, is(c));        
- 
+        assertThat("Client do not exists", client, is(c));
+
     }
 
     /**
@@ -195,7 +198,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
 
         Page<Client> clientPage = clientPersistence.list(null, new ClientSearchFilter("woman quinn dr"));
@@ -210,7 +213,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void searchSpecialCharacters() {
-    
+
 	   Client client = new Client();
 	   client.setActive(true);
 	   client.setName("Demo-hospital-'=_;:`@#&,.!()client 1" );
@@ -220,9 +223,9 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	   client.setContractOwner(superAdmin);
 	   client.setContractStart(LocalDate.now());
 	   client.setContractEnd(LocalDate.now().plusYears(2));
-	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
        clientPersistence.save(client);
-	
+
     	client = clientPersistence.findByNormalizedName("Demo-hospital-'=_;:`@#&,.!()client 1");
         assertThat("Client exists", client.getName(), is("Demo-hospital-'=_;:`@#&,.!()client 1"));
         assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient1"));
@@ -236,9 +239,9 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
  	   client.setContractOwner(superAdmin);
  	   client.setContractStart(LocalDate.now());
  	   client.setContractEnd(LocalDate.now().plusYears(2));
- 	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+ 	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
- 	
+
      	client = clientPersistence.findByNormalizedName("Demo hospital '=_;:`@#&,.!()client 2");
          assertThat("Client exists", client.getName(), is("Demo hospital '=_;:`@#&,.!()client 2"));
          assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient2"));
@@ -252,14 +255,14 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
    	   client.setContractOwner(superAdmin);
    	   client.setContractStart(LocalDate.now());
    	   client.setContractEnd(LocalDate.now().plusYears(2));
-   	   client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+   	   client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
           clientPersistence.save(client);
-   	
+
        	client = clientPersistence.findByNormalizedName("test-client123");
         assertThat("Client exists", client.getName(), is("test client123"));
         assertThat("Client exists", client.getNormalizedName(), is("testclient123"));
     }
-    
+
     /**
      * Test when the contract end date is after the contract start date
      */
@@ -305,7 +308,7 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 }

@@ -37,7 +37,7 @@ public class ClientPersistenceImpl implements ClientPersistence {
     ClientTierRepository clientTierRepository;
 
     @Resource
-    UserRepository userRepository;
+    UserAdminRepository userAdminRepository;
 
     @Resource
     ClientSpecifications clientSpecifications;
@@ -53,6 +53,7 @@ public class ClientPersistenceImpl implements ClientPersistence {
             caseInsensitiveSort(page));
     }
 
+    @Override
     public Client save(Client client) {
         client.setNormalizedName(normalizeName(client));
         return clientRepository.save(client);
@@ -60,6 +61,9 @@ public class ClientPersistenceImpl implements ClientPersistence {
 
     @Override
     public Client reload(Long id) {
+        if (id == null){
+            return null;
+        }
         return clientRepository.findOne(id);
     }
 

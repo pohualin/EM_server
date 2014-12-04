@@ -1,8 +1,10 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +40,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamPersistence teamPersistence;
 
-    User superAdmin;
+    UserAdmin superAdmin;
 
     @Resource
     ClientTypeRepository clientTypeRepository;
@@ -74,6 +76,12 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(teamTag);
         assertThat("TeamTag was given an id", afterSaveTeamTag.getId(), is(notNullValue()));
         assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        searchFilter.setTagId(tag.getId());
+        assertThat("we can find the team tag by the team tag id",
+            teamTagPersistence.findTeamsWithTag(null, searchFilter),
+            hasItem(afterSaveTeamTag));
     }
 
     /**
@@ -334,7 +342,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);
-        team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         team = teamPersistence.save(team);
         return team;
     }
@@ -365,7 +373,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
         return client;
     }

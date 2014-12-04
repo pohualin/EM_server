@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
 import org.hibernate.annotations.QueryHints;
 import org.springframework.data.domain.Page;
@@ -17,12 +18,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications.byClientId;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
@@ -33,6 +32,9 @@ public class GroupPersistenceImpl implements GroupPersistence {
 
     @Resource
     GroupRepository groupRepository;
+
+    @Resource
+    GroupSpecifications groupSpecifications;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -48,7 +50,7 @@ public class GroupPersistenceImpl implements GroupPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        Page<Group> pageGroup = groupRepository.findAll(where(byClientId(searchFilter)), page);
+        Page<Group> pageGroup = groupRepository.findAll(where(groupSpecifications.byClientId(searchFilter)), page);
 
         if (pageGroup.hasContent()) {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();

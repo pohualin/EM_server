@@ -39,7 +39,7 @@ public interface ProviderService {
      * @param pageable the page spec
      * @return a Page of ReferenceTag objects
      */
-    Page<ReferenceTag> findAllSpecialties(Pageable pageble);
+    Page<ReferenceTag> findAllSpecialties(Pageable pageable);
 
     /**
      * Finds all providers for given search filter

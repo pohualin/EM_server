@@ -1,9 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
 
-import com.emmisolutions.emmimanager.model.Permission;
-import com.emmisolutions.emmimanager.model.Role;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,13 +29,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(final String login) {
-        User userFromDatabase = userPersistence.reload(login);
+        UserAdmin userFromDatabase = userPersistence.reload(login);
         if (userFromDatabase == null) {
             throw new UsernameNotFoundException("User " + login + " was not found in the database");
         }
         Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        for (Role role : userFromDatabase.getRoles()) {
-            for (Permission permission : role.getPermissions()) {
+        for (UserAdminUserAdminRole userAdminUserAdminRole : userFromDatabase.getRoles()) {
+            for (UserAdminPermission permission : userAdminUserAdminRole.getUserAdminRole().getPermissions()) {
                 grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName().toString()));
             }
         }

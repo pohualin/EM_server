@@ -1,10 +1,15 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientSearchFilter;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -40,12 +45,36 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Create successfully
+     * bad create
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void badCreate() {
+        clientService.create(null);
+    }
+
+    /**
+     * bad update
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void badUpdate() {
+        Client toUpdate = new Client();
+        toUpdate.setId(1l);
+        clientService.update(toUpdate);
+    }
+
+    /**
+     * Create successfully then find.
      */
     @Test
     public void create() {
         Client client = clientService.create(makeClient("toCreate", "me"));
         assertThat("client was created successfully", client.getId(), is(notNullValue()));
+
+        assertThat("can find the client", clientService.list(new ClientSearchFilter("toCreate")),
+            hasItem(client));
+
+        assertThat("can find the client by normalized name", clientService.findByNormalizedName("toCreate"),
+            is(client));
     }
 
     /**
@@ -66,12 +95,23 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
+     * Reference data works
+     */
+    @Test
+    public void refData(){
+        assertThat("types not empty", clientService.getAllClientTypes().isEmpty(), is(false));
+        assertThat("regions not empty", clientService.getAllClientRegions().isEmpty(), is(false));
+        assertThat("tiers not empty", clientService.getAllClientTiers().isEmpty(), is(false));
+    }
+
+
+    /**
      * Fetch contract owners
      */
     @Test
     public void contractUserFetch(){
-        User contractOwner = userPersistence.reload("contract_owner");
-        Page<User> ret = clientService.listPotentialContractOwners(null);
+        UserAdmin contractOwner = userPersistence.reload("contract_owner");
+        Page<UserAdmin> ret = clientService.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }
@@ -82,8 +122,8 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        client.setContractOwner(userService.save(new User(username, "pw")));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setContractOwner(new UserAdmin(1l, 0));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 

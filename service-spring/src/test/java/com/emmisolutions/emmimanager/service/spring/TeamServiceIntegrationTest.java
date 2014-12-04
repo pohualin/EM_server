@@ -1,43 +1,44 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
  * Team Service Integration test
  */
 public class TeamServiceIntegrationTest extends BaseIntegrationTest {
-	
+
 	@Resource
 	ClientService clientService;
-	
+
 	@Resource
 	TeamService teamService;
-	
+
 	@Resource
     UserService userService;
-	
+
 	/**
      * Not all required fields
      */
     @Test(expected = ConstraintViolationException.class)
     public void createNotAllRequired() {
-        Team team = new Team();	
+        Team team = new Team();
         teamService.create(team);
     }
-    
+
     /**
      * Create team successfully
      */
@@ -45,10 +46,18 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     public void create() {
     	Client client = makeClient("clientTeam", "teamUser");
     	clientService.create(client);
-    	
+
     	Team team = makeTeamForClient(client);
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
+
+        assertThat("Can find the saved team",teamService.list(new TeamSearchFilter(client.getId(),
+            TeamSearchFilter.StatusFilter.INACTIVE_ONLY, "Test Team")),
+            hasItem(savedTeam));
+
+        assertThat("Can find the saved team via normalized name",
+            teamService.findByNormalizedNameAndClientId(team.getNormalizedTeamName(), client.getId()),
+            is(savedTeam));
     }
 
     @Test
@@ -64,25 +73,25 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         savedTeam = teamService.update(team);
         assertThat("client was not updated", savedTeam.getClient(), is(client));
     }
-    
+
     private Team makeTeamForClient(Client client){
 		 Team team = new Team();
 		 team.setName("Test Team");
 		 team.setDescription("Test Team description");
 		 team.setActive(false);
 		 team.setClient(client);
-		 team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+		 team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		 return team;
 	 }
-    
+
     protected Client makeClient(String clientName, String username){
         Client client = new Client();
         client.setType(new ClientType(4l));
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        client.setContractOwner(userService.save(new User(username, "pw")));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setContractOwner(new UserAdmin(1l, 0));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 }

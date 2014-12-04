@@ -64,6 +64,15 @@ public class Location extends AbstractAuditingEntity {
     }
 
     /**
+     * By id constructor
+     *
+     * @param id of the location
+     */
+    public Location(Long id) {
+        this.id = id;
+    }
+
+    /**
      * JPA Id constructor
      *
      * @param id      to use
@@ -146,10 +155,10 @@ public class Location extends AbstractAuditingEntity {
     @Override
     public String toString() {
         return "Location{" +
-                "id=" + id +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                '}';
+            "id=" + id +
+            ", version=" + version +
+            ", name='" + name + '\'' +
+            '}';
     }
 
     public boolean isActive() {

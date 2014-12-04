@@ -1,8 +1,11 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +34,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
     @Resource
     TeamPersistence teamPersistence;
 
-    User superAdmin;
+    UserAdmin superAdmin;
 
     @Resource
     ClientTypeRepository clientTypeRepository;
@@ -113,7 +116,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
     }
 
     /**
-     * Delete a location team 
+     * Delete a location team
      */
     @Test
     public void delete() {
@@ -131,14 +134,14 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         teamLocation = teamLocationPersistence.reload(teamLocation);
         assertThat("TeamLocation was deleted", teamLocation, is(nullValue()));
     }
-    
+
     private Team createTeam(Client client, int i) {
         Team team = new Team();
         team.setName("Test Team"+i);
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);
-        team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         team = teamPersistence.save(team);
         return team;
     }
@@ -165,7 +168,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         clientPersistence.save(client);
         return client;
     }

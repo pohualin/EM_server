@@ -62,6 +62,18 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
         return new Link(uriTemplate, link.getRel());
     }
 
+    public static Link createAssociationWLink(Client client) {
+        Link link = linkTo(methodOn(ClientLocationsResource.class).possibleWithoutClientLocations(client.getId(), null, null, null, null, null)).withRel("possibleLocationsWithoutCL");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+    
     /**
      * This is the link to find current locations on a client
      * @param client on which to find current locations

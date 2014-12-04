@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
@@ -47,6 +48,9 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
 
         Page<ClientProvider> clientProviderPage = clientProviderPersistence.findByClientId(client.getId(), null);
         assertThat("client provider is on the page", clientProviderPage, hasItem(clientProvider));
+        
+        ClientProvider cp = clientProviderPersistence.findByClientIdProviderId(client.getId(), provider.getId());
+        assertThat("client provider is on the page", cp, is(notNullValue()));
 
         clientProviderPersistence.remove(clientProvider.getId());
         assertThat("client provider has been removed", clientProviderPersistence.reload(clientProvider.getId()), is(nullValue()));
@@ -99,17 +103,17 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
     public void invalidFindCall(){
         clientProviderPersistence.findByClientId(null, null);
     }
-    
+
     @Test
     public void findByProviderId(){
     	Client clientA = makeClient();
     	Client clientB = makeClient();
-    	
+
     	Provider provider = makeProvider();
-    	
+
     	clientProviderPersistence.create(provider.getId(), clientA.getId());
     	clientProviderPersistence.create(provider.getId(), clientB.getId());
-    	
+
     	Page<ClientProvider> list = clientProviderPersistence.findByProviderId(provider.getId(), null);
     	assertThat("There should be 2 clients found", list.getTotalElements(), is(2l));
     }
@@ -123,7 +127,7 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
         client.setName(RandomStringUtils.randomAlphanumeric(35));
         client.setType(new ClientType(1l));
         client.setActive(true);
-        client.setContractOwner(new User(1l, 0));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return clientPersistence.save(client);
     }

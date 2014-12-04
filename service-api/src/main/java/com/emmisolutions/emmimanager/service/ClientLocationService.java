@@ -21,7 +21,16 @@ public interface ClientLocationService {
      * @param pageable which page to fetch
      * @return a page of client location objects
      */
-    Page<ClientLocation> find(Client client, Pageable pageable);
+    Page<ClientLocation> findByClient(Client client, Pageable pageable);
+
+    /**
+     * Find a page of client locations for a location
+     *
+     * @param location to find client locations
+     * @param pageable which page to fetch
+     * @return a page of client location objects
+     */
+    Page<ClientLocation> findByLocation(Location location, Pageable pageable);
 
     /**
      * Removes a ClientLocation
@@ -62,6 +71,7 @@ public interface ClientLocationService {
      *
      * @param pageable             a page
      * @param locationSearchFilter used to find the locations
+     * @param client               on which we are adding
      * @return a page of ClientLocation objects, the client relationship could be null
      */
     Page<ClientLocation> findPossibleLocationsToAdd(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable);

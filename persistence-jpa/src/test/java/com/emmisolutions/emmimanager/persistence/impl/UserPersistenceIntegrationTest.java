@@ -1,12 +1,12 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Permission;
-import com.emmisolutions.emmimanager.model.PermissionName;
-import com.emmisolutions.emmimanager.model.Role;
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
@@ -25,7 +25,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     UserPersistence userPersistence;
 
     @Resource
-    UserRepository userRepository;
+    UserAdminRepository userAdminRepository;
 
     /**
      * Invalid user no login
@@ -33,7 +33,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test(expected = ConstraintViolationException.class)
     public void testConstraints() {
         // user is invalid without a login
-        userPersistence.saveOrUpdate(new User());
+        userPersistence.saveOrUpdate(new UserAdmin());
     }
 
     /**
@@ -41,13 +41,19 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testCreate() {
-        User user = new User("login", "pw");
+        login("some user");
+        UserAdmin user = new UserAdmin("login", "pw");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
         user = userPersistence.saveOrUpdate(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
 
-        User user1 = userRepository.findOne(user.getId());
+        UserAdmin user1 = userAdminRepository.findOne(user.getId());
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
+        assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
+        logout();
+
     }
 
     /**
@@ -56,7 +62,9 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void testLoad() {
         String login = "aLogin";
-        User user = new User(login, "pw");
+        UserAdmin user = new UserAdmin(login, "pw");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
         user = userPersistence.saveOrUpdate(user);
         assertThat("the user should get an id after persistence", user.getId(), is(notNullValue()));
         assertThat("the user should get a version after persistence", user.getVersion(), is(notNullValue()));
@@ -71,13 +79,13 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void proveExistenceOfGod() {
-        User god = userPersistence.fetchUserWillFullPermissions("super_admin");
+        UserAdmin god = userPersistence.fetchUserWillFullPermissions("super_admin");
         assertThat("Should have one role ", god.getRoles().size(), is(1));
-        Role role = god.getRoles().iterator().next();
+        UserAdminRole role = god.getRoles().iterator().next().getUserAdminRole();
         assertThat("Role is the system role", role.getName(), is("SYSTEM"));
 
-        Permission godPermission = new Permission();
-        godPermission.setName(PermissionName.PERM_GOD);
+        UserAdminPermission godPermission = new UserAdminPermission();
+        godPermission.setName(UserAdminPermissionName.PERM_GOD);
         assertThat("Role has the god permission", role.getPermissions(), hasItem(godPermission));
     }
 
@@ -86,8 +94,8 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void listPotentialContractOwners() {
-        User contractOwner = userPersistence.reload("contract_owner");
-        Page<User> ret = userPersistence.listPotentialContractOwners(null);
+        UserAdmin contractOwner = userPersistence.reload("contract_owner");
+        Page<UserAdmin> ret = userPersistence.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }

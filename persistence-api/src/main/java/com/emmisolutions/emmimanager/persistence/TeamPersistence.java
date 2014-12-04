@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
  * Team Persistence class
  */
 public interface TeamPersistence {
-	
-	 /**
+
+    /**
      * Fetches a page of Team objects
      *
      * @param page         defines which page or null for the first page
@@ -28,20 +28,20 @@ public interface TeamPersistence {
     Team save(Team team);
 
     /**
-     * Loads a team based upon an id
+     * Loads a team
      *
-     * @param id to load
+     * @param team to load
      * @return the team or null
      */
     Team reload(Team team);
-    
+
     /**
      * Returns a team by normalized name and Client ID
      *
-     * @param String normalizedName
-     * @param Long clientId
+     * @param normalizedName String
+     * @param clientId       the client
      * @return Team
      */
-	Team findByNormalizedTeamNameAndClientId(String normalizedName, Long clientId);
+    Team findByNormalizedTeamNameAndClientId(String normalizedName, Long clientId);
 
 }

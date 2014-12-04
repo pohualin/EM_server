@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -32,7 +33,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Page<Client> list(ClientSearchFilter searchFilter) {
-        return clientPersistence.list(null, searchFilter);
+        return list(null, searchFilter);
     }
 
     @Override
@@ -66,10 +67,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<User> listPotentialContractOwners(Pageable pageable) {
+    public Page<UserAdmin> listPotentialContractOwners(Pageable pageable) {
         return userPersistence.listPotentialContractOwners(pageable);
     }
-    
+
 	@Override
 	public Client findByNormalizedName(String normalizedName) {
 		return clientPersistence.findByNormalizedName(normalizedName);

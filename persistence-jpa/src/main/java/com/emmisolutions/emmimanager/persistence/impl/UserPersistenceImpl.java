@@ -1,8 +1,9 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications.isContractOwner;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
@@ -22,31 +22,34 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 public class UserPersistenceImpl implements UserPersistence {
 
     @Resource
-    UserRepository userRepository;
+    UserAdminRepository userAdminRepository;
+
+    @Resource
+    UserSpecifications userSpecifications;
 
     @Override
-    public User saveOrUpdate(User user) {
+    public UserAdmin saveOrUpdate(UserAdmin user) {
         user.setLogin(StringUtils.lowerCase(user.getLogin()));
-        return userRepository.save(user);
+        return userAdminRepository.save(user);
     }
 
     @Override
-    public User reload(String login) {
-        return userRepository.findByLoginIgnoreCase(login);
+    public UserAdmin reload(String login) {
+        return userAdminRepository.findByLoginIgnoreCase(login);
     }
 
     @Override
-    public User fetchUserWillFullPermissions(String login) {
-        return userRepository.fetchWithFullPermissions(login);
+    public UserAdmin fetchUserWillFullPermissions(String login) {
+        return userAdminRepository.fetchWithFullPermissions(login);
     }
 
 
     @Override
-    public Page<User> listPotentialContractOwners(Pageable pageable) {
+    public Page<UserAdmin> listPotentialContractOwners(Pageable pageable) {
         if (pageable == null){
             // default pagination request if none
             pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return userRepository.findAll(where(isContractOwner()), pageable);
+        return userAdminRepository.findAll(where(userSpecifications.isContractOwner()), pageable);
     }
 }

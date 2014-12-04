@@ -1,11 +1,13 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +35,16 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamPersistence teamPersistence;
 
-    User superAdmin;
+    UserAdmin superAdmin;
 
     @Resource
     ClientTypeRepository clientTypeRepository;
 
     ClientType clientType;
 
+    /**
+     * Initialization method
+     */
     @Before
     public void init() {
         superAdmin = userPersistence.reload("super_admin");
@@ -97,7 +102,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("we are on page 0", teamPage.getNumber(), is(0));
 
         // request a page out of bounds
-        teamPage = teamPersistence.list(new PageRequest(10, 100), new TeamSearchFilter(ACTIVE_ONLY, "team5", "team9"));
+        teamPage = teamPersistence.list(new PageRequest(10, 100), new TeamSearchFilter(client.getId(), ACTIVE_ONLY, "team5", "team9"));
         assertThat("only teams starting with 5 or 9 should come back", teamPage.getTotalElements(), is(10l));
         assertThat("there is 1 page", teamPage.getTotalPages(), is(1));
         assertThat("there is nothing on this page", teamPage.getNumberOfElements(), is(0));
@@ -111,7 +116,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);
-        team.setSalesForceAccount(new TeamSalesForce("xxxWW" + System.currentTimeMillis()));
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return team;
     }
 
@@ -125,7 +130,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(superAdmin);
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(2));
-        client.setSalesForceAccount(new SalesForce("xxxWW" + System.currentTimeMillis()));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }
 }

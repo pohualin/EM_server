@@ -1,16 +1,25 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderTeamLocationRepository;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.TeamProviderTeamLocationRepository;
 
 /**
  * TeamProviderTeamLocation Persistence Implementation
@@ -22,24 +31,44 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
     TeamProviderTeamLocationRepository teamProviderTeamLocationRepository;
 
     @Override
-    public List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderteamLocations) {
-        return teamProviderTeamLocationRepository.save(teamProviderteamLocations);
+    public Set<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderteamLocations) {
+        return new HashSet<>(teamProviderTeamLocationRepository.save(teamProviderteamLocations));
+    }
+    
+    @Override
+    public void delete(List<TeamProviderTeamLocation> teamProviderTeamLocations){
+    	teamProviderTeamLocationRepository.delete(teamProviderTeamLocations);
     }
 
     @Override
     public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
         if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+            page = new PageRequest(0, 10, Sort.Direction.ASC, "id");
         }
         return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
+    }
+    
+    @Override
+    public Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page) {
+        if (page == null) {
+            page = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        }
+        return teamProviderTeamLocationRepository.findByTeamLocation(teamLocation, page);
     }
 
     @Override
     public void removeAllByTeamProvider(TeamProvider teamProvider) {
-        teamProviderTeamLocationRepository.removeAllByTeamProvider(teamProvider);
+        teamProviderTeamLocationRepository.deleteAllByTeamProvider(teamProvider);
+        teamProviderTeamLocationRepository.flush();
     }
 
+    @Override
+    public long removeAllByTeamLocation(TeamLocation teamLocation) {
+        long ret = teamProviderTeamLocationRepository.deleteByTeamLocation(teamLocation);
+        teamProviderTeamLocationRepository.flush();
+        return ret;
+    }
+    
     @Override
     public void removeAllByClientLocation(Client client, Location location) {
         teamProviderTeamLocationRepository.deleteByTeamProviderTeamClientAndTeamLocationLocation(client, location);
