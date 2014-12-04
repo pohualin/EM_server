@@ -65,6 +65,11 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         resolvers.add(restExceptionResolver());
     }
 
+    /**
+     * Handles REST Exception serialization
+     *
+     * @return the resolver
+     */
     @Bean
     public RestHandlerExceptionResolver restExceptionResolver() {
         return RestHandlerExceptionResolver.builder()
@@ -77,6 +82,11 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
             .build();
     }
 
+    /**
+     * Where to resolve error messages
+     *
+     * @return message source
+     */
     @Bean
     public MessageSource httpErrorMessageSource() {
         ReloadableResourceBundleMessageSource m = new ReloadableResourceBundleMessageSource();
@@ -85,6 +95,10 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         return m;
     }
 
+    /**
+     * Exception handler resolver
+     * @return resolver
+     */
     @Bean
     public ExceptionHandlerExceptionResolver exceptionHandlerExceptionResolver() {
         ExceptionHandlerExceptionResolver resolver = new ExceptionHandlerExceptionResolver();

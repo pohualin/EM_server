@@ -21,6 +21,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+/**
+ *  UserClientReferenceTeamRolePersistence implementation
+ */
 @Repository
 public class UserClientReferenceTeamRolePersistenceImpl implements UserClientReferenceTeamRolePersistence {
 

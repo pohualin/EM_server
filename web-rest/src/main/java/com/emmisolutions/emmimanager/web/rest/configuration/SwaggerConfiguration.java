@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Date;
 
+/**
+ * Configures Swagger Beans
+ */
 @Configuration
 @EnableSwagger
 public class SwaggerConfiguration {
@@ -24,16 +27,19 @@ public class SwaggerConfiguration {
 
     /**
      * Swagger Spring MVC configuration
+     *
+     * @param springSwaggerConfig the configuration to be tweaked
+     * @return the MVC plugin
      */
     @Bean
     public SwaggerSpringMvcPlugin swaggerSpringMvcPlugin(SpringSwaggerConfig springSwaggerConfig) {
         return new SwaggerSpringMvcPlugin(springSwaggerConfig)
-                .apiInfo(apiInfo())
-                .genericModelSubstitutes(ResponseEntity.class)
-                .alternateTypeRules(Alternates.newRule(LocalDate.class, Date.class),
-                        Alternates.newRule(DateTime.class, Date.class))
-                .ignoredParameterTypes(PagedResourcesAssembler.class, Pageable.class, Sort.class)
-                .includePatterns(DEFAULT_INCLUDE_PATTERN);
+            .apiInfo(apiInfo())
+            .genericModelSubstitutes(ResponseEntity.class)
+            .alternateTypeRules(Alternates.newRule(LocalDate.class, Date.class),
+                Alternates.newRule(DateTime.class, Date.class))
+            .ignoredParameterTypes(PagedResourcesAssembler.class, Pageable.class, Sort.class)
+            .includePatterns(DEFAULT_INCLUDE_PATTERN);
     }
 
     /**
@@ -41,11 +47,11 @@ public class SwaggerConfiguration {
      */
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "Web REST API",
-                "This is the server side REST API used by the Emmi Manager application.",
-                null,
-                null,
-                null,
-                null);
+            "Web REST API",
+            "This is the server side REST API used by the Emmi Manager application.",
+            null,
+            null,
+            null,
+            null);
     }
 }

@@ -53,6 +53,7 @@ public class ClientPersistenceImpl implements ClientPersistence {
             caseInsensitiveSort(page));
     }
 
+    @Override
     public Client save(Client client) {
         client.setNormalizedName(normalizeName(client));
         return clientRepository.save(client);

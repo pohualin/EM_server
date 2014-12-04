@@ -17,6 +17,9 @@ import java.util.Set;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
+/**
+ *  TagPersistence implementation
+ */
 @Repository
 public class TagPersistenceImpl implements TagPersistence {
 

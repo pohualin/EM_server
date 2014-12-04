@@ -19,11 +19,21 @@ public class HttpSessionConfiguration implements HttpSessionListener {
 
     private static final int TIMEOUT_MINUTES = 15;
 
+    /**
+     * Sets the timeout to TIMEOUT_MINUTES
+     *
+     * @param event the creation event
+     */
     public void sessionCreated(HttpSessionEvent event) {
         event.getSession().setMaxInactiveInterval(TIMEOUT_MINUTES * 60);
         LOGGER.debug("Session ID: {} created at {} and is valid for {} minutes", event.getSession().getId(), DateTime.now(), TIMEOUT_MINUTES);
     }
 
+    /**
+     * Trap for session destruction
+     *
+     * @param event session destroyed
+     */
     public void sessionDestroyed(HttpSessionEvent event) {
         LOGGER.debug("Session ID: {} destroyed at {}, last activity was {}", event.getSession().getId(), DateTime.now(), new DateTime(event.getSession().getLastAccessedTime()));
     }
