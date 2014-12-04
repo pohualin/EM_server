@@ -38,7 +38,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
  */
 @RestController
 @RequestMapping(value = "/webapi",
-        produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
+    produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
 )
 public class ClientLocationsResource {
 
@@ -73,23 +73,23 @@ public class ClientLocationsResource {
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/locations",
-            method = RequestMethod.GET)
+        method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
     @ApiOperation("finds existing ClientLocations")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "location.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "location.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientLocationResourcePage> current(
-            @PathVariable Long clientId,
-            @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
+        @PathVariable Long clientId,
+        @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
+        Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
         Page<ClientLocation> clientLocationPage = clientLocationService.findByClient(new Client(clientId), pageable);
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(
-                    new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationResourceAssembler), clientLocationPage, null),
-                    HttpStatus.OK
+                new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationResourceAssembler), clientLocationPage, null),
+                HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -100,12 +100,13 @@ public class ClientLocationsResource {
      * PUT to update a location entity for a client. This one does not change affect ClientLocation
      * objects just the Location object itself.
      *
+     * @param clientId the client id
      * @param location to update
      * @return LocationResource or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/clients/{clientId}/locations",
-            method = RequestMethod.PUT,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.PUT,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "update a Location using the client", notes = "This method updates the Location, not the ClientLocation. As such, it allows for updates to the belongsTo relationship.")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_EDIT"})
@@ -121,12 +122,13 @@ public class ClientLocationsResource {
     /**
      * POST to create a new location and associated it to a client.
      *
+     * @param clientId the client id
      * @param location to create new
      * @return the ClientLocationResource association, success or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/clients/{clientId}/locations",
-            method = RequestMethod.POST,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.POST,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "creates a brand new location and associates it to an existing client")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_CREATE"})
@@ -148,33 +150,35 @@ public class ClientLocationsResource {
      * @param pageable  the page to request
      * @param sort      sorting
      * @param assembler used to create the PagedResources
+     * @param name      the name to filter
+     * @param status    the status to filter
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/locations/associate",
-            method = RequestMethod.GET)
+        method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible locations that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientLocationResourcePage> possible(
-            @PathVariable Long clientId,
-            @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<ClientLocation> assembler,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "name", required = false) String name) {
+        @PathVariable Long clientId,
+        @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+        Sort sort, PagedResourcesAssembler<ClientLocation> assembler,
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "name", required = false) String name) {
 
         LocationSearchFilter filter = new LocationSearchFilter(fromStringOrActive(status), name);
 
         Page<ClientLocation> clientLocationPage = clientLocationService.findPossibleLocationsToAdd(
-                new Client(clientId), filter, pageable);
+            new Client(clientId), filter, pageable);
 
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(
-                    new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationFinderResourceAssembler), clientLocationPage, filter),
-                    HttpStatus.OK
+                new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationFinderResourceAssembler), clientLocationPage, filter),
+                HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -191,23 +195,25 @@ public class ClientLocationsResource {
      * @param pageable  the page to request
      * @param sort      sorting
      * @param assembler used to create the PagedResources
+     * @param name      the name to filter
+     * @param status    the status to filter
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/locations/associateWithoutCL",
-            method = RequestMethod.GET)
+        method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible locations that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientLocationResourcePage> possibleWithoutClientLocations(
-            @PathVariable Long clientId,
-            @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<ClientLocation> assembler,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "name", required = false) String name) {
+        @PathVariable Long clientId,
+        @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+        Sort sort, PagedResourcesAssembler<ClientLocation> assembler,
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "name", required = false) String name) {
 
         LocationSearchFilter filter = new LocationSearchFilter(fromStringOrActive(status), name);
         filter.setNotUsingThisClient(new Client(clientId));
@@ -216,8 +222,8 @@ public class ClientLocationsResource {
 
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(
-                    new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationFinderResourceAssembler), clientLocationPage, filter),
-                    HttpStatus.OK
+                new ClientLocationResourcePage(assembler.toResource(clientLocationPage, clientLocationFinderResourceAssembler), clientLocationPage, filter),
+                HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -233,8 +239,8 @@ public class ClientLocationsResource {
      * or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/clients/{clientId}/locations/associate",
-            method = RequestMethod.POST,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.POST,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation("create a new ClientLocation on a Client for each existing Location in a Set")
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_CREATE"})
@@ -287,8 +293,10 @@ public class ClientLocationsResource {
     /**
      * GET a page of Teams associated to the client location
      *
-     * @param clientId the client id
+     * @param clientId         the client id
      * @param clientLocationId the actual client provider to load
+     * @param assembler        used to create the PagedResources
+     * @param pageable         the page to request
      * @return page of Teams or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/locations/{clientLocationId}/teams", method = RequestMethod.GET)
