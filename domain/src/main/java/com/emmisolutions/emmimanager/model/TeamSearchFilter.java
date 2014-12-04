@@ -2,12 +2,10 @@ package com.emmisolutions.emmimanager.model;
 
 import org.apache.commons.lang3.StringUtils;
 
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,14 +15,14 @@ import java.util.Set;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TeamSearchFilter {
-	@XmlElement(name = "name")
+    @XmlElement(name = "name")
     @XmlElementWrapper(name = "names")
     private Set<String> names;
 
     private StatusFilter status;
 
     private Long clientId;
-    
+
     /**
      * Constructor
      */
@@ -34,6 +32,7 @@ public class TeamSearchFilter {
 
     /**
      * Constructor
+     *
      * @param names to filter
      */
     public TeamSearchFilter(String... names) {
@@ -42,8 +41,9 @@ public class TeamSearchFilter {
 
     /**
      * Constructor
+     *
      * @param status filter
-     * @param names to filter
+     * @param names  to filter
      */
     public TeamSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
@@ -54,7 +54,13 @@ public class TeamSearchFilter {
             this.status = status;
         }
     }
-    
+
+    /**
+     * Constructor
+     *
+     * @param status filter
+     * @param names  filter
+     */
     public TeamSearchFilter(StatusFilter status, String names) {
         if (names != null) {
             this.names = new HashSet<>();
@@ -65,6 +71,13 @@ public class TeamSearchFilter {
         }
     }
 
+    /**
+     * Constructor
+     *
+     * @param clientId the client filter
+     * @param status   filter
+     * @param names    filters
+     */
     public TeamSearchFilter(Long clientId, StatusFilter status, String... names) {
         this(status, names);
         this.clientId = clientId;
@@ -78,7 +91,9 @@ public class TeamSearchFilter {
         return status;
     }
 
-    public Long getClientId() {return clientId;}
+    public Long getClientId() {
+        return clientId;
+    }
 
     /**
      * Team Statuses
@@ -118,8 +133,8 @@ public class TeamSearchFilter {
     @Override
     public String toString() {
         return "TeamSearchFilter{" +
-                "names=" + names +
-                ", status=" + status +
-                '}';
+            "names=" + names +
+            ", status=" + status +
+            '}';
     }
 }

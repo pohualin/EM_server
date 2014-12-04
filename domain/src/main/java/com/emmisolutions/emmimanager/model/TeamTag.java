@@ -9,14 +9,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
+/**
+ * A tag on a team
+ */
 @Audited
 @Entity
-@Table(name="client_team_tag")
-@XmlRootElement(name="client_team_tag")
+@Table(name = "client_team_tag")
+@XmlRootElement(name = "client_team_tag")
 @XmlAccessorType(XmlAccessType.FIELD)
-/**
- * TeamTag Model
- */
 public class TeamTag extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -33,14 +33,14 @@ public class TeamTag extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
-    public TeamTag(){}
+    public TeamTag() {
+    }
 
     /**
-     *
      * @param team to associate with
-     * @param tag to associate with
+     * @param tag  to associate with
      */
-    public TeamTag(Team team, Tag tag){
+    public TeamTag(Team team, Tag tag) {
         setTeam(team);
         setTag(tag);
     }
