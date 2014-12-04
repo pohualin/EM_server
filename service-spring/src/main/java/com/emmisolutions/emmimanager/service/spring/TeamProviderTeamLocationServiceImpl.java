@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
 import com.emmisolutions.emmimanager.model.TeamProvider;
@@ -50,21 +49,9 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 	}
 	
 	@Override
-	@Transactional
-	public void deleteTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls){
-		teamProviderTeamLocationPersistence.delete(tptls);
-	}
-
-	@Override
     @Transactional
 	public void removeAllByTeamProvider(TeamProvider teamProvider){
 		teamProviderTeamLocationPersistence.removeAllByTeamProvider(teamProvider);
-	}
-
-	@Override
-    @Transactional
-	public void removeAllByTeamLocataion(TeamLocation teamLocation){
-		teamProviderTeamLocationPersistence.removeAllByTeamLocation(teamLocation);
 	}
 	
     @Override
@@ -92,7 +79,7 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
     @Transactional
     public void updateTeamProviderTeamLocations(TeamProvider teamProvider, TeamProviderTeamLocationSaveRequest request) {
     	
-    	if(request.getTeamLocations().size() > 0){
+    	if(request.getTeamLocations() != null && request.getTeamLocations().size() > 0){
     		List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
             
     		for (TeamLocation teamLocation : request.getTeamLocations()) {

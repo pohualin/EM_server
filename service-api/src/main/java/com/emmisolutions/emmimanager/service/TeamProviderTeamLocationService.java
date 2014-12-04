@@ -41,12 +41,6 @@ public interface TeamProviderTeamLocationService {
 	 */
 	List<TeamProviderTeamLocation> saveAllTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls);
 	
-	/**
-     * delete list of TeamProviderTeamLocation
-     * @param list of TeamProviderTeamLocation to be deleted
-     */
-	void deleteTeamProviderTeamLocations(List<TeamProviderTeamLocation> tptls);
-
     /**
      * removes all TeamProviderTeamLocations for given teamProvider
      * @param teamProvider
@@ -62,12 +56,6 @@ public interface TeamProviderTeamLocationService {
 	void updateTeamProviderTeamLocations(TeamLocation teamLocation,
 			TeamLocationTeamProviderSaveRequest request);
 
-    /**
-     * removes all TeamProviderTeamLocations for given teamLocation
-     * @param teamLocation
-     */
-	void removeAllByTeamLocataion(TeamLocation teamLocation);
-	
 	/**
 	 * update the TeamProviderTeamLocation for teamProvider
 	 * 
