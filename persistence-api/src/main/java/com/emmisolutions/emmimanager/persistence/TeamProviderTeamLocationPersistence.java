@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public interface TeamProviderTeamLocationPersistence {
      * @param teamProviderTeamLocations list of teamProviderTeamLocations
      * @return list of teamProviderTeamLocations
      */
-    List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderTeamLocations);
+    Set<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderTeamLocations);
     
     /**
      * delete a list if team provider team locations
