@@ -13,6 +13,11 @@ public class TeamLocationSearchFilter {
 
     private Long teamLocationId;
 
+    /**
+     * Constructor
+     *
+     * @param teamLocationId for a location id
+     */
     public TeamLocationSearchFilter(Long teamLocationId) {
         this.teamLocationId = teamLocationId;
     }

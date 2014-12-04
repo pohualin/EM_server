@@ -98,6 +98,7 @@ public class ClientProvidersResource {
     /**
      * POST to create a new provider and associated it to a client.
      *
+     * @param clientId to use
      * @param provider to create new
      * @return the ClientProviderResource association, success or INTERNAL_SERVER_ERROR if it could not be created
      */
@@ -126,6 +127,8 @@ public class ClientProvidersResource {
      * @param pageable  the page to request
      * @param sort      sorting
      * @param assembler used to create the PagedResources
+     * @param name      filter
+     * @param status    filter
      * @return Page of ClientProviderResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/providers/associate",
@@ -221,6 +224,8 @@ public class ClientProvidersResource {
      * GET a page of Teams associated to the client provider
      *
      * @param clientProviderId the actual client provider to load
+     * @param assembler        to make resources
+     * @param pageable         the specification
      * @return page of Teams or NO_CONTENT
      */
     @RequestMapping(value = "/client_providers/{clientProviderId}/teams", method = RequestMethod.GET)
@@ -267,13 +272,13 @@ public class ClientProvidersResource {
             return new ResponseEntity<>(clientProviderResourceAssembler.toResource(clientProvider), HttpStatus.OK);
         }
     }
-    
+
     /**
      * GET to find a ClientProvider by client id and provider id
      *
-     * @param clientId the client id
+     * @param clientId   the client id
      * @param providerId the provider id
-     * @return the found ClientProviderResource 
+     * @return the found ClientProviderResource
      */
     @RequestMapping(value = "/clients/{clientId}/providers/{providerId}", method = RequestMethod.GET)
     @ApiOperation(value = "find ClientProvider by client id and provider id")

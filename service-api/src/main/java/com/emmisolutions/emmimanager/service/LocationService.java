@@ -31,7 +31,7 @@ public interface LocationService {
     /**
      * Reloads a location from persistent storage
      *
-     * @param location to reload
+     * @param toFind to reload
      * @return the reloaded location
      */
     Location reload(Location toFind);
@@ -57,7 +57,7 @@ public interface LocationService {
     /**
      * Update the location. The client Id is
      *
-     * @param clientId requesting the update
+     * @param client   requesting the update
      * @param location the update location request/changes
      * @return the saved location
      */

@@ -18,7 +18,8 @@ public interface UserClientRoleService {
      * Find a page of roles for a client user
      *
      * @param client for which to find the roles
-     * @param page     specification
+     * @param page   specification
+     * @return a page of UserClientRole objects
      */
     Page<UserClientRole> find(Client client, Pageable page);
 
