@@ -1,16 +1,15 @@
 package com.emmisolutions.emmimanager.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Team Service API
  */
 public interface TeamService {
-	
+
     /**
      * Get the first page (default size) of team objects based upon the filter
      *
@@ -22,7 +21,7 @@ public interface TeamService {
     /**
      * Get a page of team objects.
      *
-     * @param page                 to retrieve
+     * @param page             to retrieve
      * @param teamSearchFilter filtered by
      * @return a page of location objects
      */
@@ -31,13 +30,14 @@ public interface TeamService {
     /**
      * Reloads a Team from persistent storage
      *
-     * @param team to reload
+     * @param toFind to reload
      * @return the reloaded location
      */
     Team reload(Team toFind);
-	
+
     /**
      * Creates a new team only
+     *
      * @param team to be created
      * @return the new team (with id/version)
      */
@@ -46,14 +46,15 @@ public interface TeamService {
     /**
      * Returns a team by normalized name and Client ID
      *
-     * @param String normalizedName
-     * @param Long clientId
+     * @param normalizedName to find
+     * @param clientId       for the client
      * @return Team
      */
-	Team findByNormalizedNameAndClientId(String normalizedName, Long clientId);
-	
-	/**
+    Team findByNormalizedNameAndClientId(String normalizedName, Long clientId);
+
+    /**
      * Updates an existing team
+     *
      * @param team to save
      * @return the saved team
      */
