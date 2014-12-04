@@ -161,13 +161,9 @@ public class TeamLocationsResource {
         toFind.setId(teamId);
         Page<TeamProviderTeamLocation> saved = teamLocationService.save(toFind, reqs);
 
-        if (saved.hasContent()) {
-            PagedResources<TeamProviderTeamLocationResource> tptlResourceSupports = assembler.toResource(saved, teamProviderTeamLocationResourceAssembler);
-            TeamProviderTeamLocationPage teamLocationPage1 = new TeamProviderTeamLocationPage(tptlResourceSupports, saved);
-            return new ResponseEntity<>(teamLocationPage1, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        PagedResources<TeamProviderTeamLocationResource> tptlResourceSupports = assembler.toResource(saved, teamProviderTeamLocationResourceAssembler);
+        TeamProviderTeamLocationPage teamLocationPage1 = new TeamProviderTeamLocationPage(tptlResourceSupports, saved);
+        return new ResponseEntity<>(teamLocationPage1, HttpStatus.OK);
     }
 
     /**
