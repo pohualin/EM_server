@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,10 +9,7 @@ import javax.annotation.Resource;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +23,6 @@ import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
@@ -59,8 +56,8 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     @Transactional
-    public Page<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
-    	List<TeamProviderTeamLocation> savedTptls = new ArrayList<TeamProviderTeamLocation>();
+    public Set<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
+    	Set<TeamProviderTeamLocation> savedTptls = new HashSet<TeamProviderTeamLocation>();
     	Team teamToFind = teamPersistence.reload(team);
         if(teamToFind != null && request != null) {
             for (TeamLocationTeamProviderSaveRequest req : request) {
@@ -85,8 +82,7 @@ public class TeamLocationServiceImpl implements TeamLocationService {
             }
         }
         
-        return new PageImpl<>(savedTptls, new PageRequest(0, 10), savedTptls.size());
-        //return savedTptls;
+        return savedTptls;
     }
 
     @Override
