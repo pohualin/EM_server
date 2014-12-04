@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -29,8 +31,8 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
     TeamProviderTeamLocationRepository teamProviderTeamLocationRepository;
 
     @Override
-    public List<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderteamLocations) {
-        return teamProviderTeamLocationRepository.save(teamProviderteamLocations);
+    public Set<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderteamLocations) {
+        return new HashSet<>(teamProviderTeamLocationRepository.save(teamProviderteamLocations));
     }
     
     @Override

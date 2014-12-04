@@ -4,7 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.model.ClientLocation;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamLocationSearchFilter;
@@ -177,7 +175,7 @@ public class TeamLocationsResource {
         @PathVariable("teamId") Long teamId, @RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs) {
         Team toFind = new Team();
         toFind.setId(teamId);
-        List<TeamProviderTeamLocation> saved = teamLocationService.save(toFind, reqs);
+        Set<TeamProviderTeamLocation> saved = teamLocationService.save(toFind, reqs);
 
         // convert to resources
         Set<TeamProviderTeamLocationResource> ret = new HashSet<>();

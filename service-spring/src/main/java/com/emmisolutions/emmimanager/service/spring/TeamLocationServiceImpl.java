@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,8 +56,8 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     @Transactional
-    public List<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
-    	List<TeamProviderTeamLocation> savedTptls = new ArrayList<TeamProviderTeamLocation>();
+    public Set<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
+    	Set<TeamProviderTeamLocation> savedTptls = new HashSet<TeamProviderTeamLocation>();
     	Team teamToFind = teamPersistence.reload(team);
         if(teamToFind != null && request != null) {
             for (TeamLocationTeamProviderSaveRequest req : request) {
