@@ -16,8 +16,8 @@ public interface TagPersistence {
     /**
      * Returns a list of Tags associated to the groupID provided in searchFilter
      *
-     * @param Pageable
-     * @param TagSearchFilter
+     * @param page         specification
+     * @param searchFilter TagSearchFilter
      * @return Page of Tags
      */
     Page<Tag> listTagsByGroupId(Pageable page, TagSearchFilter searchFilter);
@@ -25,15 +25,15 @@ public interface TagPersistence {
     /**
      * Saves a Tag
      *
-     * @param Tag to save
+     * @param tag Tag to save
      * @return saved Tag
      */
     Tag save(Tag tag);
 
     /**
-     * Reloads a Tag by given ID
+     * Reloads a Tag
      *
-     * @param Long id	of the Tag
+     * @param tag the Tag
      * @return Tag
      */
     Tag reload(Tag tag);
@@ -41,7 +41,7 @@ public interface TagPersistence {
     /**
      * creates tags given the list
      *
-     * @param List<Tag>
+     * @param tags to create
      * @return List<Tag>
      */
     List<Tag> createAll(List<Tag> tags);

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 
-/*
+/**
  * teamLocation persistence implementation
  */
 @Repository

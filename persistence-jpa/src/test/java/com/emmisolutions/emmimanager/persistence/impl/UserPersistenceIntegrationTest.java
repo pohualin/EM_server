@@ -41,13 +41,19 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testCreate() {
+        login("some user");
         UserAdmin user = new UserAdmin("login", "pw");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
         user = userPersistence.saveOrUpdate(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
 
         UserAdmin user1 = userAdminRepository.findOne(user.getId());
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
+        assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
+        logout();
+
     }
 
     /**
@@ -57,6 +63,8 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     public void testLoad() {
         String login = "aLogin";
         UserAdmin user = new UserAdmin(login, "pw");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
         user = userPersistence.saveOrUpdate(user);
         assertThat("the user should get an id after persistence", user.getId(), is(notNullValue()));
         assertThat("the user should get a version after persistence", user.getVersion(), is(notNullValue()));

@@ -9,7 +9,6 @@ import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserService;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -46,12 +45,36 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Create successfully
+     * bad create
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void badCreate() {
+        clientService.create(null);
+    }
+
+    /**
+     * bad update
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void badUpdate() {
+        Client toUpdate = new Client();
+        toUpdate.setId(1l);
+        clientService.update(toUpdate);
+    }
+
+    /**
+     * Create successfully then find.
      */
     @Test
     public void create() {
         Client client = clientService.create(makeClient("toCreate", "me"));
         assertThat("client was created successfully", client.getId(), is(notNullValue()));
+
+        assertThat("can find the client", clientService.list(new ClientSearchFilter("toCreate")),
+            hasItem(client));
+
+        assertThat("can find the client by normalized name", clientService.findByNormalizedName("toCreate"),
+            is(client));
     }
 
     /**
@@ -72,6 +95,17 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
+     * Reference data works
+     */
+    @Test
+    public void refData(){
+        assertThat("types not empty", clientService.getAllClientTypes().isEmpty(), is(false));
+        assertThat("regions not empty", clientService.getAllClientRegions().isEmpty(), is(false));
+        assertThat("tiers not empty", clientService.getAllClientTiers().isEmpty(), is(false));
+    }
+
+
+    /**
      * Fetch contract owners
      */
     @Test
@@ -88,7 +122,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         return client;
     }

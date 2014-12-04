@@ -3,12 +3,10 @@ package com.emmisolutions.emmimanager.web.rest.model.provider;
 import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.xml.bind.annotation.*;
-
 import java.util.List;
 
 /**
@@ -30,6 +28,12 @@ public class ProviderClientResource extends ResourceSupport {
     public ProviderClientResource() {
     }
 
+    /**
+     * Constructor
+     *
+     * @param entity         to be wrapped
+     * @param clientResource the client
+     */
     public ProviderClientResource(ClientProvider entity, ClientResource clientResource) {
         this.externalId = entity.getExternalId();
         this.id = entity.getId();

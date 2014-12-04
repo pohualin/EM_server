@@ -1,7 +1,5 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.util.Set;
-
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Length;
 
@@ -11,7 +9,6 @@ import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * A location.
@@ -66,10 +63,15 @@ public class Location extends AbstractAuditingEntity {
 
     }
 
+    /**
+     * By id constructor
+     *
+     * @param id of the location
+     */
     public Location(Long id) {
-    	this.id = id;
+        this.id = id;
     }
-    
+
     /**
      * JPA Id constructor
      *
@@ -153,10 +155,10 @@ public class Location extends AbstractAuditingEntity {
     @Override
     public String toString() {
         return "Location{" +
-                "id=" + id +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                '}';
+            "id=" + id +
+            ", version=" + version +
+            ", name='" + name + '\'' +
+            '}';
     }
 
     public boolean isActive() {

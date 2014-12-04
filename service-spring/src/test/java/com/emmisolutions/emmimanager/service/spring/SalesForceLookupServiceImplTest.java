@@ -73,7 +73,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setName(clientName);
-        client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
+        client.setContractOwner(new UserAdmin(1l, 0));
         client.setSalesForceAccount(new SalesForce(accountNumber));
         return client;
     }
