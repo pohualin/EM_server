@@ -8,10 +8,7 @@ import javax.annotation.Resource;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +22,6 @@ import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
@@ -59,7 +55,7 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     @Transactional
-    public Page<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
+    public List<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
     	List<TeamProviderTeamLocation> savedTptls = new ArrayList<TeamProviderTeamLocation>();
     	Team teamToFind = teamPersistence.reload(team);
         if(teamToFind != null && request != null) {
@@ -85,8 +81,7 @@ public class TeamLocationServiceImpl implements TeamLocationService {
             }
         }
         
-        return new PageImpl<>(savedTptls, new PageRequest(0, 10), savedTptls.size());
-        //return savedTptls;
+        return savedTptls;
     }
 
     @Override

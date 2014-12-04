@@ -1,12 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.service.TeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamService;
-import com.emmisolutions.emmimanager.web.rest.model.team.*;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,14 +18,30 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import java.util.Set;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import com.emmisolutions.emmimanager.model.ClientLocation;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamLocationSearchFilter;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.service.TeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResource;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamLocationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationResource;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamProviderTeamLocationResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 
 /**
  * TeamLocations REST API.
@@ -143,7 +162,7 @@ public class TeamLocationsResource {
     }
 
     /**
-     * POST to create new Team, Location association
+     * POST to create new TeamLocation, providers association
      *
      * @param teamId    to associate locations with
      * @param reqs      to associate with team
@@ -154,16 +173,18 @@ public class TeamLocationsResource {
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_CREATE"})
-    public ResponseEntity<TeamProviderTeamLocationPage> create(
-        @PathVariable("teamId") Long teamId, @RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs,
-        PagedResourcesAssembler<TeamProviderTeamLocation> assembler) {
+    public ResponseEntity<Set<TeamProviderTeamLocationResource>> create(
+        @PathVariable("teamId") Long teamId, @RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs) {
         Team toFind = new Team();
         toFind.setId(teamId);
-        Page<TeamProviderTeamLocation> saved = teamLocationService.save(toFind, reqs);
+        List<TeamProviderTeamLocation> saved = teamLocationService.save(toFind, reqs);
 
-        PagedResources<TeamProviderTeamLocationResource> tptlResourceSupports = assembler.toResource(saved, teamProviderTeamLocationResourceAssembler);
-        TeamProviderTeamLocationPage teamLocationPage1 = new TeamProviderTeamLocationPage(tptlResourceSupports, saved);
-        return new ResponseEntity<>(teamLocationPage1, HttpStatus.OK);
+        // convert to resources
+        Set<TeamProviderTeamLocationResource> ret = new HashSet<>();
+        for (TeamProviderTeamLocation tptl : saved) {
+            ret.add(teamProviderTeamLocationResourceAssembler.toResource(tptl));
+        }
+        return new ResponseEntity<>(ret, HttpStatus.CREATED);        
     }
 
     /**

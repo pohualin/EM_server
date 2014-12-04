@@ -36,7 +36,7 @@ public interface TeamLocationService {
      * @param team        to save
      * @param request 	locations to associate to the team and for each locations the providers selected
      */
-    Page<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request);
+    List<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request);
 
     /**
      * reload a team location
