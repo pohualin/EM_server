@@ -37,6 +37,7 @@ public class ClientLocationResourceAssembler implements ResourceAssembler<Client
     /**
      * Create the search link to find teams used by this ClientLocation
      *
+     * @param entity to search for
      * @return Link for team searches from the ClientLocation
      */
     public Link createTeamsSearchLink(ClientLocation entity) {

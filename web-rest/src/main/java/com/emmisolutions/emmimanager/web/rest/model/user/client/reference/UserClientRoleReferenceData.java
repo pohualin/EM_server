@@ -23,6 +23,8 @@ public class UserClientRoleReferenceData extends ResourceSupport {
 
     /**
      * Creates a set of blank UserClientPermission objects
+     *
+     * @param possiblePermissions to wrap
      */
     public UserClientRoleReferenceData(Set<UserClientPermission> possiblePermissions) {
         this.userClientPermissions = possiblePermissions;

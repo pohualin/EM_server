@@ -19,6 +19,9 @@ public class UserAdmin extends User {
     @OneToMany(mappedBy = "userAdmin")
     private Set<UserAdminUserAdminRole> roles;
 
+    /**
+     * Calls super()
+     */
     public UserAdmin() {
         super();
     }

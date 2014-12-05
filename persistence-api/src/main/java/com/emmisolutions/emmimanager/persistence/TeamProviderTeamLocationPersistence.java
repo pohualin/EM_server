@@ -1,17 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import java.util.List;
-import java.util.Set;
-
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.TeamLocation;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import java.util.List;
+import java.util.Set;
 
 /**
  * TeamProviderTeamLocation persistence class
@@ -25,11 +19,11 @@ public interface TeamProviderTeamLocationPersistence {
      * @return list of teamProviderTeamLocations
      */
     Set<TeamProviderTeamLocation> saveAll(List<TeamProviderTeamLocation> teamProviderTeamLocations);
-    
+
     /**
      * delete a list if team provider team locations
      *
-     * @param list of teamProviderTeamLocations to be deleted
+     * @param teamProviderTeamLocations to be deleted
      */
     void delete(List<TeamProviderTeamLocation> teamProviderTeamLocations);
 
@@ -79,6 +73,7 @@ public interface TeamProviderTeamLocationPersistence {
      * removes all TeamProviderTeamLocations for given teamLocation
      *
      * @param teamLocation to remove
+     * @return the number removed
      */
-	long removeAllByTeamLocation(TeamLocation teamLocation);
+    long removeAllByTeamLocation(TeamLocation teamLocation);
 }

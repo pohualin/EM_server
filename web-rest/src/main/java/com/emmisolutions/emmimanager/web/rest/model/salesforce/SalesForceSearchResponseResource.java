@@ -27,8 +27,9 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
     /**
      * Construct response from entity and query
      *
-     * @param entity the wrapped entity
-     * @param query  the query that caused the response
+     * @param entity     the wrapped entity
+     * @param query      the query that caused the response
+     * @param teamSearch is it a team search or not
      */
     public SalesForceSearchResponseResource(SalesForceSearchResponse entity, String query, boolean teamSearch) {
         this.query = query;
@@ -42,28 +43,30 @@ public class SalesForceSearchResponseResource extends ResourceSupport {
 
     /**
      * The link to find all sf accounts from client
+     *
      * @return the link
      */
     public static Link createFindLink() {
         Link link = linkTo(methodOn(SalesForceResource.class).find(null)).withRel("findSalesForceAccount");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("q", TemplateVariable.VariableType.REQUEST_PARAM)));
+            .with(new TemplateVariables(
+                new TemplateVariable("q", TemplateVariable.VariableType.REQUEST_PARAM)));
         return new Link(uriTemplate, link.getRel());
     }
 
     /**
      * The link to find all sf accounts from team
+     *
      * @return the link
      */
     public static Link createFindTeamLink() {
         Link link = linkTo(methodOn(SalesForceResource.class).findForTeam(null)).withRel("findTeamSalesForceAccount");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("q", TemplateVariable.VariableType.REQUEST_PARAM)));
+            .with(new TemplateVariables(
+                new TemplateVariable("q", TemplateVariable.VariableType.REQUEST_PARAM)));
         return new Link(uriTemplate, link.getRel());
     }
-    
+
     /**
      * Override to change the link property name for serialization
      *
