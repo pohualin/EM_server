@@ -1,9 +1,9 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
-import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
+import static org.springframework.data.jpa.domain.Specifications.where;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,9 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
-
-import static org.springframework.data.jpa.domain.Specifications.where;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 
 /**
  * Repo to deal with user persistence.
@@ -30,6 +31,7 @@ public class UserPersistenceImpl implements UserPersistence {
     @Override
     public UserAdmin saveOrUpdate(UserAdmin user) {
         user.setLogin(StringUtils.lowerCase(user.getLogin()));
+        user.setNormalizedName(normalizeName(user));
         return userAdminRepository.save(user);
     }
 
@@ -52,4 +54,20 @@ public class UserPersistenceImpl implements UserPersistence {
         }
         return userAdminRepository.findAll(where(userSpecifications.isContractOwner()), pageable);
     }
+    
+    private String normalizeName(UserAdmin user) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(user.getFirstName()).append(user.getLastName())
+		.append(user.getLogin());
+	if (user.getEmail() != null) {
+	    sb.append(user.getEmail());
+	}
+	String normalizedName = StringUtils.trimToEmpty(StringUtils
+		.lowerCase(sb.toString()));
+	if (StringUtils.isNotBlank(normalizedName)) {
+	    normalizedName = normalizedName.replaceAll("[^a-z0-9]*", "");
+	}
+	return normalizedName;
+    }
+
 }

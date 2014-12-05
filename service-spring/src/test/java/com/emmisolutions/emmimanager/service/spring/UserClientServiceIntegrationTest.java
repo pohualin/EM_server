@@ -7,14 +7,11 @@ import static org.junit.Assert.assertThat;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -26,52 +23,61 @@ import com.emmisolutions.emmimanager.service.UserService;
  */
 public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
-	@Resource
-	ClientService clientService;
+    @Resource
+    ClientService clientService;
 
-	@Resource
-	UserClientService userClientService;
+    @Resource
+    UserClientService userClientService;
 
-	@Resource
-	UserService userService;
+    @Resource
+    UserService userService;
 
-	/**
-	 * Create without client and login
-	 */
-	@Test(expected = ConstraintViolationException.class)
-	public void testUserCreateWithoutClient() {
-		userClientService.create(new UserClient());
-	}
+    /**
+     * Create without client and login
+     */
+    @Test(expected = ConstraintViolationException.class)
+    public void testUserCreateWithoutClient() {
+	userClientService.create(new UserClient());
+    }
 
-	/**
-	 * Create with required values
-	 */
-	@Test
-	public void testUserCreate() {
-		Client client = makeClient("UserClientService", "UserClientService");
-		clientService.create(client);
+    /**
+     * Create with required values
+     */
+    @Test
+    public void testUserCreate() {
+	Client client = makeNewRandomClient();
 
-		UserClient user = new UserClient();
-		user.setClient(client);
-		user.setFirstName("first");
-		user.setLastName("last");
-		user.setEmail("flast@mail.com");
-		user.setLogin("flast@mail.com");
-		user = userClientService.create(user);
-		assertThat(user.getId(), is(notNullValue()));
-		assertThat(user.getVersion(), is(notNullValue()));
-	}
+	UserClient user = new UserClient();
+	user.setClient(client);
+	user.setFirstName("first");
+	user.setLastName("last");
+	user.setEmail("flast@mail.com");
+	user.setLogin("flast@mail.com");
+	user = userClientService.create(user);
+	assertThat(user.getId(), is(notNullValue()));
+	assertThat(user.getVersion(), is(notNullValue()));
+    }
 
-	protected Client makeClient(String clientName, String username) {
-		Client client = new Client();
-		client.setType(new ClientType(4l));
-		client.setContractStart(LocalDate.now());
-		client.setContractEnd(LocalDate.now().plusYears(1));
-		client.setName(clientName);
-		client.setContractOwner(new UserAdmin(1l, 0));
-		client.setSalesForceAccount(new SalesForce(RandomStringUtils
-				.randomAlphanumeric(18)));
-		return client;
-	}
+    @Test
+    public void testUserUpdate() {
+	UserClient user = new UserClient();
+	userClientService.update(user);
+    }
 
+    @Test
+    public void testUserList() {
+	Client client = makeNewRandomClient();
+	makeNewRandomUserClient(client);
+
+	Page<UserClient> userClients = userClientService.list(null,
+		client.getId(), null);
+	assertThat("userClients should contain contents",
+		userClients.hasContent(), is(true));
+
+	UserClientSearchFilter filter = new UserClientSearchFilter("a");
+	Page<UserClient> userClientsWithFilter = userClientService.list(null,
+		client.getId(), filter);
+	assertThat("userClients should contain contents",
+		userClientsWithFilter.hasContent(), is(true));
+    }
 }
