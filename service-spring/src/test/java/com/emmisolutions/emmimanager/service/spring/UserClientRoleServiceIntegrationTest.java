@@ -123,6 +123,11 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void loadPermissions(){
+         assertThat("can load permissions of null client role", userClientRoleService.loadAll(null).isEmpty(), is(true));
+    }
+
+    @Test
     public void load() {
         assertThat("Reference Roles are loaded",
             userClientRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
