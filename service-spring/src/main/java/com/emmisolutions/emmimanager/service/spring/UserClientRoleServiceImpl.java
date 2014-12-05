@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -60,7 +61,11 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     @Transactional(readOnly = true)
     public Set<UserClientPermission> loadAll(UserClientRole userClientRole) {
         UserClientRole loaded = reload(userClientRole);
-        return loaded.getUserClientPermissions();
+        if (loaded != null) {
+            return loaded.getUserClientPermissions();
+        } else {
+            return new HashSet<>();
+        }
     }
 
     @Override
