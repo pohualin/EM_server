@@ -22,7 +22,7 @@ public interface ClientProviderService {
      * @return a page of client provider objects
      */
     Page<ClientProvider> findByClient(Client client, Pageable pageable);
-    
+
     /**
      * Find a page of client providers for a provider
      *
@@ -68,6 +68,7 @@ public interface ClientProviderService {
      * Finds a page of ClientProvider objects that are sparsely populated on the Client side
      * of the relationship.
      *
+     * @param client               the client
      * @param pageable             a page
      * @param providerSearchFilter used to find the providers
      * @return a page of ClientProvider objects, the client relationship could be null
@@ -81,16 +82,16 @@ public interface ClientProviderService {
      * @return the updated ClientProvider
      */
     ClientProvider update(ClientProvider clientProvider);
-    
+
     /**
      * Find a ClientProvider
      *
-     * @param clientId to use
+     * @param clientId   to use
      * @param providerId to use
      * @return clientProvider found
      */
-    ClientProvider findByClientIdProviderId (Long clientId, Long providerId);
-    
+    ClientProvider findByClientIdProviderId(Long clientId, Long providerId);
+
     /**
      * save a ClientProvider
      *

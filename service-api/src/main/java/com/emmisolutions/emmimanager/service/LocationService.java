@@ -49,6 +49,7 @@ public interface LocationService {
      * Creates/Persists a location for all attributes on the location,
      * including belongsTo.
      *
+     * @param client   to attach it to
      * @param location to save
      * @return the persistent location
      */

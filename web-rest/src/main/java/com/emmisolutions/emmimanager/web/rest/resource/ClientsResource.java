@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
  */
 @RestController
 @RequestMapping(value = "/webapi",
-        produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
+    produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
 )
 public class ClientsResource {
 
@@ -78,19 +78,19 @@ public class ClientsResource {
      * @return ClientPage or NO_CONTENT
      */
     @RequestMapping(value = "/clients",
-            method = RequestMethod.GET)
+        method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LIST"})
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name="sort", defaultValue="name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientPage> list(
-            @PageableDefault(size = 10, sort = "name") Pageable pageable,
-            @SortDefault(sort = "name") Sort sort,
-            PagedResourcesAssembler<Client> assembler,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "name", required = false) String name) {
+        @PageableDefault(size = 10, sort = "name") Pageable pageable,
+        @SortDefault(sort = "name") Sort sort,
+        PagedResourcesAssembler<Client> assembler,
+        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "name", required = false) String name) {
 
         // create the search filter
         ClientSearchFilter clientSearchFilter = new ClientSearchFilter(fromStringOrActive(status), name);
@@ -101,8 +101,8 @@ public class ClientsResource {
         if (clientPage.hasContent()) {
             // create a ClientPage containing the response
             return new ResponseEntity<>(
-                    new ClientPage(assembler.toResource(clientPage, clientResourceAssembler), clientPage, clientSearchFilter),
-                    HttpStatus.OK
+                new ClientPage(assembler.toResource(clientPage, clientResourceAssembler), clientPage, clientSearchFilter),
+                HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -118,8 +118,8 @@ public class ClientsResource {
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     public ReferenceData getReferenceData() {
         return new ReferenceData(clientService.getAllClientTypes(),
-                clientService.getAllClientRegions(),
-                clientService.getAllClientTiers());
+            clientService.getAllClientRegions(),
+            clientService.getAllClientTiers());
     }
 
     /**
@@ -133,18 +133,18 @@ public class ClientsResource {
     @RequestMapping(value = "/clients/ref/potentialOwners", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name="size",  value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name="page",  value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name="sort",  value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 100, sort="firstName") Pageable pageable,
+    public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 100, sort = "firstName") Pageable pageable,
                                                            @SortDefault(sort = "id") Sort sort,
                                                            PagedResourcesAssembler<UserAdmin> assembler) {
         Page<UserAdmin> userPage = clientService.listPotentialContractOwners(pageable);
         if (userPage.hasContent()) {
             return new ResponseEntity<>(
-                    new UserPage(assembler.toResource(userPage, userResourceAssembler), userPage),
-                    HttpStatus.OK);
+                new UserPage(assembler.toResource(userPage, userResourceAssembler), userPage),
+                HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -157,8 +157,8 @@ public class ClientsResource {
      * @return ClientResource or INTERNAL_SERVER_ERROR if it could not be created
      */
     @RequestMapping(value = "/clients",
-            method = RequestMethod.POST,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.POST,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE"})
     public ResponseEntity<ClientResource> create(@RequestBody Client client) {
@@ -177,8 +177,8 @@ public class ClientsResource {
      * @return ClientResource or INTERNAL_SERVER_ERROR if update were unsuccessful
      */
     @RequestMapping(value = "/clients",
-            method = RequestMethod.PUT,
-            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+        method = RequestMethod.PUT,
+        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_EDIT"})
     public ResponseEntity<ClientResource> update(@RequestBody Client client) {
@@ -190,16 +190,22 @@ public class ClientsResource {
         }
     }
 
-   @RequestMapping(value = "/clients/ref/findByNormalizedName",
-            method = RequestMethod.GET)
-   @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
-   public ResponseEntity<ClientResource> findByNormalizedName(@RequestParam(value = "normalizedName", required = false)String normalizedName) {
+    /**
+     * Find a client by normalized name
+     *
+     * @param normalizedName to search with
+     * @return ClientResource
+     */
+    @RequestMapping(value = "/clients/ref/findByNormalizedName",
+        method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
+    public ResponseEntity<ClientResource> findByNormalizedName(@RequestParam(value = "normalizedName", required = false) String normalizedName) {
 
-       Client toFind = clientService.findByNormalizedName(normalizedName);
-       if (toFind != null) {
-           return new ResponseEntity<>(clientResourceAssembler.toResource(toFind), HttpStatus.OK);
-       } else {
-           return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-       }
+        Client toFind = clientService.findByNormalizedName(normalizedName);
+        if (toFind != null) {
+            return new ResponseEntity<>(clientResourceAssembler.toResource(toFind), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 }
