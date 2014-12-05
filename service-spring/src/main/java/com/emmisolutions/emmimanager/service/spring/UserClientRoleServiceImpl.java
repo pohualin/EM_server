@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -45,7 +44,7 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     @Transactional
     public UserClientRole update(UserClientRole userClientRole) {
         UserClientRole inDb = userClientRolePersistence.reload(userClientRole);
-        if (inDb == null){
+        if (inDb == null) {
             throw new InvalidDataAccessApiUsageException("This method is only to be used with existing UserClientRole objects");
         }
         userClientRole.setType(inDb.getType());
@@ -58,14 +57,8 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Set<UserClientPermission> loadAll(UserClientRole userClientRole) {
-        UserClientRole loaded = reload(userClientRole);
-        if (loaded != null) {
-            return loaded.getUserClientPermissions();
-        } else {
-            return new HashSet<>();
-        }
+        return userClientRolePersistence.permissionsFor(userClientRole);
     }
 
     @Override

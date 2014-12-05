@@ -57,10 +57,8 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Set<UserClientTeamPermission> loadAll(UserClientTeamRole userClientTeamRole) {
-        UserClientTeamRole loaded = reload(userClientTeamRole);
-        return loaded.getUserClientTeamPermissions();
+        return userClientTeamRolePersistence.permissionsFor(userClientTeamRole);
     }
 
     @Override

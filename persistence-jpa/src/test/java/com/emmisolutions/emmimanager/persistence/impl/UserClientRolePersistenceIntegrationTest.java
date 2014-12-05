@@ -77,8 +77,9 @@ public class UserClientRolePersistenceIntegrationTest extends BaseIntegrationTes
         userClientPermissions.add(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER));
         UserClientRole userClientRole = userClientRolePersistence.save(new UserClientRole("permission save", makeNewRandomClient(), userClientPermissions));
         assertThat("permission present",
-            userClientRolePersistence.find(userClientRole.getClient().getId(), null).iterator().next().getUserClientPermissions(),
+            userClientRolePersistence.permissionsFor(userClientRole),
             hasItem(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER)));
+
     }
 
     /**
@@ -87,6 +88,14 @@ public class UserClientRolePersistenceIntegrationTest extends BaseIntegrationTes
     @Test
     public void nullReload(){
         assertThat("null reload returns null", userClientRolePersistence.reload(null), is(nullValue()));
+    }
+
+    /**
+     * Loading permissions on null role should return null
+     */
+    @Test
+    public void loadPermissions(){
+        assertThat("null permissions of null client role", userClientRolePersistence.permissionsFor(new UserClientRole()), is(nullValue()));
     }
 
 }
