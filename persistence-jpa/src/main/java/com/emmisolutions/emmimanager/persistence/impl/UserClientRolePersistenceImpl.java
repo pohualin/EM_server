@@ -63,4 +63,12 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
         return new HashSet<>(userClientPermissionRepository.findAll());
     }
 
+    @Override
+    public Set<UserClientPermission> permissionsFor(UserClientRole userClientRole) {
+        if (userClientRole == null || userClientRole.getId() == null) {
+            return null;
+        }
+        return userClientPermissionRepository.findAllByUserClientRolesId(userClientRole.getId());
+    }
+
 }
