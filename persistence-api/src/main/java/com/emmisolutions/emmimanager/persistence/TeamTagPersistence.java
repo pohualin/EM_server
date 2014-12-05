@@ -14,19 +14,22 @@ import java.util.Set;
 public interface TeamTagPersistence {
     /**
      * Saves a TeamTag
-     * @param tag 	to save
+     *
+     * @param tag to save
      * @return saved TeamTag
      */
     TeamTag saveTeamTag(TeamTag tag);
 
     /**
      * Deletes a TeamTag
-     * @param tag 	to delete
+     *
+     * @param tag to delete
      */
     void deleteTeamTag(TeamTag tag);
 
     /**
      * Reloads a TeamTag by given ID
+     *
      * @param tag id of the Tag
      * @return Tag
      */
@@ -34,13 +37,16 @@ public interface TeamTagPersistence {
 
     /**
      * Gets all the tags associated with a given team
-     * @param team that contains team	to search for
+     *
+     * @param team     that contains team	to search for
+     * @param pageable specification
      * @return Page of associated tags for given team
      */
-    Page<TeamTag> getAllTeamTagsForTeam(Pageable pageable,Team team);
+    Page<TeamTag> getAllTeamTagsForTeam(Pageable pageable, Team team);
 
     /**
      * deletes all teamTags with the given team
+     *
      * @param team team	to search for
      */
     void deleteTeamTagsWithTeam(Team team);
@@ -56,8 +62,9 @@ public interface TeamTagPersistence {
 
     /**
      * Find TeamTags with tag
+     *
      * @param teamTagSearchFilter to check tags against
-     * @param page page object
+     * @param page                page object
      * @return page of teamtags
      */
 

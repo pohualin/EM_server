@@ -16,32 +16,37 @@ import java.util.List;
 @XmlRootElement(name = "reference-role")
 public class UserClientReferenceRoleResource extends ResourceSupport {
 
-	private UserClientReferenceRole entity;
+    private UserClientReferenceRole entity;
 
     public UserClientReferenceRoleResource() {
     }
 
+    /**
+     * Constructor
+     *
+     * @param entity to wrap
+     */
     public UserClientReferenceRoleResource(UserClientReferenceRole entity) {
         this.entity = entity;
     }
 
     public UserClientReferenceRole getEntity() {
-		return entity;
-	}
+        return entity;
+    }
 
-	public void setEntity(UserClientReferenceRole entity) {
-		this.entity = entity;
-	}
+    public void setEntity(UserClientReferenceRole entity) {
+        this.entity = entity;
+    }
 
-	/**
-	 * Override to change the link property name for serialization
-	 *
-	 * @return links
-	 */
-	@XmlElement(name = "link")
-	@XmlElementWrapper(name = "links")
-	@JsonProperty("link")
-	public List<Link> getLinks() {
-		return super.getLinks();
-	}
+    /**
+     * Override to change the link property name for serialization
+     *
+     * @return links
+     */
+    @XmlElement(name = "link")
+    @XmlElementWrapper(name = "links")
+    @JsonProperty("link")
+    public List<Link> getLinks() {
+        return super.getLinks();
+    }
 }

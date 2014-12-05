@@ -1,14 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.model.provider;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.web.rest.resource.ProvidersResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.web.rest.resource.ProvidersResource;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+/**
+ * Converts Provider to ProviderResource objects.
+ */
 @Component
 public class ProviderResourceAssembler implements ResourceAssembler<Provider, ProviderResource> {
 

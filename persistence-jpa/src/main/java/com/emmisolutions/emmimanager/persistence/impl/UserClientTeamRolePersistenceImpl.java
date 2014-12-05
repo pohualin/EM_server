@@ -66,7 +66,7 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
     @Override
     public Set<UserClientTeamPermission> permissionsFor(UserClientTeamRole userClientRole) {
         if (userClientRole == null || userClientRole.getId() == null) {
-            return null;
+            return new HashSet<>();
         }
         return userClientTeamPermissionRepository.findAllByUserClientTeamRolesId(userClientRole.getId());
     }

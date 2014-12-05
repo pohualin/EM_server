@@ -95,7 +95,7 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
      */
     @Test
     public void loadPermissions(){
-        assertThat("null permissions of null client role", userClientTeamRolePersistence.permissionsFor(new UserClientTeamRole()), is(nullValue()));
+        assertThat("empty permissions of null client role", userClientTeamRolePersistence.permissionsFor(new UserClientTeamRole()).isEmpty(), is(true));
     }
 
 }

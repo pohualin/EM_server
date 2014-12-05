@@ -12,54 +12,57 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.Set;
 
+/**
+ * A client tag within a group.
+ */
 @Audited
 @Entity
-@Table(name="client_group_tag")
-@XmlRootElement(name="client_group_tag")
+@Table(name = "client_group_tag")
+@XmlRootElement(name = "client_group_tag")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Tag extends AbstractAuditingEntity implements Serializable{
+public class Tag extends AbstractAuditingEntity implements Serializable {
 
     @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@NotNull
-	@Column(nullable=false)
-	private String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotNull
+    @NotNull
+    @Column(nullable = false)
+    private String name;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "group_id")
     @JsonBackReference
     private Group group;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy="tag")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "tag")
     @XmlTransient
     private Set<TeamTag> teamTags;
-	
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Group getGroup() {
-		return group;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setGroup(Group group) {
-		this.group = group;
-	}
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -77,9 +80,9 @@ public class Tag extends AbstractAuditingEntity implements Serializable{
     @Override
     public String toString() {
         return "Tag{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
     }
 
     public Set<TeamTag> getTeamTags() {

@@ -13,6 +13,7 @@ public interface StringsPersistence {
     /**
      * Fetches all strings for a locale.
      *
+     * @param locale to load them for
      * @return List of Strings
      */
     List<Strings> fetchAllStrings(Locale locale);
