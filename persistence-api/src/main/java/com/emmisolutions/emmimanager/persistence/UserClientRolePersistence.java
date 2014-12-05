@@ -50,4 +50,10 @@ public interface UserClientRolePersistence {
      */
     Set<UserClientPermission> loadPossiblePermissions();
 
+    /**
+     * Load all permissions for a UserClientRole
+     * @param userClientRole to load for
+     * @return Set of UserClientPermission or null
+     */
+    Set<UserClientPermission> permissionsFor(UserClientRole userClientRole);
 }

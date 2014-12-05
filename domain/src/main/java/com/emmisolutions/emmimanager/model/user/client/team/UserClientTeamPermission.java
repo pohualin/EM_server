@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 
 /**
  * A team level permission
@@ -60,5 +61,16 @@ public class UserClientTeamPermission {
             "name=" + name +
             ", rank=" + rank +
             '}';
+    }
+
+    @ManyToMany(mappedBy = "userClientTeamPermissions")
+    private Collection<UserClientTeamRole> userClientTeamRoles;
+
+    public Collection<UserClientTeamRole> getUserClientTeamRoles() {
+        return userClientTeamRoles;
+    }
+
+    public void setUserClientTeamRoles(Collection<UserClientTeamRole> userClientTeamRoles) {
+        this.userClientTeamRoles = userClientTeamRoles;
     }
 }

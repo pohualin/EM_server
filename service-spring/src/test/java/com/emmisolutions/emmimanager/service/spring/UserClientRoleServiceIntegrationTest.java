@@ -122,6 +122,17 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("client role should have been deleted", userClientRoleService.reload(userClientRole), is(nullValue()));
     }
 
+    /**
+     * Loading permissions on null role should return null
+     */
+    @Test
+    public void loadPermissions(){
+         assertThat("null permissions of null client role", userClientRoleService.loadAll(null), is(nullValue()));
+    }
+
+    /**
+     * Ensure reference roles are loaded properly
+     */
     @Test
     public void load() {
         assertThat("Reference Roles are loaded",

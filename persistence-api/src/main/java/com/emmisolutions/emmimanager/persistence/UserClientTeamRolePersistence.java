@@ -50,4 +50,12 @@ public interface UserClientTeamRolePersistence {
      */
     Set<UserClientTeamPermission> loadPossiblePermissions();
 
+    /**
+     * Load all permissions for a UserClientRole
+     *
+     * @param userClientTeamRole to load for
+     * @return Set of UserClientPermission or null
+     */
+    Set<UserClientTeamPermission> permissionsFor(UserClientTeamRole userClientTeamRole);
+
 }

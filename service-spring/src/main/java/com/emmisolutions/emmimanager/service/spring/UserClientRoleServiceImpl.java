@@ -44,7 +44,7 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     @Transactional
     public UserClientRole update(UserClientRole userClientRole) {
         UserClientRole inDb = userClientRolePersistence.reload(userClientRole);
-        if (inDb == null){
+        if (inDb == null) {
             throw new InvalidDataAccessApiUsageException("This method is only to be used with existing UserClientRole objects");
         }
         userClientRole.setType(inDb.getType());
@@ -57,10 +57,8 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Set<UserClientPermission> loadAll(UserClientRole userClientRole) {
-        UserClientRole loaded = reload(userClientRole);
-        return loaded.getUserClientPermissions();
+        return userClientRolePersistence.permissionsFor(userClientRole);
     }
 
     @Override
