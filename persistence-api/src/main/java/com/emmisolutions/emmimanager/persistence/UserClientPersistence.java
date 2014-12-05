@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.persistence;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
@@ -30,7 +29,6 @@ public interface UserClientPersistence {
      *            contains search criteria
      * @return Page<UserClient>
      */
-    Page<UserClient> list(Pageable pageable, Client client,
-	    UserClientSearchFilter filter);
+    Page<UserClient> list(Pageable pageable, UserClientSearchFilter filter);
 
 }

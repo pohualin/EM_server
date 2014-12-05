@@ -81,10 +81,10 @@ public class UsersClientResource {
 	    @RequestParam(value = "status", required = false) String status,
 	    @RequestParam(value = "name", required = false) String term) {
 
-	UserClientSearchFilter filter = new UserClientSearchFilter(
+	UserClientSearchFilter filter = new UserClientSearchFilter(clientId,
 		fromStringOrActive(status), term);
 
-	Page<UserClient> userClients = userClientService.list(pageable, clientId, filter);
+	Page<UserClient> userClients = userClientService.list(pageable, filter);
 
 	if (userClients.hasContent()) {
 	    // create a ClientPage containing the response

@@ -73,19 +73,23 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	Client clientA = makeNewRandomClient();
 	makeNewRandomUserClient(client);
 
-	Page<UserClient> userClients = userClientPersistence.list(null, client,
-		null);
+	UserClientSearchFilter filter = new UserClientSearchFilter(
+		client.getId(), "");
+	Page<UserClient> userClients = userClientPersistence.list(null, filter);
 	assertThat("returned page of UserClient should not be empty",
 		userClients.hasContent(), is(true));
 
+	UserClientSearchFilter filterA = new UserClientSearchFilter(
+		clientA.getId(), "");
 	Page<UserClient> userClientsA = userClientPersistence.list(null,
-		clientA, null);
-	assertThat("returned page of UserClient should not be empty",
+		filterA);
+	assertThat("returned page of UserClient should be empty",
 		userClientsA.hasContent(), is(false));
 
-	UserClientSearchFilter filter = new UserClientSearchFilter("a");
+	UserClientSearchFilter realFilter = new UserClientSearchFilter(
+		client.getId(), "a");
 	Page<UserClient> userClientsWithFilter = userClientPersistence.list(
-		null, client, filter);
+		null, realFilter);
 	assertThat("returned page of UserClient should not be empty",
 		userClientsWithFilter.hasContent(), is(true));
     }

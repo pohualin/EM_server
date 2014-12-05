@@ -14,7 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
@@ -65,14 +64,15 @@ public class UserClientSpecifications {
 	};
     }
 
-    public Specification<UserClient> isClient(final Client client) {
+    public Specification<UserClient> isClient(
+	    final UserClientSearchFilter filter) {
 	return new Specification<UserClient>() {
 	    @Override
 	    public Predicate toPredicate(Root<UserClient> root,
 		    CriteriaQuery<?> query, CriteriaBuilder cb) {
-		if (client != null && client.getId() != null) {
+		if (filter != null && filter.getClientId() != null) {
 		    return cb.equal(root.get(UserClient_.client),
-			    client.getId());
+			    filter.getClientId());
 		}
 		return null;
 	    }

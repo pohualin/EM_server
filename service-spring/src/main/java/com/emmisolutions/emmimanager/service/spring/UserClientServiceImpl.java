@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
@@ -24,7 +23,7 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     ClientService clientService;
-    
+
     @Resource
     UserClientPersistence userClientPersistence;
 
@@ -42,10 +41,8 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    public Page<UserClient> list(Pageable pageable, Long clientId,
+    public Page<UserClient> list(Pageable pageable,
 	    UserClientSearchFilter filter) {
-	Client client = new Client(clientId);
-	client = clientService.reload(client);
-	return userClientPersistence.list(pageable, client, filter);
+	return userClientPersistence.list(pageable, filter);
     }
 }

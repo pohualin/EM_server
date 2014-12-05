@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
@@ -40,13 +39,14 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     }
 
     @Override
-    public Page<UserClient> list(Pageable pageable, Client client,
+    public Page<UserClient> list(Pageable pageable, 
 	    UserClientSearchFilter filter) {
 	if (pageable == null) {
 	    pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
 	}
 	return userClientRepository.findAll(
-		where(userClientSpecifications.hasNames(filter)).and(userClientSpecifications.isClient(client)),
+		where(userClientSpecifications.hasNames(filter)).and(
+			userClientSpecifications.isClient(filter)),
 		caseInsensitiveSort(pageable));
     }
 

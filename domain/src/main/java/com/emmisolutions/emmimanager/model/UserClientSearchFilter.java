@@ -23,72 +23,91 @@ public class UserClientSearchFilter {
 
     private StatusFilter status;
 
+    private Long clientId;
+
     /**
      * constructor
      */
-    public UserClientSearchFilter(){
-          this.status = StatusFilter.ALL;
+    public UserClientSearchFilter() {
+	this.status = StatusFilter.ALL;
     }
 
     /**
      * all status plus passed names
-     * @param names filter
+     * 
+     * @param names
+     *            filter
      */
-    public UserClientSearchFilter(String... names){
-        this(StatusFilter.ALL, names);
+    public UserClientSearchFilter(Long clientId, String... names) {
+	this(clientId, StatusFilter.ALL, names);
     }
 
     /**
      * constructor
-     * @param status to filter
-     * @param names to filter
+     * 
+     * @param status
+     *            to filter
+     * @param names
+     *            to filter
      */
-    public UserClientSearchFilter(StatusFilter status, String... names){
-        if (names != null) {
-            this.names = new HashSet<>();
-            Collections.addAll(this.getNames(), names);
-        }
-        if ( status != null) {
-            this.status = status;
-        }
+    public UserClientSearchFilter(Long clientId, StatusFilter status,
+	    String... names) {
+	if (clientId != null) {
+	    this.clientId = clientId;
+	}
+	if (names != null) {
+	    this.names = new HashSet<>();
+	    Collections.addAll(this.getNames(), names);
+	}
+	if (status != null) {
+	    this.status = status;
+	}
     }
 
     public Set<String> getNames() {
-        return names;
+	return names;
+    }
+
+    public Long getClientId() {
+	return clientId;
+    }
+
+    public void setClientId(Long clientId) {
+	this.clientId = clientId;
     }
 
     public StatusFilter getStatus() {
-        return status;
+	return status;
     }
 
     /**
      * Status allowed
      */
     public enum StatusFilter {
-        ALL, ACTIVE_ONLY, INACTIVE_ONLY;
+	ALL, ACTIVE_ONLY, INACTIVE_ONLY;
 
-        /**
-         * from string or ACTIVE
-         * @param status the status string
-         * @return never null, the status or ACTIVE
-         */
-        public static StatusFilter fromStringOrActive(String status) {
-            if (StringUtils.isNotBlank(status)) {
-                for (StatusFilter statusFilter : values()) {
-                    if (statusFilter.toString().equals(status.toUpperCase())) {
-                        return statusFilter;
-                    }
-                }
-            }
-            return ACTIVE_ONLY;
-        }
+	/**
+	 * from string or ACTIVE
+	 * 
+	 * @param status
+	 *            the status string
+	 * @return never null, the status or ACTIVE
+	 */
+	public static StatusFilter fromStringOrActive(String status) {
+	    if (StringUtils.isNotBlank(status)) {
+		for (StatusFilter statusFilter : values()) {
+		    if (statusFilter.toString().equals(status.toUpperCase())) {
+			return statusFilter;
+		    }
+		}
+	    }
+	    return ACTIVE_ONLY;
+	}
     }
 
     @Override
     public String toString() {
-        return "UserClientSearchFilter{" +
-                "names=" + names +
-                ", status=" + status +
-                '}';
+	return "UserClientSearchFilter{" + "names=" + names + ", status="
+		+ status + '}';
     }
 }

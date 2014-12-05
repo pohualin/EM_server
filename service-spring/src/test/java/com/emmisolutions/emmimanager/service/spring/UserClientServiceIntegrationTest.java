@@ -69,14 +69,14 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 	Client client = makeNewRandomClient();
 	makeNewRandomUserClient(client);
 
-	Page<UserClient> userClients = userClientService.list(null,
-		client.getId(), null);
+	Page<UserClient> userClients = userClientService.list(null, null);
 	assertThat("userClients should contain contents",
 		userClients.hasContent(), is(true));
 
-	UserClientSearchFilter filter = new UserClientSearchFilter("a");
+	UserClientSearchFilter filter = new UserClientSearchFilter(
+		client.getId(), "a");
 	Page<UserClient> userClientsWithFilter = userClientService.list(null,
-		client.getId(), filter);
+		filter);
 	assertThat("userClients should contain contents",
 		userClientsWithFilter.hasContent(), is(true));
     }
