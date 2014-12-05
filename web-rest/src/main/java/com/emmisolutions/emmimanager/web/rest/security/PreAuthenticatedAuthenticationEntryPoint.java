@@ -25,11 +25,17 @@ public class PreAuthenticatedAuthenticationEntryPoint implements AuthenticationE
 
     /**
      * Always returns a 401 error code to the client.
+     *
+     * @param request  the request
+     * @param response the response
+     * @param arg2     auth exception
+     * @throws IOException      if there's a problem
+     * @throws ServletException if there's a problem
      */
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException arg2) throws IOException,
-            ServletException {
-            log.debug("Pre-authenticated entry point called. Rejecting access");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
+        ServletException {
+        log.debug("Pre-authenticated entry point called. Rejecting access");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
     }
 
 }

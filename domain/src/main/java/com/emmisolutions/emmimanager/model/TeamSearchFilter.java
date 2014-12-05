@@ -118,6 +118,12 @@ public class TeamSearchFilter {
             return ALL;
         }
 
+        /**
+         * Create a StatusFilter from a string
+         *
+         * @param status if the string matches or ACTIVE
+         * @return StatusFilter
+         */
         public static StatusFilter fromStringOrActive(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {

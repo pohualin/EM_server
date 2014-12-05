@@ -31,9 +31,8 @@ public class TagPage extends PagedResource<TagResource> {
      *
      * @param tagResourceSupports to be wrapped
      * @param tagPage             true page
-     * @param filter                 which caused the response
+     * @param filter              which caused the response
      */
-
     public TagPage(PagedResources<TagResource> tagResourceSupports, Page<Tag> tagPage, TagSearchFilter filter) {
         pageDefaults(tagResourceSupports, tagPage);
         addFilterToLinks(filter);
@@ -43,24 +42,25 @@ public class TagPage extends PagedResource<TagResource> {
     /**
      * Create the search link
      *
+     * @param group to search for tags
      * @return Link for tag searches
      * @see com.emmisolutions.emmimanager.web.rest.resource.TagsResource#listTagsByGroupID(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
     public static Link createFullSearchLink(Group group) {
         Link link = linkTo(methodOn(TagsResource.class).listTagsByGroupID(null, null, null, group.getId())).withRel("tags");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
-                        ));
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
+            ));
         return new Link(uriTemplate, link.getRel());
     }
-    
+
 
     private void addFilterToLinks(TagSearchFilter filter) {
         this.searchFilter = filter;
     }
 
-    
+
 }

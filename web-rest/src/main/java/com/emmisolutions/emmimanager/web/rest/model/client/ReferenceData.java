@@ -40,9 +40,13 @@ public class ReferenceData extends ResourceSupport {
     @XmlElement(name = "statusFilter")
     @XmlElementWrapper(name = "statusFilters")
     private ClientSearchFilter.StatusFilter[] statusFilters = ClientSearchFilter.StatusFilter.values();
-    
+
     /**
      * create common links for reference data
+     *
+     * @param clientRegions regions
+     * @param clientTiers   tiers
+     * @param clientTypes   types
      */
     public ReferenceData(Collection<ClientType> clientTypes, Collection<ClientRegion> clientRegions, Collection<ClientTier> clientTiers) {
         this.clientTypes = new HashSet<>(clientTypes);

@@ -26,7 +26,7 @@ public class TeamSpecifications {
     @Resource
     MatchingCriteriaBean matchCriteria;
 
-	/**
+    /**
      * Case insensitive name anywhere match
      *
      * @param searchFilter to be found
@@ -38,24 +38,24 @@ public class TeamSpecifications {
             public Predicate toPredicate(Root<Team> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
                 if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.getNames())) {
-                for (String name: searchFilter.getNames()) {
-                	List<String> searchTerms = new ArrayList<>();
-                    String[] terms = StringUtils.split(matchCriteria.normalizeName(name), " ");
-                    if (terms != null) {
-                        for (String term : terms) {
-                            if (!searchTerms.contains(term)) {
-                                searchTerms.add(term);
+                    for (String name : searchFilter.getNames()) {
+                        List<String> searchTerms = new ArrayList<>();
+                        String[] terms = StringUtils.split(matchCriteria.normalizeName(name), " ");
+                        if (terms != null) {
+                            for (String term : terms) {
+                                if (!searchTerms.contains(term)) {
+                                    searchTerms.add(term);
+                                }
                             }
                         }
+                        List<Predicate> andClause = new ArrayList<>();
+                        for (String searchTerm : searchTerms) {
+                            andClause.add(cb.like(root.get(Team_.normalizedTeamName), "%" + searchTerm + "%"));
+                        }
+                        predicates.add(cb.and(andClause.toArray(new Predicate[andClause.size()])));
                     }
-                	List<Predicate> andClause = new ArrayList<>();
-                	for (String searchTerm: searchTerms){
-                		andClause.add(cb.like(root.get(Team_.normalizedTeamName), "%" + searchTerm + "%"));
-                	}
-                	predicates.add(cb.and(andClause.toArray(new Predicate[andClause.size()])));
-                }
 
-                return cb.or(predicates.toArray(new Predicate[predicates.size()]));
+                    return cb.or(predicates.toArray(new Predicate[predicates.size()]));
                 }
                 return null;
             }
@@ -83,7 +83,7 @@ public class TeamSpecifications {
     /**
      * Ensures that the team belongs to the client
      *
-     * @param team to load for a client, if null eager fetches all teams
+     * @param client to load
      * @return the specification
      */
     public Specification<Team> usedBy(final Client client) {
@@ -91,7 +91,7 @@ public class TeamSpecifications {
             @Override
             public Predicate toPredicate(Root<Team> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (client != null) {
-                    return cb.equal(root.get(Team_.client),client);
+                    return cb.equal(root.get(Team_.client), client);
                 }
                 return null;
             }

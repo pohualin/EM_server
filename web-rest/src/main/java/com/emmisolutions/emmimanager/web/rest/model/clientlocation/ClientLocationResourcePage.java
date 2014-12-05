@@ -35,6 +35,7 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
      *
      * @param clientLocationResourceSupports page of ClientLocationResource objects
      * @param clientLocationPage             page of ClientLocation objects
+     * @param filter                         the filter
      */
     public ClientLocationResourcePage(PagedResources<ClientLocationResource> clientLocationResourceSupports,
                                       Page<ClientLocation> clientLocationPage, LocationSearchFilter filter) {
@@ -47,45 +48,53 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
     /**
      * Create the search link
      *
+     * @param client the client
      * @return Link for location searches
      * @see com.emmisolutions.emmimanager.web.rest.resource.ClientLocationsResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
     public static Link createAssociationLink(Client client) {
         Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null, null)).withRel("possibleLocations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 
+    /**
+     * Creates a link loading associations not at a client
+     *
+     * @param client the client
+     * @return the link
+     */
     public static Link createAssociationWLink(Client client) {
         Link link = linkTo(methodOn(ClientLocationsResource.class).possibleWithoutClientLocations(client.getId(), null, null, null, null, null)).withRel("possibleLocationsWithoutCL");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
-    
+
     /**
      * This is the link to find current locations on a client
+     *
      * @param client on which to find current locations
      * @return the link
      */
     public static Link createCurrentLocationsSearchLink(Client client) {
         Link link = linkTo(methodOn(ClientLocationsResource.class).current(client.getId(), null, null, null)).withRel("locations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 
@@ -103,9 +112,9 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
             if (link.isTemplated()) {
                 // add args to template
                 UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                        .with(new TemplateVariables(
-                                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+                    .with(new TemplateVariables(
+                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
                 this.links.add(new Link(uriTemplate.toString(), rel));
             } else {
                 // add values

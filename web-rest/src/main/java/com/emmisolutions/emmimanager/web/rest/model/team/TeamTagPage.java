@@ -28,6 +28,7 @@ public class TeamTagPage extends PagedResource<TeamTagResource> {
     /**
      * Wrapper for teamTag resource objects
      *
+     * @param filter                  the filter
      * @param teamTagResourceSupports to be wrapped
      * @param teamTagPage             true page
      */
@@ -40,17 +41,17 @@ public class TeamTagPage extends PagedResource<TeamTagResource> {
     /**
      * Create the search link
      *
-     * @return Link for teamteag searches
+     * @return Link for team tag searches
      */
     public static Link createFullSearchLink() {
         Link link = linkTo(methodOn(TeamsResource.class).list(null, null, null, null, (String[]) null)).withRel("teams");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 

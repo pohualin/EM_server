@@ -119,7 +119,7 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
      */
     @Test
     public void loadPermissions(){
-        assertThat("null permissions of null client role", userClientTeamRoleService.loadAll(null), is(nullValue()));
+        assertThat("empty permissions of null client role", userClientTeamRoleService.loadAll(null).isEmpty(), is(true));
     }
 
     /**
