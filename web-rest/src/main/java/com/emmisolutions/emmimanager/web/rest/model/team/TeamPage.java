@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
@@ -33,8 +34,8 @@ public class TeamPage extends PagedResource<TeamResource> {
      * Creates a page for a team search result
      *
      * @param teamResourceSupports to be wrapped
-     * @param teamPage                true page
-     * @param filter                  which caused the response
+     * @param teamPage             true page
+     * @param filter               which caused the response
      */
     public TeamPage(PagedResources<TeamResource> teamResourceSupports, Page<Team> teamPage, TeamSearchFilter filter) {
         pageDefaults(teamResourceSupports, teamPage);
@@ -52,22 +53,28 @@ public class TeamPage extends PagedResource<TeamResource> {
     public static Link createFullSearchLink() {
         Link link = linkTo(methodOn(TeamsResource.class).list(null, null, null, null, (String[]) null)).withRel("teams");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 
-	 public static Link createFindTeamByNormalizedNameLink(Long clientId) {
-	        Link link = linkTo(methodOn(TeamsResource.class).findByNormalizedNameForClient(null,null,clientId)).withRel("findByNormalizedName");
-	        UriTemplate uriTemplate = new UriTemplate(link.getHref())
-	                .with(new TemplateVariables(
-	                        new TemplateVariable("normalizedName", TemplateVariable.VariableType.REQUEST_PARAM)));
-	        return new Link(uriTemplate, link.getRel());
-	    }
+    /**
+     * Find team by normalized name
+     *
+     * @param client for a client
+     * @return link
+     */
+    public static Link createFindTeamByNormalizedNameLink(Client client) {
+        Link link = linkTo(methodOn(TeamsResource.class).findByNormalizedNameForClient(null, null, client.getId())).withRel("findByNormalizedName");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                new TemplateVariable("normalizedName", TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(uriTemplate, link.getRel());
+    }
 
     private void addFilterToLinks(TeamSearchFilter filter) {
         this.searchFilter = filter;
@@ -83,9 +90,9 @@ public class TeamPage extends PagedResource<TeamResource> {
             if (link.isTemplated()) {
                 // add args to template
                 UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                        .with(new TemplateVariables(
-                                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+                    .with(new TemplateVariables(
+                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
                 this.links.add(new Link(uriTemplate.toString(), rel));
             } else {
                 // add values

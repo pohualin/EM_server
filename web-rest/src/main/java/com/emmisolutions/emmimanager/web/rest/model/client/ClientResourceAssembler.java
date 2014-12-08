@@ -32,10 +32,10 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
         ret.add(linkTo(methodOn(TeamsResource.class).clientTeams(entity.getId(), null, null, null, null, (String[]) null)).withRel("teams"));
-        ret.add(GroupPage.createFullSearchLink(entity.getId()));
+        ret.add(GroupPage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(GroupsResource.class).invalidTeams(null, entity.getId())).withRel("invalidTeams"));
-        ret.add(TeamPage.createFindTeamByNormalizedNameLink(entity.getId()));
-        ret.add(TeamResource.createTeamByTeamIdLink(entity.getId()));
+        ret.add(TeamPage.createFindTeamByNormalizedNameLink(entity));
+        ret.add(TeamResource.createTeamByTeamIdLink(entity));
         ret.add(ClientLocationResourcePage.createCurrentLocationsSearchLink(entity));
         ret.add(ClientLocationResourcePage.createAssociationLink(entity));
         ret.add(ClientLocationResourcePage.createAssociationWLink(entity));

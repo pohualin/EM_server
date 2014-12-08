@@ -1,17 +1,11 @@
 package com.emmisolutions.emmimanager.service;
 
-import java.util.Set;
-
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
-import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import java.util.Set;
 
 /**
  * TeamLocation Service API
@@ -31,8 +25,9 @@ public interface TeamLocationService {
     /**
      * saves an association of a team with a set of locations
      *
-     * @param team        to save
-     * @param request 	locations to associate to the team and for each locations the providers selected
+     * @param team    to save
+     * @param request locations to associate to the team and for each locations the providers selected
+     * @return the saved TPTLs
      */
     Set<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request);
 

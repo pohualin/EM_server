@@ -21,15 +21,21 @@ import java.io.IOException;
 @Component
 public class PreAuthenticatedAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final Logger log = LoggerFactory.getLogger(PreAuthenticatedAuthenticationEntryPoint.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreAuthenticatedAuthenticationEntryPoint.class);
 
     /**
      * Always returns a 401 error code to the client.
+     *
+     * @param request  the request
+     * @param response the response
+     * @param arg2     auth exception
+     * @throws IOException      if there's a problem
+     * @throws ServletException if there's a problem
      */
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException arg2) throws IOException,
-            ServletException {
-            log.debug("Pre-authenticated entry point called. Rejecting access");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
+        ServletException {
+        LOGGER.debug("Pre-authenticated entry point called. Rejecting access");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
     }
 
 }

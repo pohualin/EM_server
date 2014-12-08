@@ -35,6 +35,7 @@ public class ClientProviderResourceAssembler implements ResourceAssembler<Client
     /**
      * Create the search link
      *
+     * @param entity to search for
      * @return Link for team searches from the ClientProvider
      */
     public Link createTeamsSearchLink(ClientProvider entity) {

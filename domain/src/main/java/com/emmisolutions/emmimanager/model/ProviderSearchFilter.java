@@ -15,7 +15,7 @@ import java.util.Set;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProviderSearchFilter {
-	@XmlElement(name = "name")
+    @XmlElement(name = "name")
     @XmlElementWrapper(name = "names")
     private Set<String> names;
 
@@ -30,6 +30,7 @@ public class ProviderSearchFilter {
 
     /**
      * Constructor
+     *
      * @param names to filter
      */
     public ProviderSearchFilter(String... names) {
@@ -38,8 +39,9 @@ public class ProviderSearchFilter {
 
     /**
      * Creates a search filter using status and names
+     *
      * @param status the status
-     * @param names the names to filter by
+     * @param names  the names to filter by
      */
     public ProviderSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
@@ -65,6 +67,12 @@ public class ProviderSearchFilter {
     public enum StatusFilter {
         ALL, ACTIVE_ONLY, INACTIVE_ONLY;
 
+        /**
+         * get a status of active if not found
+         *
+         * @param status to convert
+         * @return the enum
+         */
         public static StatusFilter fromStringOrActive(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {
@@ -77,10 +85,10 @@ public class ProviderSearchFilter {
         }
     }
 
-	@Override
-	public String toString() {
-		return "ProviderSearchFilter [names=" + names + ", status=" + status
-				+ "]";
-	}
+    @Override
+    public String toString() {
+        return "ProviderSearchFilter [names=" + names + ", status=" + status
+            + "]";
+    }
 
 }

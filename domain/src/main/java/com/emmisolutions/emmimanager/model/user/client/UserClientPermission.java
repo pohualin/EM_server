@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 
 /**
  * A client level permission
@@ -68,5 +69,16 @@ public class UserClientPermission {
 
     public void setRank(int rank) {
         this.rank = rank;
+    }
+
+    @ManyToMany(mappedBy = "userClientPermissions")
+    private Collection<UserClientRole> userClientRoles;
+
+    public Collection<UserClientRole> getUserClientRoles() {
+        return userClientRoles;
+    }
+
+    public void setUserClientRoles(Collection<UserClientRole> userClientRoles) {
+        this.userClientRoles = userClientRoles;
     }
 }

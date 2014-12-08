@@ -13,7 +13,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * A Page of UserClientRoleTeamResource objects
  */
-public class UserClientTeamRoleResourcePage extends PagedResource<UserClientTeamRoleResource>{
+public class UserClientTeamRoleResourcePage extends PagedResource<UserClientTeamRoleResource> {
 
     public UserClientTeamRoleResourcePage() {
     }
@@ -22,7 +22,7 @@ public class UserClientTeamRoleResourcePage extends PagedResource<UserClientTeam
      * Wrapped constructor
      *
      * @param userClientTeamRoleResource to be wrapped
-     * @param userClientTeamRolePage      the raw response
+     * @param userClientTeamRolePage     the raw response
      */
     public UserClientTeamRoleResourcePage(PagedResources<UserClientTeamRoleResource> userClientTeamRoleResource, Page<UserClientTeamRole> userClientTeamRolePage) {
         pageDefaults(userClientTeamRoleResource, userClientTeamRolePage);
@@ -31,6 +31,7 @@ public class UserClientTeamRoleResourcePage extends PagedResource<UserClientTeam
     /**
      * Create the search link
      *
+     * @param client the client
      * @return Link for team roles on a client
      * @see com.emmisolutions.emmimanager.web.rest.resource.ClientTeamRolesAdminResource#clientTeamRoles(Long, org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler)
      */

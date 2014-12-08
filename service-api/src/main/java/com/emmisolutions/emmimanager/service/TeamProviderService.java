@@ -68,6 +68,7 @@ public interface TeamProviderService {
      *
      * @param client   the client
      * @param provider the provider
+     * @return number deleted
      */
     long delete(Client client, Provider provider);
 

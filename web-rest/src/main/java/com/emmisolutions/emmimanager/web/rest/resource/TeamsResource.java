@@ -117,6 +117,7 @@ public class TeamsResource {
     /**
      * GET to search for teams on a client
      *
+     * @param clientId  the client id
      * @param pageable  paged request
      * @param sort      sorting request
      * @param status    to filter by

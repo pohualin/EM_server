@@ -62,7 +62,7 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
         userClientTeamPermissions.add(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI));
         UserClientTeamRole userClientTeamRole = userClientTeamRolePersistence.save(new UserClientTeamRole("permission save", makeNewRandomClient(), userClientTeamPermissions));
         assertThat("permission present",
-            userClientTeamRolePersistence.find(userClientTeamRole.getClient().getId(), null).iterator().next().getUserClientTeamPermissions(),
+            userClientTeamRolePersistence.permissionsFor(userClientTeamRole),
             hasItem(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI)));
     }
 
@@ -88,6 +88,14 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
     @Test
     public void nullReload(){
         assertThat("null reload returns null", userClientTeamRolePersistence.reload(null), is(nullValue()));
+    }
+
+    /**
+     * Loading permissions on null role should return null
+     */
+    @Test
+    public void loadPermissions(){
+        assertThat("empty permissions of null client role", userClientTeamRolePersistence.permissionsFor(new UserClientTeamRole()).isEmpty(), is(true));
     }
 
 }

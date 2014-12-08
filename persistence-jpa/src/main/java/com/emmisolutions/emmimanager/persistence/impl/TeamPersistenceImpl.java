@@ -18,6 +18,9 @@ import javax.annotation.Resource;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
+/**
+ * Persistence implementation for TeamPersistence
+ */
 @Repository
 public class TeamPersistenceImpl implements TeamPersistence {
 
