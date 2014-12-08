@@ -79,9 +79,16 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
      */
     private String normalizeName(UserClient user) {
 	StringBuilder sb = new StringBuilder();
-	sb.append(user.getFirstName()).append(user.getLastName())
-		.append(user.getLogin());
-	if (user.getEmail() != null) {
+	if(StringUtils.isNotBlank(user.getFirstName())){
+	    sb.append(user.getFirstName());
+	}
+	if(StringUtils.isNotBlank(user.getLastName())){
+	    sb.append(user.getLastName());
+	}
+	if(StringUtils.isNotBlank(user.getLogin())){
+	    sb.append(user.getLogin());
+	}
+	if(StringUtils.isNotBlank(user.getEmail())){
 	    sb.append(user.getEmail());
 	}
 	String normalizedName = StringUtils.trimToEmpty(StringUtils
