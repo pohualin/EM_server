@@ -10,26 +10,32 @@ import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.UserClientService;
 
 /**
- * It can only contact the persistence layer and
- * is responsible for Transaction demarcation. This layer will also have
- * security annotations at the method level as well.
+ * It can only contact the persistence layer and is responsible for Transaction
+ * demarcation. This layer will also have security annotations at the method
+ * level as well.
  */
 @Service
 public class UserClientServiceImpl implements UserClientService {
 
-	@Resource
-	UserClientPersistence userClientPersistence;
+    @Resource
+    UserClientPersistence userClientPersistence;
 
-	@Override
-	@Transactional
-	public UserClient create(UserClient userClient) {
-		return userClientPersistence.saveOrUpdate(userClient);
-	}
+    @Override
+    @Transactional
+    public UserClient create(UserClient userClient) {
+	return userClientPersistence.saveOrUpdate(userClient);
+    }
 
-	@Override
-	@Transactional
-	public UserClient update(UserClient user) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    @Transactional
+    public UserClient reload(Long userClientId) {
+	return userClientPersistence.reload(userClientId);
+    }
+
+    @Override
+    @Transactional
+    public UserClient update(UserClient user) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 }

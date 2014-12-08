@@ -19,7 +19,15 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
 
     @Override
     public UserClient saveOrUpdate(UserClient user) {
-        return userClientRepository.save(user);
+	return userClientRepository.save(user);
+    }
+
+    @Override
+    public UserClient reload(Long userClientId) {
+	if (userClientId == null) {
+	    return null;
+	}
+	return userClientRepository.findOne(userClientId);
     }
 
 }

@@ -1,8 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -14,7 +13,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
 
 /**
  * Root integration test harness
@@ -40,6 +51,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     LocationPersistence locationPersistence;
+    
+    @Resource
+    UserClientRolePersistence userClientRolePersistence;
 
     /**
      * Login as a user
@@ -114,6 +128,14 @@ public abstract class BaseIntegrationTest {
         location.setPhone("214-555-5555");
         location.setState(State.TX);
         return locationPersistence.save(location);
+    }
+    
+    protected UserClientRole makeNewRandomUserClientRole(Client client){
+	if(client == null){
+	    client = makeNewRandomClient();
+	}
+	UserClientRole userClientRole = new UserClientRole(RandomStringUtils.randomAlphabetic(10), client, null);
+	return userClientRolePersistence.save(userClientRole);
     }
 
     /**

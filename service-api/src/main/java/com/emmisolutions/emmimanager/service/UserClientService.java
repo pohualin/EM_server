@@ -15,6 +15,8 @@ public interface UserClientService {
      */
     UserClient create(UserClient user);
     
+    UserClient reload(Long userClientId);
+    
     /**
      * Update an existing client user with the passed UserClient object.
      *
