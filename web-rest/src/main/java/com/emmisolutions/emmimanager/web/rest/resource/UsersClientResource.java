@@ -68,7 +68,8 @@ public class UsersClientResource {
      * @return ResponseEntity<UserClientPage> or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER", "PERM_CLIENT_CREATE_NEW_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+	    "PERM_CLIENT_CREATE_NEW_USER" })
     @ApiImplicitParams(value = {
 	    @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
 	    @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -79,7 +80,7 @@ public class UsersClientResource {
 	    @SortDefault(sort = "lastName") Sort sort,
 	    PagedResourcesAssembler<UserClient> assembler,
 	    @RequestParam(value = "status", required = false) String status,
-	    @RequestParam(value = "name", required = false) String term) {
+	    @RequestParam(value = "term", required = false) String term) {
 
 	UserClientSearchFilter filter = new UserClientSearchFilter(clientId,
 		fromStringOrActive(status), term);
@@ -109,7 +110,8 @@ public class UsersClientResource {
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.POST, consumes = {
 	    APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER", "PERM_CLIENT_CREATE_NEW_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+	    "PERM_CLIENT_CREATE_NEW_USER" })
     public ResponseEntity<UserClientResource> createUser(
 	    @RequestBody UserClient userClient) {
 	userClient = userClientService.create(userClient);

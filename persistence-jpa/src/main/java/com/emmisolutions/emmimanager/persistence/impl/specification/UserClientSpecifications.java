@@ -27,36 +27,37 @@ public class UserClientSpecifications {
     @Resource
     MatchingCriteriaBean matchCriteria;
 
+    /**
+     * Method to generate Specification with search term
+     * 
+     * @param filter
+     *            carriers search term
+     * @return Specification with search term
+     */
     public Specification<UserClient> hasNames(
 	    final UserClientSearchFilter filter) {
 	return new Specification<UserClient>() {
 	    @Override
 	    public Predicate toPredicate(Root<UserClient> root,
 		    CriteriaQuery<?> query, CriteriaBuilder cb) {
-		List<Predicate> predicates = new ArrayList<>();
-		if (filter != null
-			&& !CollectionUtils.isEmpty(filter.getNames())) {
-		    for (String name : filter.getNames()) {
-			List<String> searchTerms = new ArrayList<>();
-			String[] terms = StringUtils.split(
-				matchCriteria.normalizeName(name), " ");
-			if (terms != null) {
-			    for (String term : terms) {
-				if (!searchTerms.contains(term)) {
-				    searchTerms.add(term);
-				}
+		if (filter != null && StringUtils.isNotBlank(filter.getTerm())) {
+		    List<String> searchTerms = new ArrayList<>();
+		    String[] terms = StringUtils.split(
+			    matchCriteria.normalizeName(filter.getTerm()), " ");
+		    if (terms != null) {
+			for (String term : terms) {
+			    if (!searchTerms.contains(term)) {
+				searchTerms.add(term);
 			    }
 			}
-			List<Predicate> andClause = new ArrayList<>();
-			for (String searchTerm : searchTerms) {
-			    andClause.add(cb.like(
-				    root.get(UserClient_.normalizedName), "%"
-					    + searchTerm + "%"));
-			}
-			predicates.add(cb.and(andClause
-				.toArray(new Predicate[andClause.size()])));
 		    }
-		    return cb.or(predicates.toArray(new Predicate[predicates
+		    List<Predicate> andClause = new ArrayList<>();
+		    for (String searchTerm : searchTerms) {
+			andClause.add(cb.like(
+				root.get(UserClient_.normalizedName), "%"
+					+ searchTerm + "%"));
+		    }
+		    return cb.and(andClause.toArray(new Predicate[andClause
 			    .size()]));
 		}
 		return null;
@@ -64,6 +65,13 @@ public class UserClientSpecifications {
 	};
     }
 
+    /**
+     * Method to generate Specification with clientId
+     * 
+     * @param filter
+     *            carries clientId
+     * @return Specification with clientID
+     */
     public Specification<UserClient> isClient(
 	    final UserClientSearchFilter filter) {
 	return new Specification<UserClient>() {

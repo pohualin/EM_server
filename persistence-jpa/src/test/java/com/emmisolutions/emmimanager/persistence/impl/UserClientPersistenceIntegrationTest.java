@@ -5,7 +5,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
@@ -65,6 +67,51 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	UserClient user1 = userClientRepository.findOne(user.getId());
 	assertThat("the users saved should be the same as the user fetched",
 		user, is(user1));
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void testBadFirstNameCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setLastName(RandomStringUtils.randomAlphabetic(10));
+	user.setLogin(RandomStringUtils.randomAlphabetic(10));
+	user.setEmail("abc@gmail.com");
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+    }
+    
+    @Test(expected = ConstraintViolationException.class)
+    public void testBadLastNameCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+	user.setLogin(RandomStringUtils.randomAlphabetic(10));
+	user.setEmail("abc@gmail.com");
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+    }
+    
+    @Test(expected = ConstraintViolationException.class)
+    public void testBadLoginCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setLastName(RandomStringUtils.randomAlphabetic(10));
+	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+	user.setEmail("abc@gmail.com");
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+    }
+    
+    @Test
+    public void testBadEmailCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+	user.setLastName(RandomStringUtils.randomAlphabetic(10));
+	user.setLogin(RandomStringUtils.randomAlphabetic(10));
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+	assertThat(user.getId(), is(notNullValue()));
     }
 
     @Test

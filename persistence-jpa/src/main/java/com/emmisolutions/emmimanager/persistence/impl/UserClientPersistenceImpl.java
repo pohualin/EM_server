@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.impl.specification.UserClientSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
 
@@ -32,14 +32,19 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     @Resource
     UserClientSpecifications userClientSpecifications;
 
+    @Resource
+    MatchingCriteriaBean matchCriteria;
+
     @Override
     public UserClient saveOrUpdate(UserClient user) {
-	user.setNormalizedName(normalizeName(user));
+	user.setNormalizedName(matchCriteria.normalizedName(
+		user.getFirstName(), user.getLastName(), user.getLogin(),
+		user.getEmail()));
 	return userClientRepository.save(user);
     }
 
     @Override
-    public Page<UserClient> list(Pageable pageable, 
+    public Page<UserClient> list(Pageable pageable,
 	    UserClientSearchFilter filter) {
 	if (pageable == null) {
 	    pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
@@ -68,35 +73,6 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
 	    sort = new Sort(insensitiveOrders);
 	}
 	return new PageRequest(page.getPageNumber(), page.getPageSize(), sort);
-    }
-
-    /**
-     * remove the special characters replacing it with blank (" ") and change
-     * all to lower case
-     *
-     * @param name
-     * @return
-     */
-    private String normalizeName(UserClient user) {
-	StringBuilder sb = new StringBuilder();
-	if(StringUtils.isNotBlank(user.getFirstName())){
-	    sb.append(user.getFirstName());
-	}
-	if(StringUtils.isNotBlank(user.getLastName())){
-	    sb.append(user.getLastName());
-	}
-	if(StringUtils.isNotBlank(user.getLogin())){
-	    sb.append(user.getLogin());
-	}
-	if(StringUtils.isNotBlank(user.getEmail())){
-	    sb.append(user.getEmail());
-	}
-	String normalizedName = StringUtils.trimToEmpty(StringUtils
-		.lowerCase(sb.toString()));
-	if (StringUtils.isNotBlank(normalizedName)) {
-	    normalizedName = normalizedName.replaceAll("[^a-z0-9]*", "");
-	}
-	return normalizedName;
     }
 
 }

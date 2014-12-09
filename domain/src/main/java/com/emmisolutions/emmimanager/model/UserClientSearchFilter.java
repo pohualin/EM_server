@@ -1,13 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,9 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserClientSearchFilter {
 
-    @XmlElement(name = "name")
-    @XmlElementWrapper(name = "names")
-    private Set<String> names;
+    private String term;
 
     private StatusFilter status;
 
@@ -33,13 +25,11 @@ public class UserClientSearchFilter {
     }
 
     /**
-     * all status plus passed names
+     * all status plus passed term
      * 
-     * @param names
-     *            filter
      */
-    public UserClientSearchFilter(Long clientId, String... names) {
-	this(clientId, StatusFilter.ALL, names);
+    public UserClientSearchFilter(Long clientId, String term) {
+	this(clientId, StatusFilter.ALL, term);
     }
 
     /**
@@ -47,25 +37,24 @@ public class UserClientSearchFilter {
      * 
      * @param status
      *            to filter
-     * @param names
+     * @param term
      *            to filter
      */
     public UserClientSearchFilter(Long clientId, StatusFilter status,
-	    String... names) {
+	    String term) {
 	if (clientId != null) {
 	    this.clientId = clientId;
 	}
-	if (names != null) {
-	    this.names = new HashSet<>();
-	    Collections.addAll(this.getNames(), names);
+	if (term != null) {
+	    this.term = term;
 	}
 	if (status != null) {
 	    this.status = status;
 	}
     }
 
-    public Set<String> getNames() {
-	return names;
+    public String getTerm() {
+	return term;
     }
 
     public Long getClientId() {
@@ -107,7 +96,7 @@ public class UserClientSearchFilter {
 
     @Override
     public String toString() {
-	return "UserClientSearchFilter{" + "names=" + names + ", status="
+	return "UserClientSearchFilter{" + "term=" + term + ", status="
 		+ status + '}';
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 
@@ -28,53 +29,36 @@ public class UserPersistenceImpl implements UserPersistence {
     @Resource
     UserSpecifications userSpecifications;
 
+    @Resource
+    MatchingCriteriaBean matchCriteria;
+
     @Override
     public UserAdmin saveOrUpdate(UserAdmin user) {
-        user.setLogin(StringUtils.lowerCase(user.getLogin()));
-        user.setNormalizedName(normalizeName(user));
-        return userAdminRepository.save(user);
+	user.setLogin(StringUtils.lowerCase(user.getLogin()));
+	user.setNormalizedName(matchCriteria.normalizedName(
+		user.getFirstName(), user.getLastName(), user.getLogin(),
+		user.getEmail()));
+	return userAdminRepository.save(user);
     }
 
     @Override
     public UserAdmin reload(String login) {
-        return userAdminRepository.findByLoginIgnoreCase(login);
+	return userAdminRepository.findByLoginIgnoreCase(login);
     }
 
     @Override
     public UserAdmin fetchUserWillFullPermissions(String login) {
-        return userAdminRepository.fetchWithFullPermissions(login);
+	return userAdminRepository.fetchWithFullPermissions(login);
     }
-
 
     @Override
     public Page<UserAdmin> listPotentialContractOwners(Pageable pageable) {
-        if (pageable == null){
-            // default pagination request if none
-            pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
-        }
-        return userAdminRepository.findAll(where(userSpecifications.isContractOwner()), pageable);
-    }
-    
-    private String normalizeName(UserAdmin user) {
-	StringBuilder sb = new StringBuilder();
-	if(StringUtils.isNotBlank(user.getFirstName())){
-	    sb.append(user.getFirstName());
+	if (pageable == null) {
+	    // default pagination request if none
+	    pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
 	}
-	if(StringUtils.isNotBlank(user.getLastName())){
-	    sb.append(user.getLastName());
-	}
-	if(StringUtils.isNotBlank(user.getLogin())){
-	    sb.append(user.getLogin());
-	}
-	if(StringUtils.isNotBlank(user.getEmail())){
-	    sb.append(user.getEmail());
-	}
-	String normalizedName = StringUtils.trimToEmpty(StringUtils
-		.lowerCase(sb.toString()));
-	if (StringUtils.isNotBlank(normalizedName)) {
-	    normalizedName = normalizedName.replaceAll("[^a-z0-9]*", "");
-	}
-	return normalizedName;
+	return userAdminRepository.findAll(
+		where(userSpecifications.isContractOwner()), pageable);
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
@@ -59,7 +60,7 @@ public class UserClientPage extends PagedResource<UserClientResource> {
 		UriTemplate uriTemplate = new UriTemplate(link.getHref())
 			.with(new TemplateVariables(
 				new TemplateVariable(
-					"name",
+					"term",
 					TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
 				new TemplateVariable(
 					"status",
@@ -70,10 +71,8 @@ public class UserClientPage extends PagedResource<UserClientResource> {
 		if (filter.getStatus() != null) {
 		    builder.queryParam("status", filter.getStatus());
 		}
-		if (!CollectionUtils.isEmpty(filter.getNames())) {
-		    for (String s : filter.getNames()) {
-			builder.queryParam("name", s);
-		    }
+		if (StringUtils.isNotBlank(filter.getTerm())) {
+		    builder.queryParam("term", filter.getTerm());
 		}
 		this.links.add(new Link(builder.build().encode().toUriString(),
 			rel));
