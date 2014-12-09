@@ -2,9 +2,6 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Resource;
 
 import org.springframework.data.domain.Page;
@@ -51,28 +48,7 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
 	}
 	return userClientRepository.findAll(
 		where(userClientSpecifications.hasNames(filter)).and(
-			userClientSpecifications.isClient(filter)),
-		caseInsensitiveSort(pageable));
-    }
-
-    /**
-     * Takes all sort parameters and makes them case insensitive sorts
-     *
-     * @param page
-     *            copy of the existing pageable request with insensitive sorts
-     * @return Pageable
-     */
-    private Pageable caseInsensitiveSort(Pageable page) {
-	Sort sort = null;
-	if (page.getSort() != null) {
-	    List<Sort.Order> insensitiveOrders = new ArrayList<>();
-	    for (Sort.Order pageSort : page.getSort()) {
-		insensitiveOrders.add(new Sort.Order(pageSort.getDirection(),
-			pageSort.getProperty()).ignoreCase());
-	    }
-	    sort = new Sort(insensitiveOrders);
-	}
-	return new PageRequest(page.getPageNumber(), page.getPageSize(), sort);
+			userClientSpecifications.isClient(filter)), pageable);
     }
 
 }

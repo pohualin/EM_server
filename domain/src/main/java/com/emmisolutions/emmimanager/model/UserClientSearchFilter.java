@@ -42,15 +42,9 @@ public class UserClientSearchFilter {
      */
     public UserClientSearchFilter(Long clientId, StatusFilter status,
 	    String term) {
-	if (clientId != null) {
-	    this.clientId = clientId;
-	}
-	if (term != null) {
-	    this.term = term;
-	}
-	if (status != null) {
-	    this.status = status;
-	}
+	this.clientId = clientId;
+	this.term = term;
+	this.status = status;
     }
 
     public String getTerm() {
