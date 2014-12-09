@@ -53,7 +53,7 @@ public class LocationSpecifications {
                         for (String searchTerm : searchTerms) {
                             if (StringUtils.isNotBlank(searchTerm)) {
                                 addedANameFilter = true;
-                                predicates.add(cb.like(cb.lower(root.get(Location_.normalizedName)), "%" + searchTerm.toLowerCase() + "%"));
+                                predicates.add(cb.like(root.get(Location_.normalizedName), "%" + searchTerm + "%"));
                             }
                         }
                     }
