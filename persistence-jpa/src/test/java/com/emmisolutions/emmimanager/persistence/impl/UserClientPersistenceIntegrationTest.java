@@ -5,17 +5,15 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.LocalDate;
-import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
@@ -30,65 +28,116 @@ import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
  */
 public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
-	@Resource
-	ClientPersistence clientPersistence;
+    @Resource
+    ClientPersistence clientPersistence;
 
-	@Resource
-	ClientTypeRepository clientTypeRepository;
+    @Resource
+    ClientTypeRepository clientTypeRepository;
 
-	@Resource
-	UserClientPersistence userClientPersistence;
-	
-	@Resource
-	UserPersistence userPersistence;
+    @Resource
+    UserClientPersistence userClientPersistence;
 
-	@Resource
-	UserClientRepository userClientRepository;
+    @Resource
+    UserPersistence userPersistence;
 
-	ClientType clientType;
-	
-	UserAdmin superAdmin;
+    @Resource
+    UserClientRepository userClientRepository;
 
-	@Before
-	public void init() {
-		superAdmin = userPersistence.reload("super_admin");
-		clientType = clientTypeRepository.getOne(1l);
-	}
+    ClientType clientType;
 
-	/**
-	 * valid create
-	 */
-	@Test
-	public void testCreate() {
-		Client client = makeClient();
-		clientPersistence.save(client);
+    UserAdmin superAdmin;
 
-		UserClient user = new UserClient();
-		user.setClient(client);
-		user.setFirstName("firstName");
-		user.setLastName("lastName");
-		user.setLogin("flast@mail.com");
-		user = userClientPersistence.saveOrUpdate(user);
-		assertThat(user.getId(), is(notNullValue()));
-		assertThat(user.getVersion(), is(notNullValue()));
+    /**
+     * valid create
+     */
+    @Test
+    public void testCreate() {
+	Client client = makeNewRandomClient();
 
-		UserClient user1 = userClientRepository.findOne(user.getId());
-		assertThat("the users saved should be the same as the user fetched",
-				user, is(user1));
-	}
+	UserClient user = new UserClient();
+	user.setClient(client);
+	user.setFirstName("firstName");
+	user.setLastName("lastName");
+	user.setLogin("flast@mail.com");
+	user.setEmail("flast@gmail.com");
+	user = userClientPersistence.saveOrUpdate(user);
+	assertThat(user.getId(), is(notNullValue()));
+	assertThat(user.getVersion(), is(notNullValue()));
 
-	private Client makeClient() {
-		Client client = new Client();
-		client.setActive(false);
-		client.setName("Test Client");
-		client.setType(clientType);
-		client.setRegion(new ClientRegion(1l));
-		client.setTier(new ClientTier(3l));
-		client.setContractOwner(superAdmin);
-		client.setContractStart(LocalDate.now());
-		client.setContractEnd(LocalDate.now().plusYears(2));
-		client.setSalesForceAccount(new SalesForce(RandomStringUtils
-				.randomAlphanumeric(18)));
-		return client;
-	}
+	UserClient user1 = userClientRepository.findOne(user.getId());
+	assertThat("the users saved should be the same as the user fetched",
+		user, is(user1));
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void testBadFirstNameCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setLastName(RandomStringUtils.randomAlphabetic(10));
+	user.setLogin(RandomStringUtils.randomAlphabetic(10));
+	user.setEmail("abc@gmail.com");
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+    }
+    
+    @Test(expected = ConstraintViolationException.class)
+    public void testBadLastNameCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+	user.setLogin(RandomStringUtils.randomAlphabetic(10));
+	user.setEmail("abc@gmail.com");
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+    }
+    
+    @Test(expected = ConstraintViolationException.class)
+    public void testBadLoginCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setLastName(RandomStringUtils.randomAlphabetic(10));
+	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+	user.setEmail("abc@gmail.com");
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+    }
+    
+    @Test
+    public void testBadEmailCreate() {
+	Client client = makeNewRandomClient();
+	UserClient user = new UserClient();
+	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+	user.setLastName(RandomStringUtils.randomAlphabetic(10));
+	user.setLogin(RandomStringUtils.randomAlphabetic(10));
+	user.setClient(client);
+	user = userClientPersistence.saveOrUpdate(user);
+	assertThat(user.getId(), is(notNullValue()));
+    }
+
+    @Test
+    public void testList() {
+	Client client = makeNewRandomClient();
+	Client clientA = makeNewRandomClient();
+	makeNewRandomUserClient(client);
+
+	UserClientSearchFilter filter = new UserClientSearchFilter(
+		client.getId(), "");
+	Page<UserClient> userClients = userClientPersistence.list(null, filter);
+	assertThat("returned page of UserClient should not be empty",
+		userClients.hasContent(), is(true));
+
+	UserClientSearchFilter filterA = new UserClientSearchFilter(
+		clientA.getId(), "");
+	Page<UserClient> userClientsA = userClientPersistence.list(null,
+		filterA);
+	assertThat("returned page of UserClient should be empty",
+		userClientsA.hasContent(), is(false));
+
+	UserClientSearchFilter realFilter = new UserClientSearchFilter(
+		client.getId(), "a");
+	Page<UserClient> userClientsWithFilter = userClientPersistence.list(
+		null, realFilter);
+	assertThat("returned page of UserClient should not be empty",
+		userClientsWithFilter.hasContent(), is(true));
+    }
 }

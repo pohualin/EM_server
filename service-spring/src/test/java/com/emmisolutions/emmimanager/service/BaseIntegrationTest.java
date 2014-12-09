@@ -28,6 +28,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSalesForce;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
 
 /**
@@ -55,6 +56,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     TeamService teamService;
+    
+    @Resource
+    UserClientService userClientService;
 
     @Resource
     UserClientRoleService userClientRoleService;
@@ -160,6 +164,20 @@ public abstract class BaseIntegrationTest {
 	UserClientRole userClientRole = new UserClientRole(
 		RandomStringUtils.randomAlphabetic(10), client, null);
 	return userClientRoleService.create(userClientRole);
+    }
+    
+    /**
+     * Creates a new UserClient
+     *
+     * @return a UserClient
+     */
+    protected UserClient makeNewRandomUserClient(Client client) {
+	UserClient userClient = new UserClient();
+	userClient.setClient(client != null ? client : makeNewRandomClient());
+	userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
+	userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
+	userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
+	return userClientService.create(userClient);
     }
 
     /**

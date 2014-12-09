@@ -24,6 +24,7 @@ import com.emmisolutions.emmimanager.model.State;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSalesForce;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
 
@@ -54,6 +55,9 @@ public abstract class BaseIntegrationTest {
     
     @Resource
     UserClientRolePersistence userClientRolePersistence;
+    
+    @Resource
+    UserClientPersistence userClientPersistence;
 
     /**
      * Login as a user
@@ -130,6 +134,25 @@ public abstract class BaseIntegrationTest {
         return locationPersistence.save(location);
     }
     
+    /**
+     * Creates a new UserClient
+     *
+     * @return a UserClient
+     */
+    protected UserClient makeNewRandomUserClient(Client client) {
+	UserClient userClient = new UserClient();
+	userClient.setClient(client != null ? client : makeNewRandomClient());
+	userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
+	userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
+	userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
+	return userClientPersistence.saveOrUpdate(userClient);
+    }
+    
+    /**
+     * Creates a new UserClientRole
+     *
+     * @return a UserClientRole
+     */
     protected UserClientRole makeNewRandomUserClientRole(Client client){
 	if(client == null){
 	    client = makeNewRandomClient();
@@ -147,8 +170,8 @@ public abstract class BaseIntegrationTest {
         UserAdmin userAdmin = new UserAdmin(RandomStringUtils
             .randomAlphabetic(255), RandomStringUtils
             .randomAlphanumeric(100));
-        userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
-        userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
+        userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        userAdmin.setLastName(RandomStringUtils.randomAlphabetic(50));
         return userPersistence.saveOrUpdate(userAdmin);
     }
 

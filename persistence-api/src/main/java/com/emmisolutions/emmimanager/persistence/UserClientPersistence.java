@@ -1,5 +1,9 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
 /**
@@ -7,6 +11,8 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
  */
 public interface UserClientPersistence {
 
+    UserClient reload(Long userClientId);
+    
     /**
      * Saves or updates the User object
      *
@@ -16,6 +22,15 @@ public interface UserClientPersistence {
      */
     UserClient saveOrUpdate(UserClient user);
 
-    UserClient reload(Long userClientId);
+    /**
+     * Find a page of UserClient based on pagable and filter
+     * 
+     * @param pageable
+     *            contains pageable information
+     * @param filter
+     *            contains search criteria
+     * @return Page<UserClient>
+     */
+    Page<UserClient> list(Pageable pageable, UserClientSearchFilter filter);
 
 }
