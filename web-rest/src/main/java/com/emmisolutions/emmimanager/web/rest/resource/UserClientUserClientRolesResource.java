@@ -20,14 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientPage;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientResource;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResource;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 
@@ -40,16 +37,10 @@ import com.wordnik.swagger.annotations.ApiImplicitParams;
 public class UserClientUserClientRolesResource {
 
     @Resource
-    ClientService clientService;
-
-    @Resource
-    UserClientService userClientService;
-
-    @Resource
-    UserClientResourceAssembler userClientResourceAssembler;
-
-    @Resource
     UserClientUserClientRoleService userClientUserClientRoleService;
+
+    @Resource
+    UserClientUserClientRoleResourceAssembler userClientUserClientRoleResourceAssembler;
 
     /**
      * GET to search for clients
@@ -96,18 +87,20 @@ public class UserClientUserClientRolesResource {
      *         <p/>
      *         TODO User create permission
      */
-    @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.POST, consumes = {
+    @RequestMapping(value = "/user_client/{userClientId}/userClientRoles", method = RequestMethod.POST, consumes = {
 	    APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
 	    "PERM_CLIENT_CREATE_NEW_USER" })
-    public ResponseEntity<UserClientResource> createUser(
-	    @RequestBody UserClient userClient) {
-	userClient = userClientService.create(userClient);
-	if (userClient == null) {
+    public ResponseEntity<UserClientUserClientRoleResource> assignUserClientRole(
+	    @RequestBody UserClientUserClientRole userClientUserClientRole) {
+	userClientUserClientRole = userClientUserClientRoleService
+		.create(userClientUserClientRole);
+	if (userClientUserClientRole == null) {
 	    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	} else {
 	    return new ResponseEntity<>(
-		    userClientResourceAssembler.toResource(userClient),
+		    userClientUserClientRoleResourceAssembler
+			    .toResource(userClientUserClientRole),
 		    HttpStatus.CREATED);
 	}
     }
