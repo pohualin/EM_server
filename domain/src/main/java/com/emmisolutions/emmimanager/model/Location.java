@@ -1,11 +1,13 @@
 package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -56,6 +58,13 @@ public class Location extends AbstractAuditingEntity {
     @Column(length = 2, nullable = false)
     private State state;
 
+    @NotNull
+    @Size(max = 255)
+    @Column(name="normalized_name", length = 255, nullable = false)
+    @NotAudited
+    @Pattern(regexp = "[a-z0-9 ]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
+    private String normalizedName;    
+
     /**
      * No Arg Constructor
      */
@@ -63,7 +72,15 @@ public class Location extends AbstractAuditingEntity {
 
     }
 
-    /**
+    public String getNormalizedName() {
+		return normalizedName;
+	}
+
+	public void setNormalizedName(String normalizedName) {
+		this.normalizedName = normalizedName;
+	}
+
+	/**
      * By id constructor
      *
      * @param id of the location
