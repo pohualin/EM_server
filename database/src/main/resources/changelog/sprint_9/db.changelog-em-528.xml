@@ -48,4 +48,10 @@
                              constraintName="uk_location_normalized_name"/>
 	</changeSet>
 	
+	<changeSet id="normalizedName_for_location_update" author="Claudio">
+        <sql><![CDATA[	
+			update location
+			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,' ',''),'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/','') )))
+        ]]></sql>   
+	</changeSet>
 </databaseChangeLog>
