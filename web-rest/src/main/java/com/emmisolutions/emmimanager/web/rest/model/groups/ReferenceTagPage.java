@@ -1,12 +1,11 @@
 package com.emmisolutions.emmimanager.web.rest.model.groups;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.PagedResources;
 
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A HATEOAS wrapper for a page of ReferenceTagResource objects.
@@ -14,14 +13,14 @@ import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 @XmlRootElement(name = "ref-tag-page")
 public class ReferenceTagPage extends PagedResource<ReferenceTagResource> {
 
-	public ReferenceTagPage() {
+    public ReferenceTagPage() {
     }
 
     /**
      * Wrapper for ReferenceTagResource objects
      *
-     * @param PagedResources<ReferenceGroupResource> to be wrapped
-     * @param Page<ReferenceGroup>             true page
+     * @param tagResourceSupports to be wrapped
+     * @param tagPage             true page
      * @return ReferenceTagPage
      */
     public ReferenceTagPage(PagedResources<ReferenceTagResource> tagResourceSupports, Page<ReferenceTag> tagPage) {

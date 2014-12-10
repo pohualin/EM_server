@@ -15,7 +15,8 @@ public interface ClientService {
     /**
      * Fetch a page of clients
      *
-     * @param page which page to retrieve
+     * @param page         which page to retrieve
+     * @param searchFilter filtered by
      * @return a page of clients
      */
     Page<Client> list(Pageable page, ClientSearchFilter searchFilter);

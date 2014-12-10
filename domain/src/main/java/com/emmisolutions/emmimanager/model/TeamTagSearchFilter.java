@@ -14,9 +14,15 @@ public class TeamTagSearchFilter {
     private Long teamTagId;
     private Long tagId;
 
+    /**
+     * Make a search filter for a particular team tag id
+     *
+     * @param teamTagId to use
+     */
     public TeamTagSearchFilter(Long teamTagId) {
         this.teamTagId = teamTagId;
     }
+
     public TeamTagSearchFilter() {
     }
 

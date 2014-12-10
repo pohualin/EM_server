@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.groups;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
@@ -40,11 +41,12 @@ public class GroupPage extends PagedResource<GroupResource> {
     /**
      * Create the search link
      *
+     * @param client to use
      * @return Link for group searches
      * @see com.emmisolutions.emmimanager.web.rest.resource.GroupsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
-    public static Link createFullSearchLink(Long clientId) {
-        Link link = linkTo(methodOn(GroupsResource.class).listGroupsByClientID(null, null, null, clientId)).withRel("groups");
+    public static Link createFullSearchLink(Client client) {
+        Link link = linkTo(methodOn(GroupsResource.class).listGroupsByClientID(null, null, null, client.getId())).withRel("groups");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -53,10 +55,10 @@ public class GroupPage extends PagedResource<GroupResource> {
                         ));
         return new Link(uriTemplate, link.getRel());
     }
-    
+
 
     private void addFilterToLinks(GroupSearchFilter filter) {
         this.searchFilter = filter;
     }
-   
+
 }

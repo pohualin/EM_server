@@ -113,6 +113,15 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
 
         assertThat("client role should have been deleted", userClientTeamRoleService.reload(userClientTeamRole), is(nullValue()));
     }
+
+    /**
+     * Loading permissions on null role should return null
+     */
+    @Test
+    public void loadPermissions(){
+        assertThat("empty permissions of null client role", userClientTeamRoleService.loadAll(null).isEmpty(), is(true));
+    }
+
     /**
      * Make sure we can load a page
      */

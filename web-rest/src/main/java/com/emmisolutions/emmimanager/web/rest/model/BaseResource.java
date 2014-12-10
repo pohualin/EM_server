@@ -1,20 +1,19 @@
 package com.emmisolutions.emmimanager.web.rest.model;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.List;
 
 /**
- * Base resource class
+ * A Base resource
+ * @param <T> the wrapped entity
  */
 public class BaseResource<T> extends ResourceSupport {
-	
+
 	private T entity;
 
     public T getEntity() {

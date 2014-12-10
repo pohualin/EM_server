@@ -17,6 +17,7 @@ public interface UserClientTeamRolePersistence {
      *
      * @param clientId for which to find the roles
      * @param page     specification
+     * @return a page of UserClientTeamRole objects
      */
     Page<UserClientTeamRole> find(long clientId, Pageable page);
 
@@ -49,5 +50,13 @@ public interface UserClientTeamRolePersistence {
      * @return the set of permissions
      */
     Set<UserClientTeamPermission> loadPossiblePermissions();
+
+    /**
+     * Load all permissions for a UserClientRole
+     *
+     * @param userClientTeamRole to load for
+     * @return Set of UserClientTeamPermission or empty Set never null
+     */
+    Set<UserClientTeamPermission> permissionsFor(UserClientTeamRole userClientTeamRole);
 
 }

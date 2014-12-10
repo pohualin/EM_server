@@ -16,6 +16,9 @@ import java.util.List;
 @XmlRootElement(name = "reference-data")
 public class ReferenceData extends ResourceSupport {
 
+    /**
+     * Create a ReferenceData
+     */
     public ReferenceData(){
        add(SalesForceSearchResponseResource.createFindTeamLink());
     }
