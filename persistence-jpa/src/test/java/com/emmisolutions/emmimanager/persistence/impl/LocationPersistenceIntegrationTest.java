@@ -1,21 +1,37 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.*;
-import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.LocalDate;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.LocationSearchFilter;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
+import com.emmisolutions.emmimanager.persistence.LocationPersistence;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 
 /**
  * Test class
@@ -69,6 +85,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         locationPersistence.save(location);
         assertThat("Location was given an id", location.getId(), is(notNullValue()));
         assertThat("system is the created by", location.getCreatedBy(), is("system"));
+        assertThat("Normalized Name", location.getNormalizedName(), is("validname1"));
     }
 
     /**
@@ -125,7 +142,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = makeClient();
         client = clientPersistence.save(client);
         Location location = new Location();
-        location.setName("Covenant Hospital");
+        location.setName("Covenant Hospital 1");
         location.setCity("Chicago");
         location.setPhone("312-555-1212");
         location.setState(State.IL);
@@ -135,7 +152,7 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client2 = makeClient();
         client2 = clientPersistence.save(client2);
         Location location2 = new Location();
-        location2.setName("Covenant Hospital");
+        location2.setName("Covenant Hospital 2");
         location2.setCity("Chicago");
         location2.setPhone("312-555-1212");
         location2.setState(State.IL);
@@ -180,7 +197,24 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setState(State.IL);
         locationPersistence.save(location);
     }
-
+    
+    @Test(expected = DataIntegrityViolationException.class)
+    public void duplicatedName() {
+        Location location = new Location();
+        location.setName("Location");
+        location.setCity("Valid City");
+        location.setPhone("555-555-5555");
+        location.setState(State.IL);
+        locationPersistence.save(location);
+        
+        location = new Location();
+        location.setName("Location");
+        location.setCity("Valid City");
+        location.setPhone("555-555-5555");
+        location.setState(State.IL);
+        locationPersistence.save(location);
+    }
+    
     @Test
     public void reloadNull(){
         assertThat("reloading null location should result in null", locationPersistence.reload(null), is(nullValue()));
