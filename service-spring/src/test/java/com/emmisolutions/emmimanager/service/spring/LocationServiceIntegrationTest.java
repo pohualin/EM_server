@@ -100,7 +100,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void updateBadClient() {
-        Location location = locationService.create(makeLocation("matty12341234", 2));
+        Location location = locationService.create(makeLocation("matty12341234", 1));
         assertThat("location belongs to no client", location.getBelongsTo(), is(nullValue()));
         Client nonPersistentClient = new Client();
         location.setBelongsTo(nonPersistentClient);
@@ -135,7 +135,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
     public void belongsToChange() {
         Client client = clientService.create(makeClient());
         Client client2 = clientService.create(makeClient());
-        Location location = locationService.create(makeLocation("matty12341234", 2));
+        Location location = locationService.create(makeLocation("matty12341234", 3));
         location.setBelongsTo(client);
         location = locationService.update(client, location);
         assertThat("location belongs to the client", location.getBelongsTo(), is(client));
@@ -166,7 +166,7 @@ public class LocationServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void update() {
-        Location location = locationService.create(makeLocation("matty12341234", 2));
+        Location location = locationService.create(makeLocation("matty12341234", 4));
         assertThat("location belongs to no client", location.getBelongsTo(), is(nullValue()));
         Client client = clientService.create(makeClient());
         location.setBelongsTo(client);

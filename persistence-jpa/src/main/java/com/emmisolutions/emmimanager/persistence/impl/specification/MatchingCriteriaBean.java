@@ -56,4 +56,13 @@ public class MatchingCriteriaBean {
 	}
 	return sb.toString();
     }
+    
+    public String normalizeNameAndBlank(String name) {
+    	String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
+    	if (StringUtils.isNotBlank(normalizedName)){
+    	    // do regex
+    	    normalizedName = normalizedName.replaceAll("[^a-z0-9]*","");
+    	}
+    	return normalizedName;
+    }
 }
