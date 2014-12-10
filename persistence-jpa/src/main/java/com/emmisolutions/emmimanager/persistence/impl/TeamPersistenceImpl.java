@@ -54,7 +54,7 @@ public class TeamPersistenceImpl implements TeamPersistence {
 
 	@Override
 	public Team save(Team team) {
-		team.setNormalizedTeamName(normalizeName(team));
+		team.setNormalizedTeamName(matchCriteria.normalizeNameAndBlank(team.getName()));
 		return teamRepository.save(team);
 	}
 
@@ -65,10 +65,6 @@ public class TeamPersistenceImpl implements TeamPersistence {
         }
         return teamRepository.findOne(team.getId());
 	}
-
-    private String normalizeName(Team team){
-    	return matchCriteria.normalizeNameAndBlank(team.getName()==null?"":team.getName());
-    }
 
     @Override
 	public Team findByNormalizedTeamNameAndClientId(String normalizedName, Long clientId) {

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
-import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
@@ -50,7 +49,7 @@ public class LocationPersistenceImpl implements LocationPersistence {
     
     @Override
     public Location save(Location location) {
-    	location.setNormalizedName(normalizeName(location));
+    	location.setNormalizedName(matchCriteria.normalizeNameAndBlank(location.getName()));
         return locationRepository.save(location);
     }
 
@@ -62,7 +61,4 @@ public class LocationPersistenceImpl implements LocationPersistence {
         return locationRepository.findOne(location.getId());
     }
 
-    private String normalizeName(Location location){
-    	return matchCriteria.normalizeNameAndBlank(location.getName()==null?"":location.getName());
-    }
 }
