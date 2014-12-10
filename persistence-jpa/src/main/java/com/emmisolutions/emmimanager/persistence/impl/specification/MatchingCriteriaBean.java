@@ -57,6 +57,12 @@ public class MatchingCriteriaBean {
 	return sb.toString();
     }
     
+    /**
+     * Remove all special characters to the name including blank
+     *
+     * @param name
+     * @return
+     */
     public String normalizeNameAndBlank(String name) {
     	String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
     	if (StringUtils.isNotBlank(normalizedName)){
