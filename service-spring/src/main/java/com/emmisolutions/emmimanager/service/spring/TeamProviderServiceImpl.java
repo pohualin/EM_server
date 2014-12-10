@@ -255,7 +255,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         	matchedTeamProviderMap.put(matchedTeamProvider.getProvider(), matchedTeamProvider);
         }
 
-        // make ClientProvider objects from matched providers (from search) and the existing client providers
+        // make TeamProvider objects from matched providers (from search) and the existing team providers
         List<TeamProvider> teamProviders = new ArrayList<>();
         for (Provider matchingProvider : matchedProviders) {
         	TeamProvider alreadyAssociated = matchedTeamProviderMap.get(matchingProvider);
