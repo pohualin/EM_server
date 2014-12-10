@@ -24,6 +24,9 @@ public class UserServiceImpl implements UserService {
     @Resource
     UserPersistence userPersistence;
 
+    @Resource
+    SecurityUtils securityUtils;
+
     @Override
     @Transactional
     public UserAdmin save(UserAdmin user) {
@@ -33,6 +36,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserAdmin loggedIn() {
-        return userPersistence.fetchUserWillFullPermissions(SecurityUtils.getCurrentLogin());
+        return userPersistence.fetchUserWillFullPermissions(securityUtils.getCurrentLogin());
     }
 }

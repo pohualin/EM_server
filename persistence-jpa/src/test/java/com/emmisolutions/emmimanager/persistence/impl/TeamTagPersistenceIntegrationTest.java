@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -77,6 +76,12 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(teamTag);
         assertThat("TeamTag was given an id", afterSaveTeamTag.getId(), is(notNullValue()));
         assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        searchFilter.setTagId(tag.getId());
+        assertThat("we can find the team tag by the team tag id",
+            teamTagPersistence.findTeamsWithTag(null, searchFilter),
+            hasItem(afterSaveTeamTag));
     }
 
     /**

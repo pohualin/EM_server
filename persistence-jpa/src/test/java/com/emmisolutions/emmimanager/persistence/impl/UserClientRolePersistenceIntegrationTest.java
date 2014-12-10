@@ -46,11 +46,26 @@ public class UserClientRolePersistenceIntegrationTest extends BaseIntegrationTes
             userClientRolePersistence.find(userClientRole.getClient().getId(), null),
             hasItem(userClientRole));
         assertThat("we can reload it now", userClientRolePersistence.reload(new UserClientRole(userClientRole.getId())), is(userClientRole));
+
+        userClientRolePersistence.remove(userClientRole.getId());
+
+        assertThat("should be removed", userClientRolePersistence.reload(new UserClientRole(userClientRole.getId())), is(nullValue()));
     }
 
+    /**
+     * Save of a null should fail
+     */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void badSave(){
         userClientRolePersistence.save(null);
+    }
+
+    /**
+     * Load all possible permissions
+     */
+    @Test
+    public void loadPossible(){
+        assertThat("load all possible works", userClientRolePersistence.loadPossiblePermissions().isEmpty(), is(false)) ;
     }
 
     /**
@@ -62,8 +77,25 @@ public class UserClientRolePersistenceIntegrationTest extends BaseIntegrationTes
         userClientPermissions.add(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER));
         UserClientRole userClientRole = userClientRolePersistence.save(new UserClientRole("permission save", makeNewRandomClient(), userClientPermissions));
         assertThat("permission present",
-            userClientRolePersistence.find(userClientRole.getClient().getId(), null).iterator().next().getUserClientPermissions(),
+            userClientRolePersistence.permissionsFor(userClientRole),
             hasItem(new UserClientPermission(UserClientPermissionName.PERM_CLIENT_SUPER_USER)));
+
+    }
+
+    /**
+     * Reload of a null should result in null
+     */
+    @Test
+    public void nullReload(){
+        assertThat("null reload returns null", userClientRolePersistence.reload(null), is(nullValue()));
+    }
+
+    /**
+     * Loading permissions on null role should return null
+     */
+    @Test
+    public void loadPermissions(){
+        assertThat("empty permissions of null client role", userClientRolePersistence.permissionsFor(new UserClientRole()).isEmpty(), is(true));
     }
 
 }

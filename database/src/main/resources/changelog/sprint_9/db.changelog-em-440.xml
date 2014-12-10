@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="add normalized_name to users" author="Paul">
+        <addColumn tableName="users">
+            <column name="normalized_name" type="nvarchar(610)" />
+        </addColumn>
+        <sql>
+        	<![CDATA[
+        		update users
+				set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(concat(first_name,last_name,login,email),'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/','') )))
+				where normalized_name is null
+        	]]>
+        </sql>
+        <addNotNullConstraint tableName="users" columnName="normalized_name" columnDataType="nvarchar(610)"/>
+    </changeSet>
+
+</databaseChangeLog>

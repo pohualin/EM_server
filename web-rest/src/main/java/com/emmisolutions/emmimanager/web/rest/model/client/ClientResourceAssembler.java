@@ -10,7 +10,12 @@ import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientTeamRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.resource.*;
+
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.TemplateVariable;
+import org.springframework.hateoas.TemplateVariables;
+import org.springframework.hateoas.UriTemplate;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -27,10 +32,10 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
         ret.add(linkTo(methodOn(TeamsResource.class).clientTeams(entity.getId(), null, null, null, null, (String[]) null)).withRel("teams"));
-        ret.add(GroupPage.createFullSearchLink(entity.getId()));
+        ret.add(GroupPage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(GroupsResource.class).invalidTeams(null, entity.getId())).withRel("invalidTeams"));
-        ret.add(TeamPage.createFindTeamByNormalizedNameLink(entity.getId()));
-        ret.add(TeamResource.createTeamByTeamIdLink(entity.getId()));
+        ret.add(TeamPage.createFindTeamByNormalizedNameLink(entity));
+        ret.add(TeamResource.createTeamByTeamIdLink(entity));
         ret.add(ClientLocationResourcePage.createCurrentLocationsSearchLink(entity));
         ret.add(ClientLocationResourcePage.createAssociationLink(entity));
         ret.add(ClientLocationResourcePage.createAssociationWLink(entity));
@@ -41,7 +46,24 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(linkTo(methodOn(ClientRolesAdminResource.class).reference()).withRel("rolesReferenceData"));
         ret.add(UserClientTeamRoleResourcePage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(ClientTeamRolesAdminResource.class).referenceData()).withRel("teamRolesReferenceData"));
+        ret.add(createFullUsersSearchLink(entity));
         ret.setEntity(entity);
         return ret;
+    }
+    
+    /**
+     * Create the search link
+     *
+     * @return Link for client searches
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
+     */
+    public static Link createFullUsersSearchLink(Client entity) {
+        Link link = linkTo(methodOn(UsersClientResource.class).getUsers(entity.getId(), null, null, null, null, null)).withRel("users");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("term", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
     }
 }

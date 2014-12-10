@@ -15,6 +15,8 @@ import java.util.List;
 
 /**
  * This is a base class which defines a response page serialization specification.
+ *
+ * @param <T> the resource to wrap
  */
 @XmlType(propOrder = {"sortOrder", "metadata", "links", "content"})
 public abstract class PagedResource<T> {

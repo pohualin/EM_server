@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.model.team;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.model.BaseResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
@@ -24,16 +25,22 @@ public class TeamResource extends BaseResource<Team> {
 
     private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 
-    public static Link createTeamByTeamIdLink(Long clientId) {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).getTeam(clientId, 1L);
+    /**
+     * Load a team by it's id
+     *
+     * @param client to use
+     * @return the team load link
+     */
+    public static Link createTeamByTeamIdLink(Client client) {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).getTeam(client.getId(), 1L);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("teamByTeamId");
         String href = link.getHref();
         int idx = href.indexOf(discoverer.getMapping(TeamsResource.class));
         if (idx != -1) {
             return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(TeamsResource.class, method).replace("{clientId}", "" + clientId),
-                    link.getRel());
+                href.substring(0, idx) + discoverer.getMapping(TeamsResource.class, method).replace("{clientId}", "" + client.getId()),
+                link.getRel());
         }
         return null;
     }

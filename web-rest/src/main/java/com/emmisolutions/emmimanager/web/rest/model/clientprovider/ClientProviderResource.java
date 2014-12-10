@@ -28,6 +28,12 @@ public class ClientProviderResource extends ResourceSupport {
     public ClientProviderResource() {
     }
 
+    /**
+     * Create for an entity and resource
+     *
+     * @param entity           to wrap
+     * @param providerResource to set the provider
+     */
     public ClientProviderResource(ClientProvider entity, ProviderResource providerResource) {
         this.externalId = entity.getExternalId();
         this.id = entity.getId();

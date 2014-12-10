@@ -9,10 +9,7 @@ import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.ProvidersResource;
-import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
-import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
+import com.emmisolutions.emmimanager.web.rest.resource.*;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
@@ -43,29 +40,34 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
             }
         }
         UserResource ret = new UserResource(
-                user.getId(),
-                user.getVersion(),
-                user.getLogin(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                roles);
+            user.getId(),
+            user.getVersion(),
+            user.getLogin(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            roles);
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
         ret.add(createClientByIdLink());
+        ret.add(createProviderByIdLink());
+        ret.add(createLocationByIdLink());
         ret.add(ClientPage.createReferenceDataLink());
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
         ret.add(TeamPage.createFullSearchLink());
-        ret.add(createTeamByClientIdLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());
         ret.add(linkTo(methodOn(ProvidersResource.class).getReferenceData()).withRel("providersReferenceData"));
-
         return ret;
     }
 
+    /**
+     * Load clients by id link
+     *
+     * @return the link
+     */
     public Link createClientByIdLink() {
         DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ClientsResource.class).get(1l);
         Method method = invocations.getLastInvocation().getMethod();
@@ -74,23 +76,46 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
         if (idx != -1) {
             return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
-                    link.getRel());
+                href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
+                link.getRel());
         }
         return null;
     }
 
-
-    public Link createTeamByClientIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(TeamsResource.class).createTeam(1l,null);
+    /**
+     * Load providers by id
+     *
+     * @return the link
+     */
+    public Link createProviderByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ProvidersResource.class).getById(1l);
         Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("teamsByClientId");
+        Link link = linkTo(invocations).withRel("providerById");
         String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(ClientsResource.class));
+        int idx = href.indexOf(discoverer.getMapping(ProvidersResource.class));
         if (idx != -1) {
             return new Link(
-                    href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
-                    link.getRel());
+                href.substring(0, idx) + discoverer.getMapping(ProvidersResource.class, method),
+                link.getRel());
+        }
+        return null;
+    }
+
+    /**
+     * Load locations by id
+     *
+     * @return the link
+     */
+    public Link createLocationByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(LocationsResource.class).get(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("locationById");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(LocationsResource.class));
+        if (idx != -1) {
+            return new Link(
+                href.substring(0, idx) + discoverer.getMapping(LocationsResource.class, method),
+                link.getRel());
         }
         return null;
     }

@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,10 +25,11 @@ public interface TeamLocationService {
     /**
      * saves an association of a team with a set of locations
      *
-     * @param team        to save
-     * @param locationSet locations to associate to the team
+     * @param team    to save
+     * @param request locations to associate to the team and for each locations the providers selected
+     * @return the saved TPTLs
      */
-    void save(Team team, Set<Location> locationSet);
+    Set<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request);
 
     /**
      * reload a team location
@@ -68,4 +66,5 @@ public interface TeamLocationService {
      * @return the number deleted
      */
     long delete(Client client, Location location);
+
 }

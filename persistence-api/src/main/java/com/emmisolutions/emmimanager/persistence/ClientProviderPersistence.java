@@ -15,17 +15,17 @@ public interface ClientProviderPersistence {
     /**
      * Find a page of client providers for a client
      *
-     * @param clientId   to find client providers
+     * @param clientId to find client providers
      * @param pageable which page to fetch
      * @return a page of client provider objects
      */
     Page<ClientProvider> findByClientId(Long clientId, Pageable pageable);
-    
+
     /**
      * Find a page of client providers for a client
      *
-     * @param clientId   to find client providers
-     * @param pageable which page to fetch
+     * @param providerId to find client providers
+     * @param pageable   which page to fetch
      * @return a page of client provider objects
      */
     Page<ClientProvider> findByProviderId(Long providerId, Pageable pageable);
@@ -57,7 +57,8 @@ public interface ClientProviderPersistence {
     /**
      * Load matching ClientProvider objects where the Provider is within one of the
      * matched providers
-     * @param clientId to use
+     *
+     * @param clientId         to use
      * @param matchedProviders to filter by
      * @return the List of ClientProviders matching both the client id and page of providers, never null
      */
@@ -74,14 +75,16 @@ public interface ClientProviderPersistence {
 
     /**
      * Saves a client provider
+     *
      * @param clientProvider to save
      * @return saved ClientProvider
      */
     ClientProvider save(ClientProvider clientProvider);
-    
+
     /**
      * Find a client provider
-     * @param clintId to use
+     *
+     * @param clientId    to use
      * @param providerId to use
      * @return found ClientProvider
      */

@@ -71,6 +71,7 @@ public interface ClientLocationService {
      *
      * @param pageable             a page
      * @param locationSearchFilter used to find the locations
+     * @param client               on which we are adding
      * @return a page of ClientLocation objects, the client relationship could be null
      */
     Page<ClientLocation> findPossibleLocationsToAdd(Client client, LocationSearchFilter locationSearchFilter, Pageable pageable);

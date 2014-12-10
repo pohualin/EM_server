@@ -31,6 +31,7 @@ public class TeamLocationPage extends PagedResource<TeamLocationResource> {
      *
      * @param teamLocationResourceSupports to be wrapped
      * @param teamLocationPage             true page
+     * @param filter                       the filter
      */
 
     public TeamLocationPage(PagedResources<TeamLocationResource> teamLocationResourceSupports, Page<TeamLocation> teamLocationPage, TeamLocationSearchFilter filter) {
@@ -41,17 +42,18 @@ public class TeamLocationPage extends PagedResource<TeamLocationResource> {
     /**
      * Create the search link
      *
+     * @param team to find for
      * @return Link for team locations searches
      */
     public static Link createFullSearchLink(Team team) {
         Link link = linkTo(methodOn(TeamLocationsResource.class).list(team.getId(), null, null, null, null, null)).withRel("teamLocations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 

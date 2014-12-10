@@ -10,7 +10,6 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
@@ -26,41 +25,39 @@ public interface TeamProviderService {
      * @param teamProvider to reload
      * @return teamProvider
      */
-	TeamProvider reload(TeamProvider teamProvider);
+    TeamProvider reload(TeamProvider teamProvider);
 
-	/**
-	 * Finds all team-providers for a given team
-	 *
-	 * @param page
-	 * @param team
-	 * @return page of team-providers
-	 */
-	Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team);
+    /**
+     * Finds all team-providers for a given team
+     *
+     * @param page specification
+     * @param team to find for
+     * @return page of TeamProvider objects
+     */
+    Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team);
 
-	/**
-	 * Deletes a team-provider
-	 *
-	 * @param  teamProvider
-	 * @return void
-	 */
-	void delete(TeamProvider provider);
-	
-	/**
-	 * Update a teamProvider
-	 *
-	 * @param  teamProvider to be updated
-	 * @return void
-	 */
-	void updateTeamProvider(TeamProviderTeamLocationSaveRequest request);
-	
-	/**
-	 * Associates a list of existing providers to the team passed in
-	 *
-	 * @param providers
-	 * @param team
-	 * @return
-	 */
-	Set<TeamProvider> associateProvidersToTeam(List<TeamProviderTeamLocationSaveRequest> providers, Team team);
+    /**
+     * Deletes a team-provider
+     *
+     * @param provider to delete
+     */
+    void delete(TeamProvider provider);
+
+    /**
+     * Update a teamProvider
+     *
+     * @param request to be updated
+     */
+    void updateTeamProvider(TeamProviderTeamLocationSaveRequest request);
+
+    /**
+     * Associates a list of existing providers to the team passed in
+     *
+     * @param providers to associate
+     * @param team      to this team
+     * @return the saved set
+     */
+    Set<TeamProvider> associateProvidersToTeam(List<TeamProviderTeamLocationSaveRequest> providers, Team team);
 
 
     /**
@@ -68,7 +65,7 @@ public interface TeamProviderService {
      *
      * @param client   to use
      * @param provider to use
-     * @param page the page specification
+     * @param pageable the page specification
      * @return a page of TeamProvider objects
      */
     Page<Team> findTeamsBy(Client client, Provider provider, Pageable pageable);
@@ -78,14 +75,15 @@ public interface TeamProviderService {
      *
      * @param client   the client
      * @param provider the provider
+     * @return number deleted
      */
     long delete(Client client, Provider provider);
-    
+
     /**
      * Find all teamLocation by teamProvider
      *
      * @param teamProvider to use
-     * @param page the page specification
+     * @param pageable     the page specification
      * @return a set of TeamProviderTeamLocation objects
      */
     Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(TeamProvider teamProvider, Pageable pageable);

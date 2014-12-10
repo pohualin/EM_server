@@ -19,11 +19,25 @@ public class UserClientReferenceTeamRolePersistenceIntegrationTest extends BaseI
     @Resource
     UserClientReferenceTeamRolePersistence userClientReferenceTeamRolePersistence;
 
+    /**
+     * Reference roles can be loaded, null page spec
+     */
     @Test
     public void load() {
         assertThat("Reference Roles are loaded", userClientReferenceTeamRolePersistence.loadReferenceTeamRoles(new PageRequest(0, 1)).getTotalElements(), is(not(0l)));
     }
 
+    /**
+     * Reference roles can be loaded, null page spec
+     */
+    @Test
+    public void loadNull() {
+        assertThat("Reference Roles are loaded with default page", userClientReferenceTeamRolePersistence.loadReferenceTeamRoles(null).getTotalElements(), is(not(0l)));
+    }
+
+    /**
+     * Reload works
+     */
     @Test
     public void reload() {
         assertThat("reload works", userClientReferenceTeamRolePersistence.reload(new UserClientReferenceTeamRoleType(1l)), is(notNullValue()));

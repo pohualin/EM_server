@@ -104,45 +104,44 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         }
 	}
 
-    @Override
- 	@Transactional
- 	public Set<TeamProvider> associateProvidersToTeam(
- 			List<TeamProviderTeamLocationSaveRequest> request, Team team) {
- 		Team teamFromDb = teamService.reload(team);
- 		if (teamFromDb == null) {
- 			throw new InvalidDataAccessApiUsageException("Team cannot be null");
- 		}
- 		List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
- 		Set<TeamProvider> savedProviders = new HashSet<TeamProvider>();
- 		Set<Provider> providers = new HashSet<Provider>();
+	@Transactional
+	public Set<TeamProvider> associateProvidersToTeam(
+			List<TeamProviderTeamLocationSaveRequest> request, Team team) {
+		Team teamFromDb = teamService.reload(team);
+		if (teamFromDb == null) {
+			throw new InvalidDataAccessApiUsageException("Team cannot be null");
+		}
+		List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
+		Set<TeamProvider> savedProviders = new HashSet<TeamProvider>();
+		Set<Provider> providers = new HashSet<Provider>();
 
- 		for (TeamProviderTeamLocationSaveRequest req : request) {
- 			TeamProvider teamProvider = new TeamProvider();
- 			teamProvider.setId(null);
- 			teamProvider.setVersion(null);
- 			teamProvider.setProvider(req.getProvider());
- 			teamProvider.setTeam(teamFromDb);
- 			TeamProvider savedTeamProvider = teamProviderPersistence.save(teamProvider);
- 			savedProviders.add(savedTeamProvider);
- 			providers.add(req.getProvider());
+		for (TeamProviderTeamLocationSaveRequest req : request) {
+			TeamProvider teamProvider = new TeamProvider();
+			teamProvider.setId(null);
+			teamProvider.setVersion(null);
+			teamProvider.setProvider(req.getProvider());
+			teamProvider.setTeam(teamFromDb);
+			TeamProvider savedTeamProvider = teamProviderPersistence.save(teamProvider);
+			savedProviders.add(savedTeamProvider);
+			providers.add(req.getProvider());
 
- 			if (req.getTeamLocations() != null && !req.getTeamLocations().isEmpty()) {
- 				for (TeamLocation teamLocation : req.getTeamLocations()) {
- 					TeamLocation savedTeamLocation = teamLocationService.reload(teamLocation);
- 					TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
- 					tptl.setTeamProvider(savedTeamProvider);
- 					tptl.setTeamLocation(savedTeamLocation);
- 					teamProviderTeamLocationsToSave.add(tptl);
- 				}
- 			}
- 		}
+			if (req.getTeamLocations() != null && !req.getTeamLocations().isEmpty()) {
+				for (TeamLocation teamLocation : req.getTeamLocations()) {
+					TeamLocation savedTeamLocation = teamLocationService.reload(teamLocation);
+					TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
+					tptl.setTeamProvider(savedTeamProvider);
+					tptl.setTeamLocation(savedTeamLocation);
+					teamProviderTeamLocationsToSave.add(tptl);
+				}
+			}
+		}
 
- 		// create ClientProviders from new TeamProvider associations
-     	clientProviderService.create(teamFromDb.getClient(), providers);
+		// create ClientProviders from new TeamProvider associations
+    	clientProviderService.create(teamFromDb.getClient(), providers);
 
- 		List<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
- 		return savedProviders;
- 	}
+		Set<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
+		return savedProviders;
+	}
 
     @Override
     @Transactional
@@ -180,62 +179,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		}
 
 		// Deal with TeamProviderTeamLocation relationship
-		updateTeamProviderTeamLocations(request);
-	}
-
-	@Transactional
-	private void updateTeamProviderTeamLocations(
-			TeamProviderTeamLocationSaveRequest request) {
-		Set<TeamProviderTeamLocation> incomings = request
-				.getTeamProviderTeamLocations();
-
-		Set<TeamProviderTeamLocation> exists = findTeamProviderTeamLocationsByTeamProvider(
-				request.getTeamProvider(), null,
-				new HashSet<TeamProviderTeamLocation>());
-
-		List<TeamProviderTeamLocation> inserts = new ArrayList<TeamProviderTeamLocation>();
-		List<TeamProviderTeamLocation> deletes = new ArrayList<TeamProviderTeamLocation>();
-		if (incomings.size() == 0) {
-			if (exists.size() > 0) {
-				deletes.addAll(exists);
-			}
-		} else {
-			for (TeamProviderTeamLocation incoming : incomings) {
-				if (incoming.getId() == null) {
-					inserts.add(incoming);
-				}
-			}
-			for (TeamProviderTeamLocation exist : exists) {
-				if (!incomings.contains(exist)) {
-					deletes.add(exist);
-				}
-			}
-		}
-
-		if (inserts.size() > 0) {
-			teamProviderTeamLocationService
-					.saveAllTeamProviderTeamLocations(inserts);
-		}
-
-		if (deletes.size() > 0) {
-			teamProviderTeamLocationService
-					.deleteTeamProviderTeamLocations(deletes);
-		}
-	}
-	
-	@Transactional
-	private Set<TeamProviderTeamLocation> findTeamProviderTeamLocationsByTeamProvider(
-			TeamProvider teamProvider, Pageable pageable,
-			Set<TeamProviderTeamLocation> teamProviderTeamLocations) {
-		Page<TeamProviderTeamLocation> tptls = teamProviderTeamLocationService
-				.findByTeamProvider(teamProvider, pageable);
-		if (tptls.hasContent()) {
-			teamProviderTeamLocations.addAll(tptls.getContent());
-			if (tptls.hasNext()) {
-				findTeamProviderTeamLocationsByTeamProvider(teamProvider, tptls.nextPageable(), teamProviderTeamLocations);
-			}
-		}
-		return teamProviderTeamLocations;
+		teamProviderTeamLocationService.updateTeamProviderTeamLocations(request.getTeamProvider(), request);
 	}
 
 	@Override

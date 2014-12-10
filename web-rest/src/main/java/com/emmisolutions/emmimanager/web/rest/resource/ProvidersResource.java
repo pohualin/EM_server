@@ -1,25 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import static com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter.fromStringOrActive;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResource;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ReferenceData;
+import com.emmisolutions.emmimanager.web.rest.model.provider.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
-
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,33 +17,14 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientProvider;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.service.ClientProviderService;
-import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientResource;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderClientResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderClientResourcePage;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResource;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ReferenceData;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
-import com.wordnik.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
+import static com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * Providers REST API
@@ -67,13 +37,13 @@ public class ProvidersResource {
 
     @Resource
     ProviderService providerService;
-    
+
     @Resource
     ClientProviderService clientProviderService;
 
     @Resource
     ProviderResourceAssembler providerResourceAssembler;
-    
+
     @Resource
     ProviderClientResourceAssembler providerClientResourceAssembler;
 
@@ -198,11 +168,11 @@ public class ProvidersResource {
     public ReferenceData getReferenceData() {
         return new ReferenceData();
     }
-    
+
     /**
-     * GET to find existing client providers for a client.
+     * GET to find existing clients for a provider.
      *
-     * @param clientId  the client
+     * @param providerId  the provider id
      * @param pageable  the page to request
      * @param sort      sorting
      * @param assembler used to create the PagedResources
@@ -231,7 +201,7 @@ public class ProvidersResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-    
+
     /**
      * PUT to update the provider
      *

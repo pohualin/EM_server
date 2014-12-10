@@ -19,6 +19,7 @@ public class TeamLocationResourceAssembler implements ResourceAssembler<TeamLoca
     public TeamLocationResource toResource(TeamLocation entity) {
     	TeamLocationResource ret = new TeamLocationResource();
         ret.add(linkTo(methodOn(TeamLocationsResource.class).getTeamLocation(entity.getTeam().getId(), entity.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(TeamLocationsResource.class).listTeamProviderTeamLocation(entity.getId(), null, null)).withRel("tptls"));
         ret.setEntity(entity);
         return ret;
     }

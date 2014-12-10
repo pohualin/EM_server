@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Implementation of TeamTagService
+ */
 @Service
 public class TeamTagServiceImpl implements TeamTagService {
 

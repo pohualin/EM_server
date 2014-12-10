@@ -12,12 +12,13 @@ import org.springframework.hateoas.ResourceSupport;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * A team provider
+ */
 @XmlRootElement(name = "team-provider")
 public class TeamProviderResource extends ResourceSupport {
 
     private ProviderResource provider;
-
-//    private String externalId;
 
     private TeamProvider entity;
 
@@ -45,7 +46,6 @@ public class TeamProviderResource extends ResourceSupport {
     }
 
     public TeamProviderResource(TeamProvider entity, ProviderResource providerResource) {
-//        this.externalId = entity.getExternalId();
         this.id = entity.getId();
         this.version = entity.getVersion();
         this.provider = providerResource;
@@ -62,4 +62,5 @@ public class TeamProviderResource extends ResourceSupport {
 	public List<Link> getLinks() {
 		return super.getLinks();
 	}
+
 }

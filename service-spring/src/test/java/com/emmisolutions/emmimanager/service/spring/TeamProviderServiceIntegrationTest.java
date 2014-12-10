@@ -7,7 +7,6 @@ import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeReposito
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 import com.emmisolutions.emmimanager.service.*;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -82,6 +81,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 	 */
 	@Test
 	public void testProviderSave() {
+        logout(); // making default of 'system' the user
 
 		Client client = makeClient("TeamProviFirst", "teamProUserTestOne");
 		clientService.create(client);
@@ -122,7 +122,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		client.setContractStart(LocalDate.now());
 		client.setContractEnd(LocalDate.now().plusYears(1));
 		client.setName(clientName);
-		client.setContractOwner(userService.save(new UserAdmin(username, "pw")));
+		client.setContractOwner(new UserAdmin(1l, 0));
 		client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		return client;
 	}
@@ -341,11 +341,17 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         teamLocationTwo.setLocation(locationTwo);
         teamLocationTwo.setTeam(team2);
 
-        Set<Location> locationSet = new HashSet<Location>();
-        locationSet.add(locationOne);
-        locationSet.add(locationTwo);
-        teamLocationService.save(team2, locationSet);
-        
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
+        TeamLocationTeamProviderSaveRequest req = new TeamLocationTeamProviderSaveRequest();
+        req.setLocation(locationOne);
+        reqs.add(req);
+
+        req = new TeamLocationTeamProviderSaveRequest();
+        req.setLocation(locationTwo);
+        reqs.add(req);
+
+        teamLocationService.save(team2, reqs);
+
         Page<TeamLocation> teamLocationPage = teamLocationService.findAllTeamLocationsWithTeam(null,team2);
 
         final TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
@@ -360,18 +366,18 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
         assertThat("One Client Provider was saved", clientProviders.getContent().size(), is(1));
         assertThat("teamProvider was saved", teamProviders.iterator().next().getId(), is(notNullValue()));
-        
-        Set<TeamProviderTeamLocation> tptls = new HashSet<TeamProviderTeamLocation>();
+
+        Set<TeamLocation> tls = new HashSet<TeamLocation>();
         provider.setFirstName("New First Name");
-        request.setTeamProviderTeamLocations(tptls);
+        request.setTeamLocations(tls);
         teamProviderService.updateTeamProvider(request);
-        
+
         Page<TeamProvider> foundTeamProvider = teamProviderService.findTeamProvidersByTeam(null, team2);
         assertThat("TeamProvider found", foundTeamProvider.hasContent(), is(true));
         assertThat("Updated provider first name", foundTeamProvider.getContent().get(0).getProvider().getFirstName(), is("New First Name"));
 
     }
-    
+
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void invalidFindByClientAndProvider(){
         teamProviderService.findTeamsBy(null, null, null);
@@ -386,10 +392,10 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     public void invalidDeleteByClientAndProvider(){
         teamProviderService.delete(null, null);
     }
-    
+
     @Test
     public void testTeamProviderTeamLocationRelationship(){
-    	
+
     }
 
     private Location makeLocation(String name, String i) {

@@ -1,14 +1,18 @@
 package com.emmisolutions.emmimanager.model.user;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 import java.io.Serializable;
 
 /**
@@ -33,7 +37,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @Size(min = 0, max = 255)
     @Column(length = 255, nullable = false, columnDefinition = "nvarchar(255)")
-    @XmlTransient
     private String login;
 
     @Version
@@ -45,18 +48,27 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @XmlTransient
     private String password;
 
+    @NotNull
     @Size(min = 0, max = 50)
-    @Column(name = "first_name", length = 50, columnDefinition = "nvarchar(50)")
+    @Column(name = "first_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String firstName;
 
+    @NotNull
     @Size(min = 0, max = 50)
-    @Column(name = "last_name", length = 50, columnDefinition = "nvarchar(50)")
+    @Column(name = "last_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String lastName;
 
     @Email
     @Size(min = 0, max = 255)
     @Column(length = 255, columnDefinition = "nvarchar(255)")
     private String email;
+    
+    @NotNull
+    @Size(max = 610)
+    @Column(name = "normalized_name", length = 610, nullable = false, columnDefinition = "nvarchar(610)")
+    @NotAudited
+    @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters and digits")
+    private String normalizedName;
 
     public User() {
 
@@ -160,6 +172,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
     }
 
 }

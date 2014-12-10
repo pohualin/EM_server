@@ -11,25 +11,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "filter")
 public class GroupSearchFilter {
 
-	private Long clientId;
+    private Long clientId;
 
-	/**
-	 * constructor
-	 */
-	public GroupSearchFilter(Long clientId) {
-		this.clientId = clientId;
-	}
+    /**
+     * constructor
+     *
+     * @param clientId the client id
+     */
+    public GroupSearchFilter(Long clientId) {
+        this.clientId = clientId;
+    }
 
-	public Long getClientId() {
-		return clientId;
-	}
+    public Long getClientId() {
+        return clientId;
+    }
 
-	public void setClientId(Long clientId) {
-		this.clientId = clientId;
-	}
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
+    }
 
-	@Override
-	public String toString() {
-		return "GroupSearchFilter{" + "clientID=" + clientId + '}';
-	}
+    @Override
+    public String toString() {
+        return "GroupSearchFilter{" + "clientID=" + clientId + '}';
+    }
 }

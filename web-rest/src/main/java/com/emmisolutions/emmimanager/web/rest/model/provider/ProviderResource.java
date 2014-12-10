@@ -12,19 +12,22 @@ import org.springframework.hateoas.ResourceSupport;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * HATEOAS wrapper for Provider entities
+ */
 @XmlRootElement(name = "provider")
 public class ProviderResource extends ResourceSupport {
 
-	private Provider entity;
+    private Provider entity;
 
-	public Provider getEntity() {
-		return entity;
-	}
+    public Provider getEntity() {
+        return entity;
+    }
 
-	public void setEntity(Provider entity) {
-		this.entity = entity;
-	}
-	
+    public void setEntity(Provider entity) {
+        this.entity = entity;
+    }
+
 	public ProviderResource(Provider entity) {
 		super();
 		this.entity = entity;
@@ -41,7 +44,7 @@ public class ProviderResource extends ResourceSupport {
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")
-    public List<Link> getLinks(){
+    public List<Link> getLinks() {
         return super.getLinks();
     }
 

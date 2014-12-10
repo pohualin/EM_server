@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
@@ -18,8 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+/**
+ * Implementation of TeamLocationService
+ */
 @Service
 public class TeamLocationServiceImpl implements TeamLocationService {
 
@@ -48,16 +51,33 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
     @Override
     @Transactional
-    public void save(Team team, Set<Location> locationSet) {
-        Team teamToFind = teamPersistence.reload(team);
-        if(teamToFind != null && locationSet != null) {
-            for (Location location : locationSet) {
+    public Set<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
+    	Set<TeamProviderTeamLocation> savedTptls = new HashSet<TeamProviderTeamLocation>();
+    	Team teamToFind = teamPersistence.reload(team);
+        if(teamToFind != null && request != null) {
+            for (TeamLocationTeamProviderSaveRequest req : request) {
+            	Location location = req.getLocation();
                 TeamLocation teamLocation = new TeamLocation(location, teamToFind);
                 teamLocationPersistence.saveTeamLocation(teamLocation);
+
+                List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
+
+				for (TeamProvider teamProvider : req.getProviders()) {
+					TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
+					tptl.setTeamProvider(teamProvider);
+					tptl.setTeamLocation(teamLocation);
+					teamProviderTeamLocationsToSave.add(tptl);
+				}
+
+				if (teamProviderTeamLocationsToSave.size() > 0 ){
+					savedTptls = teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
+				}
                 // add to client location as well
                 clientLocationPersistence.create(location.getId(), teamToFind.getClient().getId());
             }
         }
+
+        return savedTptls;
     }
 
     @Override

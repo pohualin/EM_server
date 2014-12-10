@@ -6,36 +6,42 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 /**
  * TeamTag persistence class
  */
 public interface TeamLocationPersistence {
     /**
      * Saves a TeamLocation
-     * @param TeamLocation 	to save
+     *
+     * @param location to save
      * @return saved TeamLocation
      */
     TeamLocation saveTeamLocation(TeamLocation location);
 
     /**
      * Deletes a TeamLocation
-     * @param TeamLocation 	to delete
+     *
+     * @param location to delete
      */
     void deleteTeamLocation(TeamLocation location);
 
     /**
-     * Reloads a TeamTag by given ID
-     * @param Long id	of the Tag
-     * @return Tag
+     * Reloads a TeamLocation
+     *
+     * @param location to reload
+     * @return a TeamLocation
      */
     TeamLocation reload(TeamLocation location);
 
     /**
      * Gets all the locations associated with a given team
-     * @param TeamTag that contains team	to search for
-     * @return Page of associated tags for given team
+     *
+     * @param pageable the page specification
+     * @param team     the team
+     * @return Page of associated TeamLocation for given team
      */
-    Page<TeamLocation> getAllTeamLocationsForTeam(Pageable pageable,Team team);
+    Page<TeamLocation> getAllTeamLocationsForTeam(Pageable pageable, Team team);
 
     /**
      * Finds a page of TeamLocations for a client and location
@@ -55,4 +61,5 @@ public interface TeamLocationPersistence {
      * @return the number deleted
      */
     long delete(Client client, Location location);
+
 }

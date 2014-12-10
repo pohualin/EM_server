@@ -43,11 +43,10 @@ import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
  * TeamProviders REST API
- *
  */
 
 @RestController
-@RequestMapping(value = "/webapi", produces = { APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE })
+@RequestMapping(value = "/webapi", produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE})
 public class TeamProvidersResource {
 
 	@Resource
@@ -123,50 +122,46 @@ public class TeamProvidersResource {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 	}
-	
-	/**
-	 * POST to associate list of providers to a given team
-	 *
-	 * @param page	paged request
-	 * @param sort  sorting request
-	 * @param assembler    used to create the PagedResources
-	 * @param name
-	 * @param status
-	 * @param teamId
-	 * @return ProviderResource
-	 */
-	@RequestMapping(value = "/teamProvider", method = RequestMethod.POST)
-	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
-	public ResponseEntity<TeamProvider> updateTeamProvider(
-			@RequestBody TeamProviderTeamLocationSaveRequest request) {
-		teamProviderService.updateTeamProvider(request);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
-	
-	/**
+
+    /**
+     * POST to associate list of providers to a given team
+     *
+     * @param request to update
+     * @return ProviderResource
+     */
+    @RequestMapping(value = "/teamProvider", method = RequestMethod.POST)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_PROVIDER_CREATE"})
+    public ResponseEntity<TeamProvider> updateTeamProvider(
+        @RequestBody TeamProviderTeamLocationSaveRequest request) {
+        teamProviderService.updateTeamProvider(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
      * GET to search for TeamLocations
      *
-     * @param pageable  paged request
-     * @param sort      sorting request
-     * @param status    to filter by
-     * @param assembler used to create the PagedResources
-     * @param names     to filter by
+     * @param teamProviderId the team provider id
+     * @param pageable       paged request
+     * @param sort           sorting request
+     * @param status         to filter by
+     * @param assembler      used to create the PagedResources
+     * @param names          to filter by
      * @return TeamLocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/teamProvider/{teamProviderId}/teamLocations", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_LOCATION_LIST"})
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name="sort", defaultValue="id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamProviderTeamLocationPage> findTeamLocationsByTeamProvider(
-            @PathVariable("teamProviderId") Long teamProviderId,
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort,
-            @RequestParam(value = "status", required = false) String status,
-            PagedResourcesAssembler<TeamProviderTeamLocation> assembler,
-            @RequestParam(value = "name", required = false) String names) {
+        @PathVariable("teamProviderId") Long teamProviderId,
+        @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+        Sort sort,
+        @RequestParam(value = "status", required = false) String status,
+        PagedResourcesAssembler<TeamProviderTeamLocation> assembler,
+        @RequestParam(value = "name", required = false) String names) {
 
         TeamProvider teamProvider = new TeamProvider();
         teamProvider.setId(teamProviderId);
@@ -174,13 +169,13 @@ public class TeamProvidersResource {
 
         Page<TeamProviderTeamLocation> tptls = teamProviderService.findTeamLocationsByTeamProvider(teamProvider, pageable);
 
-        if(tptls.hasContent()){
-        	return new ResponseEntity<>(new TeamProviderTeamLocationPage(assembler.toResource(tptls, teamProviderTeamLocationResourceAssembler), tptls), HttpStatus.OK);
-        }else{
-        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (tptls.hasContent()) {
+            return new ResponseEntity<>(new TeamProviderTeamLocationPage(assembler.toResource(tptls, teamProviderTeamLocationResourceAssembler), tptls), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-	
+
 	/**
 	 * GET for teamProvider by id
 	 *
@@ -199,19 +194,6 @@ public class TeamProvidersResource {
 		} else {
 			return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), HttpStatus.OK);
 		}
-	}
-
-	/**
-	 * DELETE for deletion of a teamProvider from a team
-	 *
-	 * @return void
-	 */
-	@RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.DELETE)
-	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_REMOVE" })
-	public void deleteProviderFromTeamProvider(@PathVariable Long teamProviderId) {
-		TeamProvider teamProvider = new TeamProvider();
-		teamProvider.setId(teamProviderId);
-	    teamProviderService.delete(teamProvider);
 	}
 	
     /**
@@ -255,4 +237,17 @@ public class TeamProvidersResource {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
         }
+
+    /**
+     * DELETE for deletion of a teamProvider from a team
+     *
+     * @param teamProviderId to delete
+     */
+    @RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.DELETE)
+    @RolesAllowed({"PERM_GOD", "PERM_TEAM_PROVIDER_REMOVE"})
+    public void deleteProviderFromTeamProvider(@PathVariable Long teamProviderId) {
+        TeamProvider teamProvider = new TeamProvider();
+        teamProvider.setId(teamProviderId);
+        teamProviderService.delete(teamProvider);
+    }
 }

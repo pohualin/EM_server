@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.TagSearchFilter;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.TagSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,14 +15,19 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
-import static com.emmisolutions.emmimanager.persistence.impl.specification.TagSpecifications.byGroupId;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
+/**
+ *  TagPersistence implementation
+ */
 @Repository
 public class TagPersistenceImpl implements TagPersistence {
 
     @Resource
     TagRepository tagRepository;
+
+    @Resource
+    TagSpecifications tagSpecifications;
 
     @Override
     public Page<Tag> listTagsByGroupId(Pageable page, TagSearchFilter searchFilter) {
@@ -29,7 +35,7 @@ public class TagPersistenceImpl implements TagPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return tagRepository.findAll(where(byGroupId(searchFilter)), page);
+        return tagRepository.findAll(where(tagSpecifications.byGroupId(searchFilter)), page);
     }
 
     @Override
