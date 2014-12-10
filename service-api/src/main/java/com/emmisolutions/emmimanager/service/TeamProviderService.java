@@ -87,12 +87,14 @@ public interface TeamProviderService {
      * @return a set of TeamProviderTeamLocation objects
      */
     Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(TeamProvider teamProvider, Pageable pageable);
-     /** Finds a full list of TeamProvider objects for a single team for a
-     * discrete list of providers
+ 
+    /**
+     * Finds a full list of TeamProvider objects for a single team for the provided providerSearchFilter
      *
-     * @param teamId  to narrow by
-     * @param providers the discrete list of providers we are interested in
-     * @return a List of TeamProvider objects
+     * @param team to narrow by
+     * @param providerSearchFilter 
+     * @param pageable  the page specification
+     * @return
      */
     Page<TeamProvider> findPossibleProvidersToAdd(Team team, ProviderSearchFilter providerSearchFilter, Pageable pageable);
 

@@ -28,11 +28,18 @@ public class ProviderResource extends ResourceSupport {
         this.entity = entity;
     }
 
+    /**
+     * ProviderResource constructor
+     * @param entity
+     */
 	public ProviderResource(Provider entity) {
 		super();
 		this.entity = entity;
 	}
 	
+	/**
+	 * ProviderResource constructor
+	 */
 	public ProviderResource() {
 	}
 

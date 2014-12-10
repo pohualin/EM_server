@@ -13,7 +13,7 @@ import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A team provider
+ * A teamProviderResource
  */
 @XmlRootElement(name = "team-provider")
 public class TeamProviderResource extends ResourceSupport {
@@ -42,9 +42,17 @@ public class TeamProviderResource extends ResourceSupport {
 		this.provider = provider;
 	}
 
+	/**
+	 * TeamProviderResource constructor
+	 */
 	public TeamProviderResource() {
     }
 
+	/**
+	 * TeamProviderResource constructor
+	 * @param entity
+	 * @param providerResource
+	 */
     public TeamProviderResource(TeamProvider entity, ProviderResource providerResource) {
         this.id = entity.getId();
         this.version = entity.getVersion();
