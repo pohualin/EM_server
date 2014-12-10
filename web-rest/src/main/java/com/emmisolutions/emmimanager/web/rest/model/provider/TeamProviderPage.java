@@ -46,6 +46,13 @@ public class TeamProviderPage extends PagedResource<TeamProviderResource> {
 		pageDefaults(providerResources, providerPage);
 	}
 
+	/**
+	 * TeamProviderPage constructor 
+	 * 
+	 * @param providerResources
+	 * @param teamProviderPage
+	 * @param filter
+	 */
 	public TeamProviderPage(PagedResources<TeamProviderResource> providerResources, Page<TeamProvider> teamProviderPage, ProviderSearchFilter filter) {
 		pageDefaults(providerResources, teamProviderPage);
 		addFilterToLinks(filter);
