@@ -2,7 +2,7 @@
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
-              password="pOHV0377"
+              password="xxxxxxxx"
               driverClassName="org.postgresql.Driver"
               url="jdbc:postgresql://localhost:5432/emmimanager"
               maxActive="20"
