@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -54,6 +55,11 @@ public class UserClientUserClientRolePersistenceIntegrationTest extends
 	entity.setUserClient(userClient);
 	entity.setUserClientRole(userClientRole);
 	userClientUserClientRolePersistence.saveOrUpdate(entity);
+
+	Page<UserClientUserClientRole> pagedResourceWithPageable = userClientUserClientRolePersistence
+		.findByUserClient(userClient, new PageRequest(0, 10));
+	assertThat("should find at least one UserClientUserClientRole",
+		pagedResourceWithPageable.hasContent(), is(true));
 
 	Page<UserClientUserClientRole> pagedResource = userClientUserClientRolePersistence
 		.findByUserClient(userClient, null);

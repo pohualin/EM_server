@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Audited
 @DiscriminatorValue("C")
 public class UserClient extends User {
-
+    
     @ManyToOne
     @NotNull
     @JoinColumn(name = "client_id",

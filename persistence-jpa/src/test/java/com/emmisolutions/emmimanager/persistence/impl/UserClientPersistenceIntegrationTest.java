@@ -10,6 +10,7 @@ import javax.validation.ConstraintViolationException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientType;
@@ -79,7 +80,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	user.setClient(client);
 	user = userClientPersistence.saveOrUpdate(user);
     }
-    
+
     @Test(expected = ConstraintViolationException.class)
     public void testBadLastNameCreate() {
 	Client client = makeNewRandomClient();
@@ -90,7 +91,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	user.setClient(client);
 	user = userClientPersistence.saveOrUpdate(user);
     }
-    
+
     @Test(expected = ConstraintViolationException.class)
     public void testBadLoginCreate() {
 	Client client = makeNewRandomClient();
@@ -101,7 +102,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 	user.setClient(client);
 	user = userClientPersistence.saveOrUpdate(user);
     }
-    
+
     @Test
     public void testBadEmailCreate() {
 	Client client = makeNewRandomClient();
@@ -139,5 +140,31 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 		null, realFilter);
 	assertThat("returned page of UserClient should not be empty",
 		userClientsWithFilter.hasContent(), is(true));
+
+	UserClientSearchFilter nullClientIdFilter = new UserClientSearchFilter(
+		null, "a");
+	Page<UserClient> userClientsWithNullClientIdFilter = userClientPersistence
+		.list(null, nullClientIdFilter);
+	assertThat("returned page of UserClient should not be empty",
+		userClientsWithNullClientIdFilter.hasContent(), is(true));
+
+	Page<UserClient> userClientsWithPageableAndFilter = userClientPersistence
+		.list(new PageRequest(0, 10), realFilter);
+	assertThat("returned page of UserClient should not be empty",
+		userClientsWithPageableAndFilter.hasContent(), is(true));
+    }
+
+    @Test
+    public void testReload() {
+	Client client = makeNewRandomClient();
+	UserClient userClient = makeNewRandomUserClient(client);
+
+	UserClient userClientNull = userClientPersistence.reload(null);
+	assertThat("return null", userClientNull == null, is(true));
+
+	UserClient userClientA = userClientPersistence.reload(userClient
+		.getId());
+	assertThat("reload same UserClient object",
+		userClient.getId() == userClientA.getId(), is(true));
     }
 }

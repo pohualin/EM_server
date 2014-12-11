@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.PagedResources;
 
+import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 
 /**
@@ -27,7 +28,7 @@ public class UserClientUserClientRolePage extends
      */
     public UserClientUserClientRolePage(
 	    PagedResources<UserClientUserClientRoleResource> userClientUserClientRoleResources,
-	    Page<UserClientUserClientRoleResource> userClientUserClientRolePage) {
+	    Page<UserClientUserClientRole> userClientUserClientRolePage) {
 	pageDefaults(userClientUserClientRoleResources,
 		userClientUserClientRolePage);
     }

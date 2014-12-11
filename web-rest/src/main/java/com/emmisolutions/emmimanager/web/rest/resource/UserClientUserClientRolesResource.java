@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientPage;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRolePage;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
@@ -66,14 +67,21 @@ public class UserClientUserClientRolesResource {
 	    @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
 	    @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
 	    @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
-    public ResponseEntity<UserClientPage> getUsers(
+    public ResponseEntity<UserClientUserClientRolePage> getUserClientUserClientRoles(
 	    @PathVariable(value = "userClientId") Long userClientId,
 	    @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
 	    @SortDefault(sort = "id") Sort sort,
 	    PagedResourcesAssembler<UserClientUserClientRole> assembler) {
-	userClientUserClientRoleService
+	Page<UserClientUserClientRole> page = userClientUserClientRoleService
 		.findByUserClient(userClientId, pageable);
-	return null;
+	if (page != null) {
+	    return new ResponseEntity<>(new UserClientUserClientRolePage(
+		    assembler.toResource(page,
+			    userClientUserClientRoleResourceAssembler), page),
+		    HttpStatus.OK);
+	} else {
+	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
 
     }
 
@@ -91,7 +99,7 @@ public class UserClientUserClientRolesResource {
 	    APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
 	    "PERM_CLIENT_CREATE_NEW_USER" })
-    public ResponseEntity<UserClientUserClientRoleResource> assignUserClientRole(
+    public ResponseEntity<UserClientUserClientRoleResource> associateUserClientRole(
 	    @RequestBody UserClientUserClientRole userClientUserClientRole) {
 	userClientUserClientRole = userClientUserClientRoleService
 		.create(userClientUserClientRole);

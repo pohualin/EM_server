@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.persistence.UserClientUserClientRolePersistence;
+import com.emmisolutions.emmimanager.service.UserClientRoleService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
 
@@ -24,11 +25,18 @@ public class UserClientUserClientRoleServiceImpl implements
     UserClientService userClientService;
 
     @Resource
+    UserClientRoleService userClientRoleService;
+
+    @Resource
     UserClientUserClientRolePersistence userClientUserClientRolePersistence;
 
     @Override
     public UserClientUserClientRole create(
 	    UserClientUserClientRole userClientUserClientRole) {
+	userClientUserClientRole.setUserClient(userClientService
+		.reload(userClientUserClientRole.getUserClient().getId()));
+	userClientUserClientRole.setUserClientRole(userClientRoleService
+		.reload(userClientUserClientRole.getUserClientRole()));
 	return userClientUserClientRolePersistence
 		.saveOrUpdate(userClientUserClientRole);
     }

@@ -124,4 +124,26 @@ public class UsersClientResource {
 	}
     }
 
+    /**
+     * GET a single user client
+     *
+     * @param id
+     *            to load
+     * @return UserClientResource or NO_CONTENT
+     */
+    @RequestMapping(value = "/user_client/{id}", method = RequestMethod.GET)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+	    "PERM_CLIENT_CREATE_NEW_USER" })
+    public ResponseEntity<UserClientResource> get(@PathVariable("id") Long id) {
+	UserClient userClient = userClientService.reload(id);
+	if (userClient != null) {
+	    return new ResponseEntity<>(
+		    userClientResourceAssembler.toResource(userClient),
+		    HttpStatus.OK);
+	} else {
+	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+    }
+
 }
