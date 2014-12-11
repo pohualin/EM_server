@@ -15,6 +15,7 @@ import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.LocationSearchFilter;
 import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.LocationSpecifications;
+import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.repo.LocationRepository;
 
 /**
@@ -29,6 +30,9 @@ public class LocationPersistenceImpl implements LocationPersistence {
     @Resource
     LocationRepository locationRepository;
 
+    @Resource
+    MatchingCriteriaBean matchCriteria;
+    
     @Override
     public Page<Location> list(Pageable page, LocationSearchFilter filter) {
         if (page == null) {
@@ -45,6 +49,7 @@ public class LocationPersistenceImpl implements LocationPersistence {
     
     @Override
     public Location save(Location location) {
+    	location.setNormalizedName(matchCriteria.normalizeNameAndBlank(location.getName()));
         return locationRepository.save(location);
     }
 

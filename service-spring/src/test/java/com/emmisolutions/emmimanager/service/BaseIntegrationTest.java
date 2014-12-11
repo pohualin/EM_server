@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
@@ -16,9 +16,19 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
-import javax.annotation.Resource;
-
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
 
 /**
  * Root integration test harness
@@ -44,6 +54,9 @@ public abstract class BaseIntegrationTest {
     
     @Resource
     TeamService teamService;
+    
+    @Resource
+    UserClientService userClientService;
 
     /**
      * Login as a user
@@ -130,6 +143,20 @@ public abstract class BaseIntegrationTest {
 		team.setClient(makeNewRandomClient());
 		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
 		return teamService.create(team);
+    }
+    
+    /**
+     * Creates a new UserClient
+     *
+     * @return a UserClient
+     */
+    protected UserClient makeNewRandomUserClient(Client client) {
+	UserClient userClient = new UserClient();
+	userClient.setClient(client != null ? client : makeNewRandomClient());
+	userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
+	userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
+	userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
+	return userClientService.create(userClient);
     }
 
     /**

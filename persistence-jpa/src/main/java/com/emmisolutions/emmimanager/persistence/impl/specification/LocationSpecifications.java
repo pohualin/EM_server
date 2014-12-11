@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import com.emmisolutions.emmimanager.model.Location_;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
@@ -52,7 +53,7 @@ public class LocationSpecifications {
                         for (String searchTerm : searchTerms) {
                             if (StringUtils.isNotBlank(searchTerm)) {
                                 addedANameFilter = true;
-                                predicates.add(cb.like(cb.lower(root.get(Location_.name)), "%" + searchTerm.toLowerCase() + "%"));
+                                predicates.add(cb.like(root.get(Location_.normalizedName), "%" + searchTerm + "%"));
                             }
                         }
                     }
