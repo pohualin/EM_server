@@ -39,7 +39,7 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
     @Test
     public void addLocationToClient() {
         Client client = makeClient();
-        Location location = makeLocation();
+        Location location = makeLocation(1);
         ClientLocation clientLocation = clientLocationPersistence.create(location.getId(), client.getId());
         assertThat("client location is not null", clientLocation, is(notNullValue()));
         assertThat("client location has an id", clientLocation.getId(), is(notNullValue()));
@@ -74,9 +74,9 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         Client client = makeClient();
 
         // create a bunch of locations
-        Location location = makeLocation();
+        Location location = makeLocation(900);
         for (int i = 0; i < 10; i++) {
-             makeLocation();
+             makeLocation(i);
         }
         // associate the Client to one of the locations
         ClientLocation clientLocation = clientLocationPersistence.create(location.getId(), client.getId());
@@ -119,9 +119,9 @@ public class ClientLocationPersistenceIntegrationTest extends BaseIntegrationTes
         return clientPersistence.save(client);
     }
 
-    private Location makeLocation() {
+    private Location makeLocation(int id) {
         Location location = new Location();
-        location.setName("Client Location Association");
+        location.setName("Client Location Association " + id);
         location.setCity("Valid City 1");
         location.setPhone("630-222-8900");
         location.setState(State.TX);

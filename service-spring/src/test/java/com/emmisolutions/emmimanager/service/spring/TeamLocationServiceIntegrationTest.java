@@ -120,7 +120,7 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
 		TeamProvider teamProvider = providerPage.getContent().iterator().next();
 		assertThat("TeamProvider was created", teamProvider.getId(), is(notNullValue()));
 		
-        Location location = locationService.create( makeLocation("Location ", "1") );
+        Location location = locationService.create( makeLocation("Location ", "12") );
         assertThat("location was created successfully", location.getId(), is(notNullValue()));
 
         Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<TeamLocationTeamProviderSaveRequest>();
