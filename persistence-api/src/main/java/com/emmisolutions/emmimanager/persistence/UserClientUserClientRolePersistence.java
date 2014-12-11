@@ -7,7 +7,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 
 /**
- * Persistence API for UserClient roles and permissions.
+ * Persistence API for UserClientUserClientRole.
  */
 public interface UserClientUserClientRolePersistence {
 
@@ -31,7 +31,20 @@ public interface UserClientUserClientRolePersistence {
     Page<UserClientUserClientRole> findByUserClient(UserClient userClient,
 	    Pageable pageable);
 
+    /**
+     * Find the UserClientUserClientRole by userClientUserClientId
+     * 
+     * @param userClientUserClientId
+     *            to use
+     * @return UserClientUserClient with userClientUserClientId
+     */
     UserClientUserClientRole reload(Long userClientUserClientId);
 
+    /**
+     * Delete an UserClientUserClientRole with userClientUserClientId
+     * 
+     * @param userClientUserClientId
+     *            to use
+     */
     void delete(Long userClientUserClientId);
 }

@@ -11,11 +11,12 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 public interface UserClientUserClientRoleService {
 
     /**
-     * Creates a new user client user with the passed UserClient object.
+     * Creates a new UserClientUserClientRole with the passed
+     * UserClientUserClientRole object.
      *
-     * @param userClientUserClientRole
+     * @param UserClientUserClientRole
      *            to create
-     * @return the created userClientUserClientRole
+     * @return the created UserClientUserClientRole
      */
     UserClientUserClientRole create(
 	    UserClientUserClientRole userClientUserClientRole);

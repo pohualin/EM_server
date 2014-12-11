@@ -44,21 +44,17 @@ public class UserClientUserClientRolesResource {
     UserClientUserClientRoleResourceAssembler userClientUserClientRoleResourceAssembler;
 
     /**
-     * GET to search for clients
-     *
-     * @param id
-     *            the client id
-     * @param status
-     *            to filter by
-     * @param lastName
-     *            to filter by
+     * Get a Page of UserClientUserClientRole
+     * 
+     * @param userClientId
+     *            to use
      * @param pageable
-     *            paged request
+     *            to use
      * @param sort
-     *            sorting request
+     *            to use
      * @param assembler
-     *            used to create the PagedResources
-     * @return ResponseEntity<UserClientPage> or NO_CONTENT
+     *            to use
+     * @return UserClientUserClientRolePage
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientRoles", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
@@ -85,14 +81,11 @@ public class UserClientUserClientRolesResource {
     }
 
     /**
-     * POST to create a new UserClient
-     *
-     * @param userClient
-     *            to create
-     * @return UserClientResource or INTERNAL_SERVER_ERROR if it could not be
-     *         created
-     *         <p/>
-     *         TODO User create permission
+     * Create an UserClientUserClientRolePage
+     * 
+     * @param UserClientUserClientRole
+     *            to be created
+     * @return UserClientUserClientRolePage created
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientRoles", method = RequestMethod.POST, consumes = {
 	    APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })

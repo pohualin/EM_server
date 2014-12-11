@@ -11,7 +11,7 @@ import com.emmisolutions.emmimanager.web.rest.resource.ClientRolesAdminResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
 
 /**
- * Creates a UserResource from a User
+ * Creates a UserClientUserClientRoleResource from a UserClientUserClientRole
  */
 @Component
 public class UserClientUserClientRoleResourceAssembler

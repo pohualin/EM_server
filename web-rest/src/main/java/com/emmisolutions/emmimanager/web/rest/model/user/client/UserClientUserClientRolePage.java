@@ -9,7 +9,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 
 /**
- * A HATEOAS wrapper for a page of UserResource objects.
+ * A HATEOAS wrapper for a page of UserClientUserClientRole objects.
  */
 @XmlRootElement(name = "user-client-user-client-role-page")
 public class UserClientUserClientRolePage extends

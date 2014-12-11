@@ -36,6 +36,10 @@ import com.wordnik.swagger.annotations.ApiImplicitParams;
 /**
  * Users Client REST API
  */
+/**
+ * @author plin
+ *
+ */
 @RestController
 @RequestMapping(value = "/webapi", produces = { APPLICATION_JSON_VALUE,
 	APPLICATION_XML_VALUE })
@@ -51,21 +55,21 @@ public class UsersClientResource {
     UserClientResourceAssembler userClientResourceAssembler;
 
     /**
-     * GET to search for clients
-     *
-     * @param id
-     *            the client id
-     * @param status
-     *            to filter by
-     * @param lastName
-     *            to filter by
+     * Get a page of UserClient that satisfy the search criteria
+     * 
+     * @param clientId
+     *            to use
      * @param pageable
-     *            paged request
+     *            to use
      * @param sort
-     *            sorting request
+     *            to use
      * @param assembler
-     *            used to create the PagedResources
-     * @return ResponseEntity<UserClientPage> or NO_CONTENT
+     *            to use
+     * @param status
+     *            to filter
+     * @param term
+     *            to search
+     * @return UserClientPage
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
@@ -99,14 +103,11 @@ public class UsersClientResource {
     }
 
     /**
-     * POST to create a new UserClient
-     *
-     * @param userClient
+     * Create a brand new UserClient
+     * 
+     * @param UserClient
      *            to create
-     * @return UserClientResource or INTERNAL_SERVER_ERROR if it could not be
-     *         created
-     *         <p/>
-     *         TODO User create permission
+     * @return UserClient created
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.POST, consumes = {
 	    APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
@@ -125,7 +126,7 @@ public class UsersClientResource {
     }
 
     /**
-     * GET a single user client
+     * GET a single UserClient
      *
      * @param id
      *            to load
