@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +33,7 @@ public class UserClientUserClientRolePersistenceIntegrationTest extends
     @Test
     public void testCreate() {
 	Client client = makeNewRandomClient();
-	UserClient userClient = makeUserClient(client);
+	UserClient userClient = makeNewRandomUserClient(client);
 	UserClientRole userClientRole = makeNewRandomUserClientRole(client);
 
 	UserClientUserClientRole entity = new UserClientUserClientRole();
@@ -49,7 +48,7 @@ public class UserClientUserClientRolePersistenceIntegrationTest extends
     @Test
     public void testFindByUserClient() {
 	Client client = makeNewRandomClient();
-	UserClient userClient = makeUserClient(client);
+	UserClient userClient = makeNewRandomUserClient(client);
 	UserClientRole userClientRole = makeNewRandomUserClientRole(client);
 	UserClientUserClientRole entity = new UserClientUserClientRole();
 	entity.setUserClient(userClient);
@@ -67,12 +66,40 @@ public class UserClientUserClientRolePersistenceIntegrationTest extends
 		pagedResource.hasContent(), is(true));
     }
 
-    private UserClient makeUserClient(Client client) {
-	UserClient userClient = new UserClient();
-	userClient.setClient(client);
-	userClient.setFirstName(RandomStringUtils.randomAlphabetic(10));
-	userClient.setLastName(RandomStringUtils.randomAlphabetic(10));
-	userClient.setLogin(RandomStringUtils.randomAlphabetic(10));
-	return userClientPersistence.saveOrUpdate(userClient);
+    @Test
+    public void testReload() {
+	Client client = makeNewRandomClient();
+	UserClient userClient = makeNewRandomUserClient(client);
+	UserClientRole userClientRole = makeNewRandomUserClientRole(client);
+	UserClientUserClientRole entity = new UserClientUserClientRole();
+	entity.setUserClient(userClient);
+	entity.setUserClientRole(userClientRole);
+	userClientUserClientRolePersistence.saveOrUpdate(entity);
+
+	UserClientUserClientRole reloadNull = userClientUserClientRolePersistence
+		.reload(null);
+	assertThat("should return null", reloadNull == null, is(true));
+
+	UserClientUserClientRole reload = userClientUserClientRolePersistence
+		.reload(entity.getId());
+	assertThat("should return the existing one",
+		reload.getId() == entity.getId(), is(true));
     }
+
+    @Test
+    public void testDelete() {
+	Client client = makeNewRandomClient();
+	UserClient userClient = makeNewRandomUserClient(client);
+	UserClientRole userClientRole = makeNewRandomUserClientRole(client);
+	UserClientUserClientRole entity = new UserClientUserClientRole();
+	entity.setUserClient(userClient);
+	entity.setUserClientRole(userClientRole);
+	userClientUserClientRolePersistence.saveOrUpdate(entity);
+
+	userClientUserClientRolePersistence.delete(entity.getId());
+	UserClientUserClientRole reloadAfterDelete = userClientUserClientRolePersistence
+		.reload(entity.getId());
+	assertThat("should return nothing", reloadAfterDelete == null, is(true));
+    }
+
 }

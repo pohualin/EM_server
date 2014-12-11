@@ -82,7 +82,6 @@ public class UserClientUserClientRolesResource {
 	} else {
 	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
-
     }
 
     /**
@@ -113,4 +112,39 @@ public class UserClientUserClientRolesResource {
 	}
     }
 
+    /**
+     * @param userClientUserClientRoleId
+     *            to reload
+     * @return NO_CONTENT if no UserClientUserClientRole found by
+     *         userClientUserClientRoleId or UserClientUserClientRoleResource if
+     *         UserClientUserClientRole found by userClientUserClientRoleId
+     */
+    @RequestMapping(value = "/user_client_user_client_role/{userClientUserClientRoleId}", method = RequestMethod.GET)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+	    "PERM_CLIENT_CREATE_NEW_USER" })
+    public ResponseEntity<UserClientUserClientRoleResource> getUserClientUserClientRole(
+	    @PathVariable(value = "userClientUserClientRoleId") Long userClientUserClientRoleId) {
+	UserClientUserClientRole usucr = userClientUserClientRoleService
+		.reload(userClientUserClientRoleId);
+	if (usucr != null) {
+	    return new ResponseEntity<>(
+		    userClientUserClientRoleResourceAssembler.toResource(usucr),
+		    HttpStatus.OK);
+	} else {
+	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+    }
+
+    /**
+     * DELETE a single UserClientUserClientRole
+     *
+     * @param userClientUserClientRoleId
+     *            to remove
+     */
+    @RequestMapping(value = "/user_client_user_client_role/{userClientUserClientRoleId}", method = RequestMethod.DELETE)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+	    "PERM_CLIENT_CREATE_NEW_USER" })
+    public void delete(@PathVariable Long userClientUserClientRoleId) {
+	userClientUserClientRoleService.delete(userClientUserClientRoleId);
+    }
 }

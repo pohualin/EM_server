@@ -21,6 +21,17 @@ public interface UserClientUserClientRolePersistence {
     UserClientUserClientRole saveOrUpdate(
 	    UserClientUserClientRole userClientUserClientRole);
 
+    /**
+     * @param userClient
+     *            to use
+     * @param pageable
+     *            to use
+     * @return a page of UserClientUserClientRole having UserClient
+     */
     Page<UserClientUserClientRole> findByUserClient(UserClient userClient,
 	    Pageable pageable);
+
+    UserClientUserClientRole reload(Long userClientUserClientId);
+
+    void delete(Long userClientUserClientId);
 }

@@ -58,11 +58,46 @@ public class UserClientUserClientRoleServiceIntegrationTest extends
 		.findByUserClient(userClient.getId(), null);
 	assertThat("Should return a page of UserClientUserClientRole.",
 		ucucr.hasContent(), is(true));
-	
+
 	Page<UserClientUserClientRole> ucucrA = userClientUserClientRoleService
 		.findByUserClient(userClient.getId(), new PageRequest(0, 10));
 	assertThat("Should return a page of UserClientUserClientRole.",
 		ucucrA.hasContent(), is(true));
     }
 
+    @Test
+    public void testReload() {
+	Client client = makeNewRandomClient();
+	UserClient userClient = makeNewRandomUserClient(client);
+	UserClientRole userClientRole = makeNewRandomUserClientRole(client);
+	UserClientUserClientRole entity = new UserClientUserClientRole();
+	entity.setUserClient(userClient);
+	entity.setUserClientRole(userClientRole);
+	userClientUserClientRoleService.create(entity);
+
+	UserClientUserClientRole reloadNull = userClientUserClientRoleService
+		.reload(null);
+	assertThat("Should return null.", reloadNull == null, is(true));
+
+	UserClientUserClientRole reload = userClientUserClientRoleService
+		.reload(entity.getId());
+	assertThat("Should return existing UserClientUserClientRole",
+		reload.getId() == entity.getId(), is(true));
+    }
+
+    @Test
+    public void testDelete() {
+	Client client = makeNewRandomClient();
+	UserClient userClient = makeNewRandomUserClient(client);
+	UserClientRole userClientRole = makeNewRandomUserClientRole(client);
+	UserClientUserClientRole entity = new UserClientUserClientRole();
+	entity.setUserClient(userClient);
+	entity.setUserClientRole(userClientRole);
+	userClientUserClientRoleService.create(entity);
+
+	userClientUserClientRoleService.delete(entity.getId());
+	UserClientUserClientRole reloadAfterDelete = userClientUserClientRoleService
+		.reload(entity.getId());
+	assertThat("should return nothing", reloadAfterDelete == null, is(true));
+    }
 }

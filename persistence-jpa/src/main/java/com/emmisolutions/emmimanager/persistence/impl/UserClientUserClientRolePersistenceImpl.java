@@ -40,4 +40,18 @@ public class UserClientUserClientRolePersistenceImpl implements
 		pageable);
     }
 
+    @Override
+    public UserClientUserClientRole reload(Long userClientUserClientId) {
+	if (userClientUserClientId == null) {
+	    return null;
+	}
+	return userClientUserClientRoleRepository
+		.findOne(userClientUserClientId);
+    }
+
+    @Override
+    public void delete(Long userClientUserClientId) {
+	userClientUserClientRoleRepository.delete(userClientUserClientId);
+    }
+
 }

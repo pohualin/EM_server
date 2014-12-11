@@ -49,4 +49,15 @@ public class UserClientUserClientRoleServiceImpl implements
 		pageable);
     }
 
+    @Override
+    public UserClientUserClientRole reload(Long userClientUserClientId) {
+	return userClientUserClientRolePersistence
+		.reload(userClientUserClientId);
+    }
+
+    @Override
+    public void delete(Long userClientUserClientId) {
+	userClientUserClientRolePersistence.delete(userClientUserClientId);
+    }
+
 }

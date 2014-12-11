@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientRolesAdminResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
 
 /**
  * Creates a UserResource from a User
@@ -25,6 +26,10 @@ public class UserClientUserClientRoleResourceAssembler
 		methodOn(ClientRolesAdminResource.class).rolePermissions(
 			entity.getUserClientRole().getId())).withRel(
 		"userClientRolePermissions"));
+	ret.add(linkTo(
+		methodOn(UserClientUserClientRolesResource.class)
+			.getUserClientUserClientRole(entity.getId())).withRel(
+		"userClientUserClientRole"));
 	ret.setEntity(entity);
 	return ret;
     }
