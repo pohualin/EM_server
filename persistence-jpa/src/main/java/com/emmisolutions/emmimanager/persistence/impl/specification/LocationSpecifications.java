@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import com.emmisolutions.emmimanager.model.Location_;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
@@ -26,9 +25,15 @@ public class LocationSpecifications {
     ClientPersistence clientPersistence;
 
     /**
-     * Case insensitive name anywhere match
+     * Case insensitive name anywhere match. This searches the
+     * normalized name field if the search filter has any names
+     * on it. For example,
      *
-     * @param searchFilter to be found
+     * SearchFilter.names == {"big brown", "car"}
+     * The spec based upon this would be:
+     * (normalizedName like %big% AND normalizedName like %brown%) OR normalizedName like %car%
+     *
+     * @param searchFilter inspects the names property
      * @return the specification as a filter predicate
      */
     public Specification<Location> hasNames(final LocationSearchFilter searchFilter) {
@@ -36,7 +41,6 @@ public class LocationSpecifications {
 
             @Override
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                boolean addedANameFilter = false;
                 List<Predicate> predicates = new ArrayList<>();
                 if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.getNames())) {
 
@@ -50,14 +54,15 @@ public class LocationSpecifications {
                                 }
                             }
                         }
+                        List<Predicate> andClause = new ArrayList<>();
                         for (String searchTerm : searchTerms) {
-                            if (StringUtils.isNotBlank(searchTerm)) {
-                                addedANameFilter = true;
-                                predicates.add(cb.like(root.get(Location_.normalizedName), "%" + searchTerm + "%"));
-                            }
+                            andClause.add(cb.like(root.get(Location_.normalizedName), "%" + searchTerm + "%"));
                         }
+                        // AND all of the parts of a search term delimited by space
+                        predicates.add(cb.and(andClause.toArray(new Predicate[andClause.size()])));
                     }
-                    return addedANameFilter ? cb.or(predicates.toArray(new Predicate[predicates.size()])) : null;
+                    // OR all of the search names together
+                    return cb.or(predicates.toArray(new Predicate[predicates.size()]));
                 }
                 return null;
             }
@@ -119,7 +124,7 @@ public class LocationSpecifications {
                     notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient().getId());
                 }
                 if (notUsedByClient != null) {
-                	
+
                 	Subquery<Location> locationSubquery = query.subquery(Location.class);
                 	Root<ClientLocation> clientLocationRoot = locationSubquery.from(ClientLocation.class);
                 	locationSubquery
