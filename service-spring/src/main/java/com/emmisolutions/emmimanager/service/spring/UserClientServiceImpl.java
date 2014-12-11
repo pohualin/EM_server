@@ -35,6 +35,12 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Override
     @Transactional
+    public UserClient reload(Long userClientId) {
+	return userClientPersistence.reload(userClientId);
+    }
+
+    @Override
+    @Transactional
     public UserClient update(UserClient user) {
 	// TODO Auto-generated method stub
 	return null;

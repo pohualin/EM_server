@@ -11,6 +11,8 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
  */
 public interface UserClientPersistence {
 
+    UserClient reload(Long userClientId);
+    
     /**
      * Saves or updates the User object
      *

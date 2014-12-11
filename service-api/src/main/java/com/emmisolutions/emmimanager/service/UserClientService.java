@@ -21,6 +21,15 @@ public interface UserClientService {
     UserClient create(UserClient user);
 
     /**
+     * Reload an existing client user with the passed userClientId.
+     *
+     * @param userClientId
+     *            to lookup
+     * @return the existing user client
+     */
+    UserClient reload(Long userClientId);
+
+    /**
      * Update an existing client user with the passed UserClient object.
      *
      * @param user
