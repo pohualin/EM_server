@@ -66,7 +66,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = createClient("1");
         Group group = createGroup(client, "save");
 
-        Tag tag = createTag(group, "");
+        Tag tag = createTag(group);
 
         Team team = createTeam(client, 1);
 
@@ -78,11 +78,120 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
-        searchFilter.setTagId(tag.getId());
+        HashSet<Tag> tagSet= new HashSet<>();
+        tagSet.add(tag);
+        searchFilter.setTagSet(tagSet);
+        Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("we can find the team tag by the team tag id",
-            teamTagPersistence.findTeamsWithTag(null, searchFilter),
+                teamsWithTag,
             hasItem(afterSaveTeamTag));
     }
+
+    /**
+     * Save success
+     */
+    @Test
+    public void saveTagsInSameGroup() {
+        TeamTag teamTag1 = new TeamTag();
+        TeamTag teamTag2 = new TeamTag();
+        TeamTag teamTag3 = new TeamTag();
+
+        Client client = createClient("1");
+        Group group1 = createGroup(client, "return");
+        Group group2 = createGroup(client, "dont return");
+
+        Tag tag1 = createTag(group1);
+        Tag tag2 = createTag(group1);
+        Tag tag3 = createTag(group2);
+
+        Team team1 = createTeam(client, 1);
+        Team team2 = createTeam(client, 2);
+        Team team3 = createTeam(client, 3);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+        teamTag1.setTag(tag2);
+        teamTag1.setTeam(team1);
+        teamTag2.setTag(tag2);
+        teamTag2.setTeam(team2);
+        teamTag3.setTag(tag3);
+        teamTag3.setTeam(team3);
+
+        TeamTag afterSaveTeamTag1 = teamTagPersistence.saveTeamTag(teamTag1);
+        TeamTag afterSaveTeamTag2 = teamTagPersistence.saveTeamTag(teamTag2);
+        TeamTag afterSaveTeamTag3 = teamTagPersistence.saveTeamTag(teamTag3);
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        HashSet<Tag> tagSet = new HashSet<>();
+        tagSet.add(tag1);
+        tagSet.add(tag2);
+        searchFilter.setTagSet(tagSet);
+        Page<TeamTag> returnedTeamTags = teamTagPersistence.findTeamsWithTag(null, searchFilter);
+        assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
+        assertThat("afterSaveTeamTag2 team is returned",returnedTeamTags,hasItem(afterSaveTeamTag2));
+        assertThat("afterSaveTeamTag3 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag3)));
+    }
+
+  /**
+     * Save success
+     */
+    @Test
+    public void saveTagsInDifferentGroup() {
+        TeamTag teamTag1 = new TeamTag();
+        TeamTag teamTag2 = new TeamTag();
+        TeamTag teamTag3 = new TeamTag();
+        TeamTag teamTag4 = new TeamTag();
+
+        Client client = createClient("1");
+        Group group1 = createGroup(client, "return");
+        Group group2 = createGroup(client, "return this too");
+
+        Tag tag1 = createTag(group1);
+        Tag tag2 = createTag(group1);
+        Tag tag3 = createTag(group2);
+
+        Team team1 = createTeam(client, 1);
+        Team team2 = createTeam(client, 2);
+        Team team3 = createTeam(client, 3);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+        teamTag2.setTag(tag3);
+        teamTag2.setTeam(team1);
+        teamTag3.setTag(tag2);
+        teamTag3.setTeam(team2);
+        teamTag4.setTag(tag3);
+        teamTag4.setTeam(team3);
+
+        TeamTag afterSaveTeamTag1 = teamTagPersistence.saveTeamTag(teamTag1);
+        TeamTag afterSaveTeamTag2 = teamTagPersistence.saveTeamTag(teamTag2);
+        TeamTag afterSaveTeamTag3 = teamTagPersistence.saveTeamTag(teamTag3);
+        TeamTag afterSaveTeamTag4 = teamTagPersistence.saveTeamTag(teamTag4);
+
+        HashSet<TeamTag> teamTagsSet = new HashSet<>();
+        teamTagsSet.add(teamTag1);
+        teamTagsSet.add(teamTag2);
+        HashSet<TeamTag> teamTagsSet2 = new HashSet<>();
+        teamTagsSet2.add(teamTag3);
+        tag1.setTeamTags(teamTagsSet);
+        tag2.setTeamTags(teamTagsSet2);
+        HashSet<TeamTag> teamTagsSet3 = new HashSet<>();
+        teamTagsSet3.add(teamTag4);
+        tag3.setTeamTags(teamTagsSet3);
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        HashSet<Tag> tagSet = new HashSet<>();
+        tagSet.add(tagPersistence.reload(tag1));
+        tagSet.add(tagPersistence.reload(tag2));
+        tagSet.add(tagPersistence.reload(tag3));
+        searchFilter.setTagSet(tagSet);
+        Page<TeamTag> returnedTeamTags = teamTagPersistence.findTeamsWithTag(null, searchFilter);
+        assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
+        assertThat("afterSaveTeamTag2 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag2));
+        assertThat("afterSaveTeamTag3 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag3)));
+        assertThat("afterSaveTeamTag4 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag4)));
+    }
+
 
     /**
      * try to save a null team tag
@@ -110,7 +219,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = createClient("1");
         Group group = createGroup(client, "saveNullTeam");
 
-        Tag tag = createTag(group, "");
+        Tag tag = createTag(group);
 
         Team team = new Team();
         team.setName("Test Team");
@@ -157,7 +266,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client2 = createClient("2");
         Group group = createGroup(client1, "saveDifferentClientTeam");
 
-        Tag tag = createTag(group, "");
+        Tag tag = createTag(group);
 
         Team team = createTeam(client2, 1);
 
@@ -178,7 +287,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client2 = createClient("2");
         Group group = createGroup(client2, "saveDifferentClientTag");
 
-        Tag tag = createTag(group, "");
+        Tag tag = createTag(group);
 
         Team team = createTeam(client1, 1);
 
@@ -199,7 +308,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = createClient("1");
         Group group = createGroup(client, "delete");
 
-        Tag tag = createTag(group, "");
+        Tag tag = createTag(group);
 
         Team team = createTeam(client, 1);
 
@@ -226,8 +335,8 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = createClient("1");
         Group group = createGroup(client, "getAllTeamTagsForTeam");
 
-        Tag tag1 = createTag(group, "1");
-        Tag tag2 = createTag(group, "2");
+        Tag tag1 = createTag(group);
+        Tag tag2 = createTag(group);
 
         Team team1 = createTeam(client, 1);
         Team team3 = createTeam(client, 3);
@@ -262,8 +371,8 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client1 = createClient("1");
         Group group = createGroup(client1, "deleteTeamTagsWithTeam");
 
-        Tag tag1 = createTag(group, "1");
-        Tag tag2 = createTag(group, "2");
+        Tag tag1 = createTag(group);
+        Tag tag2 = createTag(group);
         Team team1 = createTeam(client1, 1);
         Team team2 = createTeam(client1, 2);
 
@@ -304,11 +413,11 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Team team = createTeam(client, 4);
 
         final Group groupToBeSaved = createGroup(client, "removeTeamTags1");
-        Tag savedTag = createTag(groupToBeSaved, "shouldStillBeThere");
+        Tag savedTag = createTag(groupToBeSaved);
         TeamTag shouldBeSaved = teamTagPersistence.saveTeamTag(new TeamTag(team, savedTag));
 
         Group groupToBeDeleted = createGroup(client, "removeTeamTags2");
-        Tag shouldBeRemovedTag = createTag(groupToBeDeleted, "toBeDeleted");
+        Tag shouldBeRemovedTag = createTag(groupToBeDeleted);
         teamTagPersistence.saveTeamTag(new TeamTag(team, shouldBeRemovedTag));
 
         assertThat("there should be two TeamTags for the team",
@@ -338,7 +447,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private Team createTeam(Client client, int i) {
         Team team = new Team();
-        team.setName("Test Team" + i);
+        team.setName("Test Team" + i + System.currentTimeMillis());
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);
@@ -347,9 +456,9 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         return team;
     }
 
-    private Tag createTag(Group group, String uniqueId) {
+    private Tag createTag(Group group) {
         Tag tag = new Tag();
-        tag.setName("Test Tag " + uniqueId);
+        tag.setName("Test Tag " + System.currentTimeMillis());
         tag.setGroup(group);
         tag = tagPersistence.save(tag);
         return tag;

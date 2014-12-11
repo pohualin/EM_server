@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.*;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -52,31 +51,33 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         client.setContractOwner(user);
         client.setActive(false);
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
+        clientService.create(client);
         return client;
     }
 
     private Group createGroup(Client client) {
         Group group = new Group();
-        group.setName("Test Group");
+        group.setName("Test Group" + System.currentTimeMillis());
         group.setClient(clientService.reload(client));
+        groupService.save(group);
         return group;
     }
 
     private Tag createTag(Group group) {
         Tag tag = new Tag();
-        tag.setName("Test Tag " + RandomStringUtils.randomAlphanumeric(18));
+        tag.setName("Test Tag " + System.currentTimeMillis());
         tag.setGroup(group);
         return tag;
     }
 
     private Team createTeam(Client client) {
         Team team = new Team();
-        team.setName("Test Team" + RandomStringUtils.randomAlphanumeric(18));
+        team.setName("Test Team" + System.currentTimeMillis());
         team.setDescription("Test Team description");
         team.setActive(true);
         team.setClient(client);
         team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
-
+        teamService.create(team);
         return team;
     }
 
@@ -85,12 +86,12 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testSaveAndFind() {
-        Client client = clientService.create(createClient());
-        Group group = groupService.save(createGroup(client));
+        Client client = createClient();
+        Group group = createGroup(client);
 
         List<Tag> tagList = createTagList(group, 2);
 
-        Team team1 = teamService.create(createTeam(client));
+        Team team1 = createTeam(client);
 
         Set<Tag> tagSet = new HashSet<>();
         tagSet.add(tagList.get(0));
@@ -118,8 +119,8 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testSaveDeletesItems() {
-        Client client = clientService.create(createClient());
-        Group group = groupService.save(createGroup(client));
+        Client client = createClient();
+        Group group = createGroup(client);
 
         // create 4 tags in a group
         List<Tag> tagListComplete = createTagList(group, 4);
@@ -129,7 +130,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         List<Tag> tagListSecondHalf = tagListComplete.subList(2, 4);
 
         // make a team
-        Team team1 = teamService.create(createTeam(client));
+        Team team1 = createTeam(client);
 
         // associate half of the tags to this team
         Set<Tag> tagSet = new HashSet<>();
@@ -163,11 +164,11 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testSaveSingleTeamTag() {
-        Client client = clientService.create(createClient());
-        Group group = groupService.save(createGroup(client));
+        Client client = createClient();
+        Group group = createGroup(client);
         List<Tag> tagList = createTagList(group, 1);
         Tag tag = tagList.get(0);
-        Team team1 = teamService.create(createTeam(client));
+        Team team1 = createTeam(client);
 
         TeamTag teamTag = teamTagService.saveSingleTeamTag(team1, tag);
         TeamTag newTeamTag = teamTagService.reload(teamTag);
@@ -179,9 +180,9 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testSaveSingleTeamTagWithNullTag() {
-        Client client = clientService.create(createClient());
+        Client client = createClient();
         Tag tag = null;
-        Team team1 = teamService.create(createTeam(client));
+        Team team1 = createTeam(client);
         team1.setId(1l);
 
         assertThat("null was returned", teamTagService.saveSingleTeamTag(team1, tag), is(nullValue()));
@@ -192,8 +193,8 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testSaveSingleTeamTagWitNullTeam() {
-        Client client = clientService.create(createClient());
-        Group group = groupService.save(createGroup(client));
+        Client client = createClient();
+        Group group = createGroup(client);
         List<Tag> tagList = createTagList(group, 1);
         Tag tag = tagList.get(0);
         Team team1 = null;
@@ -206,11 +207,11 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testDeleteSingleTeamTag() {
-        Client client = clientService.create(createClient());
-        Group group = groupService.save(createGroup(client));
+        Client client = createClient();
+        Group group = createGroup(client);
         List<Tag> tagList = createTagList(group, 1);
         Tag tag = tagList.get(0);
-        Team team1 = teamService.create(createTeam(client));
+        Team team1 = createTeam(client);
 
         TeamTag teamTag = teamTagService.saveSingleTeamTag(team1, tag);
         TeamTag newTeamTag = teamTagService.reload(teamTag);
@@ -220,4 +221,128 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         teamTag = teamTagService.reload(newTeamTag);
         assertThat("teamTag was deleted", teamTag, is(nullValue()));
     }
+
+
+    /**
+     * Save success
+     */
+    @Test
+    public void save() {
+        Client client = createClient();
+        Group group = createGroup(client);
+
+        Tag tag = createTagList(group,1).get(0);
+        Team team = createTeam(client);
+
+        TeamTag afterSaveTeamTag = teamTagService.saveSingleTeamTag(team, tag);
+        assertThat("TeamTag was given an id", afterSaveTeamTag.getId(), is(notNullValue()));
+        assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
+
+        Set<TeamTag> teamTagSet = new HashSet<>();
+        teamTagSet.add(afterSaveTeamTag);
+        tag.setTeamTags(teamTagSet);
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        HashSet<Tag> tagSet= new HashSet<>();
+        tagSet.add(tag);
+        searchFilter.setTagSet(tagSet);
+        Page<TeamTag> teamsWithTag = teamTagService.findTeamsWithTag(null, searchFilter);
+        assertThat("we can find the team tag by the team tag id",
+                teamsWithTag,
+                hasItem(afterSaveTeamTag));
+    }
+
+    /**
+     * Save success
+     */
+    @Test
+    public void saveTagsInSameGroup() {
+        Client client = createClient();
+        Group group1 = createGroup(client);
+        Group group2 = createGroup(client);
+
+        List<Tag> tagList = createTagList(group1, 2);
+        List<Tag> tagList2 = createTagList(group2, 1);
+        Tag tag1 = tagList.get(0);
+        Tag tag2 = tagList.get(1);
+        Tag tag3 = tagList2.get(0);
+
+        Team team1 = createTeam(client);
+        Team team2 = createTeam(client);
+        Team team3 = createTeam(client);
+
+        TeamTag afterSaveTeamTag1 = teamTagService.saveSingleTeamTag(team1, tag1);
+        TeamTag afterSaveTeamTag2 = teamTagService.saveSingleTeamTag(team2, tag2);
+        TeamTag afterSaveTeamTag3 = teamTagService.saveSingleTeamTag(team3, tag3);
+
+        Set<TeamTag> teamTagSet = new HashSet<>();
+        teamTagSet.add(afterSaveTeamTag1);
+        Set<TeamTag> teamTagSet2 = new HashSet<>();
+        teamTagSet2.add(afterSaveTeamTag2);
+       Set<TeamTag> teamTagSet3 = new HashSet<>();
+        teamTagSet3.add(afterSaveTeamTag3);
+
+        tag1.setTeamTags(teamTagSet);
+        tag2.setTeamTags(teamTagSet2);
+        tag3.setTeamTags(teamTagSet3);
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        HashSet<Tag> tagSet = new HashSet<>();
+        tagSet.add(tag1);
+        tagSet.add(tag2);
+        searchFilter.setTagSet(tagSet);
+        Page<TeamTag> returnedTeamTags = teamTagService.findTeamsWithTag(null, searchFilter);
+        assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
+        assertThat("afterSaveTeamTag2 team is returned",returnedTeamTags,hasItem(afterSaveTeamTag2));
+        assertThat("afterSaveTeamTag3 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag3)));
+    }
+
+    /**
+     * Save success
+     */
+    @Test
+    public void saveTagsInDifferentGroup() {
+        Client client = createClient();
+        Group group1 = createGroup(client);
+        Group group2 = createGroup(client);
+
+        List<Tag> tagList = createTagList(group1, 2);
+        List<Tag> tagList2 = createTagList(group2, 1);
+        Tag tag1 = tagList.get(0);
+        Tag tag2 = tagList.get(1);
+        Tag tag3 = tagList2.get(0);
+
+        Team team1 = createTeam(client);
+        Team team2 = createTeam(client);
+        Team team3 = createTeam(client);
+
+        TeamTag afterSaveTeamTag1 = teamTagService.saveSingleTeamTag(team1, tag1);
+        TeamTag afterSaveTeamTag2 = teamTagService.saveSingleTeamTag(team1, tag3);
+        TeamTag afterSaveTeamTag3 = teamTagService.saveSingleTeamTag(team2, tag2);
+        TeamTag afterSaveTeamTag4 = teamTagService.saveSingleTeamTag(team3, tag3);
+
+        HashSet<TeamTag> teamTagsSet = new HashSet<>();
+        teamTagsSet.add(afterSaveTeamTag1);
+        teamTagsSet.add(afterSaveTeamTag2);
+        HashSet<TeamTag> teamTagsSet2 = new HashSet<>();
+        teamTagsSet2.add(afterSaveTeamTag3);
+        tag1.setTeamTags(teamTagsSet);
+        tag2.setTeamTags(teamTagsSet2);
+        HashSet<TeamTag> teamTagsSet3 = new HashSet<>();
+        teamTagsSet3.add(afterSaveTeamTag4);
+        tag3.setTeamTags(teamTagsSet3);
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        HashSet<Tag> tagSet = new HashSet<>();
+        tagSet.add(tag1);
+        tagSet.add(tag2);
+        tagSet.add(tag3);
+        searchFilter.setTagSet(tagSet);
+        Page<TeamTag> returnedTeamTags = teamTagService.findTeamsWithTag(null, searchFilter);
+        assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
+        assertThat("afterSaveTeamTag2 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag2));
+        assertThat("afterSaveTeamTag3 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag3)));
+        assertThat("afterSaveTeamTag4 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag4)));
+    }
+
 }

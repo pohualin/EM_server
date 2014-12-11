@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Set;
 
 /**
  * The search filter for TeamTag entities
@@ -11,39 +12,48 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "filter")
 public class TeamTagSearchFilter {
 
-    private Long teamTagId;
-    private Long tagId;
+    private TeamTag teamTag;
+    private Client client;
+    private Set<Tag> tagSet;
 
     /**
      * Make a search filter for a particular team tag id
      *
      * @param teamTagId to use
      */
-    public TeamTagSearchFilter(Long teamTagId) {
-        this.teamTagId = teamTagId;
+    public TeamTagSearchFilter(TeamTag teamTag) {
+        this.teamTag = teamTag;
     }
 
     public TeamTagSearchFilter() {
     }
 
-    public Long getTeamTagId() {
-        return teamTagId;
+    public TeamTag getTeamTag() {
+        return teamTag;
     }
 
-    public void setTeamTagId(Long teamTagId) {
-        this.teamTagId = teamTagId;
+    public void setTeamTag(TeamTag teamTag) {
+        this.teamTag = teamTag;
     }
 
     @Override
     public String toString() {
-        return "TeamTagSearchFilter{" + "teamTagId=" + teamTagId + '}';
+        return "TeamTagSearchFilter{" + "teamTags=" + tagSet + '}';
     }
 
-    public Long getTagId() {
-        return tagId;
+    public Set<Tag> getTagSet() {
+        return tagSet;
     }
 
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
+    public void setTagSet(Set<Tag> tagSet) {
+        this.tagSet = tagSet;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 }
