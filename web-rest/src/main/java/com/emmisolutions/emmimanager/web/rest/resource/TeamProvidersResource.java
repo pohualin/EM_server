@@ -97,14 +97,10 @@ public class TeamProvidersResource {
 
 	/**
 	 * POST to associate list of providers to a given team
-	 *
-	 * @param page	paged request
-	 * @param sort  sorting request
-	 * @param assembler    used to create the PagedResources
-	 * @param name
-	 * @param status
-	 * @param teamId
-	 * @return ProviderResource
+	 * 
+	 * @param teamId team to associate providers with
+	 * @param providers list of teamProviderTeamLocationSaveRequest
+	 * @return
 	 */
 	@RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
@@ -176,12 +172,12 @@ public class TeamProvidersResource {
         }
     }
 
-	/**
-	 * GET for teamProvider by id
-	 *
-	 * @param id to load
-	 * @return TeamProviderResource or NO_CONTENT on fail
-	 */
+    /**
+     * GET for teamProvider by id
+     * 
+     * @param teamProviderId
+     * @return TeamProviderResource or NO_CONTENT on fail
+     */
 	@RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.GET)
 	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_VIEW" })
 	public ResponseEntity<TeamProviderResource> getById(
@@ -195,18 +191,20 @@ public class TeamProvidersResource {
 			return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), HttpStatus.OK);
 		}
 	}
-	
-    /**
-     * GET to find all possible providers that can be used on a team. The object will come back with a link
+
+	/**
+	 * GET to find all possible providers that can be used on a team. The object will come back with a link
      * if it is currently associated to the passed team. If it is not currently in use at the passed team,
      * the link will be null.
-     *
-     * @param teamId  the team
-     * @param pageable  the page to request
-     * @param sort      sorting
-     * @param assembler used to create the PagedResources
-     * @return Page of TeamProviderResource objects or NO_CONTENT
-     */
+     * 
+	 * @param teamId	the team
+	 * @param pageable	the page to request
+	 * @param sort		sorting
+	 * @param assembler	used to create the PagesResources
+	 * @param status
+	 * @param name
+	 * @return
+	 */
     @RequestMapping(value = "/team/{teamId}/providers/associate",
             method = RequestMethod.GET)
         @ApiOperation(value = "finds all possible providers that can be associated to a team", notes = "The object will come back with a link, if it is currently associated to the passed team. If it is not currently in use at the passed team, the link will be null.")

@@ -75,7 +75,7 @@ public class TeamProviderPage extends PagedResource<TeamProviderResource> {
 	
     /**
      * Create the search link
-     *
+     * @param team the given team
      * @return Link for provider searches
      * @see com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */

@@ -139,7 +139,7 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		// create ClientProviders from new TeamProvider associations
     	clientProviderService.create(teamFromDb.getClient(), providers);
 
-		Set<TeamProviderTeamLocation> savedTptls = teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
+		teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(teamProviderTeamLocationsToSave);
 		return savedProviders;
 	}
 
