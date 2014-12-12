@@ -34,7 +34,7 @@ public class UserClientUserClientRoleServiceImpl implements
     public UserClientUserClientRole create(
 	    UserClientUserClientRole userClientUserClientRole) {
 	userClientUserClientRole.setUserClient(userClientService
-		.reload(userClientUserClientRole.getUserClient().getId()));
+		.reload(userClientUserClientRole.getUserClient()));
 	userClientUserClientRole.setUserClientRole(userClientRoleService
 		.reload(userClientUserClientRole.getUserClientRole()));
 	return userClientUserClientRolePersistence
@@ -42,22 +42,31 @@ public class UserClientUserClientRoleServiceImpl implements
     }
 
     @Override
-    public Page<UserClientUserClientRole> findByUserClient(Long userClientId,
-	    Pageable pageable) {
-	UserClient userClient = userClientService.reload(userClientId);
+    public Page<UserClientUserClientRole> findByUserClient(
+	    UserClient userClient, Pageable pageable) {
+	userClient = userClientService.reload(userClient);
 	return userClientUserClientRolePersistence.findByUserClient(userClient,
 		pageable);
     }
 
     @Override
-    public UserClientUserClientRole reload(Long userClientUserClientId) {
+    public UserClientUserClientRole reload(
+	    UserClientUserClientRole userClientUserClientRole) {
+	if (userClientUserClientRole == null
+		|| userClientUserClientRole.getId() == null) {
+	    return null;
+	}
 	return userClientUserClientRolePersistence
-		.reload(userClientUserClientId);
+		.reload(userClientUserClientRole.getId());
     }
 
     @Override
-    public void delete(Long userClientUserClientId) {
-	userClientUserClientRolePersistence.delete(userClientUserClientId);
+    public void delete(UserClientUserClientRole userClientUserClientRole) {
+	if (userClientUserClientRole != null
+		&& userClientUserClientRole.getId() != null) {
+	    userClientUserClientRolePersistence.delete(userClientUserClientRole
+		    .getId());
+	}
     }
 
 }

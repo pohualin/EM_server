@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRolePage;
@@ -69,7 +70,7 @@ public class UserClientUserClientRolesResource {
 	    @SortDefault(sort = "id") Sort sort,
 	    PagedResourcesAssembler<UserClientUserClientRole> assembler) {
 	Page<UserClientUserClientRole> page = userClientUserClientRoleService
-		.findByUserClient(userClientId, pageable);
+		.findByUserClient(new UserClient(userClientId), pageable);
 	if (page != null) {
 	    return new ResponseEntity<>(new UserClientUserClientRolePage(
 		    assembler.toResource(page,
@@ -118,7 +119,7 @@ public class UserClientUserClientRolesResource {
     public ResponseEntity<UserClientUserClientRoleResource> getUserClientUserClientRole(
 	    @PathVariable(value = "userClientUserClientRoleId") Long userClientUserClientRoleId) {
 	UserClientUserClientRole usucr = userClientUserClientRoleService
-		.reload(userClientUserClientRoleId);
+		.reload(new UserClientUserClientRole(userClientUserClientRoleId));
 	if (usucr != null) {
 	    return new ResponseEntity<>(
 		    userClientUserClientRoleResourceAssembler.toResource(usucr),
@@ -138,6 +139,7 @@ public class UserClientUserClientRolesResource {
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
 	    "PERM_CLIENT_CREATE_NEW_USER" })
     public void delete(@PathVariable Long userClientUserClientRoleId) {
-	userClientUserClientRoleService.delete(userClientUserClientRoleId);
+	userClientUserClientRoleService.delete(new UserClientUserClientRole(
+		userClientUserClientRoleId));
     }
 }

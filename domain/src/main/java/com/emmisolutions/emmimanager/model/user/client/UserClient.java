@@ -15,6 +15,14 @@ import javax.validation.constraints.NotNull;
 @DiscriminatorValue("C")
 public class UserClient extends User {
     
+    public UserClient(){
+	
+    }
+    
+    public UserClient(Long id){
+	super.setId(id);
+    }
+    
     @ManyToOne
     @NotNull
     @JoinColumn(name = "client_id",

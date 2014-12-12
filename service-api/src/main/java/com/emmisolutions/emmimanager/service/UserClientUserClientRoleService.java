@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 
 /**
@@ -22,25 +23,30 @@ public interface UserClientUserClientRoleService {
 	    UserClientUserClientRole userClientUserClientRole);
 
     /**
-     * @param userClientId
+     * @param UserClient
      *            to be used
      * @param pageable
      *            to be used
      * @return a page of UserClientUserClientRole having passed in userClientId
      */
-    Page<UserClientUserClientRole> findByUserClient(Long userClientId,
+    Page<UserClientUserClientRole> findByUserClient(UserClient userClient,
 	    Pageable pageable);
 
     /**
-     * @param userClientUserClientId
-     *            to find
-     * @return one UserClientUserClientRole with userClientUserClientId
+     * Reload UserClientUserClientRole with passed in primary key
+     * 
+     * @param UserClientUserClientRole
+     *            to reload
+     * @return one UserClientUserClientRole
      */
-    UserClientUserClientRole reload(Long userClientUserClientId);
+    UserClientUserClientRole reload(
+	    UserClientUserClientRole userClientUserClientRole);
 
     /**
-     * @param userClientUserClientId
+     * Delete UserClientUserClientRole
+     * 
+     * @param UserClientUserClientRole
      *            to delete
      */
-    void delete(Long userClientUserClientId);
+    void delete(UserClientUserClientRole userClientUserClientRole);
 }

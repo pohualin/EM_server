@@ -35,8 +35,11 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Override
     @Transactional
-    public UserClient reload(Long userClientId) {
-	return userClientPersistence.reload(userClientId);
+    public UserClient reload(UserClient userClient) {
+	if (userClient == null || userClient.getId() == null) {
+	    return null;
+	}
+	return userClientPersistence.reload(userClient.getId());
     }
 
     @Override

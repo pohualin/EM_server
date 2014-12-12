@@ -136,7 +136,7 @@ public class UsersClientResource {
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
 	    "PERM_CLIENT_CREATE_NEW_USER" })
     public ResponseEntity<UserClientResource> get(@PathVariable("id") Long id) {
-	UserClient userClient = userClientService.reload(id);
+	UserClient userClient = userClientService.reload(new UserClient(id));
 	if (userClient != null) {
 	    return new ResponseEntity<>(
 		    userClientResourceAssembler.toResource(userClient),

@@ -27,7 +27,7 @@ public interface UserClientService {
      *            to lookup
      * @return the existing UserClient
      */
-    UserClient reload(Long userClientId);
+    UserClient reload(UserClient userClient);
 
     /**
      * Update an existing UserClient with the passed UserClient object.

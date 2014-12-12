@@ -62,9 +62,13 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     public void testUserReload() {
 	Client client = makeNewRandomClient();
 	UserClient userClient = makeNewRandomUserClient(client);
-	UserClient userClientA = userClientService.reload(userClient.getId());
+	UserClient userClientA = userClientService.reload(new UserClient(
+		userClient.getId()));
 	assertThat("Should reload the same UserClient.",
 		userClient.getId() == userClientA.getId(), is(true));
+
+	UserClient userClientB = userClientService.reload(new UserClient());
+	assertThat("Should return null", userClientB == null, is(true));
     }
 
     @Test
