@@ -76,10 +76,10 @@ public interface TeamProviderPersistence {
     /**
      * Finds a full list of TeamProvider objects for a single team for a
      * discrete list of providers
-     *
-     * @param teamId  				to narrow by
-     * @param page of providers	 	the discrete list of providers we are interested in
-     * @return a List of TeamProvider objects
+     * 
+     * @param teamId		to narrow by
+     * @param matchedProviders the discrete list of providers we are interested in
+     * @return
      */
     List<TeamProvider> getByTeamIdAndProviders(Long teamId, Page<Provider> matchedProviders);
 
