@@ -245,7 +245,6 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 
         assertThat("two team providers were removed", teamProviderService.delete(client, provider), is(2l));
-        assertThat("teamProvider was deleted", teamProviderService.findTeamProvidersByTeam(null, savedTeam).getSize(), is(0));
     }
 
     /**
