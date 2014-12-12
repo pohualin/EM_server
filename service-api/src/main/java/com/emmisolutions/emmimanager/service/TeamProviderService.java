@@ -1,11 +1,18 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.*;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Set;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 
 /**
  * Team Provider Service API
@@ -80,4 +87,15 @@ public interface TeamProviderService {
      * @return a set of TeamProviderTeamLocation objects
      */
     Page<TeamProviderTeamLocation> findTeamLocationsByTeamProvider(TeamProvider teamProvider, Pageable pageable);
+ 
+    /**
+     * Finds a full list of TeamProvider objects for a single team for the provided providerSearchFilter
+     *
+     * @param team to narrow by
+     * @param providerSearchFilter 
+     * @param pageable  the page specification
+     * @return
+     */
+    Page<TeamProvider> findPossibleProvidersToAdd(Team team, ProviderSearchFilter providerSearchFilter, Pageable pageable);
+
 }

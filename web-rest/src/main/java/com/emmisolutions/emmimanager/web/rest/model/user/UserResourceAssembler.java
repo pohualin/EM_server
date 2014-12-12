@@ -52,6 +52,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(createClientByIdLink());
         ret.add(createProviderByIdLink());
         ret.add(createLocationByIdLink());
+        ret.add(createUserClientByIdLink());
         ret.add(ClientPage.createReferenceDataLink());
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
@@ -115,6 +116,25 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         if (idx != -1) {
             return new Link(
                 href.substring(0, idx) + discoverer.getMapping(LocationsResource.class, method),
+                link.getRel());
+        }
+        return null;
+    }
+    
+    /**
+     * Load UserClient by id
+     *
+     * @return the link
+     */
+    public Link createUserClientByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UsersClientResource.class).get(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("userClientById");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(UsersClientResource.class));
+        if (idx != -1) {
+            return new Link(
+                href.substring(0, idx) + discoverer.getMapping(UsersClientResource.class, method),
                 link.getRel());
         }
         return null;

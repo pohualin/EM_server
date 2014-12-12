@@ -1,18 +1,27 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
-import org.junit.Test;
-import org.springframework.data.domain.PageRequest;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
+import org.springframework.data.domain.PageRequest;
+
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 
 /**
  *  TeamProviderPersistence integration test
@@ -21,7 +30,8 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
 
     @Resource
     TeamProviderPersistence teamProviderPersistence;
-
+    @Resource
+    ProviderPersistence providerPersistence;
     /**
      * Testing a provider save without a persistent team.
      */
@@ -49,13 +59,14 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
             teamProviderPersistence.findTeamsBy(saved.getTeam().getClient(), saved.getProvider(), null),
             hasItem(saved.getTeam()));
 
-        assertThat("find team provider by team and provider works",
-            teamProviderPersistence.findTeamProvider(saved.getTeam(), saved.getProvider()),
-            is(saved));
-
         assertThat("find team providers by team works",
             teamProviderPersistence.findTeamProvidersByTeam(null, saved.getTeam()),
             hasItem(saved));
+
+        ProviderSearchFilter filter = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "a");
+        assertThat("find by teamId and provider works", teamProviderPersistence.getByTeamIdAndProviders(saved.getTeam().getId(), providerPersistence.list(null, filter)), is(notNullValue()));
+
+        assertThat("find by teamId and provider when passed in nulls works", teamProviderPersistence.getByTeamIdAndProviders(null, null).size(), is(0));
 
         teamProviderPersistence.delete(saved);
         assertThat("ensure deleted", teamProviderPersistence.reload(saved.getId()), is(nullValue()));
