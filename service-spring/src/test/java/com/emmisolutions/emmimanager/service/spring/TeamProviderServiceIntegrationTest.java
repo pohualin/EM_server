@@ -276,9 +276,9 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("teamProviders are deleted", teamProviderService.findTeamProvidersByTeam(null, savedTeam).getTotalElements(), is(0l));
         
         ProviderSearchFilter providerSearchFilter = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "mary");
-        assertThat("teamProviders are found", teamProviderService.findPossibleProvidersToAdd(savedTeam2, providerSearchFilter, null).getTotalElements(), is(1l));
-
-        
+        Page<TeamProvider> tproviders = teamProviderService.findPossibleProvidersToAdd(savedTeam2, providerSearchFilter, null);
+        assertThat("teamProviders are found", tproviders.getTotalElements(), is(1l));
+        assertThat("teamProviders are found", tproviders.iterator().next().getId(), is(notNullValue()));
     }
 
     /**
@@ -287,7 +287,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     @Test(expected=InvalidDataAccessApiUsageException.class)
     public void testFindPossibleProvidersToAddWithNullTeam(){
         ProviderSearchFilter providerSearchFilter = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "mary");
-        assertThat("teamProviders are found", teamProviderService.findPossibleProvidersToAdd(null, providerSearchFilter, null).getTotalElements(), is(1l));
+        teamProviderService.findPossibleProvidersToAdd(null, providerSearchFilter, null);
     }
     /**
      * Associate existing provider with an invalid team
