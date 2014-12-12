@@ -41,6 +41,14 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     }
 
     @Override
+    public UserClient reload(Long userClientId) {
+	if (userClientId == null) {
+	    return null;
+	}
+	return userClientRepository.findOne(userClientId);
+    }
+
+    @Override
     public Page<UserClient> list(Pageable pageable,
 	    UserClientSearchFilter filter) {
 	if (pageable == null) {

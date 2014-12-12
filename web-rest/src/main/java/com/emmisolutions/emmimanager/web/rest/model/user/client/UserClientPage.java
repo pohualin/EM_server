@@ -20,9 +20,9 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 
 /**
- * A HATEOAS wrapper for a page of UserResource objects.
+ * A HATEOAS wrapper for a page of UserClientResource objects.
  */
-@XmlRootElement(name = "user-page")
+@XmlRootElement(name = "user-client-page")
 public class UserClientPage extends PagedResource<UserClientResource> {
 
     private UserClientSearchFilter filter;
