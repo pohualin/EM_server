@@ -1,14 +1,17 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
@@ -100,7 +104,6 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         }
 	}
 
-    @Override
 	@Transactional
 	public Set<TeamProvider> associateProvidersToTeam(
 			List<TeamProviderTeamLocationSaveRequest> request, Team team) {
@@ -140,7 +143,6 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		return savedProviders;
 	}
 
-
     @Override
     @Transactional
     public long delete(Client client, Provider provider) {
@@ -179,5 +181,31 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		// Deal with TeamProviderTeamLocation relationship
 		teamProviderTeamLocationService.updateTeamProviderTeamLocations(request.getTeamProvider(), request);
 	}
+
+	@Override
+    @Transactional(readOnly = true)
+    public Page<TeamProvider> findPossibleProvidersToAdd(Team team, ProviderSearchFilter providerSearchFilter, Pageable pageable) {
+        if (team == null) {
+            throw new InvalidDataAccessApiUsageException("Team cannot be null");
+        }
+
+        // find matching providers
+        Page<Provider> matchedProviders = providerService.list(pageable, providerSearchFilter);
+
+        // find TeamProviders for the page of matching providers
+        Map<Provider, TeamProvider> matchedTeamProviderMap = new HashMap<>();
+        for (TeamProvider matchedTeamProvider : teamProviderPersistence.getByTeamIdAndProviders(team.getId(), matchedProviders)) {
+        	matchedTeamProvider.setTeam(team);
+        	matchedTeamProviderMap.put(matchedTeamProvider.getProvider(), matchedTeamProvider);
+        }
+
+        // make TeamProvider objects from matched providers (from search) and the existing team providers
+        List<TeamProvider> teamProviders = new ArrayList<>();
+        for (Provider matchingProvider : matchedProviders) {
+        	TeamProvider alreadyAssociated = matchedTeamProviderMap.get(matchingProvider);
+        	teamProviders.add(alreadyAssociated != null ? alreadyAssociated : new TeamProvider(null, matchingProvider));
+        }
+        return new PageImpl<>(teamProviders, pageable, matchedProviders.getTotalElements());
+    }
 
 }

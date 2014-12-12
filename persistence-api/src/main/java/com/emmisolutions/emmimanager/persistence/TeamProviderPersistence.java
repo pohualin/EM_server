@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -71,12 +72,15 @@ public interface TeamProviderPersistence {
      * @return a page of TeamProvider objects
      */
     Page<Team> findTeamsBy(Client client, Provider provider, Pageable page);
-    
+
     /**
-     * Find a TeamProvider
-     * @param team to use
-     * @param provider to use
-     * @return a TeamProvider object
+     * Finds a full list of TeamProvider objects for a single team for a
+     * discrete list of providers
+     *
+     * @param teamId  				to narrow by
+     * @param page of providers	 	the discrete list of providers we are interested in
+     * @return a List of TeamProvider objects
      */
-    TeamProvider findTeamProvider(Team team, Provider provider);
+    List<TeamProvider> getByTeamIdAndProviders(Long teamId, Page<Provider> matchedProviders);
+
 }
