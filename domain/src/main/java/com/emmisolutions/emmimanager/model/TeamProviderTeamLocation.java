@@ -11,9 +11,14 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A TeamProvider TeamLocation This is the Many to Many relation between
@@ -35,12 +40,16 @@ public class TeamProviderTeamLocation extends AbstractAuditingEntity {
 	
 	@NotNull
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "team_provider_id", nullable = false)
 	private TeamProvider teamProvider;
 
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "team_location_id", nullable = false)
+	@XmlElement(name = "teamLocation")
+	@XmlElementWrapper(name = "teamLocation")
+	@JsonProperty("teamLocation")
 	private TeamLocation teamLocation;
 
 	public Long getId() {
