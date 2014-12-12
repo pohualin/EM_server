@@ -15,7 +15,7 @@ public interface UserClientUserClientRoleService {
      * Creates a new UserClientUserClientRole with the passed
      * UserClientUserClientRole object.
      *
-     * @param UserClientUserClientRole
+     * @param userClientUserClientRole
      *            to create
      * @return the created UserClientUserClientRole
      */
@@ -23,7 +23,7 @@ public interface UserClientUserClientRoleService {
 	    UserClientUserClientRole userClientUserClientRole);
 
     /**
-     * @param UserClient
+     * @param userClient
      *            to be used
      * @param pageable
      *            to be used
@@ -33,7 +33,7 @@ public interface UserClientUserClientRoleService {
 	    Pageable pageable);
 
     /**
-     * Reload UserClientUserClientRole with passed in primary key
+     * Reload an userClientUserClientRole with passed in primary key
      * 
      * @param UserClientUserClientRole
      *            to reload
@@ -43,7 +43,7 @@ public interface UserClientUserClientRoleService {
 	    UserClientUserClientRole userClientUserClientRole);
 
     /**
-     * Delete UserClientUserClientRole
+     * Delete an userClientUserClientRole
      * 
      * @param UserClientUserClientRole
      *            to delete

@@ -21,16 +21,16 @@ public interface UserClientService {
     UserClient create(UserClient user);
 
     /**
-     * Reload an existing UserClient with the passed userClientId.
+     * Reload an existing UserClient with the passed in primary key.
      *
-     * @param userClientId
-     *            to lookup
+     * @param userClient
+     *            to use
      * @return the existing UserClient
      */
     UserClient reload(UserClient userClient);
 
     /**
-     * Update an existing UserClient with the passed UserClient object.
+     * Update an existing UserClient with the passed in UserClient object.
      *
      * @param user
      *            to update
@@ -39,9 +39,9 @@ public interface UserClientService {
     UserClient update(UserClient user);
 
     /**
-     * Find existing UserClient with the passed UserClientSearchFilter.
+     * Find existing UserClient with the passed in UserClientSearchFilter.
      *
-     * @param UserClientSearchFilter
+     * @param filter
      *            to search
      * @return pageable UserClient
      */

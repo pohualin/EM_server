@@ -11,6 +11,13 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
  */
 public interface UserClientPersistence {
 
+    
+    /**
+     * Reload a UserClient with userClientId
+     * 
+     * @param userClientId to use
+     * @return
+     */
     UserClient reload(Long userClientId);
 
     /**
