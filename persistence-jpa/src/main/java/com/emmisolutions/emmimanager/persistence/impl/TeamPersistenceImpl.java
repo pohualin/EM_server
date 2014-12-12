@@ -40,16 +40,18 @@ public class TeamPersistenceImpl implements TeamPersistence {
     
 	@Override
 	public Page<Team> list(Pageable page, TeamSearchFilter filter) {
-		if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+		Pageable pageToFetch;
+        if (page == null) {
+        	pageToFetch = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        } else {
+        	pageToFetch = page;
         }
 		Client client = null;
         if (filter != null && filter.getClientId() != null){
             client = clientPersistence.reload(filter.getClientId());
         }
         return teamRepository.findAll(where(teamSpecifications.usedBy(client))
-            .and(teamSpecifications.hasNames(filter)).and(teamSpecifications.isInStatus(filter)), page);
+            .and(teamSpecifications.hasNames(filter)).and(teamSpecifications.isInStatus(filter)), pageToFetch);
 	}
 
 	@Override
