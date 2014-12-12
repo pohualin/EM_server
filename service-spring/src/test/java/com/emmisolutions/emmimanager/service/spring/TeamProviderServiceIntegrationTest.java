@@ -278,7 +278,8 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         ProviderSearchFilter providerSearchFilter = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "mary");
         Page<TeamProvider> tproviders = teamProviderService.findPossibleProvidersToAdd(savedTeam2, providerSearchFilter, null);
         assertThat("teamProviders are found", tproviders.getTotalElements(), is(1l));
-        assertThat("teamProviders are found", tproviders.iterator().next().getId(), is(notNullValue()));
+        assertThat("teamProviders are found", tproviders.iterator().next().getProvider().getId(), is(notNullValue()));
+
     }
 
     /**
