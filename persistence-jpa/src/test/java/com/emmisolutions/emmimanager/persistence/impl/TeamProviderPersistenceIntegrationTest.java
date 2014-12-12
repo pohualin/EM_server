@@ -66,7 +66,6 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
         ProviderSearchFilter filter = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "a");
         assertThat("find by teamId and provider works", teamProviderPersistence.getByTeamIdAndProviders(saved.getTeam().getId(), providerPersistence.list(null, filter)), is(notNullValue()));
 
-        ProviderSearchFilter filterTwo = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "cantFind");
         assertThat("find by teamId and provider when passed in nulls works", teamProviderPersistence.getByTeamIdAndProviders(null, null).size(), is(0));
 
         teamProviderPersistence.delete(saved);
