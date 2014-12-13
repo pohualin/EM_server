@@ -13,13 +13,13 @@ import java.util.Set;
 public class TeamTagSearchFilter {
 
     private TeamTag teamTag;
-    private Client client;
+    private Long clientId;
     private Set<Tag> tagSet;
 
     /**
      * Make a search filter for a particular team tag id
      *
-     * @param teamTagId to use
+     *
      */
     public TeamTagSearchFilter(TeamTag teamTag) {
         this.teamTag = teamTag;
@@ -49,11 +49,19 @@ public class TeamTagSearchFilter {
         this.tagSet = tagSet;
     }
 
-    public Client getClient() {
-        return client;
+//    public Client getClient() {
+//        return client;
+//    }
+//
+//    public void setClient(Client client) {
+//        this.client = client;
+//    }
+
+    public Long getClientId() {
+        return clientId;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 }

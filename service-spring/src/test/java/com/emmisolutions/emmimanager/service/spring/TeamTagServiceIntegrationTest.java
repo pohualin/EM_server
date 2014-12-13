@@ -233,14 +233,11 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
         Tag tag = createTagList(group,1).get(0);
         Team team = createTeam(client);
+        tag = tagService.reload(tag);
 
         TeamTag afterSaveTeamTag = teamTagService.saveSingleTeamTag(team, tag);
         assertThat("TeamTag was given an id", afterSaveTeamTag.getId(), is(notNullValue()));
         assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
-
-        Set<TeamTag> teamTagSet = new HashSet<>();
-        teamTagSet.add(afterSaveTeamTag);
-        tag.setTeamTags(teamTagSet);
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet= new HashSet<>();
@@ -274,17 +271,6 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         TeamTag afterSaveTeamTag1 = teamTagService.saveSingleTeamTag(team1, tag1);
         TeamTag afterSaveTeamTag2 = teamTagService.saveSingleTeamTag(team2, tag2);
         TeamTag afterSaveTeamTag3 = teamTagService.saveSingleTeamTag(team3, tag3);
-
-        Set<TeamTag> teamTagSet = new HashSet<>();
-        teamTagSet.add(afterSaveTeamTag1);
-        Set<TeamTag> teamTagSet2 = new HashSet<>();
-        teamTagSet2.add(afterSaveTeamTag2);
-       Set<TeamTag> teamTagSet3 = new HashSet<>();
-        teamTagSet3.add(afterSaveTeamTag3);
-
-        tag1.setTeamTags(teamTagSet);
-        tag2.setTeamTags(teamTagSet2);
-        tag3.setTeamTags(teamTagSet3);
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet = new HashSet<>();
@@ -320,17 +306,6 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         TeamTag afterSaveTeamTag2 = teamTagService.saveSingleTeamTag(team1, tag3);
         TeamTag afterSaveTeamTag3 = teamTagService.saveSingleTeamTag(team2, tag2);
         TeamTag afterSaveTeamTag4 = teamTagService.saveSingleTeamTag(team3, tag3);
-
-        HashSet<TeamTag> teamTagsSet = new HashSet<>();
-        teamTagsSet.add(afterSaveTeamTag1);
-        teamTagsSet.add(afterSaveTeamTag2);
-        HashSet<TeamTag> teamTagsSet2 = new HashSet<>();
-        teamTagsSet2.add(afterSaveTeamTag3);
-        tag1.setTeamTags(teamTagsSet);
-        tag2.setTeamTags(teamTagsSet2);
-        HashSet<TeamTag> teamTagsSet3 = new HashSet<>();
-        teamTagsSet3.add(afterSaveTeamTag4);
-        tag3.setTeamTags(teamTagsSet3);
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet = new HashSet<>();

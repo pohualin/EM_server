@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -77,6 +78,10 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("TeamTag was given an id", afterSaveTeamTag.getId(), is(notNullValue()));
         assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
 
+        Set<TeamTag> teamTagSet = new HashSet<>();
+        teamTagSet.add(afterSaveTeamTag);
+        tag.setTeamTags(teamTagSet);
+
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet= new HashSet<>();
         tagSet.add(tag);
@@ -120,6 +125,17 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         TeamTag afterSaveTeamTag1 = teamTagPersistence.saveTeamTag(teamTag1);
         TeamTag afterSaveTeamTag2 = teamTagPersistence.saveTeamTag(teamTag2);
         TeamTag afterSaveTeamTag3 = teamTagPersistence.saveTeamTag(teamTag3);
+
+        Set<TeamTag> teamTagSet = new HashSet<>();
+        teamTagSet.add(afterSaveTeamTag1);
+        Set<TeamTag> teamTagSet2 = new HashSet<>();
+        teamTagSet2.add(afterSaveTeamTag2);
+        Set<TeamTag> teamTagSet3 = new HashSet<>();
+        teamTagSet3.add(afterSaveTeamTag3);
+
+        tag1.setTeamTags(teamTagSet);
+        tag2.setTeamTags(teamTagSet2);
+        tag3.setTeamTags(teamTagSet3);
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet = new HashSet<>();

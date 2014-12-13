@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Set;
@@ -94,6 +95,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TeamTag> findTeamsWithTag(Pageable page, TeamTagSearchFilter teamTagSearchFilter) {
         if (page == null) {
             // default pagination request if none

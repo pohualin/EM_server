@@ -23,18 +23,18 @@ public class TeamTagSpecifications {
         return new Specification<TeamTag>() {
             @Override
             public Predicate toPredicate(Root<TeamTag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getTagSet() != null) {
+                if (searchFilter != null && !searchFilter.getTagSet().isEmpty()) {
                     Set<Tag> tagSet = searchFilter.getTagSet();
                     HashMap<Group, Set<Tag>> groupedTags = new HashMap<>();
                     Set<Tag> savedSet;
                     List<Predicate> tagPredicate = new ArrayList<>();
                     for (Tag tag : tagSet) {
                         savedSet = groupedTags.get(tag.getGroup());
-                        if(savedSet == null){
+                        if (savedSet == null) {
                             Set<Tag> newSet = new HashSet<>();
                             newSet.add(tag);
                             groupedTags.put(tag.getGroup(), newSet);
-                        }else{
+                        } else {
                             savedSet.add(tag);
                             groupedTags.put(tag.getGroup(), savedSet);
                         }
@@ -46,7 +46,7 @@ public class TeamTagSpecifications {
                     for (Tag tag : tagSet) {
                         for (TeamTag teamTag : tag.getTeamTags()) {
                             Set<Group> aTeamsGroups = teamSetMap.get(teamTag.getTeam());
-                            if (aTeamsGroups == null){
+                            if (aTeamsGroups == null) {
                                 aTeamsGroups = new HashSet<>();
                                 teamSetMap.put(teamTag.getTeam(), aTeamsGroups);
                             }
@@ -57,19 +57,20 @@ public class TeamTagSpecifications {
                     for (Map.Entry<Team, Set<Group>> teamSetEntry : teamSetMap.entrySet()) {
                         boolean teamGood = true;
                         for (Group group : groupedTags.keySet()) {
-                            if (!teamSetEntry.getValue().contains(group)){
+                            if (!teamSetEntry.getValue().contains(group)) {
                                 teamGood = false;
                             }
                         }
-                        if (teamGood){
+                        if (teamGood) {
                             goodTeams.add(teamSetEntry.getKey());
                         }
                     }
 
                     return cb.and(cb.or(tagPredicate.toArray(new Predicate[tagPredicate.size()])),
                             root.get(TeamTag_.team).in(goodTeams));
-                }
-                return null;
+                } else if (searchFilter != null) {
+                    return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClientId());
+                } else return null;
             }
         };
     }

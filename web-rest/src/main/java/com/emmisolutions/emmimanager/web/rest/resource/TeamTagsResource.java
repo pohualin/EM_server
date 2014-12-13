@@ -176,7 +176,7 @@ public class TeamTagsResource {
      *
      * @return List of TeamTag objects or INTERNAL_SERVER_ERROR if the list is empty
      */
-    @RequestMapping(value = "/clients/{clientId}/team-tags", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/team-tags", method = RequestMethod.POST)
     @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -190,12 +190,14 @@ public class TeamTagsResource {
             PagedResourcesAssembler<TeamTag> assembler,
             @RequestBody List<Long> tagIds) {
         TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter();
+
         HashSet<Tag> tagSet = new HashSet<>();
         for (Long tagId : tagIds) {
             tagSet.add(new Tag(tagId));
         }
 
         teamTagSearchFilter.setTagSet(tagSet);
+        teamTagSearchFilter.setClientId(clientId);
         Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(pageable, teamTagSearchFilter);
         if (teamTagPage.hasContent()) {
             PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
