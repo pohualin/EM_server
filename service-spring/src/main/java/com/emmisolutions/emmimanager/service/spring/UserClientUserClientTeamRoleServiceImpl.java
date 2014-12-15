@@ -34,7 +34,8 @@ public class UserClientUserClientTeamRoleServiceImpl implements
     public UserClientUserClientTeamRole create(
 	    UserClientUserClientTeamRole userClientUserClientTeamRole) {
 	userClientUserClientTeamRole.setUserClient(userClientService
-		.reload(userClientUserClientTeamRole.getUserClient().getId()));
+		.reload(new UserClient(userClientUserClientTeamRole
+			.getUserClient().getId())));
 	userClientUserClientTeamRole
 		.setUserClientTeamRole(userClientTeamRoleService
 			.reload(userClientUserClientTeamRole
@@ -46,7 +47,8 @@ public class UserClientUserClientTeamRoleServiceImpl implements
     @Override
     public Page<UserClientUserClientTeamRole> findByUserClient(
 	    Long userClientId, Pageable pageable) {
-	UserClient userClient = userClientService.reload(userClientId);
+	UserClient userClient = userClientService.reload(new UserClient(
+		userClientId));
 	return userClientUserClientTeamRolePersistence.findByUserClient(
 		userClient, pageable);
     }
