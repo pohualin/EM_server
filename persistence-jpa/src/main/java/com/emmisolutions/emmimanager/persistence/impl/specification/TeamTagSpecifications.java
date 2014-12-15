@@ -9,7 +9,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.*;
-
+/**
+ * Specifications for TeamTags
+ */
 @Component
 public class TeamTagSpecifications {
 
@@ -69,7 +71,7 @@ public class TeamTagSpecifications {
                     return cb.and(cb.or(tagPredicate.toArray(new Predicate[tagPredicate.size()])),
                             root.get(TeamTag_.team).in(goodTeams));
                 } else if (searchFilter != null) {
-                    return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClientId());
+                    return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClient().getId());
                 } else return null;
             }
         };
