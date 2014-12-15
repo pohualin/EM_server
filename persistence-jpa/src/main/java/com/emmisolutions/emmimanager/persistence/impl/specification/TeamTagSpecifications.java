@@ -67,6 +67,10 @@ public class TeamTagSpecifications {
                             goodTeams.add(teamSetEntry.getKey());
                         }
                     }
+                    if(goodTeams.size() ==0){
+                        //if there are no teams return an empty search
+                        return cb.equal(root.get(TeamTag_.tag), 0);
+                    }
 
                     return cb.and(cb.or(tagPredicate.toArray(new Predicate[tagPredicate.size()])),
                             root.get(TeamTag_.team).in(goodTeams));
