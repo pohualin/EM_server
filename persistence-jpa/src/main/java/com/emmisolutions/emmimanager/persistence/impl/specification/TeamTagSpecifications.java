@@ -71,7 +71,7 @@ public class TeamTagSpecifications {
                     return cb.and(cb.or(tagPredicate.toArray(new Predicate[tagPredicate.size()])),
                             root.get(TeamTag_.team).in(goodTeams));
                 } else if (searchFilter != null) {
-                    return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClient().getId());
+                    return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClientId());
                 } else return null;
             }
         };
