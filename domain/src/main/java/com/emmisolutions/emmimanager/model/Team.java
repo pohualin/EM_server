@@ -12,6 +12,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 /**
  * A Team that corresponds to a Client
  */
@@ -49,7 +54,8 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     @Column(name="normalized_team_name", length = 255, nullable = false)
     @NotAudited
     @Pattern(regexp = "[a-z0-9 ]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
-    private String normalizedTeamName;
+    private String normalizedTeamName;    
+ 
 
     @OneToMany(mappedBy = "team")
     private Set<TeamTag> teamTags;
@@ -162,4 +168,21 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     public void setTeamTags(Set<TeamTag> teamTags) {
         this.teamTags = teamTags;
     }
+
+	/**
+	 * Team constructor
+	 * @param id
+	 */
+	public Team(Long id) {
+		super();
+		this.id = id;
+	}
+
+	/**
+	 * Team constructor
+	 */
+	public Team() {
+		super();
+	}
+	
 }

@@ -7,12 +7,12 @@ import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
 /**
- * The User Client Service
+ * The UserClient Service
  */
 public interface UserClientService {
 
     /**
-     * Creates a new user client user with the passed UserClient object.
+     * Creates a new UserClient with the passed UserClient object.
      *
      * @param user
      *            to create
@@ -21,7 +21,16 @@ public interface UserClientService {
     UserClient create(UserClient user);
 
     /**
-     * Update an existing client user with the passed UserClient object.
+     * Reload an existing UserClient with the passed in primary key.
+     *
+     * @param userClient
+     *            to use
+     * @return the existing UserClient
+     */
+    UserClient reload(UserClient userClient);
+
+    /**
+     * Update an existing UserClient with the passed in UserClient object.
      *
      * @param user
      *            to update
@@ -30,9 +39,9 @@ public interface UserClientService {
     UserClient update(UserClient user);
 
     /**
-     * Find existing client user with the passed ClientUserSearchFilter.
+     * Find existing UserClient with the passed in UserClientSearchFilter.
      *
-     * @param ClientUserSearchFilter
+     * @param filter
      *            to search
      * @return pageable UserClient
      */

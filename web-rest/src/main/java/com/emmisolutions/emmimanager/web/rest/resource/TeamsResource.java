@@ -159,11 +159,11 @@ public class TeamsResource {
         client = clientService.reload(client);
 
         team.setClient(client);
-        team = teamService.create(team);
-        if (team == null) {
+        Team createdTeam = teamService.create(team);
+        if (createdTeam == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            return new ResponseEntity<>(teamResourceAssembler.toResource(team), HttpStatus.CREATED);
+            return new ResponseEntity<>(teamResourceAssembler.toResource(createdTeam), HttpStatus.CREATED);
         }
     }
 
