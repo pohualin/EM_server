@@ -25,6 +25,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSalesForce;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
 
 /**
@@ -51,6 +52,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     LocationPersistence locationPersistence;
+    
+    @Resource
+    UserClientRolePersistence userClientRolePersistence;
     
     @Resource
     UserClientPersistence userClientPersistence;
@@ -142,6 +146,19 @@ public abstract class BaseIntegrationTest {
 	userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
 	userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
 	return userClientPersistence.saveOrUpdate(userClient);
+    }
+    
+    /**
+     * Creates a new UserClientRole
+     *
+     * @return a UserClientRole
+     */
+    protected UserClientRole makeNewRandomUserClientRole(Client client){
+	if(client == null){
+	    client = makeNewRandomClient();
+	}
+	UserClientRole userClientRole = new UserClientRole(RandomStringUtils.randomAlphabetic(10), client, null);
+	return userClientRolePersistence.save(userClientRole);
     }
 
     /**

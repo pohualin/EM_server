@@ -42,18 +42,24 @@ public class TeamProviderTeamLocationPersistenceImpl implements TeamProviderTeam
 
     @Override
     public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
+    	Pageable pageToFetch;
         if (page == null) {
-            page = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        	pageToFetch = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        } else {
+        	pageToFetch = page;
         }
-        return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, page);
+        return teamProviderTeamLocationRepository.findByTeamProvider(teamProvider, pageToFetch);
     }
     
     @Override
     public Page<TeamProviderTeamLocation> findByTeamLocation(TeamLocation teamLocation, Pageable page) {
+    	Pageable pageToFetch;
         if (page == null) {
-            page = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        	pageToFetch = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        } else {
+        	pageToFetch = page;
         }
-        return teamProviderTeamLocationRepository.findByTeamLocation(teamLocation, page);
+        return teamProviderTeamLocationRepository.findByTeamLocation(teamLocation, pageToFetch);
     }
 
     @Override

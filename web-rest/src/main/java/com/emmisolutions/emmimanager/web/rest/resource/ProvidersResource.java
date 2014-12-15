@@ -67,13 +67,13 @@ public class ProvidersResource {
 
         Team team = new Team();
         team.setId(teamId);
-        provider = providerService.create(provider, team);
+        Provider createdProvider = providerService.create(provider, team);
 
-        if (provider == null) {
+        if (createdProvider == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             return new ResponseEntity<>(
-                    providerResourceAssembler.toResource(provider),
+                    providerResourceAssembler.toResource(createdProvider),
                     HttpStatus.CREATED);
         }
 
@@ -214,11 +214,11 @@ public class ProvidersResource {
     )
     @RolesAllowed({"PERM_GOD", "PERM_CLIENT_EDIT"})
     public ResponseEntity<ProviderResource> update(@RequestBody Provider provider) {
-        provider = providerService.update(provider);
-        if (provider == null) {
+        Provider updatedProvider = providerService.update(provider);
+        if (updatedProvider == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            return new ResponseEntity<>(providerResourceAssembler.toResource(provider), HttpStatus.OK);
+            return new ResponseEntity<>(providerResourceAssembler.toResource(updatedProvider), HttpStatus.OK);
         }
     }
 }

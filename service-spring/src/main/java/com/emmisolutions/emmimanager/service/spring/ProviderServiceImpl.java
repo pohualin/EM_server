@@ -84,11 +84,13 @@ public class ProviderServiceImpl implements ProviderService {
     @Override
     @Transactional
     public Page<ReferenceTag> findAllSpecialties(Pageable page) {
+    	Pageable pageToFetch;
         if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        	pageToFetch = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        } else {
+        	pageToFetch = page;
         }
-        return providerPersistence.findAllByGroupTypeName(page);
+        return providerPersistence.findAllByGroupTypeName(pageToFetch);
     }
 
     @Override

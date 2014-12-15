@@ -7,12 +7,21 @@ import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
 /**
- * A sample persistence interface.
+ * Persistence API for UserClient.
  */
 public interface UserClientPersistence {
 
+    
     /**
-     * Saves or updates the User object
+     * Reload a UserClient with userClientId
+     * 
+     * @param userClientId to use
+     * @return
+     */
+    UserClient reload(Long userClientId);
+
+    /**
+     * Saves or updates the UserClient object
      *
      * @param user
      *            the user to save or create

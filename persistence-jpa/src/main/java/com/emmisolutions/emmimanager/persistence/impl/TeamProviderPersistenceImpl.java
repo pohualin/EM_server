@@ -52,11 +52,13 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
     @Override
     public Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team) {
         
+    	Pageable pageToFetch;
         if (page == null) {
-            // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        	pageToFetch = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        } else {
+        	pageToFetch = page;
         }
-        Page<TeamProvider> teamProvidersPage = teamProviderRepository.findTeamProvidersByTeam(page, team);
+        Page<TeamProvider> teamProvidersPage = teamProviderRepository.findTeamProvidersByTeam(pageToFetch, team);
 
         if (teamProvidersPage.hasContent()) {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();

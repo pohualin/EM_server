@@ -66,7 +66,7 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 				teamProviderTeamLocationsToSave.add(tptl);
 			}
 
-			if (teamProviderTeamLocationsToSave.size() > 0 ){
+			if (!teamProviderTeamLocationsToSave.isEmpty()){
 				teamProviderTeamLocationPersistence.removeAllByTeamLocation(teamLocation);
 				teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
 			}
@@ -77,7 +77,7 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
     @Transactional
     public void updateTeamProviderTeamLocations(TeamProvider teamProvider, TeamProviderTeamLocationSaveRequest request) {
 
-    	if(request.getTeamLocations() != null && request.getTeamLocations().size() > 0){
+    	if(request.getTeamLocations() != null && !request.getTeamLocations().isEmpty()){
     		List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
 
     		for (TeamLocation teamLocation : request.getTeamLocations()) {
