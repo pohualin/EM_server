@@ -15,9 +15,9 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * HATEOAS wrapper for User, essentially a DTO instead of a wrapper.
+ * HATEOAS wrapper for UserClient, essentially a DTO instead of a wrapper.
  */
-@XmlRootElement(name = "user")
+@XmlRootElement(name = "user-client")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserClientResource extends ResourceSupport {
 
