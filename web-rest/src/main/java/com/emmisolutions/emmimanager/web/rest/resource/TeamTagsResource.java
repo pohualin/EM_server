@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -175,7 +176,7 @@ public class TeamTagsResource {
      *
      * @return List of TeamTag objects or INTERNAL_SERVER_ERROR if the list is empty
      */
-    @RequestMapping(value = "/clients/{clientId}/team-tags", method = RequestMethod.POST)
+    @RequestMapping(value = "/clients/{clientId}/team-tags", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -187,12 +188,14 @@ public class TeamTagsResource {
             @PageableDefault(size = 50) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
             PagedResourcesAssembler<TeamTag> assembler,
-            @RequestBody Set<Long> tagIds) {
+            @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
         TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter();
 
         Set<Tag> tagSet = new HashSet<>();
-        for (Long tagId : tagIds) {
-            tagSet.add(new Tag(tagId));
+        if (tagIds != null) {
+            for (Long tagId : tagIds) {
+                tagSet.add(new Tag(tagId));
+            }
         }
 
         teamTagSearchFilter.setTagSet(tagSet);
