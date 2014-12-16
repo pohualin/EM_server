@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.web.rest.model.groups.GroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientTeamRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.resource.*;
@@ -41,7 +42,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(linkTo(methodOn(ClientRolesAdminResource.class).reference()).withRel("rolesReferenceData"));
         ret.add(UserClientTeamRoleResourcePage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(ClientTeamRolesAdminResource.class).referenceData()).withRel("teamRolesReferenceData"));
-        ret.add(linkTo(methodOn(TeamTagsResource.class).teamTagsWithTags(entity.getId(),null,null,null,null)).withRel("teamTagsWithTags"));
+        ret.add(TeamTagPage.createFullSearchLinkTeamTagsWithTags(entity));
         ret.add(createFullUsersSearchLink(entity));
         ret.setEntity(entity);
         return ret;
