@@ -58,7 +58,89 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Save success
+     * no teams are returned that are in the selected group and the filtered tags
+     */
+    @Test
+    public void noTeamsToReturn() {
+        TeamTag teamTag1 = new TeamTag();
+        TeamTag teamTag2 = new TeamTag();
+        Client client = createClient("1");
+        Group group1 = createGroup(client, "wrong group");
+        Group group2 = createGroup(client, "right group");
+        Tag tag1 = createTag(group1);
+        Tag tag2 = createTag(group2);
+        Team team1 = createTeam(client, 1);
+        Team team2 = createTeam(client, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTag2.setTag(tag2);
+        teamTag2.setTeam(team2);
+
+        TeamTag afterSaveTeamTag1 = teamTagPersistence.saveTeamTag(teamTag1);
+        TeamTag afterSaveTeamTag2 = teamTagPersistence.saveTeamTag(teamTag2);
+
+        Set<TeamTag> teamTagSet1 = new HashSet<>();
+        teamTagSet1.add(afterSaveTeamTag1);
+        tag1.setTeamTags(teamTagSet1);
+
+        Set<TeamTag> teamTagSet2 = new HashSet<>();
+        teamTagSet2.add(afterSaveTeamTag2);
+        tag2.setTeamTags(teamTagSet2);
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        HashSet<Tag> tagSet= new HashSet<>();
+        tagSet.add(tag1);
+        tagSet.add(tag2);
+        searchFilter.setTagSet(tagSet);
+        Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
+        assertThat("no teams were returned", teamsWithTag.getContent().size(), is(0));
+    }
+
+    /**
+     * return all teams if no filtered tags are selected
+     */
+    @Test
+    public void returnAllTeams() {
+        TeamTag teamTag1 = new TeamTag();
+        TeamTag teamTag2 = new TeamTag();
+        Client client = createClient("1");
+        Group group1 = createGroup(client, "wrong group");
+        Group group2 = createGroup(client, "right group");
+        Tag tag1 = createTag(group1);
+        Tag tag2 = createTag(group2);
+        Team team1 = createTeam(client, 1);
+        Team team2 = createTeam(client, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+        teamTag2.setTag(tag2);
+        teamTag2.setTeam(team2);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+        teamTagPersistence.saveTeamTag(teamTag2);
+
+        TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
+        HashSet<Tag> tagSet= new HashSet<>();
+        searchFilter.setTagSet(tagSet);
+        searchFilter.setClientId(client.getId());
+        Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
+        assertThat("no teams were returned", teamsWithTag.getContent().size(), is(2));
+    }
+
+    /**
+     * return no results if search filter is null
+     */
+    @Test
+    public void returnNull() {
+        TeamTagSearchFilter searchFilter = null;
+        Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
+        assertThat("no teams were returned", teamsWithTag.getContent().size(), is(0));
+    }
+
+    /**
+     * get teams for a single filter tag
      */
     @Test
     public void save() {
@@ -93,7 +175,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Save success
+     * get teams for a multiple filter tags in the same group
      */
     @Test
     public void saveTagsInSameGroup() {
@@ -149,7 +231,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
   /**
-     * Save success
+     * get teams for a multiple filter tags in different groups
      */
     @Test
     public void saveTagsInDifferentGroup() {
