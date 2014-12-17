@@ -4,6 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.junit.Test;
@@ -49,29 +52,6 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
     }
 
     @Test
-    public void testFindByUserClient() {
-	Client client = makeNewRandomClient();
-	Team team = makeNewRandomTeam();
-	UserClient userClient = makeNewRandomUserClient(client);
-	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
-	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
-	entity.setUserClient(userClient);
-	entity.setTeam(team);
-	entity.setUserClientTeamRole(userClientTeamRole);
-	userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
-
-	Page<UserClientUserClientTeamRole> pagedResourceWithPageable = userClientUserClientTeamRolePersistence
-		.findByUserClient(userClient, new PageRequest(0, 10));
-	assertThat("should find at least one UserClientUserClientTeamRole",
-		pagedResourceWithPageable.hasContent(), is(true));
-
-	Page<UserClientUserClientTeamRole> pagedResource = userClientUserClientTeamRolePersistence
-		.findByUserClient(userClient, null);
-	assertThat("should find at least one UserClientUserClientTeamRole",
-		pagedResource.hasContent(), is(true));
-    }
-
-    @Test
     public void testReload() {
 	Client client = makeNewRandomClient();
 	Team team = makeNewRandomTeam();
@@ -82,10 +62,6 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
 	entity.setTeam(team);
 	entity.setUserClientTeamRole(userClientTeamRole);
 	userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
-
-	UserClientUserClientTeamRole reloadNull = userClientUserClientTeamRolePersistence
-		.reload(null);
-	assertThat("should return null", reloadNull == null, is(true));
 
 	UserClientUserClientTeamRole reload = userClientUserClientTeamRolePersistence
 		.reload(entity.getId());
@@ -111,4 +87,69 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
 	assertThat("should return nothing", reloadAfterDelete == null, is(true));
     }
 
+    @Test
+    public void testFindByUserClientIdInTeams() {
+	Team team = makeNewRandomTeam();
+	Client client = team.getClient();
+	UserClient userClient = makeNewRandomUserClient(client);
+	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+
+	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+	entity.setUserClient(userClient);
+	entity.setTeam(team);
+	entity.setUserClientTeamRole(userClientTeamRole);
+	entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+
+	List<Team> teams = new ArrayList<Team>();
+	teams.add(team);
+	List<UserClientUserClientTeamRole> ucuctrl = userClientUserClientTeamRolePersistence
+		.findByUserClientIdAndTeamsIn(userClient.getId(), teams);
+	assertThat("should return a list of UserClientUserClientTeamRole",
+		ucuctrl.size() > 0, is(true));
+    }
+
+    @Test
+    public void testFindByUserClientIdAndUserClientTeamRoleId() {
+	Team team = makeNewRandomTeam();
+	Client client = team.getClient();
+	UserClient userClient = makeNewRandomUserClient(client);
+	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+
+	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+	entity.setUserClient(userClient);
+	entity.setTeam(team);
+	entity.setUserClientTeamRole(userClientTeamRole);
+	entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+
+	Page<UserClientUserClientTeamRole> found = userClientUserClientTeamRolePersistence
+		.findByUserClientIdAndUserClientTeamRoleId(userClient.getId(),
+			userClientTeamRole.getId(), null);
+	assertThat("should return a page of UserClientUserClientTeamRole",
+		found.hasContent(), is(true));
+
+	Page<UserClientUserClientTeamRole> foundA = userClientUserClientTeamRolePersistence
+		.findByUserClientIdAndUserClientTeamRoleId(userClient.getId(),
+			userClientTeamRole.getId(), new PageRequest(0, 10));
+	assertThat("should return a page of UserClientUserClientTeamRole",
+		foundA.hasContent(), is(true));
+    }
+
+    @Test
+    public void testDeleteByUserClientAndUserClientTeamRole() {
+	Client client = makeNewRandomClient();
+	Team team = makeNewRandomTeam();
+	UserClient userClient = makeNewRandomUserClient(client);
+	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+	entity.setUserClient(userClient);
+	entity.setTeam(team);
+	entity.setUserClientTeamRole(userClientTeamRole);
+	userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+
+	userClientUserClientTeamRolePersistence.delete(userClient.getId(),
+		userClientTeamRole.getId());
+	UserClientUserClientTeamRole reloadAfterDelete = userClientUserClientTeamRolePersistence
+		.reload(entity.getId());
+	assertThat("should return nothing", reloadAfterDelete == null, is(true));
+    }
 }

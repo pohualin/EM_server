@@ -56,7 +56,7 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 
 	@Test
 	public void findByTeamProvider() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 
@@ -82,7 +82,7 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 
 	@Test
 	public void saveAllTeamProviderTeamLocations() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 		Location locationA = makeNewRandomLocation();
@@ -114,7 +114,7 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 
 	@Test
 	public void removeAllByTeamProvider() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 
@@ -138,7 +138,7 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 
 	@Test
 	public void updateTeamProviderTeamLocationsByTeamLocation() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Provider providerA = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
@@ -173,7 +173,7 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 
 	@Test
 	public void updateTeamProviderTeamLocationsByTeamProvider() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 		Location locationA = makeNewRandomLocation();

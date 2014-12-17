@@ -151,12 +151,12 @@ public abstract class BaseIntegrationTest {
      *
      * @return random team
      */
-    protected Team makeNewRandomTeam() {
+    protected Team makeNewRandomTeam(Client client) {
 	Team team = new Team();
-	team.setName(RandomStringUtils.randomAlphabetic(50));
+	team.setName("a" + RandomStringUtils.randomAlphabetic(49));
 	team.setDescription(RandomStringUtils.randomAlphabetic(50));
-	team.setActive(false);
-	team.setClient(makeNewRandomClient());
+	team.setActive(true);
+	team.setClient(client != null ? client : makeNewRandomClient());
 	team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
 		.randomAlphanumeric(18)));
 	return teamService.create(team);

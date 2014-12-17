@@ -7,6 +7,7 @@ import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientUserClientTeamRoleResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UsersClientResource;
 
@@ -26,6 +27,10 @@ public class UserClientResourceAssembler implements
 		methodOn(UserClientUserClientRolesResource.class)
 			.getUserClientUserClientRoles(entity.getId(), null,
 				null, null)).withRel("userClientRoles"));
+	ret.add(UserClientUserClientTeamRoleResourceAssembler
+		.createPossibleTeamsLink(entity));
+	ret.add(UserClientUserClientTeamRoleResourceAssembler
+		.createGetUserClientUserClientTeamRolesLink(entity));
 	ret.setEntity(entity);
 	return ret;
     }
