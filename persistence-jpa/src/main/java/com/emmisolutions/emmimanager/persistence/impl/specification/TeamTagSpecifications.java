@@ -76,25 +76,9 @@ public class TeamTagSpecifications {
                             root.get(TeamTag_.team).in(goodTeams));
                 } else if (searchFilter != null) {
                     return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClientId());
-                } else return null;
-            }
-        };
-    }
-
-    /**
-     * match on tagId within the provided TeamTagSearchFilter
-     *
-     * @param searchFilter to search
-     * @return the specification as a filter predicate
-     */
-    public Specification<TeamTag> byTagId(final TeamTagSearchFilter searchFilter) {
-        return new Specification<TeamTag>() {
-            @Override
-            public javax.persistence.criteria.Predicate toPredicate(Root<TeamTag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getTagSet() != null) {
-                    return cb.equal(root.get(TeamTag_.tag), searchFilter.getTagSet());
+                } else {
+                    return null;
                 }
-                return null;
             }
         };
     }
