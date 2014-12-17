@@ -50,7 +50,7 @@
 		<addPrimaryKey tableName="client_group"
                        columnNames="id"
                        constraintName="pk_client_group"/>
-        <addUniqueConstraint tableName="client_group" columnNames="client_id,name" constraintName="uk_client_id_group_name"/>        
+        <addUniqueConstraint tableName="client_group" columnNames="client_id,name" constraintName="uk_client_group_client_id_name"/>        
         
 		<addForeignKeyConstraint baseTableName="client_group"
                                  baseColumnNames="client_id"

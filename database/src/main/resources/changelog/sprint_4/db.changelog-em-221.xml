@@ -39,7 +39,7 @@
                                  constraintName="fk_client_tag_client_team_tag"
                                  referencedTableName="client_group_tag"
                                  referencedColumnNames="id"/>
-        <addUniqueConstraint tableName="client_team_tag" columnNames="team_id,tag_id" constraintName="uk_team_id_tag_id"/>
+        <addUniqueConstraint tableName="client_team_tag" columnNames="team_id,tag_id" constraintName="uk_client_team_tag_team_id_tag_id"/>
     </changeSet>
 
     <changeSet id="create_team_tag_audit" author="Kevin">
