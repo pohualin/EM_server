@@ -43,7 +43,7 @@
             <column name="provider_id" type="bigint"/>
         </createTable>
 
-        <addPrimaryKey tableName="client_provider_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="client_provider_audit" constraintName="pk_client_provider_audit" columnNames="id, revision"/>
         <addUniqueConstraint tableName="client_provider" columnNames="client_id, provider_id"
                              constraintName="uk_client_id_provider_id"/>
         <addUniqueConstraint tableName="client_provider" columnNames="client_id, external_id"
