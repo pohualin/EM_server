@@ -7,15 +7,11 @@ import com.emmisolutions.emmimanager.web.rest.model.groups.GroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientTeamRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.resource.*;
-
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
+import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -46,11 +42,12 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(linkTo(methodOn(ClientRolesAdminResource.class).reference()).withRel("rolesReferenceData"));
         ret.add(UserClientTeamRoleResourcePage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(ClientTeamRolesAdminResource.class).referenceData()).withRel("teamRolesReferenceData"));
+        ret.add(TeamTagPage.createFullSearchLinkTeamTagsWithTags(entity));
         ret.add(createFullUsersSearchLink(entity));
         ret.setEntity(entity);
         return ret;
     }
-    
+
     /**
      * Create the search link
      *

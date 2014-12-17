@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -35,7 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
  */
 @RestController
 @RequestMapping(value = "/webapi",
-    produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
+        produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
 )
 public class TeamTagsResource {
 
@@ -65,24 +67,25 @@ public class TeamTagsResource {
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
     @ApiImplicitParams(value = {
-        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamTagPage> list(
-        @PathVariable("teamId") Long teamId,
-        @PageableDefault(size = 10) Pageable pageable,
-        @SortDefault(sort = "id") Sort sort,
-        @RequestParam(value = "status", required = false) String status,
-        PagedResourcesAssembler<TeamTag> assembler,
-        @RequestParam(value = "name", required = false) String names) {
+            @PathVariable("teamId") Long teamId,
+            @PageableDefault(size = 10) Pageable pageable,
+            @SortDefault(sort = "id") Sort sort,
+            @RequestParam(value = "status", required = false) String status,
+            PagedResourcesAssembler<TeamTag> assembler,
+            @RequestParam(value = "name", required = false) String names) {
 
         Team toFind = new Team();
         toFind.setId(teamId);
         toFind = teamService.reload(toFind);
-        TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter(teamId);
         // find the page of clients
         Page<TeamTag> teamTagPage = teamTagService.findAllTeamTagsWithTeam(pageable, toFind);
+
+        TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter();
 
         if (teamTagPage.hasContent()) {
             // create a TeamTagPage containing the response
@@ -102,7 +105,7 @@ public class TeamTagsResource {
      * @return TeamTagResource or INTERNAL_SERVER_ERROR if it could not be saved
      */
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.POST,
-        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
     public java.util.List<TeamTag> create(@PathVariable("teamId") Long teamId, @RequestBody Set<Tag> tagSet) {
@@ -119,7 +122,7 @@ public class TeamTagsResource {
      * @return NO_CONTENT
      */
     @RequestMapping(value = "teamTags/{teamTagId}", method = RequestMethod.DELETE,
-        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
     public ResponseEntity<TeamTagResource> deleteTeamTag(@PathVariable("teamTagId") Long teamTagId) {
@@ -138,7 +141,7 @@ public class TeamTagsResource {
      * @return TeamTagResource or INTERNAL_SERVER_ERROR if it could not be saved
      */
     @RequestMapping(value = "/teams/{teamId}/saveTag", method = RequestMethod.POST,
-        consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
     public ResponseEntity<TeamTagResource> saveTeamTag(@PathVariable("teamId") Long teamId, @RequestBody Tag tag) {
@@ -171,22 +174,32 @@ public class TeamTagsResource {
     /**
      * GET teamTags with tag
      *
-     * @param tagId the client to check
      * @return List of TeamTag objects or INTERNAL_SERVER_ERROR if the list is empty
      */
-    @RequestMapping(value = "/tag/{tagId}/teamTags", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/team-tags", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
     @ApiImplicitParams(value = {
-        @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<TeamTagPage> teamTagsWithTagId(@PageableDefault(size = 50) Pageable pageable,
-                                                         @SortDefault(sort = "id") Sort sort,
-                                                         PagedResourcesAssembler<TeamTag> assembler,
-                                                         @PathVariable("tagId") Long tagId) {
+    public ResponseEntity<TeamTagPage> teamTagsWithTags(
+            @PathVariable("clientId") Long clientId,
+            @PageableDefault(size = 50) Pageable pageable,
+            @SortDefault(sort = "id") Sort sort,
+            PagedResourcesAssembler<TeamTag> assembler,
+            @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
         TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter();
-        teamTagSearchFilter.setTagId(tagId);
+
+        Set<Tag> tagSet = new HashSet<>();
+        if (tagIds != null) {
+            for (Long tagId : tagIds) {
+                tagSet.add(new Tag(tagId));
+            }
+        }
+
+        teamTagSearchFilter.setTagSet(tagSet);
+        teamTagSearchFilter.setClientId(clientId);
         Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(pageable, teamTagSearchFilter);
         if (teamTagPage.hasContent()) {
             PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
