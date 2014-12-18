@@ -1,28 +1,22 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Test;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for UserClientPersistence
@@ -30,141 +24,221 @@ import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
 public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
-    ClientPersistence clientPersistence;
-
-    @Resource
-    ClientTypeRepository clientTypeRepository;
-
-    @Resource
     UserClientPersistence userClientPersistence;
 
     @Resource
-    UserPersistence userPersistence;
-
-    @Resource
     UserClientRepository userClientRepository;
-
-    ClientType clientType;
-
-    UserAdmin superAdmin;
 
     /**
      * valid create
      */
     @Test
     public void testCreate() {
-	Client client = makeNewRandomClient();
+        Client client = makeNewRandomClient();
 
-	UserClient user = new UserClient();
-	user.setClient(client);
-	user.setFirstName("firstName");
-	user.setLastName("lastName");
-	user.setLogin("flast@mail.com");
-	user.setEmail("flast@gmail.com");
-	user = userClientPersistence.saveOrUpdate(user);
-	assertThat(user.getId(), is(notNullValue()));
-	assertThat(user.getVersion(), is(notNullValue()));
+        UserClient user = new UserClient();
+        user.setClient(client);
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
+        user.setLogin("flast@mail.com");
+        user.setEmail("flast@gmail.com");
+        user = userClientPersistence.saveOrUpdate(user);
+        assertThat(user.getId(), is(notNullValue()));
+        assertThat(user.getVersion(), is(notNullValue()));
 
-	UserClient user1 = userClientRepository.findOne(user.getId());
-	assertThat("the users saved should be the same as the user fetched",
-		user, is(user1));
+        UserClient user1 = userClientRepository.findOne(user.getId());
+        assertThat("the users saved should be the same as the user fetched",
+                user, is(user1));
     }
 
+    /**
+     * No first name
+     */
     @Test(expected = ConstraintViolationException.class)
     public void testBadFirstNameCreate() {
-	Client client = makeNewRandomClient();
-	UserClient user = new UserClient();
-	user.setLastName(RandomStringUtils.randomAlphabetic(10));
-	user.setLogin(RandomStringUtils.randomAlphabetic(10));
-	user.setEmail("abc@gmail.com");
-	user.setClient(client);
-	user = userClientPersistence.saveOrUpdate(user);
+        Client client = makeNewRandomClient();
+        UserClient user = new UserClient();
+        user.setLastName(RandomStringUtils.randomAlphabetic(10));
+        user.setLogin(RandomStringUtils.randomAlphabetic(10));
+        user.setEmail("abc@gmail.com");
+        user.setClient(client);
+        userClientPersistence.saveOrUpdate(user);
     }
 
+    /**
+     * No Last name
+     */
     @Test(expected = ConstraintViolationException.class)
     public void testBadLastNameCreate() {
-	Client client = makeNewRandomClient();
-	UserClient user = new UserClient();
-	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
-	user.setLogin(RandomStringUtils.randomAlphabetic(10));
-	user.setEmail("abc@gmail.com");
-	user.setClient(client);
-	user = userClientPersistence.saveOrUpdate(user);
+        Client client = makeNewRandomClient();
+        UserClient user = new UserClient();
+        user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+        user.setLogin(RandomStringUtils.randomAlphabetic(10));
+        user.setEmail("abc@gmail.com");
+        user.setClient(client);
+        userClientPersistence.saveOrUpdate(user);
     }
 
+    /**
+     * No login
+     */
     @Test(expected = ConstraintViolationException.class)
     public void testBadLoginCreate() {
-	Client client = makeNewRandomClient();
-	UserClient user = new UserClient();
-	user.setLastName(RandomStringUtils.randomAlphabetic(10));
-	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
-	user.setEmail("abc@gmail.com");
-	user.setClient(client);
-	user = userClientPersistence.saveOrUpdate(user);
+        Client client = makeNewRandomClient();
+        UserClient user = new UserClient();
+        user.setLastName(RandomStringUtils.randomAlphabetic(10));
+        user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+        user.setEmail("abc@gmail.com");
+        user.setClient(client);
+        userClientPersistence.saveOrUpdate(user);
     }
 
+    /**
+     * Invalid email
+     */
     @Test
     public void testBadEmailCreate() {
-	Client client = makeNewRandomClient();
-	UserClient user = new UserClient();
-	user.setFirstName(RandomStringUtils.randomAlphabetic(10));
-	user.setLastName(RandomStringUtils.randomAlphabetic(10));
-	user.setLogin(RandomStringUtils.randomAlphabetic(10));
-	user.setClient(client);
-	user = userClientPersistence.saveOrUpdate(user);
-	assertThat(user.getId(), is(notNullValue()));
+        Client client = makeNewRandomClient();
+        UserClient user = new UserClient();
+        user.setFirstName(RandomStringUtils.randomAlphabetic(10));
+        user.setLastName(RandomStringUtils.randomAlphabetic(10));
+        user.setLogin(RandomStringUtils.randomAlphabetic(10));
+        user.setClient(client);
+        user = userClientPersistence.saveOrUpdate(user);
+        assertThat(user.getId(), is(notNullValue()));
     }
 
+    /**
+     * make sure we can search and filter
+     */
     @Test
     public void testList() {
-	Client client = makeNewRandomClient();
-	Client clientA = makeNewRandomClient();
-	makeNewRandomUserClient(client);
+        Client client = makeNewRandomClient();
+        Client clientA = makeNewRandomClient();
+        makeNewRandomUserClient(client);
 
-	UserClientSearchFilter filter = new UserClientSearchFilter(
-		client.getId(), "");
-	Page<UserClient> userClients = userClientPersistence.list(null, filter);
-	assertThat("returned page of UserClient should not be empty",
-		userClients.hasContent(), is(true));
+        UserClientSearchFilter filter = new UserClientSearchFilter(
+                client.getId(), "");
+        Page<UserClient> userClients = userClientPersistence.list(null, filter);
+        assertThat("returned page of UserClient should not be empty",
+                userClients.hasContent(), is(true));
 
-	UserClientSearchFilter filterA = new UserClientSearchFilter(
-		clientA.getId(), "");
-	Page<UserClient> userClientsA = userClientPersistence.list(null,
-		filterA);
-	assertThat("returned page of UserClient should be empty",
-		userClientsA.hasContent(), is(false));
+        UserClientSearchFilter filterA = new UserClientSearchFilter(
+                clientA.getId(), "");
+        Page<UserClient> userClientsA = userClientPersistence.list(null,
+                filterA);
+        assertThat("returned page of UserClient should be empty",
+                userClientsA.hasContent(), is(false));
 
-	UserClientSearchFilter realFilter = new UserClientSearchFilter(
-		client.getId(), "a");
-	Page<UserClient> userClientsWithFilter = userClientPersistence.list(
-		null, realFilter);
-	assertThat("returned page of UserClient should not be empty",
-		userClientsWithFilter.hasContent(), is(true));
+        UserClientSearchFilter realFilter = new UserClientSearchFilter(
+                client.getId(), "a");
+        Page<UserClient> userClientsWithFilter = userClientPersistence.list(
+                null, realFilter);
+        assertThat("returned page of UserClient should not be empty",
+                userClientsWithFilter.hasContent(), is(true));
 
-	UserClientSearchFilter nullClientIdFilter = new UserClientSearchFilter(
-		null, "a");
-	Page<UserClient> userClientsWithNullClientIdFilter = userClientPersistence
-		.list(null, nullClientIdFilter);
-	assertThat("returned page of UserClient should not be empty",
-		userClientsWithNullClientIdFilter.hasContent(), is(true));
+        UserClientSearchFilter nullClientIdFilter = new UserClientSearchFilter(
+                null, "a");
+        Page<UserClient> userClientsWithNullClientIdFilter = userClientPersistence
+                .list(null, nullClientIdFilter);
+        assertThat("returned page of UserClient should not be empty",
+                userClientsWithNullClientIdFilter.hasContent(), is(true));
 
-	Page<UserClient> userClientsWithPageableAndFilter = userClientPersistence
-		.list(new PageRequest(0, 10), realFilter);
-	assertThat("returned page of UserClient should not be empty",
-		userClientsWithPageableAndFilter.hasContent(), is(true));
+        Page<UserClient> userClientsWithPageableAndFilter = userClientPersistence
+                .list(new PageRequest(0, 10), realFilter);
+        assertThat("returned page of UserClient should not be empty",
+                userClientsWithPageableAndFilter.hasContent(), is(true));
     }
 
+    /**
+     * Ensure reloading of users works
+     */
     @Test
     public void testReload() {
-	Client client = makeNewRandomClient();
-	UserClient userClient = makeNewRandomUserClient(client);
+        Client client = makeNewRandomClient();
+        UserClient userClient = makeNewRandomUserClient(client);
 
-	UserClient userClientNull = userClientPersistence.reload(null);
-	assertThat("return null", userClientNull == null, is(true));
+        UserClient userClientNull = userClientPersistence.reload(null);
+        assertThat("return null", userClientNull, is(nullValue()));
 
-	UserClient userClientA = userClientPersistence.reload(userClient
-		.getId());
-	assertThat("reload same UserClient object",
-		userClient.getId() == userClientA.getId(), is(true));
+        assertThat("reload same UserClient object", userClientPersistence.reload(userClient
+                .getId()), is(userClient));
     }
+
+    /**
+     * Make sure that two users cannot have the same email
+     */
+    @Test(expected = DataIntegrityViolationException.class)
+    public void ensureUniqueEmail() {
+        UserClient matt = new UserClient();
+        matt.setClient(makeNewRandomClient());
+        matt.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        matt.setLastName(RandomStringUtils.randomAlphabetic(50));
+        matt.setLogin("mAtT");
+        matt.setEmail("mAtT@Blipso.orG");
+        userClientPersistence.saveOrUpdate(matt);
+
+        UserClient steve = new UserClient();
+        steve.setClient(makeNewRandomClient());
+        steve.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        steve.setLastName(RandomStringUtils.randomAlphabetic(50));
+        steve.setLogin("sTeVe");
+        steve.setEmail("matt@blipso.org");
+        userClientPersistence.saveOrUpdate(steve);
+    }
+
+    /**
+     * Ensure that login and email name conflicts are reported
+     */
+    @Test
+    public void makeSureCaseInsensitiveConflictsAreFound() {
+        UserClient matt = new UserClient();
+        matt.setClient(makeNewRandomClient());
+        matt.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        matt.setLastName(RandomStringUtils.randomAlphabetic(50));
+        matt.setLogin("mAtT");
+        matt.setEmail("mAtT@Blipso.orG");
+        userClientPersistence.saveOrUpdate(matt);
+
+        UserClient steve = new UserClient();
+        steve.setClient(makeNewRandomClient());
+        steve.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        steve.setLastName(RandomStringUtils.randomAlphabetic(50));
+        steve.setLogin("sTeVe");
+        steve.setEmail("steve@BLiPso.OrG");
+        userClientPersistence.saveOrUpdate(steve);
+
+        UserClient steveMatt = new UserClient();
+        steveMatt.setClient(makeNewRandomClient());
+        steveMatt.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        steveMatt.setLastName(RandomStringUtils.randomAlphabetic(50));
+        steveMatt.setLogin("MATT");
+        steveMatt.setEmail("STEVE@BLIPSO.ORG");
+
+        assertThat("both steve and matt should conflict with the user",
+                userClientPersistence.findConflictingUsers(steveMatt),
+                hasItems(steve, matt));
+
+        assertThat("no one conflicts with blanky",
+                userClientPersistence.findConflictingUsers(new UserClient()).isEmpty(),
+                is(true));
+
+        assertThat("no one conflicts with null",
+                userClientPersistence.findConflictingUsers(null).isEmpty(),
+                is(true));
+
+        assertThat("email should conflict steve",
+                userClientPersistence.findConflictingUsers(new UserClient() {{
+                    setEmail("steve@blipso.org");
+                }}),
+                hasItem(steve));
+
+        assertThat("login should conflict with matt",
+                userClientPersistence.findConflictingUsers(new UserClient() {{
+                    setLogin("matt");
+                }}),
+                hasItem(matt));
+
+    }
+
 }

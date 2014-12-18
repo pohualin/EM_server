@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="make email unique" author="Matt">
+
+        <delete tableName="user_client_user_client_role"/>
+        <delete tableName="user_client_user_client_team_role"/>
+        <delete tableName="users">
+            <where>user_type = 'C'</where>
+        </delete>
+        <createIndex tableName="users" indexName="ix_users_email" unique="true">
+            <column name="email" type="nvarchar(255)"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="add translations for invalid reasons" author="Matt">
+
+        <insert tableName="strings">
+            <column name="key_path" value="EMAIL"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="This email is already in use."/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="LOGIN"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="This User ID already exists."/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
