@@ -79,7 +79,7 @@
                                  referencedTableName="language"
                                  referencedColumnNames="id"/>
         <addUniqueConstraint tableName="strings"
-                             constraintName="uk_strings_language_id_key"
+                             constraintName="uk_strings_language_id_key_path"
                              columnNames="language_id, key"/>
     </changeSet>
 

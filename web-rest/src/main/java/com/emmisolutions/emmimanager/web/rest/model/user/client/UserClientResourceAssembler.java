@@ -9,29 +9,29 @@ import org.springframework.stereotype.Component;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientUserClientTeamRoleResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
-import com.emmisolutions.emmimanager.web.rest.resource.UsersClientResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource;
 
 /**
  * Creates a UserClientResource from a UserClient
  */
 @Component
 public class UserClientResourceAssembler implements
-	ResourceAssembler<UserClient, UserClientResource> {
+		ResourceAssembler<UserClient, UserClientResource> {
 
-    @Override
-    public UserClientResource toResource(UserClient entity) {
-	UserClientResource ret = new UserClientResource();
-	ret.add(linkTo(methodOn(UsersClientResource.class).get(entity.getId()))
-		.withSelfRel());
-	ret.add(linkTo(
-		methodOn(UserClientUserClientRolesResource.class)
-			.getUserClientUserClientRoles(entity.getId(), null,
-				null, null)).withRel("userClientRoles"));
-	ret.add(UserClientUserClientTeamRoleResourceAssembler
-		.createPossibleTeamsLink(entity));
-	ret.add(UserClientUserClientTeamRoleResourceAssembler
-		.createGetUserClientUserClientTeamRolesLink(entity));
-	ret.setEntity(entity);
-	return ret;
-    }
+	@Override
+	public UserClientResource toResource(UserClient entity) {
+		UserClientResource ret = new UserClientResource();
+		ret.add(linkTo(methodOn(UserClientsResource.class).get(entity.getId()))
+				.withSelfRel());
+		ret.add(linkTo(
+				methodOn(UserClientUserClientRolesResource.class)
+						.getUserClientUserClientRoles(entity.getId(), null,
+								null, null)).withRel("userClientRoles"));
+		ret.add(UserClientUserClientTeamRoleResourceAssembler
+				.createPossibleTeamsLink(entity));
+		ret.add(UserClientUserClientTeamRoleResourceAssembler
+				.createGetUserClientUserClientTeamRolesLink(entity));
+		ret.setEntity(entity);
+		return ret;
+	}
 }

@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.model.user;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
@@ -12,7 +11,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
 import java.io.Serializable;
 
 /**
@@ -21,11 +19,16 @@ import java.io.Serializable;
 @Entity
 @Audited
 @Table(name = "users",
-        uniqueConstraints =
-        @UniqueConstraint(columnNames = {"login"}, name = "uk_users_login"))
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"login"}, name = "uk_users_login")
+        },
+        indexes = {
+                @Index(name = "ix_users_email", columnList = "email", unique = true)
+        }
+)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(
-    name="user_type", discriminatorType=DiscriminatorType.STRING)
+        name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @XmlRootElement(name = "user")
 public class User extends AbstractAuditingEntity implements Serializable {
 
@@ -53,6 +56,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "first_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String firstName;
 
+    private boolean active;
+
     @NotNull
     @Size(min = 0, max = 50)
     @Column(name = "last_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
@@ -62,7 +67,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Size(min = 0, max = 255)
     @Column(length = 255, columnDefinition = "nvarchar(255)")
     private String email;
-    
+
     @NotNull
     @Size(max = 610)
     @Column(name = "normalized_name", length = 610, nullable = false, columnDefinition = "nvarchar(610)")
@@ -122,10 +127,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"{" +
+        return getClass().getSimpleName() + "{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", version=" + version +
+                ", active=" + active +
                 '}';
     }
 
@@ -173,7 +179,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     public String getNormalizedName() {
         return normalizedName;
     }
@@ -182,4 +188,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.normalizedName = normalizedName;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

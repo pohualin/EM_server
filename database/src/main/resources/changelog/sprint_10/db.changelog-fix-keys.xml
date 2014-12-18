@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+        
+        <changeSet id="add missing primary key team_provider_audit" author="Vinay">
+            <addPrimaryKey tableName="team_provider_audit" constraintName="pk_team_provider_audit" columnNames="id, revision"/>
+        </changeSet>
+        
+        <changeSet id="add missing primary key for user_client_reference_role_permission" author="Vinay" dbms="mssql">
+            <addPrimaryKey tableName="user_client_reference_role_permission" constraintName="pk_user_client_reference_role_permission" columnNames="id"/>
+        </changeSet>
+        
+        <changeSet id="add missing foreign keys" author="Vinay">
+            <addForeignKeyConstraint baseTableName="client_group_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_group_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+            <addForeignKeyConstraint baseTableName="salesforce_client_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_salesforce_client_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>                              
+
+            <addForeignKeyConstraint baseTableName="salesforce_team_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_salesforce_team_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+        </changeSet>
+</databaseChangeLog>
