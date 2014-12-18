@@ -30,7 +30,7 @@
         </createTable>
 	    <addPrimaryKey tableName="team_provider_team_location_audit" columnNames="id, revision" constraintName="pk_team_provider_team_location_audit"/>
 
-	    <addPrimaryKey tableName="team_provider" columnNames="id" constraintName="pk_team_provider_id"/>
+	    <addPrimaryKey tableName="team_provider" columnNames="id" constraintName="pk_team_provider"/>
 	        		
 		<addForeignKeyConstraint baseTableName="team_provider_team_location"
                                  baseColumnNames="team_location_id"
