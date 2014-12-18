@@ -38,7 +38,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 @RestController
 @RequestMapping(value = "/webapi", produces = {APPLICATION_JSON_VALUE,
         APPLICATION_XML_VALUE})
-public class UsersClientResource {
+public class UserClientsResource {
 
     @Resource
     ClientService clientService;
@@ -150,6 +150,29 @@ public class UsersClientResource {
                     HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+    }
+
+    /**
+     * PUT to update a single UserClient
+     *
+     * @param id         to update
+     * @param userClient the object to update
+     * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow returns null
+     */
+    @RequestMapping(value = "/user_client/{id}", method = RequestMethod.PUT, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER"})
+    public ResponseEntity<UserClientResource> update(@PathVariable("id") Long id, @RequestBody UserClient userClient) {
+        UserClient updatedUserClient = userClientService.update(userClient);
+        if (updatedUserClient != null) {
+            return new ResponseEntity<>(
+                    userClientResourceAssembler.toResource(updatedUserClient),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
