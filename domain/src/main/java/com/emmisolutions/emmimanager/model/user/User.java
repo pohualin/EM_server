@@ -56,6 +56,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "first_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String firstName;
 
+    private boolean active;
+
     @NotNull
     @Size(min = 0, max = 50)
     @Column(name = "last_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
@@ -129,6 +131,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", version=" + version +
+                ", active=" + active +
                 '}';
     }
 
@@ -185,4 +188,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.normalizedName = normalizedName;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

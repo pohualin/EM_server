@@ -2,7 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
-import com.emmisolutions.emmimanager.web.rest.resource.UsersClientResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class UserClientResourceAssembler implements
     @Override
     public UserClientResource toResource(UserClient entity) {
         UserClientResource ret = new UserClientResource();
-        ret.add(linkTo(methodOn(UsersClientResource.class).get(entity.getId()))
+        ret.add(linkTo(methodOn(UserClientsResource.class).get(entity.getId()))
                 .withSelfRel());
         ret.add(linkTo(
                 methodOn(UserClientUserClientRolesResource.class)

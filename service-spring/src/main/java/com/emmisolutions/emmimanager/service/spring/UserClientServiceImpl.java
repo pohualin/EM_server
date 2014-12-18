@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,9 +47,15 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Override
     @Transactional
-    public UserClient update(UserClient user) {
-        // TODO Auto-generated method stub
-        return null;
+    public UserClient update(UserClient userClient) {
+        UserClient inDb = reload(userClient);
+        if (inDb == null) {
+            throw new InvalidDataAccessApiUsageException("This method is only to be used with existing UserClient objects");
+        }
+        // do not allow for client or password changes
+        userClient.setClient(inDb.getClient());
+        userClient.setPassword(inDb.getPassword());
+        return userClientPersistence.saveOrUpdate(userClient);
     }
 
     @Override

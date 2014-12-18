@@ -55,7 +55,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
      * @see com.emmisolutions.emmimanager.web.rest.resource.ClientsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
     public static Link createFullUsersSearchLink(Client entity) {
-        Link link = linkTo(methodOn(UsersClientResource.class).getUsers(entity.getId(), null, null, null, null, null)).withRel("users");
+        Link link = linkTo(methodOn(UserClientsResource.class).getUsers(entity.getId(), null, null, null, null, null)).withRel("users");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

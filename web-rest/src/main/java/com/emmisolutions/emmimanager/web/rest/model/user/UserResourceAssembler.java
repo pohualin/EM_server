@@ -127,14 +127,14 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
      * @return the link
      */
     public Link createUserClientByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UsersClientResource.class).get(1l);
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UserClientsResource.class).get(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("userClientById");
         String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(UsersClientResource.class));
+        int idx = href.indexOf(discoverer.getMapping(UserClientsResource.class));
         if (idx != -1) {
             return new Link(
-                href.substring(0, idx) + discoverer.getMapping(UsersClientResource.class, method),
+                href.substring(0, idx) + discoverer.getMapping(UserClientsResource.class, method),
                 link.getRel());
         }
         return null;
