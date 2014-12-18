@@ -36,7 +36,7 @@
             <column name="revision_type" type="TINYINT"/>
             <column name="key_path" type="NVARCHAR(1024)"/>
         </createTable>
-        <addPrimaryKey tableName="client_type_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="client_type_audit" constraintName="pk_client_type_audit" columnNames="id, revision"/>
 
         <!-- load in the types -->
         <loadData encoding="UTF-8"
@@ -108,7 +108,7 @@
             <column name="revision_type" type="TINYINT"/>
             <column name="key_path" type="NVARCHAR(1024)"/>
         </createTable>
-        <addPrimaryKey tableName="client_region_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="client_region_audit" constraintName="pk_client_region_audit" columnNames="id, revision"/>
 
         <!-- load in the types -->
         <loadData encoding="UTF-8"
@@ -179,7 +179,7 @@
             <column name="revision_type" type="TINYINT"/>
             <column name="key_path" type="NVARCHAR(1024)"/>
         </createTable>
-        <addPrimaryKey tableName="client_tier_audit" columnNames="id, revision"/>
+        <addPrimaryKey tableName="client_tier_audit" constraintName="pk_client_tier_audit" columnNames="id, revision"/>
 
         <!-- load in the types -->
         <loadData encoding="UTF-8"

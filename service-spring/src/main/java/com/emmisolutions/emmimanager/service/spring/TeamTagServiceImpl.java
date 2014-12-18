@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -80,12 +81,21 @@ public class TeamTagServiceImpl implements TeamTagService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public TeamTag reload(TeamTag teamTag) {
         return teamTagPersistence.reload(teamTag);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TeamTag> findTeamsWithTag(Pageable pageable, TeamTagSearchFilter teamTagSearchFilter) {
+        Set<Tag> tagSet = teamTagSearchFilter.getTagSet();
+        Set<Tag> newTagSet = new HashSet<>();
+        for (Tag tag : tagSet) {
+            tag = tagPersistence.reload(new Tag(tag.getId()));
+            newTagSet.add(tag);
+        }
+        teamTagSearchFilter.setTagSet(newTagSet);
         return teamTagPersistence.findTeamsWithTag(pageable, teamTagSearchFilter);
     }
 }

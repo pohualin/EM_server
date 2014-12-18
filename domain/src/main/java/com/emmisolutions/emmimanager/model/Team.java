@@ -1,22 +1,16 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.Set;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -62,6 +56,9 @@ public class Team extends AbstractAuditingEntity implements Serializable {
     @Pattern(regexp = "[a-z0-9 ]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
     private String normalizedTeamName;    
  
+
+    @OneToMany(mappedBy = "team")
+    private Set<TeamTag> teamTags;
 
 	public String getNormalizedTeamName() {
 		return normalizedTeamName;
@@ -163,6 +160,14 @@ public class Team extends AbstractAuditingEntity implements Serializable {
 		return "Team [id=" + id + ", version=" + version + ", name=" + name
 				+ "]";
 	}
+
+    public Set<TeamTag> getTeamTags() {
+        return teamTags;
+    }
+
+    public void setTeamTags(Set<TeamTag> teamTags) {
+        this.teamTags = teamTags;
+    }
 
 	/**
 	 * Team constructor

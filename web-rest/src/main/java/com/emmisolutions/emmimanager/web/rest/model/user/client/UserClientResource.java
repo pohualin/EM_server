@@ -1,18 +1,13 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.UserClientService;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.xml.bind.annotation.*;
+import java.util.List;
 
 /**
  * HATEOAS wrapper for UserClient, essentially a DTO instead of a wrapper.
@@ -22,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class UserClientResource extends ResourceSupport {
 
 	private UserClient entity;
+
+	private List<UserClientService.UserClientConflict> conflicts;
 
 	/**
 	 * Override to change the link property name for serialization
@@ -43,4 +40,11 @@ public class UserClientResource extends ResourceSupport {
 		this.entity = entity;
 	}
 
+	public List<UserClientService.UserClientConflict> getConflicts() {
+		return conflicts;
+	}
+
+	public void setConflicts(List<UserClientService.UserClientConflict> conflicts) {
+		this.conflicts = conflicts;
+	}
 }

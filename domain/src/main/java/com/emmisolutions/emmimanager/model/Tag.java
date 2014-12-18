@@ -30,39 +30,47 @@ public class Tag extends AbstractAuditingEntity implements Serializable {
     @Column(nullable = false)
     private String name;
 
-    @NotNull
+	@NotNull
     @ManyToOne
     @JoinColumn(name = "group_id")
     @JsonBackReference
     private Group group;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "tag")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy="tag")
     @XmlTransient
     private Set<TeamTag> teamTags;
 
-    public Long getId() {
-        return id;
+    public Tag(){
+        super();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Tag(Long id){
+        setId(id);
     }
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Group getGroup() {
-        return group;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setGroup(Group group) {
-        this.group = group;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
 
     @Override
     public boolean equals(Object o) {
@@ -80,9 +88,9 @@ public class Tag extends AbstractAuditingEntity implements Serializable {
     @Override
     public String toString() {
         return "Tag{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
     public Set<TeamTag> getTeamTags() {

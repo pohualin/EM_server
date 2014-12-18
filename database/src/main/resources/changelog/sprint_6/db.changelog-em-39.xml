@@ -46,7 +46,7 @@
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>   
                                  
-        <addUniqueConstraint tableName="team_provider" columnNames="provider_id,team_id" constraintName="uk_team_provider_teamid_provid"/>        
+        <addUniqueConstraint tableName="team_provider" columnNames="provider_id,team_id" constraintName="uk_team_provider_provider_id_team_id"/>  
                                  
 	</changeSet>
 </databaseChangeLog>

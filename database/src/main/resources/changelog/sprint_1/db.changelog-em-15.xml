@@ -21,7 +21,7 @@
             <column name="salesforce_account_id" type="bigint"><constraints nullable="false"/> </column>
         </addColumn>
 
-        <addUniqueConstraint tableName="client" columnNames="salesforce_account_id" constraintName="uk_salesforce_account_id"/>
+        <addUniqueConstraint tableName="client" columnNames="salesforce_account_id" constraintName="uk_client_salesforce_account_id"/>
 
         <addForeignKeyConstraint baseTableName="client"
                                  baseColumnNames="salesforce_account_id"
