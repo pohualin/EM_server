@@ -11,10 +11,17 @@
         <delete tableName="users">
             <where>user_type = 'C'</where>
         </delete>
+
+    </changeSet>
+
+    <changeSet id="create unique index for non mssql" author="Matt" dbms="h2, postgres, mysql">
         <createIndex tableName="users" indexName="ix_users_email" unique="true">
             <column name="email" type="nvarchar(255)"/>
         </createIndex>
+    </changeSet>
 
+    <changeSet id="create unique index mssql" author="Matt" dbms="mssql">
+        <sql>create unique index ix_users_email on users(email) where email is not null</sql>
     </changeSet>
 
     <changeSet id="add translations for invalid reasons" author="Matt">
