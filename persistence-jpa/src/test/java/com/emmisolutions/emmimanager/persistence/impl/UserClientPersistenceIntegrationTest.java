@@ -239,6 +239,10 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
                 }}),
                 hasItem(matt));
 
+        assertThat("matt should not conflict with itself",
+                userClientPersistence.findConflictingUsers(matt).isEmpty(),
+                is(true));
+
     }
 
 }
