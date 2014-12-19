@@ -129,7 +129,7 @@ public class UserClientsResource {
             // found some conflicting users
             return new ResponseEntity<>(
                     conflictingUserClient,
-                    HttpStatus.CONFLICT);
+                    HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -166,15 +166,26 @@ public class UserClientsResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER"})
     public ResponseEntity<UserClientResource> update(@PathVariable("id") Long id, @RequestBody UserClient userClient) {
-        UserClient updatedUserClient = userClientService.update(userClient);
-        if (updatedUserClient != null) {
-            return new ResponseEntity<>(
-                    userClientResourceAssembler.toResource(updatedUserClient),
-                    HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
+        // look for conflicts before attempting to save
+        UserClientResource conflictingUserClient =
+                userClientConflictResourceAssembler.toResource(userClientService.findConflictingUsers(userClient));
+
+        if (conflictingUserClient == null) {
+            UserClient updatedUserClient = userClientService.update(userClient);
+            if (updatedUserClient != null) {
+                return new ResponseEntity<>(
+                        userClientResourceAssembler.toResource(updatedUserClient),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            // found some conflicting users
+            return new ResponseEntity<>(
+                    conflictingUserClient,
+                    HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
 }
