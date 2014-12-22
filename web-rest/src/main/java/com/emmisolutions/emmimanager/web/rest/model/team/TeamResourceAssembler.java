@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderPage;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamLocationsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamTagsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
@@ -31,7 +32,11 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
          ret.add(TeamLocationPage.createFullSearchLink(entity));
          ret.add(linkTo(methodOn(TeamProvidersResource.class).list(entity.getId(), null, null, null, null)).withRel("teamProviders"));
          ret.add(TeamProviderPage.createAssociationLink(entity));
+         ret.add(linkTo(methodOn(TeamLocationsResource.class).list(entity.getId(), null, null, null, null, null)).withRel("teamLocations"));
+         ret.add(TeamResource.getByProviderAndTeam(entity));
          ret.setEntity(entity);
 	     return ret;
 	 }
+ 
+	    
 }
