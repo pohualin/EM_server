@@ -58,9 +58,11 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
         ret.add(TeamPage.createFullSearchLink());
+        ret.add(SimpleUserPage.createFullSearchLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());
         ret.add(linkTo(methodOn(ProvidersResource.class).getReferenceData()).withRel("providersReferenceData"));
+        ret.add(createUserByIdLink());
         return ret;
     }
 
@@ -83,6 +85,20 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         return null;
     }
 
+    public Link createUserByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UsersResource.class).get(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("userById");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(UsersResource.class));
+        if (idx != -1) {
+            return new Link(
+                href.substring(0, idx) + discoverer.getMapping(UsersResource.class, method),
+                link.getRel());
+        }
+        return null;
+    }
+    
     /**
      * Load providers by id
      *

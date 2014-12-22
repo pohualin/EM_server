@@ -1,5 +1,18 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+
+import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
@@ -7,14 +20,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
 
 /**
  * Integration test for user persistence.
@@ -27,6 +33,9 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserAdminRepository userAdminRepository;
 
+    @Resource
+    UserRepository userRepository;
+    
     /**
      * Invalid user no login
      */
@@ -54,6 +63,34 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
         logout();
 
+    }
+    
+    @Test
+    public void testSimpleCreate() {
+    	login("some user");
+        User user = new User();
+        user.setLogin("claudio");
+        user.setPassword("clave");
+        user.setFirstName("firstName1");
+        user.setLastName("lastName1");
+        user.setActive(true);
+        user = userPersistence.saveOrUpdate(user);
+        assertThat(user.getId(), is(notNullValue()));
+        assertThat(user.getVersion(), is(notNullValue()));
+
+        User user1 = userRepository.findOne(user.getId());
+        assertThat("the users saved should be the same as the user fetched", user, is(user1));
+        assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
+        
+        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "claudio");
+        Page<User> users = userPersistence.list(null, filter);
+        
+        assertThat("the search user return values", users.getContent(), is(notNullValue()));
+        assertThat("the search user return values", users.getContent().size(), is(1) );
+        
+        User findUser = users.getContent().iterator().next();
+        assertThat("the users returned is the same user saved", findUser, is(user1));
+        logout();
     }
 
     /**

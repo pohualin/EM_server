@@ -1,16 +1,19 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+
 /**
- * A sample persistence interface.
+ * User persistence interface.
  */
 public interface UserPersistence {
 
     /**
-     * Saves or updates the User object
+     * Saves or updates the UserAdmin object
      *
      * @param user the user to save or create
      * @return the saved user
@@ -39,4 +42,29 @@ public interface UserPersistence {
      * @return a page of User objects
      */
     Page<UserAdmin> listPotentialContractOwners(Pageable pageable);
+
+    /**
+     * Saves or updates the User object
+     *
+     * @param user the user to save or create
+     * @return the saved user
+     */
+	User saveOrUpdate(User user);
+	
+    /**
+     * Pulls the User from the database using the Id
+     *
+     * @param User object
+     * @return User or null if one is not found
+     */
+	User reload(User user);
+
+	/**
+     * Find a page of User based on pagable and filter
+     *
+     * @param pageable contains pageable information
+     * @param filter   contains search criteria
+     * @return Page<User>
+     */
+	Page<User> list(Pageable page, UserSearchFilter filter);
 }

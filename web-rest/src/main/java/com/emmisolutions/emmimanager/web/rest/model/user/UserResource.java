@@ -1,12 +1,19 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import javax.xml.bind.annotation.*;
-import java.util.List;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * HATEOAS wrapper for User, essentially a DTO instead of a wrapper.
@@ -14,7 +21,7 @@ import java.util.List;
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserResource extends ResourceSupport {
-
+	
     private Long id;
 
     private Integer version;
@@ -66,6 +73,5 @@ public class UserResource extends ResourceSupport {
     public List<Link> getLinks() {
         return super.getLinks();
     }
-
 
 }

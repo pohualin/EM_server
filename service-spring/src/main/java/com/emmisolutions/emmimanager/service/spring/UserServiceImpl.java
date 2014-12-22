@@ -1,14 +1,19 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.service.UserService;
-import com.emmisolutions.emmimanager.service.spring.security.SecurityUtils;
+import javax.annotation.Resource;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.spring.security.SecurityUtils;
 
 /**
  * An example of a Service class. It can only contact the persistence layer
@@ -38,4 +43,30 @@ public class UserServiceImpl implements UserService {
     public UserAdmin loggedIn() {
         return userPersistence.fetchUserWillFullPermissions(securityUtils.getCurrentLogin());
     }
+      
+    @Override
+    @Transactional
+    public User create(User user) {
+        return userPersistence.saveOrUpdate(user);
+    }
+
+    @Override
+    @Transactional
+    public User reload(User user) {
+        if (user == null || user.getId() == null) {
+            return null;
+        }
+        return userPersistence.reload(user);
+    }
+ 
+    /**
+     * @param page             Page number of users needed
+     * @param userSearchFilter search filter for teams
+     * @return a particular page of users
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<User> list(Pageable page, UserSearchFilter userSearchFilter) {
+        return userPersistence.list(page, userSearchFilter);
+    }        
 }

@@ -1,9 +1,18 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.*;
+import com.emmisolutions.emmimanager.model.user.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.persistence.criteria.*;
 
 import static com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName.PERM_ADMIN_CONTRACT_OWNER;
@@ -13,7 +22,47 @@ import static com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission
  */
 @Component
 public class UserSpecifications {
+	@Resource
+	MatchingCriteriaBean matchCriteria;
 
+	/**
+	 * Method to generate Specification with search term
+	 *
+	 * @param filter
+	 *            carriers search term
+	 * @return Specification with search term
+	 */
+	public Specification<User> hasNames(
+			final UserSearchFilter filter) {
+		return new Specification<User>() {
+			@Override
+			public Predicate toPredicate(Root<User> root,
+					CriteriaQuery<?> query, CriteriaBuilder cb) {
+				if (filter != null && StringUtils.isNotBlank(filter.getTerm())) {
+					List<String> searchTerms = new ArrayList<>();
+					String[] terms = StringUtils.split(
+							matchCriteria.normalizeName(filter.getTerm()), " ");
+					if (terms != null) {
+						for (String term : terms) {
+							if (!searchTerms.contains(term)) {
+								searchTerms.add(term);
+							}
+						}
+					}
+					List<Predicate> andClause = new ArrayList<>();
+					for (String searchTerm : searchTerms) {
+						andClause.add(cb.like(
+								root.get(User_.normalizedName), "%"
+										+ searchTerm + "%"));
+					}
+					return cb.and(andClause.toArray(new Predicate[andClause
+							.size()]));
+				}
+				return null;
+			}
+		};
+	}
+	
     /**
      * Filter to ensure User is a contract owner
      *
