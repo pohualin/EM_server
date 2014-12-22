@@ -119,4 +119,23 @@ public class UserClientSpecifications {
             }
         };
     }
+
+    /**
+     * Adds a not for the id of the passed userClient:
+     * e.g. where UserClient.id != userClient.getId()
+     *
+     * @param userClient to use for the id to compare against
+     * @return a specification if an id is present or null
+     */
+    public Specification<UserClient> isNot(final UserClient userClient) {
+        return new Specification<UserClient>() {
+            @Override
+            public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (userClient != null && userClient.getId() != null) {
+                    return cb.notEqual(root.get(UserClient_.id), userClient.getId());
+                }
+                return null;
+            }
+        };
+    }
 }

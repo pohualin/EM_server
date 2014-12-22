@@ -74,7 +74,8 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         return new HashSet<>(
                 userClientRepository.findAll(
                         where(userClientSpecifications.hasLogin(userClient))
-                                .or(userClientSpecifications.hasEmail(userClient))));
+                                .or(userClientSpecifications.hasEmail(userClient))
+                                .and(userClientSpecifications.isNot(userClient))));
     }
 
 }
