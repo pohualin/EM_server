@@ -16,39 +16,39 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class UserClientUserClientTeamRoleResource extends ResourceSupport {
 
-    private UserClientUserClientTeamRole entity;
+	private UserClientUserClientTeamRole entity;
 
-    public UserClientUserClientTeamRoleResource() {
-    }
+	public UserClientUserClientTeamRoleResource() {
+	}
 
-    /**
-     * Constructor that takes the wrapped entity as an argument
-     *
-     * @param entity
-     *            to be wrapped
-     */
-    public UserClientUserClientTeamRoleResource(
-	    UserClientUserClientTeamRole entity) {
-	this.setEntity(entity);
-    }
+	/**
+	 * Constructor that takes the wrapped entity as an argument
+	 *
+	 * @param entity
+	 *            to be wrapped
+	 */
+	public UserClientUserClientTeamRoleResource(
+			UserClientUserClientTeamRole entity) {
+		this.setEntity(entity);
+	}
 
-    /**
-     * Override to change the link property name for serialization
-     *
-     * @return links
-     */
-    @XmlElement(name = "link")
-    @XmlElementWrapper(name = "links")
-    @JsonProperty("link")
-    public List<Link> getLinks() {
-	return super.getLinks();
-    }
+	/**
+	 * Override to change the link property name for serialization
+	 *
+	 * @return links
+	 */
+	@XmlElement(name = "link")
+	@XmlElementWrapper(name = "links")
+	@JsonProperty("link")
+	public List<Link> getLinks() {
+		return super.getLinks();
+	}
 
-    public UserClientUserClientTeamRole getEntity() {
-	return entity;
-    }
+	public UserClientUserClientTeamRole getEntity() {
+		return entity;
+	}
 
-    public void setEntity(UserClientUserClientTeamRole entity) {
-	this.entity = entity;
-    }
+	public void setEntity(UserClientUserClientTeamRole entity) {
+		this.entity = entity;
+	}
 }
