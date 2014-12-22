@@ -1,9 +1,13 @@
 package com.emmisolutions.emmimanager.service;
 
+import java.util.Set;
+
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -57,5 +61,4 @@ public interface ProviderService {
      * @return the saved provider
      */
     Provider create(Provider provider);
-
 }

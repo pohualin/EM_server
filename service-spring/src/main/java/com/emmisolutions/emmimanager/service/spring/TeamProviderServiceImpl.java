@@ -84,6 +84,19 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 		return teamProviderPersistence.findTeamProvidersByTeam(page, toFind);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public TeamProvider findTeamProviderByProviderAndTeam(Pageable page, Provider provider, Team team) {
+		
+		Team teamFromDb = teamService.reload(team);
+		Provider providerFromDb = providerService.reload(provider);
+		if (providerFromDb == null || teamFromDb == null) {
+            throw new InvalidDataAccessApiUsageException("provider or team cannot be null");
+        }
+		
+		return teamProviderPersistence.findTeamProvidersByProviderAndTeam(page, providerFromDb, teamFromDb);
+	}
+	
     @Override
     public Page<Team> findTeamsBy(Client client, Provider provider, Pageable page) {
         Client dbClient = clientService.reload(client);
