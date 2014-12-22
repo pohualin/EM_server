@@ -79,6 +79,30 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		
 		teamProviderTeamLocationService.findByTeamLocation(teamLocation, null);
 	}
+	
+	@Test
+	public void testCreateTeamProviderTeamLocation() {
+		Team team = makeNewRandomTeam();
+		Provider provider = makeNewRandomProvider();
+		Location location = makeNewRandomLocation();
+
+		TeamLocation teamLocation = new TeamLocation(location, team);
+		TeamLocation firstTeam = teamLocationPersistence.saveTeamLocation(teamLocation);
+
+		TeamLocation teamLocationTwo = new TeamLocation(location, team);
+		TeamLocation TeamTwo = teamLocationPersistence.saveTeamLocation(teamLocationTwo);
+		
+		Set<TeamLocation> teamLocations = new HashSet<TeamLocation>();
+		teamLocations.add(teamLocation);
+		teamLocations.add(teamLocationTwo);
+		
+		TeamProvider teamProvider = new TeamProvider();
+		teamProvider.setTeam(team);
+		teamProvider.setProvider(provider);
+		teamProviderPersistence.save(teamProvider);
+
+		teamProviderTeamLocationService.createTeamProviderTeamLocation(teamLocations, teamProvider);
+	}
 
 	@Test
 	public void saveAllTeamProviderTeamLocations() {
