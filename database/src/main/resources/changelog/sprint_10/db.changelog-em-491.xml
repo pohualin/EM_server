@@ -39,4 +39,22 @@
 
     </changeSet>
 
+    <changeSet id="add active to user client" author="Matt">
+
+        <addColumn tableName="users">
+            <column name="active" type="boolean"/>
+        </addColumn>
+
+        <update tableName="users">
+            <column name="active" valueBoolean="true"/>
+        </update>
+
+        <addNotNullConstraint tableName="users" columnName="active"
+                              columnDataType="boolean"/>
+
+        <addColumn tableName="users_audit">
+            <column name="active" type="boolean"/>
+        </addColumn>
+
+    </changeSet>
 </databaseChangeLog>
