@@ -545,7 +545,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private Team createTeam(Client client, int i) {
         Team team = new Team();
-        team.setName("Test Team" + i + System.currentTimeMillis());
+        team.setName("Test Team" + i + RandomStringUtils.randomAlphanumeric(18));
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);
@@ -556,7 +556,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private Tag createTag(Group group) {
         Tag tag = new Tag();
-        tag.setName("Test Tag " + System.currentTimeMillis());
+        tag.setName("Test Tag " + RandomStringUtils.randomAlphanumeric(18));
         tag.setGroup(group);
         tag = tagPersistence.save(tag);
         return tag;

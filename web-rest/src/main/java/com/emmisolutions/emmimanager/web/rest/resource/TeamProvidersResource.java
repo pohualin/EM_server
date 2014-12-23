@@ -24,12 +24,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
 import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderFinderResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.TeamProviderResource;
@@ -63,6 +66,9 @@ public class TeamProvidersResource {
 	
 	@Resource
 	TeamProviderFinderResourceAssembler teamProviderFinderResourceAssembler;
+	
+	@Resource
+	TeamProviderTeamLocationService teamProviderTeamLocationService;
 
 	/**
 	 * GET for a list of all teamProviders for a given team
@@ -248,4 +254,46 @@ public class TeamProvidersResource {
         teamProvider.setId(teamProviderId);
         teamProviderService.delete(teamProvider);
     }
+    
+	/**
+	 * POST to create teamProviderTeamLocation
+
+	 * @return
+	 */
+	@RequestMapping(value = "/teamProviders/{teamProviderId}/teamProviderTeamLocation", method = RequestMethod.POST)
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_CREATE" })
+	public Set<TeamProviderTeamLocation> createTeamProviderTeamLocation(
+			@RequestBody Set<TeamLocation> teamLocations,
+			@PathVariable("teamProviderId") Long teamProviderId) {
+
+		TeamProvider toFind = new TeamProvider();
+    	toFind.setId(teamProviderId);
+		return teamProviderTeamLocationService.createTeamProviderTeamLocation(teamLocations, toFind);
+	}
+
+	/**
+	 * GET for teamProvider by provider and team
+	 * @param teamId	to find by
+	 * @param providerId	to find by
+	 * @return TeamProviderResource or NO_CONTENT on fail
+	 */
+	@RequestMapping(value = "/teamProviders/{teamId}/teamProviderByProvider", method = RequestMethod.GET)
+	@RolesAllowed({ "PERM_GOD", "PERM_TEAM_PROVIDER_VIEW" })
+	public ResponseEntity<TeamProviderResource> getByProviderAndTeam(
+			@PathVariable("teamId") Long teamId,
+			@RequestParam(value = "providerId", required = false) Long providerId) {
+		
+		Team toFind = new Team();
+		toFind.setId(teamId);
+		
+		Provider providerToFind = new Provider();
+		providerToFind.setId(providerId);
+
+		TeamProvider teamProvider = teamProviderService.findTeamProviderByProviderAndTeam(null, providerToFind, toFind);
+		if (teamProvider == null) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} else {
+			return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), HttpStatus.OK);
+		}
+	}
 }

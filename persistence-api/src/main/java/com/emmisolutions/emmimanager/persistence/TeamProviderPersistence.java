@@ -1,14 +1,14 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamProvider;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamProvider;
 
 /**
  * TeamProvider persistence class
@@ -31,6 +31,15 @@ public interface TeamProviderPersistence {
      * @return page of team-providers
      */
     Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team);
+
+    /**
+     * Finds the team-provider for a given provider and team
+     * @param page the page specification
+     * @param provider to find
+     * @param team	to find
+     * @return
+     */
+    TeamProvider findTeamProvidersByProviderAndTeam(Pageable page, Provider provider, Team team);
 
     /**
      * Saves a teamProvider

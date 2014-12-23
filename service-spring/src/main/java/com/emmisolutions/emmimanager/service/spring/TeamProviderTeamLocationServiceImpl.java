@@ -1,19 +1,27 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
+import com.emmisolutions.emmimanager.service.ProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
 
 /**
  *  Implementation of TeamProviderTeamLocationService
@@ -29,7 +37,13 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
 
     @Resource
     TeamLocationPersistence teamLocationPersistence;
+    
+    @Resource
+    TeamProviderService teamProviderService;
 
+    @Resource
+    ProviderService providerService;
+    
 	@Override
 	public Page<TeamProviderTeamLocation> findByTeamProvider(TeamProvider teamProvider, Pageable page) {
 		return teamProviderTeamLocationPersistence.findByTeamProvider(teamProvider, page);
@@ -92,5 +106,22 @@ public class TeamProviderTeamLocationServiceImpl implements TeamProviderTeamLoca
     	} else {
     		teamProviderTeamLocationPersistence.removeAllByTeamProvider(teamProvider);
     	}
+    }
+    
+    @Override
+    @Transactional
+	public Set<TeamProviderTeamLocation> createTeamProviderTeamLocation(Set<TeamLocation> teamLocations, TeamProvider teamProvider){
+
+    	TeamProvider teamProviderFromDb = teamProviderService.reload(teamProvider);
+    	List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
+    	
+    	for (TeamLocation teamLocation : teamLocations) {
+			TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
+			tptl.setTeamProvider(teamProviderFromDb);
+			tptl.setTeamLocation(teamLocation);
+			teamProviderTeamLocationsToSave.add(tptl);
+		}
+    	
+		return teamProviderTeamLocationPersistence.saveAll(teamProviderTeamLocationsToSave);
     }
 }

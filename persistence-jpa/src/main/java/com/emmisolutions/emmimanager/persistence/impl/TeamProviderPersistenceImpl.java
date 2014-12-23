@@ -75,6 +75,11 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
     }
 
     @Override
+    public TeamProvider findTeamProvidersByProviderAndTeam(Pageable page, Provider provider, Team team){
+    	return teamProviderRepository.findTeamProviderByTeamAndProvider(team, provider);
+    }
+
+    @Override
     public void delete(TeamProvider provider) {
         teamProviderRepository.delete(provider);
     }
