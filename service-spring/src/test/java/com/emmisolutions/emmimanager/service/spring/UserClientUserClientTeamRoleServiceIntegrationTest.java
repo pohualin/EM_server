@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
 
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -37,6 +36,11 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 	@Resource
 	UserClientUserClientTeamRoleService userClientUserClientTeamRoleService;
 
+	/**
+	 * Ensure findPossible works with and without
+	 * UserClientUserClientTeamRole(s)
+	 * 
+	 */
 	@Test
 	public void testFindPossible() {
 		Client client = makeNewRandomClient();
@@ -66,6 +70,10 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 				pageA.getContent().size() > 0, is(true));
 	}
 
+	/**
+	 * Test find list of existing UserClientUSerClientTeamRole by given
+	 * userClientId and teams
+	 */
 	@Test
 	public void testFindExistingByUserClientInTeams() {
 		List<UserClientUserClientTeamRole> listA = userClientUserClientTeamRoleService
@@ -103,6 +111,9 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 		assertThat("should return empty list", listE.size() > 0, is(true));
 	}
 
+	/**
+	 * Test insert an UserClientUserClientTeamRole record
+	 */
 	@Test
 	public void testAssociate() {
 		Client client = makeNewRandomClient();
@@ -130,6 +141,9 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 				added.size() > 0, is(true));
 	}
 
+	/**
+	 * Test reload an UserClientUserClientTeamRole record
+	 */
 	@Test
 	public void testReload() {
 		Team team = makeNewRandomTeam(null);
@@ -154,12 +168,18 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 				first.getId() == reloaded.getId(), is(true));
 	}
 
+	/**
+	 * Test bad reload with null userClientUserClientTeamRoleId
+	 */
 	@Test(expected = InvalidDataAccessApiUsageException.class)
 	public void testBadReload() {
 		userClientUserClientTeamRoleService
 				.reload(new UserClientUserClientTeamRole());
 	}
 
+	/**
+	 * Test delete an UserClientUserClientTeamRole
+	 */
 	@Test
 	public void testDelete() {
 		Team team = makeNewRandomTeam(null);
@@ -184,18 +204,28 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 		assertThat("should return nothing", reloaded == null, is(true));
 	}
 
+	/**
+	 * Test bad delete with null userClientUserClientTeamRoleId
+	 */
 	@Test(expected = InvalidDataAccessApiUsageException.class)
 	public void testBadDelete() {
 		userClientUserClientTeamRoleService
 				.delete(new UserClientUserClientTeamRole());
 	}
 
+	/**
+	 * Test bad delete with null userClientId and userClientTeamRoleId
+	 */
 	@Test(expected = InvalidDataAccessApiUsageException.class)
 	public void testAnotherBadDelete() {
 		userClientUserClientTeamRoleService.delete(new UserClient(),
 				new UserClientTeamRole());
 	}
 
+	/**
+	 * Test find a page of UserClientUserClientTeamRole with userClientId and
+	 * userClientTeamRoleId
+	 */
 	@Test
 	public void testFindByUserClientAndUserClientTeamRole() {
 		Team team = makeNewRandomTeam(null);
@@ -224,6 +254,10 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 				is(true));
 	}
 
+	/**
+	 * Negative test find a page of UserClientUserClientTeamRole with null
+	 * userClientId and userClientTeamRoleId
+	 */
 	@Test(expected = InvalidDataAccessApiUsageException.class)
 	public void testBadFindByUserClientAndUserClientTeamRole() {
 		userClientUserClientTeamRoleService
@@ -231,6 +265,10 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 						new UserClientTeamRole(), null);
 	}
 
+	/**
+	 * Test delete all UserClientUserClientTeamRole by userClientId and
+	 * userClientTeamRoleId
+	 */
 	@Test
 	public void testDeleteAllByUserClientAndUserClientTeamRole() {
 		Team team = makeNewRandomTeam(null);

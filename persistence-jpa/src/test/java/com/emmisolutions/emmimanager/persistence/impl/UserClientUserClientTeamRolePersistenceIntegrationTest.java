@@ -26,130 +26,153 @@ import com.emmisolutions.emmimanager.persistence.UserClientUserClientTeamRolePer
  * Integration test for UserClientPersistence
  */
 public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
-	BaseIntegrationTest {
+		BaseIntegrationTest {
 
-    @Resource
-    UserClientPersistence userClientPersistence;
+	@Resource
+	UserClientPersistence userClientPersistence;
 
-    @Resource
-    UserClientUserClientTeamRolePersistence userClientUserClientTeamRolePersistence;
+	@Resource
+	UserClientUserClientTeamRolePersistence userClientUserClientTeamRolePersistence;
 
-    @Test
-    public void testCreate() {
-	Client client = makeNewRandomClient();
-	Team team = makeNewRandomTeam();
-	UserClient userClient = makeNewRandomUserClient(client);
-	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+	/**
+	 * Test create an UserCleintUserClientTeamRole
+	 */
+	@Test
+	public void testCreate() {
+		Client client = makeNewRandomClient();
+		Team team = makeNewRandomTeam();
+		UserClient userClient = makeNewRandomUserClient(client);
+		UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
 
-	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
-	entity.setUserClient(userClient);
-	entity.setTeam(team);
-	entity.setUserClientTeamRole(userClientTeamRole);
+		UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+		entity.setUserClient(userClient);
+		entity.setTeam(team);
+		entity.setUserClientTeamRole(userClientTeamRole);
 
-	UserClientUserClientTeamRole created = userClientUserClientTeamRolePersistence
-		.saveOrUpdate(entity);
-	assertThat("entity created", created.getId(), is(notNullValue()));
-    }
+		UserClientUserClientTeamRole created = userClientUserClientTeamRolePersistence
+				.saveOrUpdate(entity);
+		assertThat("entity created", created.getId(), is(notNullValue()));
+	}
 
-    @Test
-    public void testReload() {
-	Client client = makeNewRandomClient();
-	Team team = makeNewRandomTeam();
-	UserClient userClient = makeNewRandomUserClient(client);
-	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
-	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
-	entity.setUserClient(userClient);
-	entity.setTeam(team);
-	entity.setUserClientTeamRole(userClientTeamRole);
-	userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+	/**
+	 * Test reload an UserClientUserClientTeamRole by
+	 * userClientUserClientTeamRoleId
+	 */
+	@Test
+	public void testReload() {
+		Client client = makeNewRandomClient();
+		Team team = makeNewRandomTeam();
+		UserClient userClient = makeNewRandomUserClient(client);
+		UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+		UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+		entity.setUserClient(userClient);
+		entity.setTeam(team);
+		entity.setUserClientTeamRole(userClientTeamRole);
+		userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
-	UserClientUserClientTeamRole reload = userClientUserClientTeamRolePersistence
-		.reload(entity.getId());
-	assertThat("should return the existing one",
-		reload.getId() == entity.getId(), is(true));
-    }
+		UserClientUserClientTeamRole reload = userClientUserClientTeamRolePersistence
+				.reload(entity.getId());
+		assertThat("should return the existing one",
+				reload.getId() == entity.getId(), is(true));
+	}
 
-    @Test
-    public void testDelete() {
-	Client client = makeNewRandomClient();
-	Team team = makeNewRandomTeam();
-	UserClient userClient = makeNewRandomUserClient(client);
-	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
-	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
-	entity.setUserClient(userClient);
-	entity.setTeam(team);
-	entity.setUserClientTeamRole(userClientTeamRole);
-	userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+	/**
+	 * Test delete an UserClientUserClientTeamRole by
+	 * userClientUserClientTeamRoleId
+	 */
+	@Test
+	public void testDelete() {
+		Client client = makeNewRandomClient();
+		Team team = makeNewRandomTeam();
+		UserClient userClient = makeNewRandomUserClient(client);
+		UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+		UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+		entity.setUserClient(userClient);
+		entity.setTeam(team);
+		entity.setUserClientTeamRole(userClientTeamRole);
+		userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
-	userClientUserClientTeamRolePersistence.delete(entity.getId());
-	UserClientUserClientTeamRole reloadAfterDelete = userClientUserClientTeamRolePersistence
-		.reload(entity.getId());
-	assertThat("should return nothing", reloadAfterDelete == null, is(true));
-    }
+		userClientUserClientTeamRolePersistence.delete(entity.getId());
+		UserClientUserClientTeamRole reloadAfterDelete = userClientUserClientTeamRolePersistence
+				.reload(entity.getId());
+		assertThat("should return nothing", reloadAfterDelete == null, is(true));
+	}
 
-    @Test
-    public void testFindByUserClientIdInTeams() {
-	Team team = makeNewRandomTeam();
-	Client client = team.getClient();
-	UserClient userClient = makeNewRandomUserClient(client);
-	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+	/**
+	 * Test find a list of UserClientUserClientTeamRole by given userClientId
+	 * and teams
+	 */
+	@Test
+	public void testFindByUserClientIdInTeams() {
+		Team team = makeNewRandomTeam();
+		Client client = team.getClient();
+		UserClient userClient = makeNewRandomUserClient(client);
+		UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
 
-	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
-	entity.setUserClient(userClient);
-	entity.setTeam(team);
-	entity.setUserClientTeamRole(userClientTeamRole);
-	entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+		UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+		entity.setUserClient(userClient);
+		entity.setTeam(team);
+		entity.setUserClientTeamRole(userClientTeamRole);
+		entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
-	List<Team> teams = new ArrayList<Team>();
-	teams.add(team);
-	List<UserClientUserClientTeamRole> ucuctrl = userClientUserClientTeamRolePersistence
-		.findByUserClientIdAndTeamsIn(userClient.getId(), teams);
-	assertThat("should return a list of UserClientUserClientTeamRole",
-		ucuctrl.size() > 0, is(true));
-    }
+		List<Team> teams = new ArrayList<Team>();
+		teams.add(team);
+		List<UserClientUserClientTeamRole> ucuctrl = userClientUserClientTeamRolePersistence
+				.findByUserClientIdAndTeamsIn(userClient.getId(), teams);
+		assertThat("should return a list of UserClientUserClientTeamRole",
+				ucuctrl.size() > 0, is(true));
+	}
 
-    @Test
-    public void testFindByUserClientIdAndUserClientTeamRoleId() {
-	Team team = makeNewRandomTeam();
-	Client client = team.getClient();
-	UserClient userClient = makeNewRandomUserClient(client);
-	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+	/**
+	 * Test find a page of UserClientUserClientTeamRole by given userClientId
+	 * and userClientTeamRoleId
+	 */
+	@Test
+	public void testFindByUserClientIdAndUserClientTeamRoleId() {
+		Team team = makeNewRandomTeam();
+		Client client = team.getClient();
+		UserClient userClient = makeNewRandomUserClient(client);
+		UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
 
-	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
-	entity.setUserClient(userClient);
-	entity.setTeam(team);
-	entity.setUserClientTeamRole(userClientTeamRole);
-	entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+		UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+		entity.setUserClient(userClient);
+		entity.setTeam(team);
+		entity.setUserClientTeamRole(userClientTeamRole);
+		entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
-	Page<UserClientUserClientTeamRole> found = userClientUserClientTeamRolePersistence
-		.findByUserClientIdAndUserClientTeamRoleId(userClient.getId(),
-			userClientTeamRole.getId(), null);
-	assertThat("should return a page of UserClientUserClientTeamRole",
-		found.hasContent(), is(true));
+		Page<UserClientUserClientTeamRole> found = userClientUserClientTeamRolePersistence
+				.findByUserClientIdAndUserClientTeamRoleId(userClient.getId(),
+						userClientTeamRole.getId(), null);
+		assertThat("should return a page of UserClientUserClientTeamRole",
+				found.hasContent(), is(true));
 
-	Page<UserClientUserClientTeamRole> foundA = userClientUserClientTeamRolePersistence
-		.findByUserClientIdAndUserClientTeamRoleId(userClient.getId(),
-			userClientTeamRole.getId(), new PageRequest(0, 10));
-	assertThat("should return a page of UserClientUserClientTeamRole",
-		foundA.hasContent(), is(true));
-    }
+		Page<UserClientUserClientTeamRole> foundA = userClientUserClientTeamRolePersistence
+				.findByUserClientIdAndUserClientTeamRoleId(userClient.getId(),
+						userClientTeamRole.getId(), new PageRequest(0, 10));
+		assertThat("should return a page of UserClientUserClientTeamRole",
+				foundA.hasContent(), is(true));
+	}
 
-    @Test
-    public void testDeleteByUserClientAndUserClientTeamRole() {
-	Client client = makeNewRandomClient();
-	Team team = makeNewRandomTeam();
-	UserClient userClient = makeNewRandomUserClient(client);
-	UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
-	UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
-	entity.setUserClient(userClient);
-	entity.setTeam(team);
-	entity.setUserClientTeamRole(userClientTeamRole);
-	userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+	/**
+	 * Test delete all UserClientUserClientTeamRole by given userClientId and
+	 * userClientTeamRoleId
+	 */
+	@Test
+	public void testDeleteByUserClientAndUserClientTeamRole() {
+		Client client = makeNewRandomClient();
+		Team team = makeNewRandomTeam();
+		UserClient userClient = makeNewRandomUserClient(client);
+		UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
+		UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
+		entity.setUserClient(userClient);
+		entity.setTeam(team);
+		entity.setUserClientTeamRole(userClientTeamRole);
+		userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
-	userClientUserClientTeamRolePersistence.delete(userClient.getId(),
-		userClientTeamRole.getId());
-	UserClientUserClientTeamRole reloadAfterDelete = userClientUserClientTeamRolePersistence
-		.reload(entity.getId());
-	assertThat("should return nothing", reloadAfterDelete == null, is(true));
-    }
+		userClientUserClientTeamRolePersistence.delete(userClient.getId(),
+				userClientTeamRole.getId());
+		UserClientUserClientTeamRole reloadAfterDelete = userClientUserClientTeamRolePersistence
+				.reload(entity.getId());
+		assertThat("should return nothing", reloadAfterDelete == null, is(true));
+	}
 }

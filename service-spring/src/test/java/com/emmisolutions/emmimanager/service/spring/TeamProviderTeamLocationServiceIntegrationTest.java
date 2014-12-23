@@ -58,6 +58,9 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 	@Resource
 	TeamProviderTeamLocationPersistence teamProviderTeamLocationPersistence;
 
+	/**
+	 * Test find TeamProviderTeamLocation by TeamProvider
+	 */
 	@Test
 	public void findByTeamProvider() {
 		Team team = makeNewRandomTeam(null);
@@ -84,6 +87,9 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProviderTeamLocationService.findByTeamLocation(teamLocation, null);
 	}
 
+	/**
+	 * Test create a TeamProviderTeamLocation
+	 */
 	@Test
 	public void testCreateTeamProviderTeamLocation() {
 		Team team = makeNewRandomTeam(null);
@@ -112,6 +118,9 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		assertThat("TPTL has been created", savedTPTLs.size(), is(2));
 	}
 
+	/**
+	 * Test create a set of TeamProviderTeamLocation
+	 */
 	@Test
 	public void saveAllTeamProviderTeamLocations() {
 		Team team = makeNewRandomTeam(null);
@@ -144,6 +153,9 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(tptls);
 	}
 
+	/**
+	 * Test delete all TeamProviderTeamLocation by TeamProvider
+	 */
 	@Test
 	public void removeAllByTeamProvider() {
 		Team team = makeNewRandomTeam(null);
@@ -168,6 +180,9 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProviderTeamLocationService.removeAllByTeamProvider(teamProvider);
 	}
 
+	/**
+	 * Test update TeamProviderTeamLocation by TeamLocation
+	 */
 	@Test
 	public void updateTeamProviderTeamLocationsByTeamLocation() {
 		Team team = makeNewRandomTeam(null);
@@ -204,6 +219,9 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 				teamLocation, request);
 	}
 
+	/**
+	 * Test update TeamProviderTeamLocation by TeamProvider
+	 */
 	@Test
 	public void updateTeamProviderTeamLocationsByTeamProvider() {
 		Team team = makeNewRandomTeam(null);

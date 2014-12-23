@@ -161,6 +161,13 @@ public abstract class BaseIntegrationTest {
 		return teamService.create(team);
 	}
 
+	/**
+	 * Create a brand new UserClientRole with given client
+	 * 
+	 * @param client
+	 *            to use
+	 * @return random UserClientRole
+	 */
 	protected UserClientRole makeNewRandomUserClientRole(Client client) {
 		if (client == null) {
 			client = makeNewRandomClient();
@@ -170,6 +177,13 @@ public abstract class BaseIntegrationTest {
 		return userClientRoleService.create(userClientRole);
 	}
 
+	/**
+	 * Create a brand new UserClientTeamRole with given client
+	 * 
+	 * @param client
+	 *            to use
+	 * @return random UserClientTeamRole
+	 */
 	protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
 		if (client == null) {
 			client = makeNewRandomClient();
