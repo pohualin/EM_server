@@ -8,6 +8,7 @@ import javax.annotation.security.RolesAllowed;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -20,14 +21,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserAdminRolePage;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserAdminRoleResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceForAssociationsAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 
 /**
@@ -45,6 +52,12 @@ public class UsersResource {
     @Resource
     UserResourceAssembler userResourceAssembler;
 
+    @Resource
+    UserAdminRoleResourceAssembler userAdminRoleResourceAssembler;
+    
+    @Resource 
+    UserResourceForAssociationsAssembler userAdminResourceAssembler;
+    
     /**
      * GET to retrieve authenticated user
      *
@@ -85,7 +98,7 @@ public class UsersResource {
 
         if (users.hasContent()) {
             // create a ClientPage containing the response
-            return new ResponseEntity<>(new UserPage(assembler.toResource(users, userResourceAssembler), users),
+            return new ResponseEntity<>(new UserPage(assembler.toResource(users, userAdminResourceAssembler), users),
                     HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -102,13 +115,13 @@ public class UsersResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
-    public ResponseEntity<UserResource> createUser(@RequestBody UserAdmin user) {
+    public ResponseEntity<UserResource> createUser(@RequestBody UserAdminSaveRequest req) {
 
-    	UserAdmin savedUser = userService.save(user);
+    	UserAdmin savedUser = userService.save(req);
         if (savedUser != null) {
             // created a user client successfully
             return new ResponseEntity<>(
-            		userResourceAssembler.toResource(user),
+            		userAdminResourceAssembler.toResource(savedUser),
                     HttpStatus.CREATED);
         } else {
             // error creating user client
@@ -126,13 +139,13 @@ public class UsersResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
-    public ResponseEntity<UserResource> updateUser(@RequestBody UserAdmin user) {
+    public ResponseEntity<UserResource> updateUser(@RequestBody UserAdminSaveRequest req) {
 
-    	UserAdmin savedUser = userService.save(user);
+    	UserAdmin savedUser = userService.save(req);
         if (savedUser != null) {
             // created a user client successfully
             return new ResponseEntity<>(
-            		userResourceAssembler.toResource(user),
+            		userAdminResourceAssembler.toResource(savedUser),
                     HttpStatus.CREATED);
         } else {
             // error creating user client
@@ -154,7 +167,40 @@ public class UsersResource {
         toFind.setId(id);
         toFind = userService.reload(toFind);
         if (toFind != null) {
-            return new ResponseEntity<>(userResourceAssembler.toResource(toFind), HttpStatus.OK);
+            return new ResponseEntity<>(userAdminResourceAssembler.toResource(toFind), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
+    /**
+     * Fetch all existing user admin roles 
+     *
+     * @param clientId  the client
+     * @param pageable  page specification
+     * @param assembler to make resources
+     * @return a page of UserClientRoleResource objects
+     */
+    @RequestMapping(value = "/admin/roles", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @ApiOperation(value = "finds all existing user admin roles ")
+    @ApiImplicitParams(value = {
+        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<UserAdminRolePage> userAdminRoles(
+        @PageableDefault(size = 10, sort = {"name"}, direction = Sort.Direction.ASC) Pageable pageable,
+        PagedResourcesAssembler<UserAdminRole> assembler) {
+    	
+        Page<UserAdminRole> userRolePage = userService.listRolesWithoutSystem(pageable);
+        if (userRolePage.hasContent()) {
+            return new ResponseEntity<>(
+                new UserAdminRolePage(
+                    assembler.toResource(userRolePage, userAdminRoleResourceAssembler),
+                    userRolePage),
+                HttpStatus.OK
+            );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

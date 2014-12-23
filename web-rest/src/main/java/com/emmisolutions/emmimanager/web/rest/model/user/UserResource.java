@@ -33,6 +33,8 @@ public class UserResource extends ResourceSupport {
     private String lastName;
 
     private String email;
+    
+    private boolean active;
 
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
@@ -52,13 +54,14 @@ public class UserResource extends ResourceSupport {
      * @param email       email
      * @param permissions permissions
      */
-    public UserResource(Long id, Integer version, String login, String firstName, String lastName, String email, List<UserAdminPermissionName> permissions) {
+    public UserResource(Long id, Integer version, String login, String firstName, String lastName, String email, boolean active, List<UserAdminPermissionName> permissions) {
         this.id = id;
         this.version = version;
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.active = active;
         this.permissions = permissions;
     }
 

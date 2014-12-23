@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
@@ -20,7 +19,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
 
 /**
  * Integration test for user persistence.
@@ -29,13 +28,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserPersistence userPersistence;
-
-    @Resource
-    UserAdminRepository userAdminRepository;
-
-    @Resource
-    UserRepository userRepository;
-    
+        
     /**
      * Invalid user no login
      */
@@ -45,6 +38,17 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         userPersistence.saveOrUpdate(new UserAdmin());
     }
 
+    /**
+     * find user admin roles without system role
+     */
+    @Test
+    public void testUserAdminRoles() {
+    	
+    	Page<UserAdminRole> roles = userPersistence.listRolesWithoutSystem(null);
+        assertThat("the search roles return values", roles.getContent(), is(notNullValue()));
+        assertThat("the search roles return values", roles.getContent().size(), is(3) );
+
+    }
     /**
      * valid create
      */
@@ -58,11 +62,11 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
 
-        UserAdmin user1 = userAdminRepository.findOne(user.getId());
+        UserAdmin user1 = userPersistence.reload(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
         
-        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "claudio");
+        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "firstName");
         Page<UserAdmin> users = userPersistence.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));

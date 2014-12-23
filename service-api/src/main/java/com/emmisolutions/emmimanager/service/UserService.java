@@ -3,9 +3,10 @@ package com.emmisolutions.emmimanager.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 
 /**
  * The User Service
@@ -15,10 +16,10 @@ public interface UserService {
     /**
      * Creates a new user admin or updates an existing user with the passed User object.
      *
-     * @param user to save
+     * @param user request to save
      * @return the saved user
      */
-    UserAdmin save(UserAdmin user);
+    UserAdmin save(UserAdminSaveRequest req);
 
     /**
      * Fetch the currently logged in user.
@@ -44,4 +45,10 @@ public interface UserService {
      */
 	Page<UserAdmin> list(Pageable page, UserSearchFilter userSearchFilter);
 
+	/**
+     * Find all user admin roles excluding the system roles
+     *
+     * @return PAge<UserAdminRole> or null
+     */
+	Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable);
 }

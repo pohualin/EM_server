@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 
 /**
  * User persistence interface.
@@ -58,4 +59,11 @@ public interface UserPersistence {
      * @return User or null if one is not found
      */
 	UserAdmin reload(UserAdmin user);
+    
+	/**
+     * Find all user admin roles excluding the system roles
+     *
+     * @return PAge<UserAdminRole> or null
+     */
+	Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable);
 }

@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
@@ -13,8 +15,10 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserService;
 
@@ -31,25 +35,50 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = ConstraintViolationException.class)
     public void testUserCreateWithoutLogin() {
-        userService.save(new UserAdmin());
+    	UserAdminSaveRequest req = new UserAdminSaveRequest();
+       	req.setUserAdmin(new UserAdmin());
+       	req.setRoles(new HashSet<UserAdminRole>());
+        UserAdmin user = userService.save(req);
+        assertThat(user.getId(), is(notNullValue()));
+        assertThat(user.getVersion(), is(notNullValue()));
     }
 
+
+    /**
+     * find user admin roles without system role
+     */
+    @Test
+    public void testUserAdminRoles() {
+    	Page<UserAdminRole> roles = userService.listRolesWithoutSystem(null);
+        assertThat("the search roles return values", roles.getContent(), is(notNullValue()));
+        assertThat("the search roles return values", roles.getContent().size(), is(3) );
+    }
+    
     /**
      * Create with required values
      */
     @Test
     public void testUserCreate() {
         UserAdmin user = new UserAdmin("login", "pw");
-        user.setFirstName("firstName");
+        user.setFirstName("firstName1");
         user.setLastName("lastName");
-        user = userService.save(user);
+        
+        Page<UserAdminRole> roles = userService.listRolesWithoutSystem(null);
+        UserAdminRole role = roles.getContent().iterator().next();
+        Set<UserAdminRole> adminRoles = new HashSet<UserAdminRole>();
+        adminRoles.add(role);
+        
+    	UserAdminSaveRequest req = new UserAdminSaveRequest();
+       	req.setUserAdmin(user);
+       	req.setRoles(adminRoles);
+        user = userService.save(req);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
         
         UserAdmin user1 = userService.reload(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
      
-        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "claudio");
+        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "firstName1");
         Page<UserAdmin> users = userService.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));

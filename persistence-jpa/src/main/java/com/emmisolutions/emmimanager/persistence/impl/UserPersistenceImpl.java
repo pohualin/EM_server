@@ -13,10 +13,12 @@ import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
 
 /**
  * Repo to deal with user persistence.
@@ -24,6 +26,9 @@ import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 @Repository
 public class UserPersistenceImpl implements UserPersistence {
 
+    @Resource
+    UserAdminRoleRepository userAdminroleRepository;
+    
     @Resource
     UserAdminRepository userAdminRepository;
     
@@ -76,4 +81,13 @@ public class UserPersistenceImpl implements UserPersistence {
         return userAdminRepository.findAll(
                 where(userSpecifications.hasNames(filter)), pageable);
    }
+	
+    @Override
+    public Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable) {
+        if (pageable == null) {
+            // default pagination request if none
+            pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        }
+        return userAdminroleRepository.findAllWithoutSystem(pageable);
+    }
 }

@@ -2,9 +2,11 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -18,6 +20,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import javax.annotation.Resource;
+
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -179,6 +183,9 @@ public abstract class BaseIntegrationTest {
                 RandomStringUtils.randomAlphanumeric(100));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
-        return userService.save(userAdmin);
+    	UserAdminSaveRequest req = new UserAdminSaveRequest();
+       	req.setUserAdmin(userAdmin);
+       	req.setRoles(new HashSet<UserAdminRole>());
+        return userService.save(req);
     }
 }

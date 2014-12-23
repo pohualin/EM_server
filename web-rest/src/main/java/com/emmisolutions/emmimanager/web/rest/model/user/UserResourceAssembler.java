@@ -52,6 +52,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
             user.getFirstName(),
             user.getLastName(),
             user.getEmail(),
+            user.isActive(),
             roles);
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
@@ -64,10 +65,11 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
         ret.add(TeamPage.createFullSearchLink());
-        ret.add(UserPage.createFullSearchLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());
         ret.add(linkTo(methodOn(ProvidersResource.class).getReferenceData()).withRel("providersReferenceData"));
+        ret.add(UserPage.createFullSearchLink());
+        ret.add(UserAdminRolePage.createUserAdminRolesLink());
         ret.add(createUserByIdLink());
         return ret;
     }
@@ -86,20 +88,6 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         if (idx != -1) {
             return new Link(
                 href.substring(0, idx) + discoverer.getMapping(ClientsResource.class, method),
-                link.getRel());
-        }
-        return null;
-    }
-
-    public Link createUserByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UsersResource.class).get(1l);
-        Method method = invocations.getLastInvocation().getMethod();
-        Link link = linkTo(invocations).withRel("userById");
-        String href = link.getHref();
-        int idx = href.indexOf(discoverer.getMapping(UsersResource.class));
-        if (idx != -1) {
-            return new Link(
-                href.substring(0, idx) + discoverer.getMapping(UsersResource.class, method),
                 link.getRel());
         }
         return null;
@@ -157,6 +145,25 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         if (idx != -1) {
             return new Link(
                 href.substring(0, idx) + discoverer.getMapping(UserClientsResource.class, method),
+                link.getRel());
+        }
+        return null;
+    }
+
+    /**
+     * Load user by id
+     *
+     * @return the link
+     */
+    public Link createUserByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UsersResource.class).get(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("userById");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(UsersResource.class));
+        if (idx != -1) {
+            return new Link(
+                href.substring(0, idx) + discoverer.getMapping(UsersResource.class, method),
                 link.getRel());
         }
         return null;
