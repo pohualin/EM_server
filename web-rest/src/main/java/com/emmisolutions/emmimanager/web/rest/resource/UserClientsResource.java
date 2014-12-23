@@ -31,13 +31,9 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 /**
  * Users Client REST API
  */
-
-/**
- * @author plin
- */
 @RestController
-@RequestMapping(value = "/webapi", produces = {APPLICATION_JSON_VALUE,
-        APPLICATION_XML_VALUE})
+@RequestMapping(value = "/webapi", produces = { APPLICATION_JSON_VALUE,
+        APPLICATION_XML_VALUE })
 public class UserClientsResource {
 
     @Resource
@@ -55,21 +51,27 @@ public class UserClientsResource {
     /**
      * Get a page of UserClient that satisfy the search criteria
      *
-     * @param clientId  to use
-     * @param pageable  to use
-     * @param sort      to use
-     * @param assembler to use
-     * @param status    to filter
-     * @param term      to search
+     * @param clientId
+     *            to use
+     * @param pageable
+     *            to use
+     * @param sort
+     *            to use
+     * @param assembler
+     *            to use
+     * @param status
+     *            to filter
+     * @param term
+     *            to search
      * @return UserClientPage
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")})
+            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
     public ResponseEntity<UserClientPage> getUsers(
             @PathVariable(value = "clientId") Long clientId,
             @PageableDefault(size = 10, sort = "lastName", direction = Direction.ASC) Pageable pageable,
@@ -97,21 +99,22 @@ public class UserClientsResource {
     /**
      * Create a brand new UserClient
      *
-     * @param clientId   on which to create
-     * @param userClient to create
+     * @param clientId
+     *            on which to create
+     * @param userClient
+     *            to create
      * @return UserClient created
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.POST, consumes = {
-            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER" })
     public ResponseEntity<UserClientResource> createUser(
-            @PathVariable Long clientId,
-            @RequestBody UserClient userClient) {
+            @PathVariable Long clientId, @RequestBody UserClient userClient) {
 
         // look for conflicts before attempting to save
-        UserClientResource conflictingUserClient =
-                userClientConflictResourceAssembler.toResource(userClientService.findConflictingUsers(userClient));
+        UserClientResource conflictingUserClient = userClientConflictResourceAssembler
+                .toResource(userClientService.findConflictingUsers(userClient));
 
         if (conflictingUserClient == null) {
             UserClient savedUserClient = userClientService.create(userClient);
@@ -127,8 +130,7 @@ public class UserClientsResource {
             }
         } else {
             // found some conflicting users
-            return new ResponseEntity<>(
-                    conflictingUserClient,
+            return new ResponseEntity<>(conflictingUserClient,
                     HttpStatus.NOT_ACCEPTABLE);
         }
     }
@@ -136,12 +138,13 @@ public class UserClientsResource {
     /**
      * GET a single UserClient
      *
-     * @param id to load
+     * @param id
+     *            to load
      * @return UserClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/user_client/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER" })
     public ResponseEntity<UserClientResource> get(@PathVariable("id") Long id) {
         UserClient userClient = userClientService.reload(new UserClient(id));
         if (userClient != null) {
@@ -157,33 +160,37 @@ public class UserClientsResource {
     /**
      * PUT to update a single UserClient
      *
-     * @param id         to update
-     * @param userClient the object to update
-     * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow returns null
+     * @param id
+     *            to update
+     * @param userClient
+     *            the object to update
+     * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow
+     *         returns null
      */
     @RequestMapping(value = "/user_client/{id}", method = RequestMethod.PUT, consumes = {
-            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
-    public ResponseEntity<UserClientResource> update(@PathVariable("id") Long id, @RequestBody UserClient userClient) {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER" })
+    public ResponseEntity<UserClientResource> update(
+            @PathVariable("id") Long id, @RequestBody UserClient userClient) {
 
         // look for conflicts before attempting to save
-        UserClientResource conflictingUserClient =
-                userClientConflictResourceAssembler.toResource(userClientService.findConflictingUsers(userClient));
+        UserClientResource conflictingUserClient = userClientConflictResourceAssembler
+                .toResource(userClientService.findConflictingUsers(userClient));
 
         if (conflictingUserClient == null) {
             UserClient updatedUserClient = userClientService.update(userClient);
             if (updatedUserClient != null) {
                 return new ResponseEntity<>(
-                        userClientResourceAssembler.toResource(updatedUserClient),
+                        userClientResourceAssembler
+                                .toResource(updatedUserClient),
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             // found some conflicting users
-            return new ResponseEntity<>(
-                    conflictingUserClient,
+            return new ResponseEntity<>(conflictingUserClient,
                     HttpStatus.NOT_ACCEPTABLE);
         }
     }

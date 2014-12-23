@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Audited
 @Entity
 @Table(name = "user_client_user_client_role", uniqueConstraints = @UniqueConstraint(columnNames = {
-	"users_id", "user_client_role_id" }, name = "uk_user_client_user_client_role"))
+        "users_id", "user_client_role_id" }, name = "uk_user_client_user_client_role"))
 public class UserClientUserClientRole extends AbstractAuditingEntity {
 
     public UserClientUserClientRole() {
@@ -21,7 +21,7 @@ public class UserClientUserClientRole extends AbstractAuditingEntity {
     }
 
     public UserClientUserClientRole(Long id) {
-	this.id = id;
+        this.id = id;
     }
 
     @Id
@@ -40,47 +40,47 @@ public class UserClientUserClientRole extends AbstractAuditingEntity {
     private UserClient userClient;
 
     public Long getId() {
-	return id;
+        return id;
     }
 
     public void setId(Long id) {
-	this.id = id;
+        this.id = id;
     }
 
     public UserClientRole getUserClientRole() {
-	return userClientRole;
+        return userClientRole;
     }
 
     public void setUserClientRole(UserClientRole userClientRole) {
-	this.userClientRole = userClientRole;
+        this.userClientRole = userClientRole;
     }
 
     public UserClient getUserClient() {
-	return userClient;
+        return userClient;
     }
 
     public void setUserClient(UserClient userClient) {
-	this.userClient = userClient;
+        this.userClient = userClient;
     }
 
     @Override
     public boolean equals(Object o) {
-	if (this == o)
-	    return true;
-	if (o == null || getClass() != o.getClass())
-	    return false;
-	UserClientUserClientRole that = (UserClientUserClientRole) o;
-	return !(id != null ? !id.equals(that.id) : that.id != null);
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        UserClientUserClientRole that = (UserClientUserClientRole) o;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
     }
 
     @Override
     public int hashCode() {
-	return id != null ? id.hashCode() : 0;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
     public String toString() {
-	return "UserClientUserClientRole{" + "id=" + id + ", userClientRole="
-		+ userClientRole + ", userClient=" + userClient + '}';
+        return "UserClientUserClientRole{" + "id=" + id + ", userClientRole="
+                + userClientRole + ", userClient=" + userClient + '}';
     }
 }

@@ -15,8 +15,10 @@ public interface UserClientRolePersistence {
     /**
      * Find a page of roles for a client user
      *
-     * @param clientId for which to find the roles
-     * @param page     specification
+     * @param clientId
+     *            for which to find the roles
+     * @param page
+     *            specification
      * @return page of UserClientRole objects
      */
     Page<UserClientRole> find(long clientId, Pageable page);
@@ -24,7 +26,8 @@ public interface UserClientRolePersistence {
     /**
      * Create/Update a user client role
      *
-     * @param userClientRole to be saved
+     * @param userClientRole
+     *            to be saved
      * @return the saved user client role
      */
     UserClientRole save(UserClientRole userClientRole);
@@ -32,15 +35,18 @@ public interface UserClientRolePersistence {
     /**
      * Reloads a UserClientRole from persistence
      *
-     * @param userClientRole to reload
-     * @return the persistent UserClientRole object or null if the userClientRole is null or not found
+     * @param userClientRole
+     *            to reload
+     * @return the persistent UserClientRole object or null if the
+     *         userClientRole is null or not found
      */
     UserClientRole reload(UserClientRole userClientRole);
 
     /**
      * Removes a UserClientRole by id
      *
-     * @param id to remove
+     * @param id
+     *            to remove
      */
     void remove(Long id);
 
@@ -54,7 +60,8 @@ public interface UserClientRolePersistence {
     /**
      * Load all permissions for a UserClientRole
      *
-     * @param userClientRole to load for
+     * @param userClientRole
+     *            to load for
      * @return Set of UserClientPermission or empty Set never null
      */
     Set<UserClientPermission> permissionsFor(UserClientRole userClientRole);

@@ -43,182 +43,182 @@ import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
 // annotated correctly!
 public abstract class BaseIntegrationTest {
 
-	@Resource
-	ClientService clientService;
+    @Resource
+    ClientService clientService;
 
-	@Resource
-	UserService userService;
+    @Resource
+    UserService userService;
 
-	@Resource
-	LocationService locationService;
+    @Resource
+    LocationService locationService;
 
-	@Resource
-	ProviderService providerService;
+    @Resource
+    ProviderService providerService;
 
-	@Resource
-	TeamService teamService;
+    @Resource
+    TeamService teamService;
 
-	@Resource
-	UserClientService userClientService;
+    @Resource
+    UserClientService userClientService;
 
-	@Resource
-	UserClientRoleService userClientRoleService;
+    @Resource
+    UserClientRoleService userClientRoleService;
 
-	@Resource
-	UserClientTeamRoleService userClientTeamRoleService;
+    @Resource
+    UserClientTeamRoleService userClientTeamRoleService;
 
-	/**
-	 * Login as a user
-	 *
-	 * @param login
-	 *            to login as
-	 */
-	protected void login(String login) {
-		SecurityContextHolder.getContext().setAuthentication(
-				new UsernamePasswordAuthenticationToken(login, "******"));
-	}
+    /**
+     * Login as a user
+     *
+     * @param login
+     *            to login as
+     */
+    protected void login(String login) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(login, "******"));
+    }
 
-	/**
-	 * Makes a UserDetails object with authorities
-	 *
-	 * @param login
-	 *            to use
-	 */
-	protected void login(String login, List<GrantedAuthority> authorityList) {
-		SecurityContextHolder.getContext().setAuthentication(
-				new UsernamePasswordAuthenticationToken(new User(login, "****",
-						authorityList), "******"));
-	}
+    /**
+     * Makes a UserDetails object with authorities
+     *
+     * @param login
+     *            to use
+     */
+    protected void login(String login, List<GrantedAuthority> authorityList) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(new User(login, "****",
+                        authorityList), "******"));
+    }
 
-	/**
-	 * Logout of the system
-	 */
-	protected void logout() {
-		SecurityContextHolder.clearContext();
-	}
+    /**
+     * Logout of the system
+     */
+    protected void logout() {
+        SecurityContextHolder.clearContext();
+    }
 
-	/**
-	 * Creates a brand new client that shouldn't already be inserted
-	 *
-	 * @return random client
-	 */
-	protected Client makeNewRandomClient() {
-		Client client = new Client();
-		client.setTier(new ClientTier(3l));
-		client.setContractEnd(LocalDate.now().plusYears(1));
-		client.setContractStart(LocalDate.now());
-		client.setRegion(new ClientRegion(1l));
-		client.setName(RandomStringUtils.randomAlphanumeric(255));
-		client.setType(new ClientType(1l));
-		client.setActive(true);
-		client.setContractOwner(makeNewRandomUserAdmin());
-		client.setSalesForceAccount(new SalesForce(RandomStringUtils
-				.randomAlphanumeric(18)));
-		return clientService.create(client);
-	}
+    /**
+     * Creates a brand new client that shouldn't already be inserted
+     *
+     * @return random client
+     */
+    protected Client makeNewRandomClient() {
+        Client client = new Client();
+        client.setTier(new ClientTier(3l));
+        client.setContractEnd(LocalDate.now().plusYears(1));
+        client.setContractStart(LocalDate.now());
+        client.setRegion(new ClientRegion(1l));
+        client.setName(RandomStringUtils.randomAlphanumeric(255));
+        client.setType(new ClientType(1l));
+        client.setActive(true);
+        client.setContractOwner(makeNewRandomUserAdmin());
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils
+                .randomAlphanumeric(18)));
+        return clientService.create(client);
+    }
 
-	/**
-	 * Creates a brand new location that shouldn't already be inserted
-	 *
-	 * @return random location
-	 */
-	protected Location makeNewRandomLocation() {
-		Location location = new Location();
-		location.setName(RandomStringUtils.randomAlphabetic(50));
-		location.setCity(RandomStringUtils.randomAlphabetic(50));
-		location.setActive(true);
-		location.setPhone("555-422-1212");
-		location.setState(State.IL);
-		return locationService.create(location);
-	}
+    /**
+     * Creates a brand new location that shouldn't already be inserted
+     *
+     * @return random location
+     */
+    protected Location makeNewRandomLocation() {
+        Location location = new Location();
+        location.setName(RandomStringUtils.randomAlphabetic(50));
+        location.setCity(RandomStringUtils.randomAlphabetic(50));
+        location.setActive(true);
+        location.setPhone("555-422-1212");
+        location.setState(State.IL);
+        return locationService.create(location);
+    }
 
-	/**
-	 * Make a new randomized Provider
-	 *
-	 * @return random provider
-	 */
-	protected Provider makeNewRandomProvider() {
-		Provider provider = new Provider();
-		provider.setFirstName(RandomStringUtils.randomAlphabetic(255));
-		provider.setLastName(RandomStringUtils.randomAlphabetic(255));
-		provider.setActive(true);
-		return providerService.create(provider);
-	}
+    /**
+     * Make a new randomized Provider
+     *
+     * @return random provider
+     */
+    protected Provider makeNewRandomProvider() {
+        Provider provider = new Provider();
+        provider.setFirstName(RandomStringUtils.randomAlphabetic(255));
+        provider.setLastName(RandomStringUtils.randomAlphabetic(255));
+        provider.setActive(true);
+        return providerService.create(provider);
+    }
 
-	/**
-	 * Creates a brand new team that shouldn't already be inserted
-	 *
-	 * @return random team
-	 */
-	protected Team makeNewRandomTeam(Client client) {
-		Team team = new Team();
-		team.setName("a" + RandomStringUtils.randomAlphabetic(49));
-		team.setDescription(RandomStringUtils.randomAlphabetic(50));
-		team.setActive(true);
-		team.setClient(client != null ? client : makeNewRandomClient());
-		team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
-				.randomAlphanumeric(18)));
-		return teamService.create(team);
-	}
+    /**
+     * Creates a brand new team that shouldn't already be inserted
+     *
+     * @return random team
+     */
+    protected Team makeNewRandomTeam(Client client) {
+        Team team = new Team();
+        team.setName("a" + RandomStringUtils.randomAlphabetic(49));
+        team.setDescription(RandomStringUtils.randomAlphabetic(50));
+        team.setActive(true);
+        team.setClient(client != null ? client : makeNewRandomClient());
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
+                .randomAlphanumeric(18)));
+        return teamService.create(team);
+    }
 
-	/**
-	 * Create a brand new UserClientRole with given client
-	 * 
-	 * @param client
-	 *            to use
-	 * @return random UserClientRole
-	 */
-	protected UserClientRole makeNewRandomUserClientRole(Client client) {
-		if (client == null) {
-			client = makeNewRandomClient();
-		}
-		UserClientRole userClientRole = new UserClientRole(
-				RandomStringUtils.randomAlphabetic(10), client, null);
-		return userClientRoleService.create(userClientRole);
-	}
+    /**
+     * Create a brand new UserClientRole with given client
+     * 
+     * @param client
+     *            to use
+     * @return random UserClientRole
+     */
+    protected UserClientRole makeNewRandomUserClientRole(Client client) {
+        if (client == null) {
+            client = makeNewRandomClient();
+        }
+        UserClientRole userClientRole = new UserClientRole(
+                RandomStringUtils.randomAlphabetic(10), client, null);
+        return userClientRoleService.create(userClientRole);
+    }
 
-	/**
-	 * Create a brand new UserClientTeamRole with given client
-	 * 
-	 * @param client
-	 *            to use
-	 * @return random UserClientTeamRole
-	 */
-	protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
-		if (client == null) {
-			client = makeNewRandomClient();
-		}
-		UserClientTeamRole userClientTeamRole = new UserClientTeamRole(
-				RandomStringUtils.randomAlphabetic(10), client, null);
-		return userClientTeamRoleService.create(userClientTeamRole);
-	}
+    /**
+     * Create a brand new UserClientTeamRole with given client
+     * 
+     * @param client
+     *            to use
+     * @return random UserClientTeamRole
+     */
+    protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
+        if (client == null) {
+            client = makeNewRandomClient();
+        }
+        UserClientTeamRole userClientTeamRole = new UserClientTeamRole(
+                RandomStringUtils.randomAlphabetic(10), client, null);
+        return userClientTeamRoleService.create(userClientTeamRole);
+    }
 
-	/**
-	 * Creates a new UserClient
-	 *
-	 * @return a UserClient
-	 */
-	protected UserClient makeNewRandomUserClient(Client client) {
-		UserClient userClient = new UserClient();
-		userClient.setClient(client != null ? client : makeNewRandomClient());
-		userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
-		userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
-		userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
-		userClient.setPassword(RandomStringUtils.randomAlphanumeric(100));
-		return userClientService.create(userClient);
-	}
+    /**
+     * Creates a new UserClient
+     *
+     * @return a UserClient
+     */
+    protected UserClient makeNewRandomUserClient(Client client) {
+        UserClient userClient = new UserClient();
+        userClient.setClient(client != null ? client : makeNewRandomClient());
+        userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
+        userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
+        userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
+        userClient.setPassword(RandomStringUtils.randomAlphanumeric(100));
+        return userClientService.create(userClient);
+    }
 
-	/**
-	 * Make new random UserAdmin
-	 *
-	 * @return new UserAdmin
-	 */
-	protected UserAdmin makeNewRandomUserAdmin() {
-		UserAdmin userAdmin = new UserAdmin(
-				RandomStringUtils.randomAlphabetic(255),
-				RandomStringUtils.randomAlphanumeric(100));
-		userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
-		userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
-		return userService.save(userAdmin);
-	}
+    /**
+     * Make new random UserAdmin
+     *
+     * @return new UserAdmin
+     */
+    protected UserAdmin makeNewRandomUserAdmin() {
+        UserAdmin userAdmin = new UserAdmin(
+                RandomStringUtils.randomAlphabetic(255),
+                RandomStringUtils.randomAlphanumeric(100));
+        userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
+        userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
+        return userService.save(userAdmin);
+    }
 }

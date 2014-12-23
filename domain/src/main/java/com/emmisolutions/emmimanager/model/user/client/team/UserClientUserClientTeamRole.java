@@ -14,29 +14,26 @@ import javax.validation.constraints.NotNull;
  */
 @Audited
 @Entity
-@Table(name = "user_client_user_client_team_role",
-    uniqueConstraints =
-    @UniqueConstraint(columnNames = {"users_id", "client_team_id","user_client_team_role_id"},
-        name = "uk_user_client_user_client_team_role")
-)
+@Table(name = "user_client_user_client_team_role", uniqueConstraints = @UniqueConstraint(columnNames = {
+        "users_id", "client_team_id", "user_client_team_role_id" }, name = "uk_user_client_user_client_team_role"))
 public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
-	/**
-	 * Default constructor
-	 */
-	public UserClientUserClientTeamRole() {
+    /**
+     * Default constructor
+     */
+    public UserClientUserClientTeamRole() {
 
-	}
+    }
 
-	/**
-	 * Constructor with id
-	 * 
-	 * @param id
-	 */
-	public UserClientUserClientTeamRole(Long id) {
-		this.id = id;
-	}
-	
+    /**
+     * Constructor with id
+     * 
+     * @param id
+     */
+    public UserClientUserClientTeamRole(Long id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "bigint")
@@ -44,22 +41,16 @@ public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_client_team_role_id", nullable = false, columnDefinition = "bigint",
-        foreignKey = @ForeignKey(name = "fk_user_client_user_client_team_role_role")
-    )
+    @JoinColumn(name = "user_client_team_role_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_user_client_user_client_team_role_role"))
     private UserClientTeamRole userClientTeamRole;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "client_team_id", nullable = false, columnDefinition = "bigint",
-        foreignKey = @ForeignKey(name = "fk_user_client_client_team")
-    )
+    @JoinColumn(name = "client_team_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_user_client_client_team"))
     private Team team;
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "users_id", nullable = false, columnDefinition = "bigint",
-        foreignKey = @ForeignKey(name = "fk_user_client_user_client_team_role_users")
-    )
+    @JoinColumn(name = "users_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_user_client_user_client_team_role_users"))
     private UserClient userClient;
 
     public Long getId() {
@@ -96,8 +87,10 @@ public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         UserClientUserClientTeamRole that = (UserClientUserClientTeamRole) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }
@@ -109,11 +102,8 @@ public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
     @Override
     public String toString() {
-        return "UserClientUserClientTeamRole{" +
-            "id=" + id +
-            ", userClientTeamRole=" + userClientTeamRole +
-            ", team=" + team +
-            ", userClient=" + userClient +
-            '}';
+        return "UserClientUserClientTeamRole{" + "id=" + id
+                + ", userClientTeamRole=" + userClientTeamRole + ", team="
+                + team + ", userClient=" + userClient + '}';
     }
 }

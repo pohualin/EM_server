@@ -12,13 +12,18 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * Creates a UserClientRoleResource from a UserClientRole
  */
 @Component
-public class UserClientRoleResourceAssembler implements ResourceAssembler<UserClientRole, UserClientRoleResource>{
+public class UserClientRoleResourceAssembler implements
+        ResourceAssembler<UserClientRole, UserClientRoleResource> {
 
     @Override
     public UserClientRoleResource toResource(UserClientRole entity) {
         UserClientRoleResource ret = new UserClientRoleResource(entity);
-        ret.add(linkTo(methodOn(ClientRolesAdminResource.class).get(entity.getId())).withSelfRel());
-        ret.add(linkTo(methodOn(ClientRolesAdminResource.class).rolePermissions(entity.getId())).withRel("permissions"));
+        ret.add(linkTo(
+                methodOn(ClientRolesAdminResource.class).get(entity.getId()))
+                .withSelfRel());
+        ret.add(linkTo(
+                methodOn(ClientRolesAdminResource.class).rolePermissions(
+                        entity.getId())).withRel("permissions"));
         return ret;
     }
 }

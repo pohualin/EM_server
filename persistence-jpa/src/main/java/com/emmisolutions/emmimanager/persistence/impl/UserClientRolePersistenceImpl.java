@@ -37,11 +37,13 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
 
     @Override
     public UserClientRole save(UserClientRole userClientRole) {
-        if (userClientRole == null){
-            throw new InvalidDataAccessApiUsageException("UserClientRole cannot be null");
+        if (userClientRole == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "UserClientRole cannot be null");
         }
         // reload the type because the version may have changed
-        userClientRole.setType(userClientReferenceRolePersistence.reload(userClientRole.getType()));
+        userClientRole.setType(userClientReferenceRolePersistence
+                .reload(userClientRole.getType()));
         return userClientRoleRepository.save(userClientRole);
     }
 
@@ -64,11 +66,13 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
     }
 
     @Override
-    public Set<UserClientPermission> permissionsFor(UserClientRole userClientRole) {
+    public Set<UserClientPermission> permissionsFor(
+            UserClientRole userClientRole) {
         if (userClientRole == null || userClientRole.getId() == null) {
             return new HashSet<>();
         }
-        return userClientPermissionRepository.findAllByUserClientRolesId(userClientRole.getId());
+        return userClientPermissionRepository
+                .findAllByUserClientRolesId(userClientRole.getId());
     }
 
 }
