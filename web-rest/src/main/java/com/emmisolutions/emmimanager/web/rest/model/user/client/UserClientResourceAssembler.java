@@ -1,13 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
-import com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientUserClientTeamRoleResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource;
 
 /**
  * Creates a UserClientResource from a UserClient
@@ -25,6 +27,10 @@ public class UserClientResourceAssembler implements
                 methodOn(UserClientUserClientRolesResource.class)
                         .getUserClientUserClientRoles(entity.getId(), null,
                                 null, null)).withRel("userClientRoles"));
+        ret.add(UserClientUserClientTeamRoleResourceAssembler
+                .createPossibleTeamsLink(entity));
+        ret.add(UserClientUserClientTeamRoleResourceAssembler
+                .createGetUserClientUserClientTeamRolesLink(entity));
         ret.setEntity(entity);
         return ret;
     }

@@ -1,11 +1,10 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
-import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+
+import java.util.HashSet;
+import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
@@ -19,10 +18,24 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
-import javax.annotation.Resource;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
 
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * Root integration test harness
@@ -56,10 +69,14 @@ public abstract class BaseIntegrationTest {
     @Resource
     UserClientRoleService userClientRoleService;
 
+    @Resource
+    UserClientTeamRoleService userClientTeamRoleService;
+
     /**
      * Login as a user
      *
-     * @param login to login as
+     * @param login
+     *            to login as
      */
     protected void login(String login) {
         SecurityContextHolder.getContext().setAuthentication(
@@ -69,7 +86,8 @@ public abstract class BaseIntegrationTest {
     /**
      * Makes a UserDetails object with authorities
      *
-     * @param login to use
+     * @param login
+     *            to use
      */
     protected void login(String login, List<GrantedAuthority> authorityList) {
         SecurityContextHolder.getContext().setAuthentication(
@@ -137,17 +155,24 @@ public abstract class BaseIntegrationTest {
      *
      * @return random team
      */
-    protected Team makeNewRandomTeam() {
+    protected Team makeNewRandomTeam(Client client) {
         Team team = new Team();
-        team.setName(RandomStringUtils.randomAlphabetic(50));
+        team.setName("a" + RandomStringUtils.randomAlphabetic(49));
         team.setDescription(RandomStringUtils.randomAlphabetic(50));
-        team.setActive(false);
-        team.setClient(makeNewRandomClient());
+        team.setActive(true);
+        team.setClient(client != null ? client : makeNewRandomClient());
         team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
                 .randomAlphanumeric(18)));
         return teamService.create(team);
     }
 
+    /**
+     * Create a brand new UserClientRole with given client
+     * 
+     * @param client
+     *            to use
+     * @return random UserClientRole
+     */
     protected UserClientRole makeNewRandomUserClientRole(Client client) {
         if (client == null) {
             client = makeNewRandomClient();
@@ -155,6 +180,22 @@ public abstract class BaseIntegrationTest {
         UserClientRole userClientRole = new UserClientRole(
                 RandomStringUtils.randomAlphabetic(10), client, null);
         return userClientRoleService.create(userClientRole);
+    }
+
+    /**
+     * Create a brand new UserClientTeamRole with given client
+     * 
+     * @param client
+     *            to use
+     * @return random UserClientTeamRole
+     */
+    protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
+        if (client == null) {
+            client = makeNewRandomClient();
+        }
+        UserClientTeamRole userClientTeamRole = new UserClientTeamRole(
+                RandomStringUtils.randomAlphabetic(10), client, null);
+        return userClientTeamRoleService.create(userClientTeamRole);
     }
 
     /**

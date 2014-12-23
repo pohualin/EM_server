@@ -13,7 +13,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * A Page of UserClientRoleResource objects
  */
-public class UserClientRoleResourcePage extends PagedResource<UserClientRoleResource> {
+public class UserClientRoleResourcePage extends
+        PagedResource<UserClientRoleResource> {
 
     public UserClientRoleResourcePage() {
     }
@@ -21,27 +22,41 @@ public class UserClientRoleResourcePage extends PagedResource<UserClientRoleReso
     /**
      * Wrapped constructor
      *
-     * @param userClientRoleResource to be wrapped
-     * @param userClientRolePage     the raw response
+     * @param userClientRoleResource
+     *            to be wrapped
+     * @param userClientRolePage
+     *            the raw response
      */
-    public UserClientRoleResourcePage(PagedResources<UserClientRoleResource> userClientRoleResource, Page<UserClientRole> userClientRolePage) {
+    public UserClientRoleResourcePage(
+            PagedResources<UserClientRoleResource> userClientRoleResource,
+            Page<UserClientRole> userClientRolePage) {
         pageDefaults(userClientRoleResource, userClientRolePage);
     }
 
     /**
      * Create the search link
      *
-     * @param client to load for
+     * @param client
+     *            to load for
      * @return Link for roles on a client
-     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientRolesAdminResource#clientRoles(Long, org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler)
+     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientRolesAdminResource#clientRoles(Long,
+     *      org.springframework.data.domain.Pageable,
+     *      org.springframework.data.web.PagedResourcesAssembler)
      */
     public static Link createFullSearchLink(Client client) {
-        Link link = linkTo(methodOn(ClientRolesAdminResource.class).clientRoles(client.getId(), null, null)).withRel("roles");
+        Link link = linkTo(
+                methodOn(ClientRolesAdminResource.class).clientRoles(
+                        client.getId(), null, null)).withRel("roles");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
-            .with(new TemplateVariables(
-                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+                .with(new TemplateVariables(
+                        new TemplateVariable("page",
+                                TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable(
+                                "size",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(
+                                "sort",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 

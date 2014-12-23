@@ -161,8 +161,9 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         UserClient userClientNull = userClientPersistence.reload(null);
         assertThat("return null", userClientNull, is(nullValue()));
 
-        assertThat("reload same UserClient object", userClientPersistence.reload(userClient
-                .getId()), is(userClient));
+        assertThat("reload same UserClient object",
+                userClientPersistence.reload(userClient.getId()),
+                is(userClient));
     }
 
     /**
@@ -219,25 +220,25 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
                 userClientPersistence.findConflictingUsers(steveMatt),
                 hasItems(steve, matt));
 
-        assertThat("no one conflicts with blanky",
-                userClientPersistence.findConflictingUsers(new UserClient()).isEmpty(),
-                is(true));
+        assertThat("no one conflicts with blanky", userClientPersistence
+                .findConflictingUsers(new UserClient()).isEmpty(), is(true));
 
-        assertThat("no one conflicts with null",
-                userClientPersistence.findConflictingUsers(null).isEmpty(),
-                is(true));
+        assertThat("no one conflicts with null", userClientPersistence
+                .findConflictingUsers(null).isEmpty(), is(true));
 
         assertThat("email should conflict steve",
-                userClientPersistence.findConflictingUsers(new UserClient() {{
-                    setEmail("steve@blipso.org");
-                }}),
-                hasItem(steve));
+                userClientPersistence.findConflictingUsers(new UserClient() {
+                    {
+                        setEmail("steve@blipso.org");
+                    }
+                }), hasItem(steve));
 
         assertThat("login should conflict with matt",
-                userClientPersistence.findConflictingUsers(new UserClient() {{
-                    setLogin("matt");
-                }}),
-                hasItem(matt));
+                userClientPersistence.findConflictingUsers(new UserClient() {
+                    {
+                        setLogin("matt");
+                    }
+                }), hasItem(matt));
 
         assertThat("matt should not conflict with itself",
                 userClientPersistence.findConflictingUsers(matt).isEmpty(),

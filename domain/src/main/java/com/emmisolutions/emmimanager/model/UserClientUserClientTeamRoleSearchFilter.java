@@ -5,62 +5,82 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+
 /**
  * The search filter for UserClient entities
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserClientSearchFilter {
+public class UserClientUserClientTeamRoleSearchFilter {
 
     private String term;
 
     private StatusFilter status;
 
-    private Long clientId;
+    private UserClient userClient;
 
     /**
-     * constructor
+     * Default constructor
      */
-    public UserClientSearchFilter() {
+    public UserClientUserClientTeamRoleSearchFilter() {
         this.status = StatusFilter.ALL;
     }
 
     /**
-     * all status plus passed term
+     * Constructor with passed in userClient and search term
      * 
+     * @param userClient
+     *            to use
+     * @param term
+     *            to search
      */
-    public UserClientSearchFilter(Long clientId, String term) {
-        this(clientId, StatusFilter.ALL, term);
+    public UserClientUserClientTeamRoleSearchFilter(UserClient userClient,
+            String term) {
+        this(userClient, StatusFilter.ALL, term);
     }
 
     /**
-     * constructor
+     * Constructor with passed in userClient, status and search term
      * 
+     * @param userClient
+     *            to use
      * @param status
      *            to filter
      * @param term
-     *            to filter
+     *            to search
      */
-    public UserClientSearchFilter(Long clientId, StatusFilter status,
-            String term) {
-        this.clientId = clientId;
+    public UserClientUserClientTeamRoleSearchFilter(UserClient userClient,
+            StatusFilter status, String term) {
+        this.userClient = userClient;
         this.term = term;
         this.status = status;
     }
 
+    /**
+     * Return term
+     * 
+     * @return term
+     */
     public String getTerm() {
         return term;
     }
 
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
-
+    /**
+     * Return status
+     * 
+     * @return status
+     */
     public StatusFilter getStatus() {
         return status;
+    }
+
+    /**
+     * Return userClient
+     * 
+     * @return userClient
+     */
+    public UserClient getUserClient() {
+        return userClient;
     }
 
     /**
@@ -79,7 +99,7 @@ public class UserClientSearchFilter {
         public static StatusFilter fromStringOrActive(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {
-                    if (statusFilter.toString().equals(status.toUpperCase())) {
+                    if (statusFilter.toString().equalsIgnoreCase(status)) {
                         return statusFilter;
                     }
                 }

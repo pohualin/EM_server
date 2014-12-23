@@ -4,7 +4,9 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -47,15 +49,20 @@ public abstract class BaseIntegrationTest {
     UserClientRolePersistence userClientRolePersistence;
 
     @Resource
+    UserClientTeamRolePersistence userClientTeamRolePersistence;
+
+    @Resource
     UserClientPersistence userClientPersistence;
 
     /**
      * Login as a user
      *
-     * @param login to login as
+     * @param login
+     *            to login as
      */
     protected void login(String login) {
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(login, "******"));
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(login, "******"));
     }
 
     /**
@@ -80,7 +87,8 @@ public abstract class BaseIntegrationTest {
         client.setType(new ClientType(1l));
         client.setActive(true);
         client.setContractOwner(makeNewRandomUserAdmin());
-        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils
+                .randomAlphanumeric(18)));
         return clientPersistence.save(client);
     }
 
@@ -94,7 +102,8 @@ public abstract class BaseIntegrationTest {
         team.setName(RandomStringUtils.randomAlphanumeric(100));
         team.setClient(makeNewRandomClient());
         team.setActive(true);
-        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
+                .randomAlphanumeric(18)));
         team.setDescription(RandomStringUtils.randomAlphabetic(255));
         return teamPersistence.save(team);
     }
@@ -150,8 +159,22 @@ public abstract class BaseIntegrationTest {
         if (client == null) {
             client = makeNewRandomClient();
         }
-        UserClientRole userClientRole = new UserClientRole(RandomStringUtils.randomAlphabetic(10), client, null);
+        UserClientRole userClientRole = new UserClientRole(
+                RandomStringUtils.randomAlphabetic(10), client, null);
         return userClientRolePersistence.save(userClientRole);
+    }
+
+    /**
+     * Create a random UserClientTeamRole
+     */
+    protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
+        if (client == null) {
+            client = makeNewRandomClient();
+        }
+        UserClientTeamRole userClientTeamRole = new UserClientTeamRole();
+        userClientTeamRole.setName(RandomStringUtils.randomAlphabetic(50));
+        userClientTeamRole.setClient(client);
+        return userClientTeamRolePersistence.save(userClientTeamRole);
     }
 
     /**
@@ -160,9 +183,9 @@ public abstract class BaseIntegrationTest {
      * @return a UserAdmin
      */
     protected UserAdmin makeNewRandomUserAdmin() {
-        UserAdmin userAdmin = new UserAdmin(RandomStringUtils
-                .randomAlphabetic(255), RandomStringUtils
-                .randomAlphanumeric(100));
+        UserAdmin userAdmin = new UserAdmin(
+                RandomStringUtils.randomAlphabetic(255),
+                RandomStringUtils.randomAlphanumeric(100));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(50));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(50));
         return userPersistence.saveOrUpdate(userAdmin);
