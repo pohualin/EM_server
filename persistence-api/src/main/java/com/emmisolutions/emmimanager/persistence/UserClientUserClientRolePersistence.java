@@ -19,7 +19,7 @@ public interface UserClientUserClientRolePersistence {
      * @return the saved UserClientUserClientRole
      */
     UserClientUserClientRole saveOrUpdate(
-	    UserClientUserClientRole userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole);
 
     /**
      * @param userClient
@@ -29,7 +29,7 @@ public interface UserClientUserClientRolePersistence {
      * @return a page of UserClientUserClientRole having UserClient
      */
     Page<UserClientUserClientRole> findByUserClient(UserClient userClient,
-	    Pageable pageable);
+            Pageable pageable);
 
     /**
      * Find the UserClientUserClientRole by userClientUserClientId

@@ -20,7 +20,7 @@ import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
  */
 @Service
 public class UserClientUserClientRoleServiceImpl implements
-	UserClientUserClientRoleService {
+        UserClientUserClientRoleService {
 
     @Resource
     UserClientService userClientService;
@@ -34,44 +34,44 @@ public class UserClientUserClientRoleServiceImpl implements
     @Override
     @Transactional
     public UserClientUserClientRole create(
-	    UserClientUserClientRole userClientUserClientRole) {
-	userClientUserClientRole.setUserClient(userClientService
-		.reload(userClientUserClientRole.getUserClient()));
-	userClientUserClientRole.setUserClientRole(userClientRoleService
-		.reload(userClientUserClientRole.getUserClientRole()));
-	return userClientUserClientRolePersistence
-		.saveOrUpdate(userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole) {
+        userClientUserClientRole.setUserClient(userClientService
+                .reload(userClientUserClientRole.getUserClient()));
+        userClientUserClientRole.setUserClientRole(userClientRoleService
+                .reload(userClientUserClientRole.getUserClientRole()));
+        return userClientUserClientRolePersistence
+                .saveOrUpdate(userClientUserClientRole);
     }
 
     @Override
     @Transactional
     public Page<UserClientUserClientRole> findByUserClient(
-	    UserClient userClient, Pageable pageable) {
-	userClient = userClientService.reload(userClient);
-	return userClientUserClientRolePersistence.findByUserClient(userClient,
-		pageable);
+            UserClient userClient, Pageable pageable) {
+        userClient = userClientService.reload(userClient);
+        return userClientUserClientRolePersistence.findByUserClient(userClient,
+                pageable);
     }
 
     @Override
     @Transactional
     public UserClientUserClientRole reload(
-	    UserClientUserClientRole userClientUserClientRole) {
-	if (userClientUserClientRole == null
-		|| userClientUserClientRole.getId() == null) {
-	    return null;
-	}
-	return userClientUserClientRolePersistence
-		.reload(userClientUserClientRole.getId());
+            UserClientUserClientRole userClientUserClientRole) {
+        if (userClientUserClientRole == null
+                || userClientUserClientRole.getId() == null) {
+            return null;
+        }
+        return userClientUserClientRolePersistence
+                .reload(userClientUserClientRole.getId());
     }
 
     @Override
     @Transactional
     public void delete(UserClientUserClientRole userClientUserClientRole) {
-	if (userClientUserClientRole != null
-		&& userClientUserClientRole.getId() != null) {
-	    userClientUserClientRolePersistence.delete(userClientUserClientRole
-		    .getId());
-	}
+        if (userClientUserClientRole != null
+                && userClientUserClientRole.getId() != null) {
+            userClientUserClientRolePersistence.delete(userClientUserClientRole
+                    .getId());
+        }
     }
 
 }

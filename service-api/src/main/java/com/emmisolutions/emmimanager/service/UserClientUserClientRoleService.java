@@ -20,7 +20,7 @@ public interface UserClientUserClientRoleService {
      * @return the created UserClientUserClientRole
      */
     UserClientUserClientRole create(
-	    UserClientUserClientRole userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole);
 
     /**
      * @param userClient
@@ -30,7 +30,7 @@ public interface UserClientUserClientRoleService {
      * @return a page of UserClientUserClientRole having passed in userClientId
      */
     Page<UserClientUserClientRole> findByUserClient(UserClient userClient,
-	    Pageable pageable);
+            Pageable pageable);
 
     /**
      * Reload an userClientUserClientRole with passed in primary key
@@ -40,7 +40,7 @@ public interface UserClientUserClientRoleService {
      * @return one UserClientUserClientRole
      */
     UserClientUserClientRole reload(
-	    UserClientUserClientRole userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole);
 
     /**
      * Delete an userClientUserClientRole

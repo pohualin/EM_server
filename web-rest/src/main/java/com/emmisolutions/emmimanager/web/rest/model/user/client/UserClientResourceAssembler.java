@@ -16,22 +16,22 @@ import com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource;
  */
 @Component
 public class UserClientResourceAssembler implements
-		ResourceAssembler<UserClient, UserClientResource> {
+        ResourceAssembler<UserClient, UserClientResource> {
 
-	@Override
-	public UserClientResource toResource(UserClient entity) {
-		UserClientResource ret = new UserClientResource();
-		ret.add(linkTo(methodOn(UserClientsResource.class).get(entity.getId()))
-				.withSelfRel());
-		ret.add(linkTo(
-				methodOn(UserClientUserClientRolesResource.class)
-						.getUserClientUserClientRoles(entity.getId(), null,
-								null, null)).withRel("userClientRoles"));
-		ret.add(UserClientUserClientTeamRoleResourceAssembler
-				.createPossibleTeamsLink(entity));
-		ret.add(UserClientUserClientTeamRoleResourceAssembler
-				.createGetUserClientUserClientTeamRolesLink(entity));
-		ret.setEntity(entity);
-		return ret;
-	}
+    @Override
+    public UserClientResource toResource(UserClient entity) {
+        UserClientResource ret = new UserClientResource();
+        ret.add(linkTo(methodOn(UserClientsResource.class).get(entity.getId()))
+                .withSelfRel());
+        ret.add(linkTo(
+                methodOn(UserClientUserClientRolesResource.class)
+                        .getUserClientUserClientRoles(entity.getId(), null,
+                                null, null)).withRel("userClientRoles"));
+        ret.add(UserClientUserClientTeamRoleResourceAssembler
+                .createPossibleTeamsLink(entity));
+        ret.add(UserClientUserClientTeamRoleResourceAssembler
+                .createGetUserClientUserClientTeamRolesLink(entity));
+        ret.setEntity(entity);
+        return ret;
+    }
 }
