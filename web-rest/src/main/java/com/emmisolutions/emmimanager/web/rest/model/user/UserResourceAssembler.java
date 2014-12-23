@@ -5,7 +5,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
@@ -39,10 +42,12 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
 
     @Override
     public UserResource toResource(UserAdmin user) {
-        List<UserAdminPermissionName> roles = new ArrayList<>();
+        List<UserAdminPermissionName> perms = new ArrayList<>();
+        Set<UserAdminRole> roles = new HashSet<UserAdminRole>();
         for (UserAdminUserAdminRole role : user.getRoles()) {
+        	roles.add(role.getUserAdminRole());
             for (UserAdminPermission permission : role.getUserAdminRole().getPermissions()) {
-                roles.add(permission.getName());
+            	perms.add(permission.getName());
             }
         }
         UserResource ret = new UserResource(
@@ -53,7 +58,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
             user.getLastName(),
             user.getEmail(),
             user.isActive(),
-            roles);
+            perms, roles);
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
         ret.add(createClientByIdLink());

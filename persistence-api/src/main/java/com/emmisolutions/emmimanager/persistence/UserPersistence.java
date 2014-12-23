@@ -1,11 +1,15 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 
 /**
  * User persistence interface.
@@ -66,4 +70,19 @@ public interface UserPersistence {
      * @return PAge<UserAdminRole> or null
      */
 	Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable);
+
+    /**
+     * Deletes all UserAdminUserAdminRoleRepository for a give userAdmin
+     *
+     * @param userAdmin to delete
+     */
+	long removeAllAdminRoleByUserAdmin(UserAdmin user);
+
+	/**
+	 * Saves the useradmin useradminrole set
+	 * @param userAdminUserAdminRole
+	 * @return
+	 */
+	Set<UserAdminUserAdminRole> saveAll(
+			Set<UserAdminUserAdminRole> userAdminUserAdminRole);
 }

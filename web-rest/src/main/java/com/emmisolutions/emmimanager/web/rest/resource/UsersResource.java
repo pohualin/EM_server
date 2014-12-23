@@ -167,7 +167,7 @@ public class UsersResource {
         toFind.setId(id);
         toFind = userService.reload(toFind);
         if (toFind != null) {
-            return new ResponseEntity<>(userAdminResourceAssembler.toResource(toFind), HttpStatus.OK);
+            return new ResponseEntity<>(userResourceAssembler.toResource(toFind), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

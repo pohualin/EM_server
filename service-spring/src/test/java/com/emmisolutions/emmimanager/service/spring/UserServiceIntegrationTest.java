@@ -77,7 +77,11 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         
         UserAdmin user1 = userService.reload(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
-     
+
+        assertThat("the users roles saved", user1.getRoles().size(), is(1));
+
+        user = userService.save(req); //execute again just to verify that is deleting the previous roles
+        
         UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "firstName1");
         Page<UserAdmin> users = userService.list(null, filter);
         

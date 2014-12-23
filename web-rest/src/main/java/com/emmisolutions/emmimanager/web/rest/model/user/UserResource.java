@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,8 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -39,6 +40,8 @@ public class UserResource extends ResourceSupport {
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
     private List<UserAdminPermissionName> permissions;
+      
+    private Set<UserAdminRole> roles;
 
     public UserResource() {
     }
@@ -53,8 +56,9 @@ public class UserResource extends ResourceSupport {
      * @param lastName    last name
      * @param email       email
      * @param permissions permissions
+     * @param roles		  roles
      */
-    public UserResource(Long id, Integer version, String login, String firstName, String lastName, String email, boolean active, List<UserAdminPermissionName> permissions) {
+    public UserResource(Long id, Integer version, String login, String firstName, String lastName, String email, boolean active, List<UserAdminPermissionName> permissions, Set<UserAdminRole> roles) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -63,6 +67,7 @@ public class UserResource extends ResourceSupport {
         this.email = email;
         this.active = active;
         this.permissions = permissions;
+        this.roles = roles;
     }
 
     /**

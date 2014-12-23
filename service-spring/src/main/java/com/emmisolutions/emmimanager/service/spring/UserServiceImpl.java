@@ -51,9 +51,13 @@ public class UserServiceImpl implements UserService {
     	}	
     	
     	UserAdmin user = req.getUserAdmin();
-    	user.setRoles(roles);
-    	
-        return userPersistence.saveOrUpdate(user);
+    	user = userPersistence.saveOrUpdate(user);
+    	if (roles.size() > 0){
+    		userPersistence.removeAllAdminRoleByUserAdmin(user);
+    		userPersistence.saveAll(roles);
+    		user.setRoles(roles);
+    	}
+        return user;
     }
 
     @Override
@@ -68,7 +72,8 @@ public class UserServiceImpl implements UserService {
         if (user == null || user.getId() == null) {
             return null;
         }
-        return userPersistence.reload(user);
+        user = userPersistence.reload(user);
+        return userPersistence.fetchUserWillFullPermissions(user.getLogin());
     }
  
     /**
