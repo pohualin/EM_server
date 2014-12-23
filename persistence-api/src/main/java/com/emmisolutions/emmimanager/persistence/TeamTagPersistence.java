@@ -61,6 +61,15 @@ public interface TeamTagPersistence {
     long removeTeamTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep);
 
     /**
+     * select all teams that do not have teamtags
+     *
+     * @param clientId to use
+     * @param page pag object to use
+     * @return teams
+     */
+    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId);
+
+    /**
      * Find TeamTags with tag
      *
      * @param teamTagSearchFilter to check tags against
