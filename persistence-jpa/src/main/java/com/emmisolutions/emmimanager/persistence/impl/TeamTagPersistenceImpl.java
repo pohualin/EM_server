@@ -100,7 +100,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
             if (page == null) {
                 // default pagination request if none
                 Pageable newPage = new PageRequest(0, 50, Sort.Direction.ASC, "id");
-                teamTagRepository.findTeamsWithNoTeamTags(clientId, newPage);
+                return teamTagRepository.findTeamsWithNoTeamTags(clientId, newPage);
             }
             return teamTagRepository.findTeamsWithNoTeamTags(clientId, page);
         }
