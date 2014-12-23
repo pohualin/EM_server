@@ -15,6 +15,7 @@ import org.springframework.hateoas.UriTemplate;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 
 /**
  * A HATEOAS wrapper for a page of UserResource objects.
@@ -48,4 +49,19 @@ public class UserPage extends PagedResource<UserResource> {
         return new Link(uriTemplate, link.getRel());
     }
 
+    /**
+     * Creates link used to find users
+     *
+     */
+    public static Link createFullSearchLink() {
+        Link link = linkTo(methodOn(UsersResource.class).list(null, null, null, null)).withRel("users");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("term", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
 }

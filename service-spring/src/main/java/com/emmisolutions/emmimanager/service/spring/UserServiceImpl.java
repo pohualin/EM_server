@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.UserService;
@@ -43,16 +42,10 @@ public class UserServiceImpl implements UserService {
     public UserAdmin loggedIn() {
         return userPersistence.fetchUserWillFullPermissions(securityUtils.getCurrentLogin());
     }
-      
-    @Override
-    @Transactional
-    public User create(User user) {
-        return userPersistence.saveOrUpdate(user);
-    }
 
     @Override
     @Transactional
-    public User reload(User user) {
+    public UserAdmin reload(UserAdmin user) {
         if (user == null || user.getId() == null) {
             return null;
         }
@@ -66,7 +59,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<User> list(Pageable page, UserSearchFilter userSearchFilter) {
+    public Page<UserAdmin> list(Pageable page, UserSearchFilter userSearchFilter) {
         return userPersistence.list(page, userSearchFilter);
     }        
 }

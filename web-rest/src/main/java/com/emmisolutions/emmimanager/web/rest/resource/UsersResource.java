@@ -8,11 +8,9 @@ import javax.annotation.security.RolesAllowed;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,10 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
-import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.UserService;
-import com.emmisolutions.emmimanager.web.rest.model.user.SimpleUserPage;
-import com.emmisolutions.emmimanager.web.rest.model.user.SimpleUserResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.model.user.UserPage;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserResource;
 import com.emmisolutions.emmimanager.web.rest.model.user.UserResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
@@ -48,9 +45,6 @@ public class UsersResource {
     @Resource
     UserResourceAssembler userResourceAssembler;
 
-    @Resource
-    SimpleUserResourceAssembler simpleUserResourceAssembler;
-    
     /**
      * GET to retrieve authenticated user
      *
@@ -79,19 +73,19 @@ public class UsersResource {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")})
-    public ResponseEntity<SimpleUserPage> list(
+    public ResponseEntity<UserPage> list(
             @PageableDefault(size = 10, sort = "lastName", direction = Direction.ASC) Pageable pageable,
-            PagedResourcesAssembler<User> assembler,
+            PagedResourcesAssembler<UserAdmin> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "term", required = false) String term) {
 
         UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.fromStringOrActive(status) , term);
 
-        Page<User> users = userService.list(pageable, filter);
+        Page<UserAdmin> users = userService.list(pageable, filter);
 
         if (users.hasContent()) {
             // create a ClientPage containing the response
-            return new ResponseEntity<>(new SimpleUserPage(assembler.toResource(users, simpleUserResourceAssembler), users),
+            return new ResponseEntity<>(new UserPage(assembler.toResource(users, userResourceAssembler), users),
                     HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -108,13 +102,13 @@ public class UsersResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
-    public ResponseEntity<UserResource> createUser(@RequestBody User user) {
+    public ResponseEntity<UserResource> createUser(@RequestBody UserAdmin user) {
 
-    	User savedUser = userService.create(user);
+    	UserAdmin savedUser = userService.save(user);
         if (savedUser != null) {
             // created a user client successfully
             return new ResponseEntity<>(
-            		simpleUserResourceAssembler.toResource(user),
+            		userResourceAssembler.toResource(user),
                     HttpStatus.CREATED);
         } else {
             // error creating user client
@@ -132,13 +126,13 @@ public class UsersResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
-    public ResponseEntity<UserResource> updateUser(@RequestBody User user) {
+    public ResponseEntity<UserResource> updateUser(@RequestBody UserAdmin user) {
 
-    	User savedUser = userService.create(user);
+    	UserAdmin savedUser = userService.save(user);
         if (savedUser != null) {
             // created a user client successfully
             return new ResponseEntity<>(
-            		simpleUserResourceAssembler.toResource(user),
+            		userResourceAssembler.toResource(user),
                     HttpStatus.CREATED);
         } else {
             // error creating user client
@@ -155,12 +149,12 @@ public class UsersResource {
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
     "PERM_CREATE_NEW_USER"})
-    public ResponseEntity<UserResource> get (@PathVariable("id") Long id) {
-        User toFind = new User();
+    public ResponseEntity<UserResource> get(@PathVariable("id") Long id) {
+        UserAdmin toFind = new UserAdmin();
         toFind.setId(id);
         toFind = userService.reload(toFind);
         if (toFind != null) {
-            return new ResponseEntity<>(simpleUserResourceAssembler.toResource(toFind), HttpStatus.OK);
+            return new ResponseEntity<>(userResourceAssembler.toResource(toFind), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

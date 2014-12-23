@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.*;
-import com.emmisolutions.emmimanager.model.user.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,11 +30,10 @@ public class UserSpecifications {
 	 *            carriers search term
 	 * @return Specification with search term
 	 */
-	public Specification<User> hasNames(
-			final UserSearchFilter filter) {
-		return new Specification<User>() {
+	public Specification<UserAdmin> hasNames(final UserSearchFilter filter) {
+		return new Specification<UserAdmin>() {
 			@Override
-			public Predicate toPredicate(Root<User> root,
+			public Predicate toPredicate(Root<UserAdmin> root,
 					CriteriaQuery<?> query, CriteriaBuilder cb) {
 				if (filter != null && StringUtils.isNotBlank(filter.getTerm())) {
 					List<String> searchTerms = new ArrayList<>();
@@ -52,7 +49,7 @@ public class UserSpecifications {
 					List<Predicate> andClause = new ArrayList<>();
 					for (String searchTerm : searchTerms) {
 						andClause.add(cb.like(
-								root.get(User_.normalizedName), "%"
+								root.get(UserAdmin_.normalizedName), "%"
 										+ searchTerm + "%"));
 					}
 					return cb.and(andClause.toArray(new Predicate[andClause
@@ -62,20 +59,25 @@ public class UserSpecifications {
 			}
 		};
 	}
-	
-    /**
-     * Filter to ensure User is a contract owner
-     *
-     * @return the specification as a filter predicate
-     */
-    public Specification<UserAdmin> isContractOwner() {
 
-        return new Specification<UserAdmin>() {
-            @Override
-            public Predicate toPredicate(Root<UserAdmin> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Join<UserAdminRole, UserAdminPermission> permissions = root.join(UserAdmin_.roles).join(UserAdminUserAdminRole_.userAdminRole).join(UserAdminRole_.permissions);
-                return cb.equal(permissions.get(UserAdminPermission_.name), PERM_ADMIN_CONTRACT_OWNER);
-            }
-        };
-    }
+	/**
+	 * Filter to ensure User is a contract owner
+	 *
+	 * @return the specification as a filter predicate
+	 */
+	public Specification<UserAdmin> isContractOwner() {
+
+		return new Specification<UserAdmin>() {
+			@Override
+			public Predicate toPredicate(Root<UserAdmin> root,
+					CriteriaQuery<?> query, CriteriaBuilder cb) {
+				Join<UserAdminRole, UserAdminPermission> permissions = root
+						.join(UserAdmin_.roles)
+						.join(UserAdminUserAdminRole_.userAdminRole)
+						.join(UserAdminRole_.permissions);
+				return cb.equal(permissions.get(UserAdminPermission_.name),
+						PERM_ADMIN_CONTRACT_OWNER);
+			}
+		};
+	}
 }

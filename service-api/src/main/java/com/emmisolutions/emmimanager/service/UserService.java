@@ -28,20 +28,12 @@ public interface UserService {
     UserAdmin loggedIn();
 
     /**
-     * Creates a new user 
-     *
-     * @param user to save
-     * @return the saved user
-     */
-	User create(User user);
-
-    /**
      * Reloads a User from persistent storage
      *
      * @param user to reload
      * @return the reloaded user
      */
-	User reload(User user);
+	UserAdmin reload(UserAdmin user);
 	
     /**
      * Get a page of user objects.
@@ -50,6 +42,6 @@ public interface UserService {
      * @param userSearchFilter filtered by
      * @return a page of users objects
      */
-	Page<User> list(Pageable page, UserSearchFilter userSearchFilter);
+	Page<UserAdmin> list(Pageable page, UserSearchFilter userSearchFilter);
 
 }

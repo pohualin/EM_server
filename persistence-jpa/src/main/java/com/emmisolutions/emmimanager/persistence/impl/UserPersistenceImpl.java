@@ -12,13 +12,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.UserSearchFilter;
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
-import com.emmisolutions.emmimanager.persistence.repo.UserRepository;
 
 /**
  * Repo to deal with user persistence.
@@ -28,9 +26,6 @@ public class UserPersistenceImpl implements UserPersistence {
 
     @Resource
     UserAdminRepository userAdminRepository;
-
-    @Resource
-    UserRepository userRepository;
     
     @Resource
     UserSpecifications userSpecifications;
@@ -47,16 +42,6 @@ public class UserPersistenceImpl implements UserPersistence {
                 user.getEmail()));
         return userAdminRepository.save(user);
     }
-
-    @Override
-    public User saveOrUpdate(User user) {
-        user.setLogin(StringUtils.lowerCase(user.getLogin()));
-        user.setEmail(StringUtils.lowerCase(user.getEmail()));
-        user.setNormalizedName(matchCriteria.normalizedName(
-                user.getFirstName(), user.getLastName(), user.getLogin(),
-                user.getEmail()));
-        return userRepository.save(user);
-    }
     
     @Override
     public UserAdmin reload(String login) {
@@ -64,8 +49,8 @@ public class UserPersistenceImpl implements UserPersistence {
     }
 
     @Override
-    public User reload(User user) {
-        return userRepository.findOne(user.getId());
+    public UserAdmin reload(UserAdmin user) {
+        return userAdminRepository.findOne(user.getId());
     }
     
     @Override
@@ -84,11 +69,11 @@ public class UserPersistenceImpl implements UserPersistence {
     }
 
 	@Override
-	public Page<User> list(Pageable pageable, UserSearchFilter filter) {
+	public Page<UserAdmin> list(Pageable pageable, UserSearchFilter filter) {
         if (pageable == null) {
             pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
         }
-        return userRepository.findAll(
+        return userAdminRepository.findAll(
                 where(userSpecifications.hasNames(filter)), pageable);
    }
 }

@@ -61,38 +61,19 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         UserAdmin user1 = userAdminRepository.findOne(user.getId());
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
-        logout();
-
-    }
-    
-    @Test
-    public void testSimpleCreate() {
-    	login("some user");
-        User user = new User();
-        user.setLogin("claudio");
-        user.setPassword("clave");
-        user.setFirstName("firstName1");
-        user.setLastName("lastName1");
-        user.setActive(true);
-        user = userPersistence.saveOrUpdate(user);
-        assertThat(user.getId(), is(notNullValue()));
-        assertThat(user.getVersion(), is(notNullValue()));
-
-        User user1 = userRepository.findOne(user.getId());
-        assertThat("the users saved should be the same as the user fetched", user, is(user1));
-        assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
         
         UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "claudio");
-        Page<User> users = userPersistence.list(null, filter);
+        Page<UserAdmin> users = userPersistence.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));
         assertThat("the search user return values", users.getContent().size(), is(1) );
         
-        User findUser = users.getContent().iterator().next();
+        UserAdmin findUser = users.getContent().iterator().next();
         assertThat("the users returned is the same user saved", findUser, is(user1));
+
         logout();
     }
-
+    
     /**
      * save then reloadLocationUsingClient
      */
