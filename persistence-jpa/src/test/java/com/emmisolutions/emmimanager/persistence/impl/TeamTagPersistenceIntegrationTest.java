@@ -543,6 +543,30 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("nothing gets removed", teamTagPersistence.removeTeamTagsThatAreNotAssociatedWith(null, null), is(0l));
     }
 
+     /**
+     * return teams with no teamtags
+     */
+    @Test
+    public void getTeamsWithNoTeamTags() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 1);
+        Team team2 = createTeam(client1, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        Page<Team> returnedTeams= teamTagPersistence.findTeamsWithNoTeamTags(null,client1.getId());
+        assertThat("team2 was returned", returnedTeams, hasItem(team2));
+        assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
+    }
+
     private Team createTeam(Client client, int i) {
         Team team = new Team();
         team.setName("Test Team" + i + System.currentTimeMillis());

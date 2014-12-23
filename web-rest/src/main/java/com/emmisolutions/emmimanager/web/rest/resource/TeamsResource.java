@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.service.TeamTagService;
 import com.emmisolutions.emmimanager.web.rest.model.team.ReferenceData;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamResource;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +44,9 @@ public class TeamsResource {
 
     @Resource
     TeamResourceAssembler teamResourceAssembler;
+
+    @Resource
+    TeamTagService teamTagService;
 
     @Resource
     ClientService clientService;
@@ -220,6 +225,34 @@ public class TeamsResource {
         if (toFind != null) {
             return new ResponseEntity<>(
                 teamResourceAssembler.toResource(toFind), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
+     * GET teams with no teamtags
+     *
+     * @return List of Team objects or INTERNAL_SERVER_ERROR if the list is empty
+     */
+    @RequestMapping(value = "/clients/{clientId}/no-team-tags", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<TeamPage> teamsWithNoTeamTags(
+            @PathVariable("clientId") Long clientId,
+            @PageableDefault(size = 50) Pageable pageable,
+            @SortDefault(sort = "id") Sort sort,
+            PagedResourcesAssembler<Team> assembler) {
+
+        Page<Team> teamsWithNoTeamTagsPage = teamTagService.findTeamsWithNoTeamTags(null,clientId);
+        if (teamsWithNoTeamTagsPage.hasContent()) {
+            PagedResources<TeamResource> teamTagResourceSupports = assembler.toResource(teamsWithNoTeamTagsPage, teamResourceAssembler);
+            TeamPage teamTagPage1 = new TeamPage(teamTagResourceSupports, teamsWithNoTeamTagsPage,null);
+            return new ResponseEntity<>(teamTagPage1, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

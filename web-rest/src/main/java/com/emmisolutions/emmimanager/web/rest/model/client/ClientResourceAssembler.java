@@ -43,6 +43,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(UserClientTeamRoleResourcePage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(ClientTeamRolesAdminResource.class).referenceData()).withRel("teamRolesReferenceData"));
         ret.add(TeamTagPage.createFullSearchLinkTeamTagsWithTags(entity));
+        ret.add(TeamPage.createFullSearchLinkTeamsWithNoTeamTags(entity));
         ret.add(createFullUsersSearchLink(entity));
         ret.setEntity(entity);
         return ret;

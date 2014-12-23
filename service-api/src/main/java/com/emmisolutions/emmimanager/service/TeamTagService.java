@@ -65,4 +65,12 @@ public interface TeamTagService {
      * @return matching teamTags
      */
     Page<TeamTag> findTeamsWithTag(Pageable pageable, TeamTagSearchFilter teamTagSearchFilter);
+
+    /**
+     * select all teams that do not have teamtags
+     *
+     * @param forThisClientId to use
+     * @return teams
+     */
+    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId);
 }
