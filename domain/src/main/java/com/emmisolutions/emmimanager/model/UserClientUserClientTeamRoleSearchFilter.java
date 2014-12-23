@@ -99,8 +99,7 @@ public class UserClientUserClientTeamRoleSearchFilter {
         public static StatusFilter fromStringOrActive(String status) {
             if (StringUtils.isNotBlank(status)) {
                 for (StatusFilter statusFilter : values()) {
-                    status = status.toUpperCase();
-                    if (statusFilter.toString().equals(status)) {
+                    if (statusFilter.toString().equalsIgnoreCase(status)) {
                         return statusFilter;
                     }
                 }
