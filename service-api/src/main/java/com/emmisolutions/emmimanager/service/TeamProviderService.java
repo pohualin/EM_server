@@ -37,6 +37,15 @@ public interface TeamProviderService {
     Page<TeamProvider> findTeamProvidersByTeam(Pageable page, Team team);
 
     /**
+     * Find the teamProvider by given provider for a specific team
+     * @param page	the page specification
+     * @param provider	to find by
+     * @param team		to find by
+     * @return
+     */
+    TeamProvider findTeamProviderByProviderAndTeam(Pageable page, Provider provider, Team team);
+
+    /**
      * Deletes a team-provider
      *
      * @param provider to delete
