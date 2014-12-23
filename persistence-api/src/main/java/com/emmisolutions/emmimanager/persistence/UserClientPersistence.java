@@ -12,7 +12,6 @@ import java.util.Set;
  */
 public interface UserClientPersistence {
 
-
     /**
      * Reload a UserClient with userClientId
      *

@@ -59,6 +59,7 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
+    @Transactional
     public Page<UserClient> list(Pageable pageable,
                                  UserClientSearchFilter filter) {
         return userClientPersistence.list(pageable, filter);

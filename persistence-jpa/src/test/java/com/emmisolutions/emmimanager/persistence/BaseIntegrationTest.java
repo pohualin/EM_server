@@ -4,7 +4,9 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -45,6 +47,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     UserClientRolePersistence userClientRolePersistence;
+    
+    @Resource
+    UserClientTeamRolePersistence userClientTeamRolePersistence;
 
     @Resource
     UserClientPersistence userClientPersistence;
@@ -152,6 +157,19 @@ public abstract class BaseIntegrationTest {
         }
         UserClientRole userClientRole = new UserClientRole(RandomStringUtils.randomAlphabetic(10), client, null);
         return userClientRolePersistence.save(userClientRole);
+    }
+    
+    /**
+     * Create a random UserClientTeamRole
+     */
+    protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client){
+    	 if (client == null) {
+             client = makeNewRandomClient();
+         }
+         UserClientTeamRole userClientTeamRole = new UserClientTeamRole();
+         userClientTeamRole.setName(RandomStringUtils.randomAlphabetic(50));
+         userClientTeamRole.setClient(client);
+         return userClientTeamRolePersistence.save(userClientTeamRole);
     }
 
     /**
