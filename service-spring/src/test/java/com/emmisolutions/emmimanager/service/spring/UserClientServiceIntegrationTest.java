@@ -93,10 +93,14 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClient.setClient(makeNewRandomClient());
         userClient.setPassword("new password");
         UserClient updatedUserClient = userClientService.update(userClient);
-        assertThat("version increment occurred", updatedUserClient.getVersion(), is(userClient.getVersion() + 1));
-        assertThat("name changed", updatedUserClient.getFirstName(), is(userClient.getFirstName()));
-        assertThat("password did not change", updatedUserClient.getPassword(), is(userClient.getPassword()));
-        assertThat("client id not change", updatedUserClient.getClient(), is(userClient.getClient()));
+        assertThat("version increment occurred",
+                updatedUserClient.getVersion(), is(userClient.getVersion() + 1));
+        assertThat("name changed", updatedUserClient.getFirstName(),
+                is(userClient.getFirstName()));
+        assertThat("password did not change", updatedUserClient.getPassword(),
+                is(userClient.getPassword()));
+        assertThat("client id not change", updatedUserClient.getClient(),
+                is(userClient.getClient()));
     }
 
     /**
@@ -120,7 +124,8 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Ensure that login and email name conflicts are reported accurately with a reason
+     * Ensure that login and email name conflicts are reported accurately with a
+     * reason
      */
     @Test
     public void makeSureCaseInsensitiveConflictsAreFound() {
@@ -147,30 +152,35 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         steveMatt.setLogin("MATT");
         steveMatt.setEmail("STEVE@BLIPSO.ORG");
 
-        assertThat("both steve and matt should conflict with the user for the correct reason",
+        assertThat(
+                "both steve and matt should conflict with the user for the correct reason",
                 userClientService.findConflictingUsers(steveMatt),
-                hasItems(new UserClientService.UserClientConflict(UserClientService.Reason.LOGIN, matt),
-                        new UserClientService.UserClientConflict(UserClientService.Reason.EMAIL, steve)));
+                hasItems(new UserClientService.UserClientConflict(
+                        UserClientService.Reason.LOGIN, matt),
+                        new UserClientService.UserClientConflict(
+                                UserClientService.Reason.EMAIL, steve)));
 
-        assertThat("no one conflicts with blanky",
-                userClientService.findConflictingUsers(new UserClient()).isEmpty(),
-                is(true));
+        assertThat("no one conflicts with blanky", userClientService
+                .findConflictingUsers(new UserClient()).isEmpty(), is(true));
 
-        assertThat("no one conflicts with null",
-                userClientService.findConflictingUsers(null).isEmpty(),
-                is(true));
+        assertThat("no one conflicts with null", userClientService
+                .findConflictingUsers(null).isEmpty(), is(true));
 
         assertThat("email should conflict steve on email",
-                userClientService.findConflictingUsers(new UserClient() {{
-                    setEmail("steve@blipso.org");
-                }}),
-                hasItem(new UserClientService.UserClientConflict(UserClientService.Reason.EMAIL, steve)));
+                userClientService.findConflictingUsers(new UserClient() {
+                    {
+                        setEmail("steve@blipso.org");
+                    }
+                }), hasItem(new UserClientService.UserClientConflict(
+                        UserClientService.Reason.EMAIL, steve)));
 
         assertThat("login should conflict with matt on login",
-                userClientService.findConflictingUsers(new UserClient() {{
-                    setLogin("matt");
-                }}),
-                hasItem(new UserClientService.UserClientConflict(UserClientService.Reason.LOGIN, matt)));
+                userClientService.findConflictingUsers(new UserClient() {
+                    {
+                        setLogin("matt");
+                    }
+                }), hasItem(new UserClientService.UserClientConflict(
+                        UserClientService.Reason.LOGIN, matt)));
 
     }
 }

@@ -1,10 +1,9 @@
 package com.emmisolutions.emmimanager.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * The UserClientUserClientRole Service
@@ -20,7 +19,7 @@ public interface UserClientUserClientRoleService {
      * @return the created UserClientUserClientRole
      */
     UserClientUserClientRole create(
-	    UserClientUserClientRole userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole);
 
     /**
      * @param userClient
@@ -30,7 +29,7 @@ public interface UserClientUserClientRoleService {
      * @return a page of UserClientUserClientRole having passed in userClientId
      */
     Page<UserClientUserClientRole> findByUserClient(UserClient userClient,
-	    Pageable pageable);
+            Pageable pageable);
 
     /**
      * Reload an userClientUserClientRole with passed in primary key
@@ -40,7 +39,7 @@ public interface UserClientUserClientRoleService {
      * @return one UserClientUserClientRole
      */
     UserClientUserClientRole reload(
-	    UserClientUserClientRole userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole);
 
     /**
      * Delete an userClientUserClientRole

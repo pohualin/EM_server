@@ -22,7 +22,8 @@ public class UserClientRoleResource extends ResourceSupport {
     /**
      * Constructor that takes the wrapped entity as an argument
      *
-     * @param entity to be wrapped
+     * @param entity
+     *            to be wrapped
      */
     public UserClientRoleResource(UserClientRole entity) {
         this.setEntity(entity);

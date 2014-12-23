@@ -115,7 +115,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
     public void testList() {
         Client client = makeNewRandomClient();
         Client clientA = makeNewRandomClient();
-        makeNewRandomUserClient(client);
+        UserClient userClient = makeNewRandomUserClient(client);
 
         UserClientSearchFilter filter = new UserClientSearchFilter(
                 client.getId(), "");
@@ -148,6 +148,17 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
                 .list(new PageRequest(0, 10), realFilter);
         assertThat("returned page of UserClient should not be empty",
                 userClientsWithPageableAndFilter.hasContent(), is(true));
+
+        // make sure status filter is working
+        assertThat("active status should return nothing",
+                userClientPersistence.list(new PageRequest(0, 10), new UserClientSearchFilter(
+                        client.getId(), UserClientSearchFilter.StatusFilter.ACTIVE_ONLY, "a")).getTotalElements(),
+                is(0l));
+
+        assertThat("inactive status should return results",
+                userClientPersistence.list(new PageRequest(0, 10), new UserClientSearchFilter(
+                        client.getId(), UserClientSearchFilter.StatusFilter.INACTIVE_ONLY, "a")),
+                hasItem(userClient));
     }
 
     /**
@@ -161,8 +172,9 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         UserClient userClientNull = userClientPersistence.reload(null);
         assertThat("return null", userClientNull, is(nullValue()));
 
-        assertThat("reload same UserClient object", userClientPersistence.reload(userClient
-                .getId()), is(userClient));
+        assertThat("reload same UserClient object",
+                userClientPersistence.reload(userClient.getId()),
+                is(userClient));
     }
 
     /**
@@ -219,25 +231,25 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
                 userClientPersistence.findConflictingUsers(steveMatt),
                 hasItems(steve, matt));
 
-        assertThat("no one conflicts with blanky",
-                userClientPersistence.findConflictingUsers(new UserClient()).isEmpty(),
-                is(true));
+        assertThat("no one conflicts with blanky", userClientPersistence
+                .findConflictingUsers(new UserClient()).isEmpty(), is(true));
 
-        assertThat("no one conflicts with null",
-                userClientPersistence.findConflictingUsers(null).isEmpty(),
-                is(true));
+        assertThat("no one conflicts with null", userClientPersistence
+                .findConflictingUsers(null).isEmpty(), is(true));
 
         assertThat("email should conflict steve",
-                userClientPersistence.findConflictingUsers(new UserClient() {{
-                    setEmail("steve@blipso.org");
-                }}),
-                hasItem(steve));
+                userClientPersistence.findConflictingUsers(new UserClient() {
+                    {
+                        setEmail("steve@blipso.org");
+                    }
+                }), hasItem(steve));
 
         assertThat("login should conflict with matt",
-                userClientPersistence.findConflictingUsers(new UserClient() {{
-                    setLogin("matt");
-                }}),
-                hasItem(matt));
+                userClientPersistence.findConflictingUsers(new UserClient() {
+                    {
+                        setLogin("matt");
+                    }
+                }), hasItem(matt));
 
         assertThat("matt should not conflict with itself",
                 userClientPersistence.findConflictingUsers(matt).isEmpty(),

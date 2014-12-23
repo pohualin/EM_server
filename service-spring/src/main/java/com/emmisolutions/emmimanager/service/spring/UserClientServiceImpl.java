@@ -50,7 +50,8 @@ public class UserClientServiceImpl implements UserClientService {
     public UserClient update(UserClient userClient) {
         UserClient inDb = reload(userClient);
         if (inDb == null) {
-            throw new InvalidDataAccessApiUsageException("This method is only to be used with existing UserClient objects");
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
         }
         // do not allow for client or password changes
         userClient.setClient(inDb.getClient());
@@ -59,18 +60,22 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
+    @Transactional
     public Page<UserClient> list(Pageable pageable,
-                                 UserClientSearchFilter filter) {
+            UserClientSearchFilter filter) {
         return userClientPersistence.list(pageable, filter);
     }
 
     @Override
     public List<UserClientConflict> findConflictingUsers(UserClient userClient) {
         List<UserClientConflict> ret = new ArrayList<>();
-        for (UserClient conflict : userClientPersistence.findConflictingUsers(userClient)) {
-            if (StringUtils.equalsIgnoreCase(userClient.getLogin(), conflict.getLogin())) {
+        for (UserClient conflict : userClientPersistence
+                .findConflictingUsers(userClient)) {
+            if (StringUtils.equalsIgnoreCase(userClient.getLogin(),
+                    conflict.getLogin())) {
                 ret.add(new UserClientConflict(Reason.LOGIN, conflict));
-            } else if (StringUtils.equalsIgnoreCase(userClient.getEmail(), conflict.getEmail())) {
+            } else if (StringUtils.equalsIgnoreCase(userClient.getEmail(),
+                    conflict.getEmail())) {
                 ret.add(new UserClientConflict(Reason.EMAIL, conflict));
             }
         }
