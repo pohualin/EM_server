@@ -1,9 +1,9 @@
 package com.emmisolutions.emmimanager.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * The search filter for UserClient entities
@@ -26,7 +26,6 @@ public class UserClientSearchFilter {
 
     /**
      * all status plus passed term
-     * 
      */
     public UserClientSearchFilter(Long clientId, String term) {
         this(clientId, StatusFilter.ALL, term);
@@ -34,14 +33,12 @@ public class UserClientSearchFilter {
 
     /**
      * constructor
-     * 
-     * @param status
-     *            to filter
-     * @param term
-     *            to filter
+     *
+     * @param status to filter
+     * @param term   to filter
      */
     public UserClientSearchFilter(Long clientId, StatusFilter status,
-            String term) {
+                                  String term) {
         this.clientId = clientId;
         this.term = term;
         this.status = status;
@@ -71,9 +68,8 @@ public class UserClientSearchFilter {
 
         /**
          * from string or ACTIVE
-         * 
-         * @param status
-         *            the status string
+         *
+         * @param status the status string
          * @return never null, the status or ACTIVE
          */
         public static StatusFilter fromStringOrActive(String status) {
