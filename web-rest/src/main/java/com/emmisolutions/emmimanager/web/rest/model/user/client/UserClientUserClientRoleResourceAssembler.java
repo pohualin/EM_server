@@ -15,23 +15,23 @@ import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRoles
  */
 @Component
 public class UserClientUserClientRoleResourceAssembler
-	implements
-	ResourceAssembler<UserClientUserClientRole, UserClientUserClientRoleResource> {
+        implements
+        ResourceAssembler<UserClientUserClientRole, UserClientUserClientRoleResource> {
 
     @Override
     public UserClientUserClientRoleResource toResource(
-	    UserClientUserClientRole entity) {
-	UserClientUserClientRoleResource ret = new UserClientUserClientRoleResource();
-	ret.add(linkTo(
-		methodOn(ClientRolesAdminResource.class).rolePermissions(
-			entity.getUserClientRole().getId())).withRel(
-		"userClientRolePermissions"));
-	ret.add(linkTo(
-		methodOn(UserClientUserClientRolesResource.class)
-			.getUserClientUserClientRole(entity.getId())).withRel(
-		"userClientUserClientRole"));
-	ret.setEntity(entity);
-	return ret;
+            UserClientUserClientRole entity) {
+        UserClientUserClientRoleResource ret = new UserClientUserClientRoleResource();
+        ret.add(linkTo(
+                methodOn(ClientRolesAdminResource.class).rolePermissions(
+                        entity.getUserClientRole().getId())).withRel(
+                "userClientRolePermissions"));
+        ret.add(linkTo(
+                methodOn(UserClientUserClientRolesResource.class)
+                        .getUserClientUserClientRole(entity.getId())).withRel(
+                "userClientUserClientRole"));
+        ret.setEntity(entity);
+        return ret;
     }
 
 }

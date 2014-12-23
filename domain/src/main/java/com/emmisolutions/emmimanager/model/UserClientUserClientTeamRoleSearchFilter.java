@@ -23,30 +23,37 @@ public class UserClientUserClientTeamRoleSearchFilter {
      * Default constructor
      */
     public UserClientUserClientTeamRoleSearchFilter() {
-	this.status = StatusFilter.ALL;
+        this.status = StatusFilter.ALL;
     }
 
     /**
-     * all status plus passed term
+     * Constructor with passed in userClient and search term
      * 
-     */
-    public UserClientUserClientTeamRoleSearchFilter(UserClient userClient,
-	    String term) {
-	this(userClient, StatusFilter.ALL, term);
-    }
-
-    /**
-     * Constructor takes client, status and term
-     * 
-     * @param client
-     * @param status
+     * @param userClient
+     *            to use
      * @param term
+     *            to search
      */
     public UserClientUserClientTeamRoleSearchFilter(UserClient userClient,
-	    StatusFilter status, String term) {
-	this.userClient = userClient;
-	this.term = term;
-	this.status = status;
+            String term) {
+        this(userClient, StatusFilter.ALL, term);
+    }
+
+    /**
+     * Constructor with passed in userClient, status and search term
+     * 
+     * @param userClient
+     *            to use
+     * @param status
+     *            to filter
+     * @param term
+     *            to search
+     */
+    public UserClientUserClientTeamRoleSearchFilter(UserClient userClient,
+            StatusFilter status, String term) {
+        this.userClient = userClient;
+        this.term = term;
+        this.status = status;
     }
 
     /**
@@ -55,7 +62,7 @@ public class UserClientUserClientTeamRoleSearchFilter {
      * @return term
      */
     public String getTerm() {
-	return term;
+        return term;
     }
 
     /**
@@ -64,7 +71,7 @@ public class UserClientUserClientTeamRoleSearchFilter {
      * @return status
      */
     public StatusFilter getStatus() {
-	return status;
+        return status;
     }
 
     /**
@@ -73,37 +80,37 @@ public class UserClientUserClientTeamRoleSearchFilter {
      * @return userClient
      */
     public UserClient getUserClient() {
-	return userClient;
+        return userClient;
     }
 
     /**
      * Status allowed
      */
     public enum StatusFilter {
-	ALL, ACTIVE_ONLY, INACTIVE_ONLY;
+        ALL, ACTIVE_ONLY, INACTIVE_ONLY;
 
-	/**
-	 * from string or ACTIVE
-	 * 
-	 * @param status
-	 *            the status string
-	 * @return never null, the status or ACTIVE
-	 */
-	public static StatusFilter fromStringOrActive(String status) {
-	    if (StringUtils.isNotBlank(status)) {
-		for (StatusFilter statusFilter : values()) {
-		    if (statusFilter.toString().equals(status.toUpperCase())) {
-			return statusFilter;
-		    }
-		}
-	    }
-	    return ACTIVE_ONLY;
-	}
+        /**
+         * from string or ACTIVE
+         * 
+         * @param status
+         *            the status string
+         * @return never null, the status or ACTIVE
+         */
+        public static StatusFilter fromStringOrActive(String status) {
+            if (StringUtils.isNotBlank(status)) {
+                for (StatusFilter statusFilter : values()) {
+                    if (statusFilter.toString().equalsIgnoreCase(status)) {
+                        return statusFilter;
+                    }
+                }
+            }
+            return ACTIVE_ONLY;
+        }
     }
 
     @Override
     public String toString() {
-	return "UserClientSearchFilter{" + "term=" + term + ", status="
-		+ status + '}';
+        return "UserClientSearchFilter{" + "term=" + term + ", status="
+                + status + '}';
     }
 }

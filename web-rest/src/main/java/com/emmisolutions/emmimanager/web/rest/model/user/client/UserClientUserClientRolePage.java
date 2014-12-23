@@ -13,7 +13,7 @@ import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
  */
 @XmlRootElement(name = "user-client-user-client-role-page")
 public class UserClientUserClientRolePage extends
-	PagedResource<UserClientUserClientRoleResource> {
+        PagedResource<UserClientUserClientRoleResource> {
 
     public UserClientUserClientRolePage() {
     }
@@ -27,9 +27,9 @@ public class UserClientUserClientRolePage extends
      *            the raw response
      */
     public UserClientUserClientRolePage(
-	    PagedResources<UserClientUserClientRoleResource> userClientUserClientRoleResources,
-	    Page<UserClientUserClientRole> userClientUserClientRolePage) {
-	pageDefaults(userClientUserClientRoleResources,
-		userClientUserClientRolePage);
+            PagedResources<UserClientUserClientRoleResource> userClientUserClientRoleResources,
+            Page<UserClientUserClientRole> userClientUserClientRolePage) {
+        pageDefaults(userClientUserClientRoleResources,
+                userClientUserClientRolePage);
     }
 }

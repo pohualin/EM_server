@@ -18,40 +18,40 @@ import com.emmisolutions.emmimanager.persistence.repo.UserClientUserClientRoleRe
  */
 @Repository
 public class UserClientUserClientRolePersistenceImpl implements
-	UserClientUserClientRolePersistence {
+        UserClientUserClientRolePersistence {
 
     @Resource
     UserClientUserClientRoleRepository userClientUserClientRoleRepository;
 
     @Override
     public UserClientUserClientRole saveOrUpdate(
-	    UserClientUserClientRole userClientUserClientRole) {
-	return userClientUserClientRoleRepository
-		.save(userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole) {
+        return userClientUserClientRoleRepository
+                .save(userClientUserClientRole);
     }
 
     @Override
     public Page<UserClientUserClientRole> findByUserClient(
-	    UserClient userClient, Pageable pageable) {
-	if (pageable == null) {
-	    pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
-	}
-	return userClientUserClientRoleRepository.findByUserClient(userClient,
-		pageable);
+            UserClient userClient, Pageable pageable) {
+        if (pageable == null) {
+            pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        }
+        return userClientUserClientRoleRepository.findByUserClient(userClient,
+                pageable);
     }
 
     @Override
     public UserClientUserClientRole reload(Long userClientUserClientId) {
-	if (userClientUserClientId == null) {
-	    return null;
-	}
-	return userClientUserClientRoleRepository
-		.findOne(userClientUserClientId);
+        if (userClientUserClientId == null) {
+            return null;
+        }
+        return userClientUserClientRoleRepository
+                .findOne(userClientUserClientId);
     }
 
     @Override
     public void delete(Long userClientUserClientId) {
-	userClientUserClientRoleRepository.delete(userClientUserClientId);
+        userClientUserClientRoleRepository.delete(userClientUserClientId);
     }
 
 }
