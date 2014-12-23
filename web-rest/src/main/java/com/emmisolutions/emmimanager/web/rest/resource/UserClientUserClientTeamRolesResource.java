@@ -161,7 +161,7 @@ public class UserClientUserClientTeamRolesResource {
 	/**
 	 * Get a page of possible UserClientUserClientTeamRole
 	 * 
-	 * @param clientId
+	 * @param userClientId
 	 *            to lookup
 	 * @param pageable
 	 *            to use

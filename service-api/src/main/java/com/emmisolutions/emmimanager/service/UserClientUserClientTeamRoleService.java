@@ -20,6 +20,8 @@ public interface UserClientUserClientTeamRoleService {
 	/**
 	 * Associate a set of UserClientUserClientTeamRole
 	 * 
+	 * @param userClientUserClientTeamRoles
+	 *            to insert
 	 * @return a set of associated UserClientUserClientTeamRole
 	 */
 	Set<UserClientUserClientTeamRole> associate(
