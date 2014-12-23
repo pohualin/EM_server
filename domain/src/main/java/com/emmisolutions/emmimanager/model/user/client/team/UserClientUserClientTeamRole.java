@@ -21,6 +21,22 @@ import javax.validation.constraints.NotNull;
 )
 public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
+	/**
+	 * Default constructor
+	 */
+	public UserClientUserClientTeamRole() {
+
+	}
+
+	/**
+	 * Constructor with id
+	 * 
+	 * @param id
+	 */
+	public UserClientUserClientTeamRole(Long id) {
+		this.id = id;
+	}
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "bigint")

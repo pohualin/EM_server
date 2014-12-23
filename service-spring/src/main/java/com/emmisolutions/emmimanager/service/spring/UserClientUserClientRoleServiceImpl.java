@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ public class UserClientUserClientRoleServiceImpl implements
     UserClientUserClientRolePersistence userClientUserClientRolePersistence;
 
     @Override
+    @Transactional
     public UserClientUserClientRole create(
 	    UserClientUserClientRole userClientUserClientRole) {
 	userClientUserClientRole.setUserClient(userClientService
@@ -42,6 +44,7 @@ public class UserClientUserClientRoleServiceImpl implements
     }
 
     @Override
+    @Transactional
     public Page<UserClientUserClientRole> findByUserClient(
 	    UserClient userClient, Pageable pageable) {
 	userClient = userClientService.reload(userClient);
@@ -50,6 +53,7 @@ public class UserClientUserClientRoleServiceImpl implements
     }
 
     @Override
+    @Transactional
     public UserClientUserClientRole reload(
 	    UserClientUserClientRole userClientUserClientRole) {
 	if (userClientUserClientRole == null
@@ -61,6 +65,7 @@ public class UserClientUserClientRoleServiceImpl implements
     }
 
     @Override
+    @Transactional
     public void delete(UserClientUserClientRole userClientUserClientRole) {
 	if (userClientUserClientRole != null
 		&& userClientUserClientRole.getId() != null) {

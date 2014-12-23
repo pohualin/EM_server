@@ -22,7 +22,7 @@ public interface UserClientService {
     UserClient create(UserClient user);
 
     /**
-     * Reload an existing UserClient with the passed in primary key.
+     * Reload an existing client user with the passed userClientId.
      *
      * @param userClient to use
      * @return the existing UserClient
