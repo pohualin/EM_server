@@ -64,6 +64,7 @@ public interface TeamTagPersistence {
      * select all teams that do not have teamtags
      *
      * @param clientId to use
+     * @param page pag object to use
      * @return teams
      */
     Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId);

@@ -70,6 +70,7 @@ public interface TeamTagService {
      * select all teams that do not have teamtags
      *
      * @param forThisClientId to use
+     * @param page page object
      * @return teams
      */
     Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId);

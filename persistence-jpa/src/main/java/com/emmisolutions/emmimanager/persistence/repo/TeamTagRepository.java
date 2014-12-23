@@ -52,6 +52,7 @@ public interface TeamTagRepository extends JpaRepository<TeamTag, Long>, JpaSpec
      * select all teams that do not have teamtags
      *
      * @param forThisClientId to use
+     * @param page page object
      * @return teams
      */
     @Query("SELECT t FROM Team t LEFT JOIN t.teamTags tt WHERE tt.team IS NULL AND t.client.id = :forThisClientId")

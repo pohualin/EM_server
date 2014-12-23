@@ -232,6 +232,10 @@ public class TeamsResource {
 
     /**
      * GET teams with no teamtags
+     * @param clientId       to use
+     * @param pageable       specification
+     * @param sort      sorting request
+     * @param assembler used to create the PagedResources
      *
      * @return List of Team objects or INTERNAL_SERVER_ERROR if the list is empty
      */

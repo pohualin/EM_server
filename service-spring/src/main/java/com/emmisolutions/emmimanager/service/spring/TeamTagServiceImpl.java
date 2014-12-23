@@ -9,7 +9,9 @@ import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
 import com.emmisolutions.emmimanager.service.TeamTagService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,6 +104,10 @@ public class TeamTagServiceImpl implements TeamTagService {
     @Override
     @Transactional(readOnly = true)
     public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId){
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        }
         return teamTagPersistence.findTeamsWithNoTeamTags(page,forThisClientId);
     }
 }

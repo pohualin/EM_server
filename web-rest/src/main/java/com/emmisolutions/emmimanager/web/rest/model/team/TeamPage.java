@@ -109,6 +109,12 @@ public class TeamPage extends PagedResource<TeamResource> {
         }
     }
 
+    /**
+     * Find teams with no teamtags
+     *
+     * @param entity to search within
+     * @return link
+     */
     public static Link createFullSearchLinkTeamsWithNoTeamTags(Client entity) {
         Link link = linkTo(methodOn(TeamsResource.class).teamsWithNoTeamTags(entity.getId(), null, null, null)).withRel("teamsWithNoTeamTags");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
