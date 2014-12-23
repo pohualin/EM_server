@@ -1,12 +1,11 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
+import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
+import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.PagedResources;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
-import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A HATEOAS wrapper for a page of UserClientUserClientRole objects.

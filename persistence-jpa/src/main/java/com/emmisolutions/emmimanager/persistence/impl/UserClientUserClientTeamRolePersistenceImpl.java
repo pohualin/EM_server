@@ -1,19 +1,17 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
+import com.emmisolutions.emmimanager.persistence.UserClientUserClientTeamRolePersistence;
+import com.emmisolutions.emmimanager.persistence.repo.UserClientUserClientTeamRoleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
-import com.emmisolutions.emmimanager.persistence.UserClientUserClientTeamRolePersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserClientUserClientTeamRoleRepository;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Spring data implementation class

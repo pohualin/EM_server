@@ -1,11 +1,13 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
+import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRolePage;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResource;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,20 +17,13 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
-import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRolePage;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResource;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResourceAssembler;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * Users Client REST API
