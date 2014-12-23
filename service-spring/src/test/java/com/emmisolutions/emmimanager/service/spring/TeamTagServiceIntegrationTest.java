@@ -57,7 +57,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
     private Group createGroup(Client client) {
         Group group = new Group();
-        group.setName("Test Group" + System.currentTimeMillis());
+        group.setName("Test Group" + RandomStringUtils.randomAlphanumeric(9));
         group.setClient(clientService.reload(client));
         groupService.save(group);
         return group;
@@ -65,14 +65,14 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
     private Tag createTag(Group group) {
         Tag tag = new Tag();
-        tag.setName("Test Tag " + System.currentTimeMillis());
+        tag.setName("Test Tag " + RandomStringUtils.randomAlphanumeric(9));
         tag.setGroup(group);
         return tag;
     }
 
     private Team createTeam(Client client) {
         Team team = new Team();
-        team.setName("Test Team" + System.currentTimeMillis());
+        team.setName("Test Team" + RandomStringUtils.randomAlphanumeric(18));
         team.setDescription("Test Team description");
         team.setActive(true);
         team.setClient(client);
