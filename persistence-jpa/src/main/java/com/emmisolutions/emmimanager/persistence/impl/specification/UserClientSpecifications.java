@@ -138,4 +138,22 @@ public class UserClientSpecifications {
             }
         };
     }
+
+    /**
+     * Ensures that the UserClient is in a particular status
+     *
+     * @param searchFilter used to find the status
+     * @return the specification as a filter predicate
+     */
+    public Specification<UserClient> isInStatus(final UserClientSearchFilter searchFilter) {
+        return new Specification<UserClient>() {
+            @Override
+            public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (searchFilter != null && UserClientSearchFilter.StatusFilter.ALL != searchFilter.getStatus()) {
+                    return cb.equal(root.get(UserClient_.active), searchFilter.getStatus().equals(UserClientSearchFilter.StatusFilter.ACTIVE_ONLY));
+                }
+                return null;
+            }
+        };
+    }
 }
