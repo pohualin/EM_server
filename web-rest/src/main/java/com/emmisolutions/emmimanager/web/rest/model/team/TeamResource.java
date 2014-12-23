@@ -3,14 +3,20 @@ package com.emmisolutions.emmimanager.web.rest.model.team;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.model.BaseResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.TemplateVariable;
+import org.springframework.hateoas.TemplateVariables;
+import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
 import org.springframework.hateoas.core.DummyInvocationUtils;
 import org.springframework.hateoas.core.MappingDiscoverer;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.lang.reflect.Method;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -44,5 +50,12 @@ public class TeamResource extends BaseResource<Team> {
         }
         return null;
     }
+    
+	 public static Link getByProviderAndTeam(Team team){
+		 Link link = linkTo(methodOn(TeamProvidersResource.class).getByProviderAndTeam(team.getId(), null)).withRel("findTeamProviderByProviderAndTeam");
+		 UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(new TemplateVariables(
+				 new TemplateVariable("providerId", TemplateVariable.VariableType.REQUEST_PARAM)));
+		 return new Link(uriTemplate, link.getRel());
+	 }
 
 }

@@ -73,6 +73,12 @@ public class TeamProviderPage extends PagedResource<TeamProviderResource> {
 		return new Link(uriTemplate, link.getRel());
 	}
 	
+	public static Link createTeamProviderTeamLocationLink(TeamProvider teamProvider) {
+		Link link = linkTo(methodOn(TeamProvidersResource.class).createTeamProviderTeamLocation(null, teamProvider.getId())).withRel("teamProviderTeamLocation");
+		UriTemplate uriTemplate = new UriTemplate(link.getHref());
+		return new Link(uriTemplate, link.getRel());
+	}
+	
     /**
      * Create the search link
      * @param team the given team

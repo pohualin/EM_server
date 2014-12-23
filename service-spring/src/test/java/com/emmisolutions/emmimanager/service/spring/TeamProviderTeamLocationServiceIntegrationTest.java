@@ -1,5 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -78,6 +82,31 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProviderTeamLocationService.findByTeamProvider(teamProvider, null);
 		
 		teamProviderTeamLocationService.findByTeamLocation(teamLocation, null);
+	}
+	
+	@Test
+	public void testCreateTeamProviderTeamLocation() {
+		Team team = makeNewRandomTeam();
+		Provider provider = makeNewRandomProvider();
+		Location location = makeNewRandomLocation();
+
+		TeamLocation teamLocation = new TeamLocation(location, team);
+		TeamLocation firstTeam = teamLocationPersistence.saveTeamLocation(teamLocation);
+
+		TeamLocation teamLocationTwo = new TeamLocation(location, team);
+		TeamLocation TeamTwo = teamLocationPersistence.saveTeamLocation(teamLocationTwo);
+		
+		Set<TeamLocation> teamLocations = new HashSet<TeamLocation>();
+		teamLocations.add(teamLocation);
+		teamLocations.add(teamLocationTwo);
+		
+		TeamProvider teamProvider = new TeamProvider();
+		teamProvider.setTeam(team);
+		teamProvider.setProvider(provider);
+		teamProviderPersistence.save(teamProvider);
+
+		Set<TeamProviderTeamLocation> savedTPTLs = teamProviderTeamLocationService.createTeamProviderTeamLocation(teamLocations, teamProvider);
+        assertThat("TPTL has been created", savedTPTLs.size(), is(2));
 	}
 
 	@Test
