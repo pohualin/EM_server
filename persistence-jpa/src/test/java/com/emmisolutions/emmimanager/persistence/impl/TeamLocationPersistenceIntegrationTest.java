@@ -4,13 +4,11 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 
@@ -55,7 +53,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         TeamLocation teamLocation = new TeamLocation();
 
         Client client = createClient("1");
-        Location location = createLocation(client,"1");
+        Location location = createLocation(client, "1");
         Team team = createTeam(client, 1);
 
         teamLocation.setLocation(location);
@@ -71,7 +69,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void saveNullTeamLocation() {
-    	teamLocationPersistence.saveTeamLocation(null);
+        teamLocationPersistence.saveTeamLocation(null);
     }
 
 
@@ -80,14 +78,14 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
      */
     @Test
     public void getAllTeamLocationForTeam() {
-    	TeamLocation teamLocation1 = new TeamLocation();
-    	TeamLocation teamLocation2 = new TeamLocation();
-    	TeamLocation teamLocation3 = new TeamLocation();
+        TeamLocation teamLocation1 = new TeamLocation();
+        TeamLocation teamLocation2 = new TeamLocation();
+        TeamLocation teamLocation3 = new TeamLocation();
 
         Client client = createClient("1");
 
-        Location location1 = createLocation(client,"1");
-        Location location2 = createLocation(client,"2");
+        Location location1 = createLocation(client, "1");
+        Location location2 = createLocation(client, "2");
 
         Team team1 = createTeam(client, 1);
         Team team3 = createTeam(client, 3);
@@ -107,11 +105,23 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         assertThat("TeamLocation was given an id", teamLocation2.getId(), is(notNullValue()));
         assertThat("TeamLocation was given an id", teamLocation3.getId(), is(notNullValue()));
 
-        Page<TeamLocation> associatedTeamLocationPage = teamLocationPersistence.getAllTeamLocationsForTeam(null,team1);
-        assertThat("2 teams were correctly returned", associatedTeamLocationPage.getTotalElements(), is(2L));
+        assertThat("2 team locations were correctly returned", teamLocationPersistence.getAllTeamLocationsForTeam(null, team1),
+                hasItems(teamLocation1, teamLocation2));
 
-        associatedTeamLocationPage = teamLocationPersistence.getAllTeamLocationsForTeam(null,team3);
-        assertThat("1 team were correctly returned", associatedTeamLocationPage.getTotalElements(), is(1L));
+        assertThat("1 team location was correctly returned", teamLocationPersistence.getAllTeamLocationsForTeam(null, team3), hasItem(teamLocation3));
+
+        assertThat("teams can be found by client and location",
+                teamLocationPersistence.findTeamsBy(client, location1, null),
+                hasItems(team1, team3));
+
+        assertThat("team locations can be removed by client and location",
+                teamLocationPersistence.delete(client, location1),
+                is(2l));
+
+        assertThat("teams should not be be found by client and location",
+                teamLocationPersistence.findTeamsBy(client, location1, null),
+                not(hasItems(team1, team3)));
+
 
     }
 
@@ -122,7 +132,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
     public void delete() {
 
         Client client = createClient("1");
-        Location location = createLocation(client,"1");
+        Location location = createLocation(client, "1");
         Team team = createTeam(client, 1);
         TeamLocation teamLocation = new TeamLocation(location, team);
 
@@ -137,7 +147,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
 
     private Team createTeam(Client client, int i) {
         Team team = new Team();
-        team.setName("Test Team"+i);
+        team.setName("Test Team" + i);
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);
@@ -146,9 +156,9 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         return team;
     }
 
-    private Location createLocation(Client client, String uniqueId ) {
+    private Location createLocation(Client client, String uniqueId) {
         Location location = new Location();
-        location.setName("Test Location "+ uniqueId);
+        location.setName("Test Location " + uniqueId);
         location.setActive(true);
         location.setBelongsTo(client);
         location.setCity("CHICAGO");
@@ -164,7 +174,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         client.setContractEnd(LocalDate.now().plusYears(1));
         client.setContractStart(LocalDate.now());
         client.setRegion(new ClientRegion(1l));
-        client.setName("Test Client "+uniqueId);
+        client.setName("Test Client " + uniqueId);
         client.setType(clientType);
         client.setActive(false);
         client.setContractOwner(superAdmin);

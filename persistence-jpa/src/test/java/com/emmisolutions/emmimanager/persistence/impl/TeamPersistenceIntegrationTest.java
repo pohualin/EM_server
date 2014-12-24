@@ -65,6 +65,10 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("client was given an id", client.getId(), is(notNullValue()));
         assertThat("system is the created by", team.getCreatedBy(), is("system"));
         assertThat("Normalized Name", team.getNormalizedTeamName(), is("testteam1"));
+
+        assertThat("can find by name and client id",
+                teamPersistence.findByNormalizedTeamNameAndClientId("test Team 1", client.getId()),
+                is(team));
         
     }
 

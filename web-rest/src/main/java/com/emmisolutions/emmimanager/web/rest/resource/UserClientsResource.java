@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -71,17 +73,22 @@ public class UserClientsResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
+            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "status", defaultValue = "0", value = "user status filter", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "term", defaultValue = "0", value = "user name filter", dataType = "string", paramType = "query")
+    })
     public ResponseEntity<UserClientPage> getUsers(
             @PathVariable(value = "clientId") Long clientId,
             @PageableDefault(size = 10, sort = "lastName", direction = Direction.ASC) Pageable pageable,
             @SortDefault(sort = "lastName") Sort sort,
             PagedResourcesAssembler<UserClient> assembler,
             @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "term", required = false) String term) {
+            @RequestParam(value = "term", required = false) String term,
+            @RequestParam(value = "teamId", required = false) Long teamId) {
 
-        UserClientSearchFilter filter = new UserClientSearchFilter(clientId,
+        UserClientSearchFilter filter = new UserClientSearchFilter(new Client(clientId),
                 fromStringOrActive(status), term);
+        filter.setTeam(new Team(teamId));
 
         Page<UserClient> userClients = userClientService.list(pageable, filter);
 

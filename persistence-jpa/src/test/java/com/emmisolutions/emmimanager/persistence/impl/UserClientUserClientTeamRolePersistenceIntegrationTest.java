@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
@@ -16,8 +17,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -33,7 +33,8 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
     UserClientUserClientTeamRolePersistence userClientUserClientTeamRolePersistence;
 
     /**
-     * Test create an UserCleintUserClientTeamRole
+     * Test create an UserClientUserClientTeamRole and that the user client
+     * can be found by using the team associated to that role.
      */
     @Test
     public void testCreate() {
@@ -50,6 +51,12 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
         UserClientUserClientTeamRole created = userClientUserClientTeamRolePersistence
                 .saveOrUpdate(entity);
         assertThat("entity created", created.getId(), is(notNullValue()));
+
+        UserClientSearchFilter filter = new UserClientSearchFilter();
+        filter.setClient(client);
+        filter.setTeam(team);
+        assertThat("the user client should be found when the team is added to the filter",
+                userClientPersistence.list(null, filter), hasItem(userClient));
     }
 
     /**
@@ -68,10 +75,9 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
         entity.setUserClientTeamRole(userClientTeamRole);
         userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
-        UserClientUserClientTeamRole reload = userClientUserClientTeamRolePersistence
-                .reload(entity.getId());
         assertThat("should return the existing one",
-                reload.getId() == entity.getId(), is(true));
+                userClientUserClientTeamRolePersistence.reload(entity.getId()),
+                is(entity));
     }
 
     /**
@@ -111,14 +117,13 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
         entity.setUserClient(userClient);
         entity.setTeam(team);
         entity.setUserClientTeamRole(userClientTeamRole);
-        entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+        userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
-        List<Team> teams = new ArrayList<Team>();
+        List<Team> teams = new ArrayList<>();
         teams.add(team);
-        List<UserClientUserClientTeamRole> ucuctrl = userClientUserClientTeamRolePersistence
-                .findByUserClientIdAndTeamsIn(userClient.getId(), teams);
         assertThat("should return a list of UserClientUserClientTeamRole",
-                ucuctrl.size() > 0, is(true));
+                userClientUserClientTeamRolePersistence
+                        .findByUserClientIdAndTeamsIn(userClient.getId(), teams).size() > 0, is(true));
     }
 
     /**
@@ -136,7 +141,7 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
         entity.setUserClient(userClient);
         entity.setTeam(team);
         entity.setUserClientTeamRole(userClientTeamRole);
-        entity = userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
+        userClientUserClientTeamRolePersistence.saveOrUpdate(entity);
 
         Page<UserClientUserClientTeamRole> found = userClientUserClientTeamRolePersistence
                 .findByUserClientIdAndUserClientTeamRoleId(userClient.getId(),
