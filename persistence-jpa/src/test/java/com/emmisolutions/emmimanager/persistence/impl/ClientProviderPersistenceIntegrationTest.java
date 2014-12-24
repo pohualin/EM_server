@@ -104,6 +104,9 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
         clientProviderPersistence.findByClientId(null, null);
     }
 
+    /**
+     * Find by provider id
+     */
     @Test
     public void findByProviderId(){
     	Client clientA = makeClient();
@@ -116,6 +119,16 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
 
     	Page<ClientProvider> list = clientProviderPersistence.findByProviderId(provider.getId(), null);
     	assertThat("There should be 2 clients found", list.getTotalElements(), is(2l));
+    }
+
+    /**
+     * Test that save works
+     */
+    @Test
+    public void save() {
+        assertThat("client provider is saved",
+                clientProviderPersistence.save(new ClientProvider(makeClient(), makeProvider())).getId(),
+                is(notNullValue()));
     }
 
     private Client makeClient() {

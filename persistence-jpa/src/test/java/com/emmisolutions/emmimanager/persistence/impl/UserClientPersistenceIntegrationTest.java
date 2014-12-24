@@ -117,21 +117,18 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         Client clientA = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
 
-        UserClientSearchFilter filter = new UserClientSearchFilter(
-                client.getId(), "");
+        UserClientSearchFilter filter = new UserClientSearchFilter(client, "");
         Page<UserClient> userClients = userClientPersistence.list(null, filter);
         assertThat("returned page of UserClient should not be empty",
                 userClients.hasContent(), is(true));
 
-        UserClientSearchFilter filterA = new UserClientSearchFilter(
-                clientA.getId(), "");
+        UserClientSearchFilter filterA = new UserClientSearchFilter(clientA, "");
         Page<UserClient> userClientsA = userClientPersistence.list(null,
                 filterA);
         assertThat("returned page of UserClient should be empty",
                 userClientsA.hasContent(), is(false));
 
-        UserClientSearchFilter realFilter = new UserClientSearchFilter(
-                client.getId(), "a");
+        UserClientSearchFilter realFilter = new UserClientSearchFilter(client, "a");
         Page<UserClient> userClientsWithFilter = userClientPersistence.list(
                 null, realFilter);
         assertThat("returned page of UserClient should not be empty",
@@ -152,12 +149,12 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         // make sure status filter is working
         assertThat("active status should return nothing",
                 userClientPersistence.list(new PageRequest(0, 10), new UserClientSearchFilter(
-                        client.getId(), UserClientSearchFilter.StatusFilter.ACTIVE_ONLY, "a")).getTotalElements(),
+                        client, UserClientSearchFilter.StatusFilter.ACTIVE_ONLY, "a")).getTotalElements(),
                 is(0l));
 
         assertThat("inactive status should return results",
                 userClientPersistence.list(new PageRequest(0, 10), new UserClientSearchFilter(
-                        client.getId(), UserClientSearchFilter.StatusFilter.INACTIVE_ONLY, "a")),
+                        new Client(client.getId()), UserClientSearchFilter.StatusFilter.INACTIVE_ONLY, "a")),
                 hasItem(userClient));
     }
 

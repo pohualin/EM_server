@@ -65,7 +65,9 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         return userClientRepository.findAll(
                 where(userClientSpecifications.hasNames(filter))
                         .and(userClientSpecifications.isClient(filter))
-                        .and(userClientSpecifications.isInStatus(filter)), pageSpecification);
+                        .and(userClientSpecifications.isInStatus(filter))
+                        .and(userClientSpecifications.hasRoleOnTeam(filter)),
+                pageSpecification);
     }
 
     @Override

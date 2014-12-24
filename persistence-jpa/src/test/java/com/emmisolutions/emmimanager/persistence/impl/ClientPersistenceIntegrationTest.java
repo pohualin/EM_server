@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
@@ -174,12 +173,9 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("Client exists", client.getName(), is("Demo hospital client 1"));
         assertThat("Client exists", client.getNormalizedName(), is("demohospitalclient1"));
 
-        client = clientPersistence.findByNormalizedName("demo hospital cloient");
-        Client c = null;
-        assertThat("Client do not exists", client, is(c));
+        assertThat("Client do not exists", clientPersistence.findByNormalizedName("demo hospital cloient"), is(nullValue()));
 
-        client = clientPersistence.findByNormalizedName(null);
-        assertThat("Client do not exists", client, is(c));
+        assertThat("Client do not exists", clientPersistence.findByNormalizedName(null), is(nullValue()));
 
     }
 
@@ -284,6 +280,16 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setContractStart(LocalDate.now());
         client.setContractEnd(LocalDate.now().plus(Minutes.minutes(12)));
         clientPersistence.save(client);
+    }
+
+    /**
+     * Reference data works
+     */
+    @Test
+    public void refData() {
+        assertThat("types not empty", clientPersistence.getAllClientTypes().isEmpty(), is(false));
+        assertThat("regions not empty", clientPersistence.getAllRegionTypes().isEmpty(), is(false));
+        assertThat("tiers not empty", clientPersistence.getAllClientTiers().isEmpty(), is(false));
     }
 
     /**
