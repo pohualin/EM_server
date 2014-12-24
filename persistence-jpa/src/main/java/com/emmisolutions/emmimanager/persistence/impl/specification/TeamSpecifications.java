@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.model.Team_;
@@ -83,15 +82,15 @@ public class TeamSpecifications {
     /**
      * Ensures that the team belongs to the client
      *
-     * @param client to load
+     * @param searchFilter uses the clientId
      * @return the specification
      */
-    public Specification<Team> usedBy(final Client client) {
+    public Specification<Team> usedByClient(final TeamSearchFilter searchFilter) {
         return new Specification<Team>() {
             @Override
             public Predicate toPredicate(Root<Team> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (client != null) {
-                    return cb.equal(root.get(Team_.client), client);
+                if (searchFilter != null && searchFilter.getClientId() != null) {
+                    return cb.equal(root.get(Team_.client), searchFilter.getClientId());
                 }
                 return null;
             }

@@ -65,13 +65,11 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     public void testUserReload() {
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
-        UserClient userClientA = userClientService.reload(new UserClient(
-                userClient.getId()));
         assertThat("Should reload the same UserClient.",
-                userClient.getId() == userClientA.getId(), is(true));
+                userClientService.reload(new UserClient(
+                        userClient.getId())), is(userClient));
 
-        UserClient userClientB = userClientService.reload(new UserClient());
-        assertThat("Should return null", userClientB == null, is(true));
+        assertThat("Should return null", userClientService.reload(new UserClient()), is(nullValue()));
     }
 
     /**
@@ -115,8 +113,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("userClients should contain contents",
                 userClients.hasContent(), is(true));
 
-        UserClientSearchFilter filter = new UserClientSearchFilter(
-                client.getId(), "a");
+        UserClientSearchFilter filter = new UserClientSearchFilter(client, "a");
         Page<UserClient> userClientsWithFilter = userClientService.list(null,
                 filter);
         assertThat("userClients should contain contents",

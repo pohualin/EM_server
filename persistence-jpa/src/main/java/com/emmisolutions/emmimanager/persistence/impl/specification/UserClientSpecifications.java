@@ -3,15 +3,13 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole_;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,9 +71,9 @@ public class UserClientSpecifications {
             @Override
             public Predicate toPredicate(Root<UserClient> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (filter != null && filter.getClientId() != null) {
+                if (filter != null && filter.getClient() != null && filter.getClient().getId() != null) {
                     return cb.equal(root.get(UserClient_.client),
-                            filter.getClientId());
+                            filter.getClient().getId());
                 }
                 return null;
             }
@@ -156,4 +154,24 @@ public class UserClientSpecifications {
             }
         };
     }
+
+    /**
+     * Ensures that the UserClient has a team role for the team in the search filter.
+     *
+     * @param searchFilter that contains the team
+     * @return a specification if the team is present or null if it is not
+     */
+    public Specification<UserClient> hasRoleOnTeam(final UserClientSearchFilter searchFilter) {
+        return new Specification<UserClient>() {
+            @Override
+            public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (searchFilter != null && searchFilter.getTeam() != null && searchFilter.getTeam().getId() != null) {
+                    return cb.equal(root.join(UserClient_.teamRoles, JoinType.LEFT).get(UserClientUserClientTeamRole_.team),
+                            searchFilter.getTeam().getId());
+                }
+                return null;
+            }
+        };
+    }
+
 }
