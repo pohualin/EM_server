@@ -34,8 +34,8 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
  * Users Client REST API
  */
 @RestController
-@RequestMapping(value = "/webapi", produces = { APPLICATION_JSON_VALUE,
-        APPLICATION_XML_VALUE })
+@RequestMapping(value = "/webapi", produces = {APPLICATION_JSON_VALUE,
+        APPLICATION_XML_VALUE})
 public class UserClientsResource {
 
     @Resource
@@ -53,23 +53,18 @@ public class UserClientsResource {
     /**
      * Get a page of UserClient that satisfy the search criteria
      *
-     * @param clientId
-     *            to use
-     * @param pageable
-     *            to use
-     * @param sort
-     *            to use
-     * @param assembler
-     *            to use
-     * @param status
-     *            to filter
-     * @param term
-     *            to search
+     * @param clientId  to use
+     * @param pageable  to use
+     * @param sort      to use
+     * @param assembler to use
+     * @param status    to filter
+     * @param term      to search
+     * @param teamId    the team to filter by
      * @return UserClientPage
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER" })
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -106,16 +101,14 @@ public class UserClientsResource {
     /**
      * Create a brand new UserClient
      *
-     * @param clientId
-     *            on which to create
-     * @param userClient
-     *            to create
+     * @param clientId   on which to create
+     * @param userClient to create
      * @return UserClient created
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.POST, consumes = {
-            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER" })
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER"})
     public ResponseEntity<UserClientResource> createUser(
             @PathVariable Long clientId, @RequestBody UserClient userClient) {
 
@@ -145,13 +138,12 @@ public class UserClientsResource {
     /**
      * GET a single UserClient
      *
-     * @param id
-     *            to load
+     * @param id to load
      * @return UserClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/user_client/{id}", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER" })
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER"})
     public ResponseEntity<UserClientResource> get(@PathVariable("id") Long id) {
         UserClient userClient = userClientService.reload(new UserClient(id));
         if (userClient != null) {
@@ -167,17 +159,15 @@ public class UserClientsResource {
     /**
      * PUT to update a single UserClient
      *
-     * @param id
-     *            to update
-     * @param userClient
-     *            the object to update
+     * @param id         to update
+     * @param userClient the object to update
      * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow
-     *         returns null
+     * returns null
      */
     @RequestMapping(value = "/user_client/{id}", method = RequestMethod.PUT, consumes = {
-            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER" })
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+            "PERM_CLIENT_CREATE_NEW_USER"})
     public ResponseEntity<UserClientResource> update(
             @PathVariable("id") Long id, @RequestBody UserClient userClient) {
 
