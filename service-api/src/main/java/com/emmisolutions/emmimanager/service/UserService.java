@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 
@@ -43,7 +43,7 @@ public interface UserService {
      * @param userSearchFilter filtered by
      * @return a page of users objects
      */
-	Page<UserAdmin> list(Pageable page, UserSearchFilter userSearchFilter);
+	Page<UserAdmin> list(Pageable page, UserAdminSearchFilter userSearchFilter);
 
 	/**
      * Find all user admin roles excluding the system roles
@@ -51,4 +51,12 @@ public interface UserService {
      * @return PAge<UserAdminRole> or null
      */
 	Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable);
+
+	/**
+     * Reloads a User from persistent storage with full roles and permissions
+     *
+     * @param user to reload
+     * @return the reloaded user
+     */
+	UserAdmin fetchUserWillFullPermissions(UserAdmin user);
 }

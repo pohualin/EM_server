@@ -6,7 +6,7 @@ import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
@@ -54,7 +54,7 @@ public interface UserPersistence {
      * @param filter   contains search criteria
      * @return Page<UserAdmin>
      */
-	Page<UserAdmin> list(Pageable page, UserSearchFilter filter);
+	Page<UserAdmin> list(Pageable page, UserAdminSearchFilter filter);
 
     /**
      * Pulls the User from the database using the id

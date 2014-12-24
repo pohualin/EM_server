@@ -11,7 +11,7 @@ import javax.validation.ConstraintViolationException;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
@@ -66,7 +66,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
         
-        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "firstName");
+        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.ALL , "firstName");
         Page<UserAdmin> users = userPersistence.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));

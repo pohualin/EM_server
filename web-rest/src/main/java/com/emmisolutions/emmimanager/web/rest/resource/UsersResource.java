@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.UserService;
@@ -92,7 +92,7 @@ public class UsersResource {
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "term", required = false) String term) {
 
-        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.fromStringOrActive(status) , term);
+        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.fromStringOrActive(status) , term);
 
         Page<UserAdmin> users = userService.list(pageable, filter);
 
@@ -165,7 +165,7 @@ public class UsersResource {
     public ResponseEntity<UserResource> get(@PathVariable("id") Long id) {
         UserAdmin toFind = new UserAdmin();
         toFind.setId(id);
-        toFind = userService.reload(toFind);
+        toFind = userService.fetchUserWillFullPermissions(toFind);
         if (toFind != null) {
             return new ResponseEntity<>(userResourceAssembler.toResource(toFind), HttpStatus.OK);
         } else {

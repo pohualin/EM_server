@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  * The search filter for User entities
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserSearchFilter {
+public class UserAdminSearchFilter {
 
 	private String term;
 
@@ -18,7 +18,7 @@ public class UserSearchFilter {
 	/**
 	 * constructor
 	 */
-	public UserSearchFilter() {
+	public UserAdminSearchFilter() {
 		this.status = StatusFilter.ALL;
 	}
 
@@ -26,7 +26,7 @@ public class UserSearchFilter {
 	 * all status plus passed term
 	 * 
 	 */
-	public UserSearchFilter(String term) {
+	public UserAdminSearchFilter(String term) {
 		this(StatusFilter.ALL, term);
 	}
 
@@ -38,7 +38,7 @@ public class UserSearchFilter {
 	 * @param term
 	 *            to filter
 	 */
-	public UserSearchFilter(StatusFilter status, String term) {
+	public UserAdminSearchFilter(StatusFilter status, String term) {
 		this.term = term;
 		this.status = status;
 	}

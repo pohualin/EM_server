@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +30,7 @@ public class UserSpecifications {
 	 *            carriers search term
 	 * @return Specification with search term
 	 */
-	public Specification<UserAdmin> hasNames(final UserSearchFilter filter) {
+	public Specification<UserAdmin> hasNames(final UserAdminSearchFilter filter) {
 		return new Specification<UserAdmin>() {
 			@Override
 			public Predicate toPredicate(Root<UserAdmin> root,

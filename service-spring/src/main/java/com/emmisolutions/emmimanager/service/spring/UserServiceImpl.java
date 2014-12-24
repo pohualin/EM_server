@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
@@ -72,10 +72,19 @@ public class UserServiceImpl implements UserService {
         if (user == null || user.getId() == null) {
             return null;
         }
+        return userPersistence.reload(user);
+    }
+ 
+    @Override
+    @Transactional
+    public UserAdmin fetchUserWillFullPermissions(UserAdmin user) {
+        if (user == null || user.getId() == null) {
+            return null;
+        }
         user = userPersistence.reload(user);
         return userPersistence.fetchUserWillFullPermissions(user.getLogin());
     }
- 
+    
     /**
      * @param page             Page number of users needed
      * @param userSearchFilter search filter for teams
@@ -83,7 +92,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<UserAdmin> list(Pageable page, UserSearchFilter userSearchFilter) {
+    public Page<UserAdmin> list(Pageable page, UserAdminSearchFilter userSearchFilter) {
         return userPersistence.list(page, userSearchFilter);
     }
 

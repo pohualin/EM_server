@@ -16,7 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
@@ -75,14 +75,14 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
         
-        UserAdmin user1 = userService.reload(user);
+        UserAdmin user1 = userService.fetchUserWillFullPermissions(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
 
         assertThat("the users roles saved", user1.getRoles().size(), is(1));
 
         user = userService.save(req); //execute again just to verify that is deleting the previous roles
         
-        UserSearchFilter filter = new UserSearchFilter(UserSearchFilter.StatusFilter.ALL , "firstName1");
+        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.ALL , "firstName1");
         Page<UserAdmin> users = userService.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));

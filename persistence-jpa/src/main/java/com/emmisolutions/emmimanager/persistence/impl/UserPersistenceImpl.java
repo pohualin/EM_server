@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.UserSearchFilter;
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
@@ -33,13 +33,13 @@ public class UserPersistenceImpl implements UserPersistence {
 
     @Resource
     UserAdminRoleRepository userAdminroleRepository;
-    
+
     @Resource
     UserAdminRepository userAdminRepository;
-    
+
     @Resource
     UserAdminUserAdminRoleRepository userAdminUserAdminRoleRepository;
-    
+
     @Resource
     UserSpecifications userSpecifications;
 
@@ -47,10 +47,12 @@ public class UserPersistenceImpl implements UserPersistence {
     MatchingCriteriaBean matchCriteria;
 
     @Override
-    public Set<UserAdminUserAdminRole> saveAll(Set<UserAdminUserAdminRole> userAdminUserAdminRole) {
-        return new HashSet<>(userAdminUserAdminRoleRepository.save(userAdminUserAdminRole));
+    public Set<UserAdminUserAdminRole> saveAll(
+            Set<UserAdminUserAdminRole> userAdminUserAdminRole) {
+        return new HashSet<>(
+                userAdminUserAdminRoleRepository.save(userAdminUserAdminRole));
     }
-    
+
     @Override
     public UserAdmin saveOrUpdate(UserAdmin user) {
         user.setLogin(StringUtils.lowerCase(user.getLogin()));
@@ -67,7 +69,7 @@ public class UserPersistenceImpl implements UserPersistence {
         userAdminUserAdminRoleRepository.flush();
         return ret;
     }
-    
+
     @Override
     public UserAdmin reload(String login) {
         return userAdminRepository.findByLoginIgnoreCase(login);
@@ -77,7 +79,7 @@ public class UserPersistenceImpl implements UserPersistence {
     public UserAdmin reload(UserAdmin user) {
         return userAdminRepository.findOne(user.getId());
     }
-    
+
     @Override
     public UserAdmin fetchUserWillFullPermissions(String login) {
         return userAdminRepository.fetchWithFullPermissions(login);
@@ -93,15 +95,15 @@ public class UserPersistenceImpl implements UserPersistence {
                 where(userSpecifications.isContractOwner()), pageable);
     }
 
-	@Override
-	public Page<UserAdmin> list(Pageable pageable, UserSearchFilter filter) {
+    @Override
+    public Page<UserAdmin> list(Pageable pageable, UserAdminSearchFilter filter) {
         if (pageable == null) {
             pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
         }
         return userAdminRepository.findAll(
                 where(userSpecifications.hasNames(filter)), pageable);
-   }
-	
+    }
+
     @Override
     public Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable) {
         if (pageable == null) {
