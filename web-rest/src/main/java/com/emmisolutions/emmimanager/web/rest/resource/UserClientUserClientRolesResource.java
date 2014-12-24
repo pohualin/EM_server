@@ -1,11 +1,13 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
+import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRolePage;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResource;
+import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,27 +17,20 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
-import com.emmisolutions.emmimanager.service.UserClientUserClientRoleService;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRolePage;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResource;
-import com.emmisolutions.emmimanager.web.rest.model.user.client.UserClientUserClientRoleResourceAssembler;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * Users Client REST API
  */
 @RestController
 @RequestMapping(value = "/webapi", produces = { APPLICATION_JSON_VALUE,
-	APPLICATION_XML_VALUE })
+        APPLICATION_XML_VALUE })
 public class UserClientUserClientRolesResource {
 
     @Resource
@@ -59,26 +54,26 @@ public class UserClientUserClientRolesResource {
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientRoles", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-	    "PERM_CLIENT_CREATE_NEW_USER" })
+            "PERM_CLIENT_CREATE_NEW_USER" })
     @ApiImplicitParams(value = {
-	    @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-	    @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-	    @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
     public ResponseEntity<UserClientUserClientRolePage> getUserClientUserClientRoles(
-	    @PathVariable(value = "userClientId") Long userClientId,
-	    @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
-	    @SortDefault(sort = "id") Sort sort,
-	    PagedResourcesAssembler<UserClientUserClientRole> assembler) {
-	Page<UserClientUserClientRole> page = userClientUserClientRoleService
-		.findByUserClient(new UserClient(userClientId), pageable);
-	if (page != null) {
-	    return new ResponseEntity<>(new UserClientUserClientRolePage(
-		    assembler.toResource(page,
-			    userClientUserClientRoleResourceAssembler), page),
-		    HttpStatus.OK);
-	} else {
-	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
+            @PathVariable(value = "userClientId") Long userClientId,
+            @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
+            @SortDefault(sort = "id") Sort sort,
+            PagedResourcesAssembler<UserClientUserClientRole> assembler) {
+        Page<UserClientUserClientRole> page = userClientUserClientRoleService
+                .findByUserClient(new UserClient(userClientId), pageable);
+        if (page != null) {
+            return new ResponseEntity<>(new UserClientUserClientRolePage(
+                    assembler.toResource(page,
+                            userClientUserClientRoleResourceAssembler), page),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     /**
@@ -89,21 +84,21 @@ public class UserClientUserClientRolesResource {
      * @return UserClientUserClientRolePage created
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientRoles", method = RequestMethod.POST, consumes = {
-	    APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-	    "PERM_CLIENT_CREATE_NEW_USER" })
+            "PERM_CLIENT_CREATE_NEW_USER" })
     public ResponseEntity<UserClientUserClientRoleResource> associateUserClientRole(
-	    @RequestBody UserClientUserClientRole userClientUserClientRole) {
-	userClientUserClientRole = userClientUserClientRoleService
-		.create(userClientUserClientRole);
-	if (userClientUserClientRole == null) {
-	    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	} else {
-	    return new ResponseEntity<>(
-		    userClientUserClientRoleResourceAssembler
-			    .toResource(userClientUserClientRole),
-		    HttpStatus.CREATED);
-	}
+            @RequestBody UserClientUserClientRole userClientUserClientRole) {
+        userClientUserClientRole = userClientUserClientRoleService
+                .create(userClientUserClientRole);
+        if (userClientUserClientRole == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(
+                    userClientUserClientRoleResourceAssembler
+                            .toResource(userClientUserClientRole),
+                    HttpStatus.CREATED);
+        }
     }
 
     /**
@@ -115,18 +110,18 @@ public class UserClientUserClientRolesResource {
      */
     @RequestMapping(value = "/user_client_user_client_role/{userClientUserClientRoleId}", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-	    "PERM_CLIENT_CREATE_NEW_USER" })
+            "PERM_CLIENT_CREATE_NEW_USER" })
     public ResponseEntity<UserClientUserClientRoleResource> getUserClientUserClientRole(
-	    @PathVariable(value = "userClientUserClientRoleId") Long userClientUserClientRoleId) {
-	UserClientUserClientRole usucr = userClientUserClientRoleService
-		.reload(new UserClientUserClientRole(userClientUserClientRoleId));
-	if (usucr != null) {
-	    return new ResponseEntity<>(
-		    userClientUserClientRoleResourceAssembler.toResource(usucr),
-		    HttpStatus.OK);
-	} else {
-	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
+            @PathVariable(value = "userClientUserClientRoleId") Long userClientUserClientRoleId) {
+        UserClientUserClientRole usucr = userClientUserClientRoleService
+                .reload(new UserClientUserClientRole(userClientUserClientRoleId));
+        if (usucr != null) {
+            return new ResponseEntity<>(
+                    userClientUserClientRoleResourceAssembler.toResource(usucr),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     /**
@@ -137,9 +132,9 @@ public class UserClientUserClientRolesResource {
      */
     @RequestMapping(value = "/user_client_user_client_role/{userClientUserClientRoleId}", method = RequestMethod.DELETE)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-	    "PERM_CLIENT_CREATE_NEW_USER" })
+            "PERM_CLIENT_CREATE_NEW_USER" })
     public void delete(@PathVariable Long userClientUserClientRoleId) {
-	userClientUserClientRoleService.delete(new UserClientUserClientRole(
-		userClientUserClientRoleId));
+        userClientUserClientRoleService.delete(new UserClientUserClientRole(
+                userClientUserClientRoleId));
     }
 }

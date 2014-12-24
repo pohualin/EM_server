@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
@@ -52,10 +53,14 @@ public abstract class BaseIntegrationTest {
     @Resource
     UserClientRoleService userClientRoleService;
 
+    @Resource
+    UserClientTeamRoleService userClientTeamRoleService;
+
     /**
      * Login as a user
      *
-     * @param login to login as
+     * @param login
+     *            to login as
      */
     protected void login(String login) {
         SecurityContextHolder.getContext().setAuthentication(
@@ -65,7 +70,8 @@ public abstract class BaseIntegrationTest {
     /**
      * Makes a UserDetails object with authorities
      *
-     * @param login to use
+     * @param login
+     *            to use
      */
     protected void login(String login, List<GrantedAuthority> authorityList) {
         SecurityContextHolder.getContext().setAuthentication(
@@ -133,17 +139,24 @@ public abstract class BaseIntegrationTest {
      *
      * @return random team
      */
-    protected Team makeNewRandomTeam() {
+    protected Team makeNewRandomTeam(Client client) {
         Team team = new Team();
-        team.setName(RandomStringUtils.randomAlphabetic(50));
+        team.setName("a" + RandomStringUtils.randomAlphabetic(49));
         team.setDescription(RandomStringUtils.randomAlphabetic(50));
-        team.setActive(false);
-        team.setClient(makeNewRandomClient());
+        team.setActive(true);
+        team.setClient(client != null ? client : makeNewRandomClient());
         team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
                 .randomAlphanumeric(18)));
         return teamService.create(team);
     }
 
+    /**
+     * Create a brand new UserClientRole with given client
+     * 
+     * @param client
+     *            to use
+     * @return random UserClientRole
+     */
     protected UserClientRole makeNewRandomUserClientRole(Client client) {
         if (client == null) {
             client = makeNewRandomClient();
@@ -151,6 +164,22 @@ public abstract class BaseIntegrationTest {
         UserClientRole userClientRole = new UserClientRole(
                 RandomStringUtils.randomAlphabetic(10), client, null);
         return userClientRoleService.create(userClientRole);
+    }
+
+    /**
+     * Create a brand new UserClientTeamRole with given client
+     * 
+     * @param client
+     *            to use
+     * @return random UserClientTeamRole
+     */
+    protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
+        if (client == null) {
+            client = makeNewRandomClient();
+        }
+        UserClientTeamRole userClientTeamRole = new UserClientTeamRole(
+                RandomStringUtils.randomAlphabetic(10), client, null);
+        return userClientTeamRoleService.create(userClientTeamRole);
     }
 
     /**

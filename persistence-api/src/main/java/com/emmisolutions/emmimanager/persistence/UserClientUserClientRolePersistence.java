@@ -1,10 +1,9 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Persistence API for UserClientUserClientRole.
@@ -19,7 +18,7 @@ public interface UserClientUserClientRolePersistence {
      * @return the saved UserClientUserClientRole
      */
     UserClientUserClientRole saveOrUpdate(
-	    UserClientUserClientRole userClientUserClientRole);
+            UserClientUserClientRole userClientUserClientRole);
 
     /**
      * @param userClient
@@ -29,7 +28,7 @@ public interface UserClientUserClientRolePersistence {
      * @return a page of UserClientUserClientRole having UserClient
      */
     Page<UserClientUserClientRole> findByUserClient(UserClient userClient,
-	    Pageable pageable);
+            Pageable pageable);
 
     /**
      * Find the UserClientUserClientRole by userClientUserClientId

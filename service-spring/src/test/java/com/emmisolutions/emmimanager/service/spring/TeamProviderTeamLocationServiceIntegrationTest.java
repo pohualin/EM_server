@@ -39,16 +39,16 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 
 	@Resource
 	ClientPersistence clientPersistence;
-	
+
 	@Resource
 	TeamPersistence teamPersistence;
-	
+
 	@Resource
 	LocationPersistence locationPersistence;
-	
+
 	@Resource
 	ProviderPersistence providerPersistence;
-	
+
 	@Resource
 	TeamLocationPersistence teamLocationPersistence;
 
@@ -58,9 +58,12 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 	@Resource
 	TeamProviderTeamLocationPersistence teamProviderTeamLocationPersistence;
 
+	/**
+	 * Test find TeamProviderTeamLocation by TeamProvider
+	 */
 	@Test
 	public void findByTeamProvider() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 
@@ -78,47 +81,56 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		List<TeamProviderTeamLocation> tptls = new ArrayList<TeamProviderTeamLocation>();
 		tptls.add(tptl);
 		teamProviderTeamLocationPersistence.saveAll(tptls);
-		
+
 		teamProviderTeamLocationService.findByTeamProvider(teamProvider, null);
-		
+
 		teamProviderTeamLocationService.findByTeamLocation(teamLocation, null);
 	}
-	
+
+	/**
+	 * Test create a TeamProviderTeamLocation
+	 */
 	@Test
 	public void testCreateTeamProviderTeamLocation() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 
 		TeamLocation teamLocation = new TeamLocation(location, team);
-		TeamLocation firstTeam = teamLocationPersistence.saveTeamLocation(teamLocation);
+		TeamLocation firstTeam = teamLocationPersistence
+				.saveTeamLocation(teamLocation);
 
 		TeamLocation teamLocationTwo = new TeamLocation(location, team);
-		TeamLocation TeamTwo = teamLocationPersistence.saveTeamLocation(teamLocationTwo);
-		
+		TeamLocation TeamTwo = teamLocationPersistence
+				.saveTeamLocation(teamLocationTwo);
+
 		Set<TeamLocation> teamLocations = new HashSet<TeamLocation>();
 		teamLocations.add(teamLocation);
 		teamLocations.add(teamLocationTwo);
-		
+
 		TeamProvider teamProvider = new TeamProvider();
 		teamProvider.setTeam(team);
 		teamProvider.setProvider(provider);
 		teamProviderPersistence.save(teamProvider);
 
-		Set<TeamProviderTeamLocation> savedTPTLs = teamProviderTeamLocationService.createTeamProviderTeamLocation(teamLocations, teamProvider);
-        assertThat("TPTL has been created", savedTPTLs.size(), is(2));
+		Set<TeamProviderTeamLocation> savedTPTLs = teamProviderTeamLocationService
+				.createTeamProviderTeamLocation(teamLocations, teamProvider);
+		assertThat("TPTL has been created", savedTPTLs.size(), is(2));
 	}
 
+	/**
+	 * Test create a set of TeamProviderTeamLocation
+	 */
 	@Test
 	public void saveAllTeamProviderTeamLocations() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 		Location locationA = makeNewRandomLocation();
 
 		TeamLocation teamLocation = new TeamLocation(location, team);
 		teamLocationPersistence.saveTeamLocation(teamLocation);
-		
+
 		TeamLocation teamLocationA = new TeamLocation(locationA, team);
 		teamLocationPersistence.saveTeamLocation(teamLocationA);
 
@@ -130,20 +142,23 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
 		tptl.setTeamLocation(teamLocation);
 		tptl.setTeamProvider(teamProvider);
-		
+
 		TeamProviderTeamLocation tptlA = new TeamProviderTeamLocation();
 		tptlA.setTeamLocation(teamLocationA);
 		tptlA.setTeamProvider(teamProvider);
 		List<TeamProviderTeamLocation> tptls = new ArrayList<TeamProviderTeamLocation>();
 		tptls.add(tptl);
 		tptls.add(tptlA);
-		
+
 		teamProviderTeamLocationService.saveAllTeamProviderTeamLocations(tptls);
 	}
 
+	/**
+	 * Test delete all TeamProviderTeamLocation by TeamProvider
+	 */
 	@Test
 	public void removeAllByTeamProvider() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 
@@ -161,13 +176,16 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		List<TeamProviderTeamLocation> tptls = new ArrayList<TeamProviderTeamLocation>();
 		tptls.add(tptl);
 		teamProviderTeamLocationPersistence.saveAll(tptls);
-		
+
 		teamProviderTeamLocationService.removeAllByTeamProvider(teamProvider);
 	}
 
+	/**
+	 * Test update TeamProviderTeamLocation by TeamLocation
+	 */
 	@Test
 	public void updateTeamProviderTeamLocationsByTeamLocation() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Provider providerA = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
@@ -179,7 +197,7 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		teamProvider.setTeam(team);
 		teamProvider.setProvider(provider);
 		teamProviderPersistence.save(teamProvider);
-		
+
 		TeamProvider teamProviderA = new TeamProvider();
 		teamProviderA.setTeam(team);
 		teamProviderA.setProvider(providerA);
@@ -191,25 +209,29 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		List<TeamProviderTeamLocation> tptls = new ArrayList<TeamProviderTeamLocation>();
 		tptls.add(tptl);
 		teamProviderTeamLocationPersistence.saveAll(tptls);
-		
+
 		TeamLocationTeamProviderSaveRequest request = new TeamLocationTeamProviderSaveRequest();
 		Set<TeamProvider> providers = new HashSet<TeamProvider>();
 		providers.add(teamProvider);
 		providers.add(teamProviderA);
 		request.setProviders(providers);
-		teamProviderTeamLocationService.updateTeamProviderTeamLocations(teamLocation, request);
+		teamProviderTeamLocationService.updateTeamProviderTeamLocations(
+				teamLocation, request);
 	}
 
+	/**
+	 * Test update TeamProviderTeamLocation by TeamProvider
+	 */
 	@Test
 	public void updateTeamProviderTeamLocationsByTeamProvider() {
-		Team team = makeNewRandomTeam();
+		Team team = makeNewRandomTeam(null);
 		Provider provider = makeNewRandomProvider();
 		Location location = makeNewRandomLocation();
 		Location locationA = makeNewRandomLocation();
 
 		TeamLocation teamLocation = new TeamLocation(location, team);
 		teamLocationPersistence.saveTeamLocation(teamLocation);
-		
+
 		TeamLocation teamLocationA = new TeamLocation(locationA, team);
 		teamLocationPersistence.saveTeamLocation(teamLocationA);
 
@@ -224,13 +246,14 @@ public class TeamProviderTeamLocationServiceIntegrationTest extends
 		List<TeamProviderTeamLocation> tptls = new ArrayList<TeamProviderTeamLocation>();
 		tptls.add(tptl);
 		teamProviderTeamLocationPersistence.saveAll(tptls);
-		
+
 		TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
 		Set<TeamLocation> teamLocations = new HashSet<TeamLocation>();
 		teamLocations.add(teamLocation);
 		teamLocations.add(teamLocationA);
 		request.setTeamLocations(teamLocations);
-		teamProviderTeamLocationService.updateTeamProviderTeamLocations(teamProvider, request);
+		teamProviderTeamLocationService.updateTeamProviderTeamLocations(
+				teamProvider, request);
 	}
-	
+
 }

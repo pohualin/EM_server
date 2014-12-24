@@ -56,12 +56,18 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     @Override
     public Page<UserClient> list(Pageable pageable,
                                  UserClientSearchFilter filter) {
+        Pageable pageSpecification;
         if (pageable == null) {
-            pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+            pageSpecification = new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        } else {
+            pageSpecification = pageable;
         }
         return userClientRepository.findAll(
-                where(userClientSpecifications.hasNames(filter)).and(
-                        userClientSpecifications.isClient(filter)), pageable);
+                where(userClientSpecifications.hasNames(filter))
+                        .and(userClientSpecifications.isClient(filter))
+                        .and(userClientSpecifications.isInStatus(filter))
+                        .and(userClientSpecifications.hasRoleOnTeam(filter)),
+                pageSpecification);
     }
 
     @Override

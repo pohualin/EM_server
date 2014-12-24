@@ -52,15 +52,17 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
      * Create the search link
      *
      * @return Link for client searches
-     * @see com.emmisolutions.emmimanager.web.rest.resource.ClientsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
+     * @see com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource#getUsers(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String, Long)
      */
     public static Link createFullUsersSearchLink(Client entity) {
-        Link link = linkTo(methodOn(UserClientsResource.class).getUsers(entity.getId(), null, null, null, null, null)).withRel("users");
+        Link link = linkTo(methodOn(UserClientsResource.class).getUsers(entity.getId(), null, null, null, null, null, null)).withRel("users");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("term", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+                        new TemplateVariable("term", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("teamId", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 }
