@@ -1,18 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
+import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.xml.bind.annotation.*;
+import java.util.List;
 
 /**
  * HATEOAS wrapper for UserClientUserClientRole, essentially a DTO instead of a

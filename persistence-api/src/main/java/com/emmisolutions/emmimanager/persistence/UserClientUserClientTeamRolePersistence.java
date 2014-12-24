@@ -1,12 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import java.util.List;
-
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
+import java.util.List;
 
 /**
  * Persistence API for UserClientUserClientTeamRole

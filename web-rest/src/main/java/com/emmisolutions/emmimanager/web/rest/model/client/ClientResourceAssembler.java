@@ -43,6 +43,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(UserClientTeamRoleResourcePage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(ClientTeamRolesAdminResource.class).referenceData()).withRel("teamRolesReferenceData"));
         ret.add(TeamTagPage.createFullSearchLinkTeamTagsWithTags(entity));
+        ret.add(TeamPage.createFullSearchLinkTeamsWithNoTeamTags(entity));
         ret.add(createFullUsersSearchLink(entity));
         ret.setEntity(entity);
         return ret;
@@ -60,7 +61,8 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("term", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+                        new TemplateVariable("term", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 }

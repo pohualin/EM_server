@@ -1,11 +1,10 @@
 package com.emmisolutions.emmimanager.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.apache.commons.lang3.StringUtils;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 /**
  * The search filter for UserClient entities

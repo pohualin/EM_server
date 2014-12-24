@@ -1,23 +1,19 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.hateoas.*;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A HATEOAS wrapper for a page of UserClientResource objects.
@@ -25,7 +21,12 @@ import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 @XmlRootElement(name = "user-client-page")
 public class UserClientPage extends PagedResource<UserClientResource> {
 
+    @XmlElement(name = "filter")
     private UserClientSearchFilter filter;
+
+    @XmlElement(name = "statusFilter")
+    @XmlElementWrapper(name = "statusFilters")
+    private UserClientSearchFilter.StatusFilter[] statusFilters = UserClientSearchFilter.StatusFilter.values();
 
     public UserClientPage() {
     }
@@ -33,13 +34,11 @@ public class UserClientPage extends PagedResource<UserClientResource> {
     /**
      * Wrapped constructor
      *
-     * @param userResources
-     *            to be wrapped
-     * @param userPage
-     *            the raw response
+     * @param userResources to be wrapped
+     * @param userPage      the raw response
      */
     public UserClientPage(PagedResources<UserClientResource> userResources,
-            Page<UserClient> userPage, UserClientSearchFilter filter) {
+                          Page<UserClient> userPage, UserClientSearchFilter filter) {
         pageDefaults(userResources, userPage);
         addFilterToLinks(filter);
     }

@@ -1,16 +1,15 @@
 package com.emmisolutions.emmimanager.service;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.UserClientUserClientTeamRoleSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * The UserClientUserClientTeamRole Service

@@ -1,19 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client.team;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import org.springframework.data.domain.Page;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.web.rest.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientTeamRolesAdminResource;
+import org.springframework.data.domain.Page;
+import org.springframework.hateoas.*;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * A Page of UserClientUserClientRoleTeamResource objects

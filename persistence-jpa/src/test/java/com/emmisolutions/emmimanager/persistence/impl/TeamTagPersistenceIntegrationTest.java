@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import javax.annotation.Resource;
 import java.util.HashSet;
@@ -90,7 +92,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         tag2.setTeamTags(teamTagSet2);
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
-        HashSet<Tag> tagSet= new HashSet<>();
+        HashSet<Tag> tagSet = new HashSet<>();
         tagSet.add(tag1);
         tagSet.add(tag2);
         searchFilter.setTagSet(tagSet);
@@ -122,7 +124,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         teamTagPersistence.saveTeamTag(teamTag2);
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
-        HashSet<Tag> tagSet= new HashSet<>();
+        HashSet<Tag> tagSet = new HashSet<>();
         searchFilter.setTagSet(tagSet);
         searchFilter.setClientId(client.getId());
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
@@ -165,13 +167,13 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         tag.setTeamTags(teamTagSet);
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
-        HashSet<Tag> tagSet= new HashSet<>();
+        HashSet<Tag> tagSet = new HashSet<>();
         tagSet.add(tag);
         searchFilter.setTagSet(tagSet);
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("we can find the team tag by the team tag id",
                 teamsWithTag,
-            hasItem(afterSaveTeamTag));
+                hasItem(afterSaveTeamTag));
     }
 
     /**
@@ -226,11 +228,11 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         searchFilter.setTagSet(tagSet);
         Page<TeamTag> returnedTeamTags = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
-        assertThat("afterSaveTeamTag2 team is returned",returnedTeamTags,hasItem(afterSaveTeamTag2));
-        assertThat("afterSaveTeamTag3 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag3)));
+        assertThat("afterSaveTeamTag2 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag2));
+        assertThat("afterSaveTeamTag3 team is not returned", returnedTeamTags, not(hasItem(afterSaveTeamTag3)));
     }
 
-  /**
+    /**
      * get teams for a multiple filter tags in different groups
      */
     @Test
@@ -286,8 +288,8 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         Page<TeamTag> returnedTeamTags = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
         assertThat("afterSaveTeamTag2 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag2));
-        assertThat("afterSaveTeamTag3 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag3)));
-        assertThat("afterSaveTeamTag4 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag4)));
+        assertThat("afterSaveTeamTag3 team is not returned", returnedTeamTags, not(hasItem(afterSaveTeamTag3)));
+        assertThat("afterSaveTeamTag4 team is not returned", returnedTeamTags, not(hasItem(afterSaveTeamTag4)));
     }
 
 
@@ -541,6 +543,77 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void removeNothing() {
         assertThat("nothing gets removed", teamTagPersistence.removeTeamTagsThatAreNotAssociatedWith(null, null), is(0l));
+    }
+
+    /**
+     * return teams with no teamtags
+     */
+    @Test
+    public void getTeamsWithNoTeamTags() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 1);
+        Team team2 = createTeam(client1, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(null, client1.getId());
+        assertThat("team2 was returned", returnedTeams, hasItem(team2));
+        assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
+    }
+
+    /**
+     * return teams with no teamtags and defined page
+     */
+    @Test
+    public void getTeamsWithNoTeamTagsAndDefinedPage() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 1);
+        Team team2 = createTeam(client1, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(new PageRequest(0, 50, Sort.Direction.ASC, "id"), client1.getId());
+        assertThat("team2 was returned", returnedTeams, hasItem(team2));
+        assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
+    }
+
+  /**
+     * return null chen clientId is null
+     */
+    @Test
+    public void getTeamsWithNoTeamTagsReturnsNull() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 1);
+        Team team2 = createTeam(client1, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(new PageRequest(0, 50, Sort.Direction.ASC, "id"), null);
+        assertThat("returned null", returnedTeams, is(nullValue()));
     }
 
     private Team createTeam(Client client, int i) {

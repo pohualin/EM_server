@@ -1,15 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.model.user.client;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.stereotype.Component;
-
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientUserClientTeamRoleResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.resource.UserClientUserClientRolesResource;
 import com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.stereotype.Component;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Creates a UserClientResource from a UserClient

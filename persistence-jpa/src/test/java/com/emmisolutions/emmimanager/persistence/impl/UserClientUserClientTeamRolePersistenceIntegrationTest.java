@@ -1,18 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -21,6 +8,17 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClient
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientUserClientTeamRolePersistence;
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for UserClientPersistence
