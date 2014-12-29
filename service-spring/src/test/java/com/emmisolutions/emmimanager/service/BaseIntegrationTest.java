@@ -1,11 +1,10 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
-import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
-import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+import java.util.HashSet;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -18,8 +17,24 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientRegion;
+import com.emmisolutions.emmimanager.model.ClientTier;
+import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+
 
 /**
  * Root integration test harness
@@ -208,6 +223,9 @@ public abstract class BaseIntegrationTest {
                 RandomStringUtils.randomAlphanumeric(100));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
-        return userService.save(userAdmin);
+    	UserAdminSaveRequest req = new UserAdminSaveRequest();
+       	req.setUserAdmin(userAdmin);
+       	req.setRoles(new HashSet<UserAdminRole>());
+        return userService.save(req);
     }
 }

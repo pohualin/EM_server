@@ -1,8 +1,13 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
+import java.util.HashSet;
+
+import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserService;
+
 import org.junit.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,8 +38,12 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
         UserAdmin aUser = new UserAdmin(login, "pw");
         aUser.setFirstName("firstName");
         aUser.setLastName("lastName");
-        userService.save(aUser);
 
+    	UserAdminSaveRequest req = new UserAdminSaveRequest();
+       	req.setUserAdmin(aUser);
+       	req.setRoles(new HashSet<UserAdminRole>());
+        userService.save(req);
+        
         UserDetails details = userDetailsService.loadUserByUsername(login);
         assertThat("A UserDetails object should be returned", details, is(notNullValue()));
     }
