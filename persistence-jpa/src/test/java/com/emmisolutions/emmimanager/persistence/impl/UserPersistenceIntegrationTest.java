@@ -1,5 +1,17 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
@@ -7,14 +19,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
 
 /**
  * Integration test for user persistence.
@@ -23,10 +28,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserPersistence userPersistence;
-
-    @Resource
-    UserAdminRepository userAdminRepository;
-
+        
     /**
      * Invalid user no login
      */
@@ -36,6 +38,17 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         userPersistence.saveOrUpdate(new UserAdmin());
     }
 
+    /**
+     * find user admin roles without system role
+     */
+    @Test
+    public void testUserAdminRoles() {
+    	
+    	Page<UserAdminRole> roles = userPersistence.listRolesWithoutSystem(null);
+        assertThat("the search roles return values", roles.getContent(), is(notNullValue()));
+        assertThat("the search roles return values", roles.getContent().size(), is(3) );
+
+    }
     /**
      * valid create
      */
@@ -49,13 +62,22 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
 
-        UserAdmin user1 = userAdminRepository.findOne(user.getId());
+        UserAdmin user1 = userPersistence.reload(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
+        
+        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.ALL , "firstName");
+        Page<UserAdmin> users = userPersistence.list(null, filter);
+        
+        assertThat("the search user return values", users.getContent(), is(notNullValue()));
+        assertThat("the search user return values", users.getContent().size(), is(1) );
+        
+        UserAdmin findUser = users.getContent().iterator().next();
+        assertThat("the users returned is the same user saved", findUser, is(user1));
+
         logout();
-
     }
-
+    
     /**
      * save then reloadLocationUsingClient
      */

@@ -1,8 +1,9 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
+
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 
 /**
  * This assembler is to be used when a User is required for a relationship with another object.
@@ -20,6 +21,8 @@ public class UserResourceForAssociationsAssembler implements ResourceAssembler<U
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
+                user.isActive(),
+                null, 
                 null);
     }
 
