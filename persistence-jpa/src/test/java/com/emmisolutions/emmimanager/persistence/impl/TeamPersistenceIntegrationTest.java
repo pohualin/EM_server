@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
@@ -7,6 +9,7 @@ import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -114,6 +117,17 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("there is nothing on this page", teamPage.getNumberOfElements(), is(0));
         assertThat("there are 100 items in the page", teamPage.getSize(), is(100));
         assertThat("we are on page 10", teamPage.getNumber(), is(10));
+        
+        Team team = makeNewRandomTeam(client);
+        Group group = makeNewRandomGroup(client);
+        List<Tag> tags = makeNewRandomTags(group, 2);
+        for (Tag tag : tags) {
+            makeNewTeamTag(team, tag);
+        }
+        TeamSearchFilter filter = new TeamSearchFilter();
+        filter.setTag(tags.get(0));
+        Page<Team> teamPageA = teamPersistence.list(null, filter);
+        assertThat("should return some teams", teamPageA.hasContent(), is(true));
     }
 
     private Team makeTeamForClient(Client client, int i) {

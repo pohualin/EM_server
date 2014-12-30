@@ -40,6 +40,7 @@ public class TeamPersistenceImpl implements TeamPersistence {
     public Page<Team> list(Pageable page, TeamSearchFilter filter) {
         return teamRepository.findAll(where(teamSpecifications.usedByClient(filter))
                         .and(teamSpecifications.hasNames(filter))
+                        .and(teamSpecifications.hasTeamTag(filter))
                         .and(teamSpecifications.isInStatus(filter)),
                 page == null ? new PageRequest(0, 50, Sort.Direction.ASC, "id") : page);
     }

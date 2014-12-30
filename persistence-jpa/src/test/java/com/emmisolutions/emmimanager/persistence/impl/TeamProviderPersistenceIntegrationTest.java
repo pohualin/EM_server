@@ -41,7 +41,7 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
     @Test
     public void save() {
         TeamProvider tp = new TeamProvider();
-        tp.setTeam(makeNewRandomTeam());
+        tp.setTeam(makeNewRandomTeam(null));
         tp.setProvider(makeNewRandomProvider());
         TeamProvider saved = teamProviderPersistence.save(tp);
         assertThat("save was successful",
@@ -76,7 +76,7 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
     @Test
     public void saveAll() {
         final TeamProvider one = new TeamProvider();
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         one.setTeam(team);
         one.setProvider(makeNewRandomProvider());
         final TeamProvider two = new TeamProvider();
