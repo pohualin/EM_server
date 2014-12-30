@@ -24,7 +24,7 @@ import java.util.*;
 import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.fromStringOrActive;
 
 /**
- * 
+ * Service layer for UserClientUserClientTeamRole
  * 
  */
 @Service
@@ -124,6 +124,7 @@ public class UserClientUserClientTeamRoleServiceImpl implements
         TeamSearchFilter teamSearchFilter = new TeamSearchFilter(userClient
                 .getClient().getId(), fromStringOrActive(status),
                 filter.getTerm());
+        teamSearchFilter.setTag(filter.getTag());
         Page<Team> teamPage = teamService.list(pageable, teamSearchFilter);
 
         Map<Team, UserClientUserClientTeamRole> existingMap = new HashMap<Team, UserClientUserClientTeamRole>();

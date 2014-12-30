@@ -19,6 +19,8 @@ public class TeamSearchFilter {
     @XmlElementWrapper(name = "names")
     private Set<String> names;
 
+    private Tag tag;
+
     private StatusFilter status;
 
     private Long clientId;
@@ -33,7 +35,8 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param names to filter
+     * @param names
+     *            to filter
      */
     public TeamSearchFilter(String... names) {
         this(StatusFilter.ALL, names);
@@ -42,8 +45,10 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param status filter
-     * @param names  to filter
+     * @param status
+     *            filter
+     * @param names
+     *            to filter
      */
     public TeamSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
@@ -58,8 +63,10 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param status filter
-     * @param names  filter
+     * @param status
+     *            filter
+     * @param names
+     *            filter
      */
     public TeamSearchFilter(StatusFilter status, String names) {
         if (names != null) {
@@ -74,9 +81,12 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param clientId the client filter
-     * @param status   filter
-     * @param names    filters
+     * @param clientId
+     *            the client filter
+     * @param status
+     *            filter
+     * @param names
+     *            filters
      */
     public TeamSearchFilter(Long clientId, StatusFilter status, String... names) {
         this(status, names);
@@ -85,6 +95,14 @@ public class TeamSearchFilter {
 
     public Set<String> getNames() {
         return names;
+    }
+
+    public Tag getTag() {
+        return tag;
+    }
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
     }
 
     public StatusFilter getStatus() {
@@ -104,7 +122,8 @@ public class TeamSearchFilter {
         /**
          * Create a StatusFilter from a string
          *
-         * @param status if the string matches or ALL
+         * @param status
+         *            if the string matches or ALL
          * @return StatusFilter
          */
         public static StatusFilter fromStringOrAll(String status) {
@@ -121,7 +140,8 @@ public class TeamSearchFilter {
         /**
          * Create a StatusFilter from a string
          *
-         * @param status if the string matches or ACTIVE
+         * @param status
+         *            if the string matches or ACTIVE
          * @return StatusFilter
          */
         public static StatusFilter fromStringOrActive(String status) {
@@ -138,9 +158,7 @@ public class TeamSearchFilter {
 
     @Override
     public String toString() {
-        return "TeamSearchFilter{" +
-            "names=" + names +
-            ", status=" + status +
-            '}';
+        return "TeamSearchFilter{" + "names=" + names + ", status=" + status
+                + '}';
     }
 }

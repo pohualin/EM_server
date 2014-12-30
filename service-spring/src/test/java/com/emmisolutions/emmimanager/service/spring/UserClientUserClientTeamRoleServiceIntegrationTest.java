@@ -1,7 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.UserClientUserClientTeamRoleSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
@@ -9,13 +11,16 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClient
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientUserClientTeamRoleService;
+
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,12 +48,11 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
     public void testFindPossible() {
         Client client = makeNewRandomClient();
         Team teamA = makeNewRandomTeam(client);
-        Team teamB = makeNewRandomTeam(client);
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
 
         UserClientUserClientTeamRoleSearchFilter filter = new UserClientUserClientTeamRoleSearchFilter(
-                new UserClient(userClient.getId()), null, "a");
+                new UserClient(userClient.getId()), null, "a", null);
         Page<UserClientUserClientTeamRole> page = userClientUserClientTeamRoleService
                 .findPossible(filter, null);
         assertThat("should contain a page of UserClientUserClientTeamRole",
@@ -66,6 +70,15 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
                 .findPossible(filter, null);
         assertThat("should contain a page of UserClientUserClientTeamRole",
                 pageA.getContent().size() > 0, is(true));
+
+        List<Tag> tags = makeNewRandomTags(makeNewRandomGroup(client), 2);
+        List<TeamTag> teamTags = makeNewTeamTags(teamA, new HashSet<Tag>(tags));
+        UserClientUserClientTeamRoleSearchFilter filterA = new UserClientUserClientTeamRoleSearchFilter(
+                new UserClient(userClient.getId()), null, "a", tags.get(0));
+        Page<UserClientUserClientTeamRole> pageB = userClientUserClientTeamRoleService
+                .findPossible(filterA, null);
+        assertThat("should contain a page of UserClientUserClientTeamRole",
+                pageB.getContent().size() > 0, is(true));
     }
 
     /**

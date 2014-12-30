@@ -1,11 +1,16 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -33,10 +38,19 @@ public abstract class BaseIntegrationTest {
     UserPersistence userPersistence;
 
     @Resource
+    GroupPersistence groupPersistence;
+
+    @Resource
     ClientPersistence clientPersistence;
 
     @Resource
+    TagPersistence tagPersistence;
+
+    @Resource
     TeamPersistence teamPersistence;
+
+    @Resource
+    TeamTagPersistence teamTagPersistence;
 
     @Resource
     ProviderPersistence providerPersistence;
@@ -92,14 +106,64 @@ public abstract class BaseIntegrationTest {
     }
 
     /**
-     * Makes a new randomized team
-     *
+     * Creates a brand new group
+     * 
+     * @param client
+     *            to use
+     * @return random group
+     */
+    protected Group makeNewRandomGroup(Client client) {
+        Group group = new Group();
+        group.setName(RandomStringUtils.randomAlphabetic(10));
+        group.setClient(client != null ? client : makeNewRandomClient());
+        return groupPersistence.save(group);
+    }
+
+    /**
+     * Create a list of tags with given group
+     * 
+     * @param group
+     *            to use
+     * @param count
+     *            to use
+     * @return list of tags
+     */
+    protected List<Tag> makeNewRandomTags(Group group, int count) {
+        List<Tag> tags = new ArrayList<Tag>();
+        for (int i = 0; i < count; i++) {
+            Tag tag = new Tag();
+            tag.setName(RandomStringUtils.randomAlphabetic(10));
+            tag.setGroup(group != null ? group : makeNewRandomGroup(null));
+            tags.add(tag);
+        }
+        return tagPersistence.createAll(tags);
+    }
+
+    /**
+     * Create a new TeamTag
+     * 
+     * @param team
+     *            to use
+     * @param tag
+     *            to use
+     * @return a new teamTag
+     */
+    protected TeamTag makeNewTeamTag(Team team, Tag tag) {
+        TeamTag teamTag = new TeamTag(team, tag);
+        return teamTagPersistence.saveTeamTag(teamTag);
+    }
+
+    /**
+     * Create a new random team
+     * 
+     * @param client
+     *            to use
      * @return random team
      */
-    protected Team makeNewRandomTeam() {
+    protected Team makeNewRandomTeam(Client client) {
         Team team = new Team();
         team.setName(RandomStringUtils.randomAlphanumeric(100));
-        team.setClient(makeNewRandomClient());
+        team.setClient(client != null ? client : makeNewRandomClient());
         team.setActive(true);
         team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
                 .randomAlphanumeric(18)));
