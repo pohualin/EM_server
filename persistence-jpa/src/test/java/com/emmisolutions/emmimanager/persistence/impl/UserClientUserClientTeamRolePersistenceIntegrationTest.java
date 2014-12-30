@@ -39,7 +39,7 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
     @Test
     public void testCreate() {
         Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
 
@@ -66,7 +66,7 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
     @Test
     public void testReload() {
         Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
         UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
@@ -87,7 +87,7 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
     @Test
     public void testDelete() {
         Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
         UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();
@@ -108,7 +108,7 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
      */
     @Test
     public void testFindByUserClientIdInTeams() {
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         Client client = team.getClient();
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
@@ -132,7 +132,7 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
      */
     @Test
     public void testFindByUserClientIdAndUserClientTeamRoleId() {
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         Client client = team.getClient();
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
@@ -163,7 +163,7 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
     @Test
     public void testDeleteByUserClientAndUserClientTeamRole() {
         Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
         UserClientUserClientTeamRole entity = new UserClientUserClientTeamRole();

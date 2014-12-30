@@ -33,7 +33,20 @@ public class TeamTag extends AbstractAuditingEntity implements Serializable {
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
+    /**
+     * Default constructor
+     */
     public TeamTag() {
+    }
+
+    /**
+     * Constructor with id
+     * 
+     * @param id
+     *            to use
+     */
+    public TeamTag(long id) {
+        this.id = id;
     }
 
     /**

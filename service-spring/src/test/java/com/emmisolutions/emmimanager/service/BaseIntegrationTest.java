@@ -1,7 +1,9 @@
 package com.emmisolutions.emmimanager.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -21,12 +23,15 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientTier;
 import com.emmisolutions.emmimanager.model.ClientType;
+import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.State;
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
@@ -34,7 +39,6 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
-
 
 /**
  * Root integration test harness
@@ -51,7 +55,7 @@ public abstract class BaseIntegrationTest {
     ClientService clientService;
 
     @Resource
-    UserService userService;
+    GroupService groupService;
 
     @Resource
     LocationService locationService;
@@ -60,7 +64,13 @@ public abstract class BaseIntegrationTest {
     ProviderService providerService;
 
     @Resource
+    TagService tagService;
+
+    @Resource
     TeamService teamService;
+
+    @Resource
+    TeamTagService teamTagService;
 
     @Resource
     UserClientService userClientService;
@@ -70,6 +80,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     UserClientTeamRoleService userClientTeamRoleService;
+
+    @Resource
+    UserService userService;
 
     /**
      * Login as a user
@@ -122,6 +135,18 @@ public abstract class BaseIntegrationTest {
     }
 
     /**
+     * Creates a brand new group
+     * 
+     * @return random group
+     */
+    protected Group makeNewRandomGroup(Client client) {
+        Group group = new Group();
+        group.setName(RandomStringUtils.randomAlphabetic(10));
+        group.setClient(client != null ? client : makeNewRandomClient());
+        return groupService.save(group);
+    }
+
+    /**
      * Creates a brand new location that shouldn't already be inserted
      *
      * @return random location
@@ -147,6 +172,39 @@ public abstract class BaseIntegrationTest {
         provider.setLastName(RandomStringUtils.randomAlphabetic(255));
         provider.setActive(true);
         return providerService.create(provider);
+    }
+
+    /**
+     * Make a list of random Tags
+     * 
+     * @param group
+     *            to use
+     * @param count
+     *            to use
+     * @return a list of tags
+     */
+    protected List<Tag> makeNewRandomTags(Group group, int count) {
+        List<Tag> tags = new ArrayList<Tag>();
+        for (int i = 0; i < count; i++) {
+            Tag tag = new Tag();
+            tag.setName(RandomStringUtils.randomAlphabetic(10));
+            tag.setGroup(group != null ? group : makeNewRandomGroup(null));
+            tags.add(tag);
+        }
+        return tagService.saveAllTagsForGroup(tags, group);
+    }
+
+    /**
+     * Make a list of TeamTags
+     * 
+     * @param team
+     *            to use
+     * @param tags
+     *            to use
+     * @return list of teamTags
+     */
+    protected List<TeamTag> makeNewTeamTags(Team team, Set<Tag> tags) {
+        return teamTagService.save(team, tags);
     }
 
     /**
@@ -223,9 +281,9 @@ public abstract class BaseIntegrationTest {
                 RandomStringUtils.randomAlphanumeric(100));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
-    	UserAdminSaveRequest req = new UserAdminSaveRequest();
-       	req.setUserAdmin(userAdmin);
-       	req.setRoles(new HashSet<UserAdminRole>());
+        UserAdminSaveRequest req = new UserAdminSaveRequest();
+        req.setUserAdmin(userAdmin);
+        req.setRoles(new HashSet<UserAdminRole>());
         return userService.save(req);
     }
 }
