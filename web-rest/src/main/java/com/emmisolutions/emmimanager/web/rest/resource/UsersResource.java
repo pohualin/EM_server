@@ -142,10 +142,11 @@ public class UsersResource {
     public ResponseEntity<UserResource> updateUser(@RequestBody UserAdminSaveRequest req) {
 
     	UserAdmin savedUser = userService.save(req);
+    	savedUser = userService.fetchUserWillFullPermissions(savedUser);
         if (savedUser != null) {
             // created a user client successfully
             return new ResponseEntity<>(
-            		userAdminResourceAssembler.toResource(savedUser),
+                    userResourceAssembler.toResource(savedUser),
                     HttpStatus.CREATED);
         } else {
             // error creating user client
