@@ -1,15 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.model.user;
 
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
-import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
-import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
-import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.resource.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
@@ -18,12 +17,22 @@ import org.springframework.hateoas.core.MappingDiscoverer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
+import com.emmisolutions.emmimanager.web.rest.model.client.ClientPage;
+import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
+import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
+import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.LocationsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.ProvidersResource;
+import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UserClientsResource;
+import com.emmisolutions.emmimanager.web.rest.resource.UsersResource;
 
 /**
  * Creates a UserResource from a User
@@ -33,10 +42,12 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
 
     @Override
     public UserResource toResource(UserAdmin user) {
-        List<UserAdminPermissionName> roles = new ArrayList<>();
+        List<UserAdminPermissionName> perms = new ArrayList<>();
+        Set<UserAdminRole> roles = new HashSet<UserAdminRole>();
         for (UserAdminUserAdminRole role : user.getRoles()) {
+        	roles.add(role.getUserAdminRole());
             for (UserAdminPermission permission : role.getUserAdminRole().getPermissions()) {
-                roles.add(permission.getName());
+            	perms.add(permission.getName());
             }
         }
         UserResource ret = new UserResource(
@@ -46,7 +57,8 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
             user.getFirstName(),
             user.getLastName(),
             user.getEmail(),
-            roles);
+            user.isActive(),
+            perms, roles);
         ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
         ret.add(ClientPage.createFullSearchLink());
         ret.add(createClientByIdLink());
@@ -61,6 +73,9 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());
         ret.add(linkTo(methodOn(ProvidersResource.class).getReferenceData()).withRel("providersReferenceData"));
+        ret.add(UserPage.createFullSearchLink());
+        ret.add(UserAdminRolePage.createUserAdminRolesLink());
+        ret.add(createUserByIdLink());
         return ret;
     }
 
@@ -82,7 +97,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         }
         return null;
     }
-
+    
     /**
      * Load providers by id
      *
@@ -135,6 +150,25 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         if (idx != -1) {
             return new Link(
                 href.substring(0, idx) + discoverer.getMapping(UserClientsResource.class, method),
+                link.getRel());
+        }
+        return null;
+    }
+
+    /**
+     * Load user by id
+     *
+     * @return the link
+     */
+    public Link createUserByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UsersResource.class).get(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("userById");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(UsersResource.class));
+        if (idx != -1) {
+            return new Link(
+                href.substring(0, idx) + discoverer.getMapping(UsersResource.class, method),
                 link.getRel());
         }
         return null;

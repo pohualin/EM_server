@@ -42,7 +42,7 @@ public class TeamProviderTeamLocationPersistenceIntegrationTest extends BaseInte
      */
     @Test
     public void save() {
-        Team team = makeNewRandomTeam();
+        Team team = makeNewRandomTeam(null);
         TeamProvider tp = new TeamProvider();
         tp.setProvider(makeNewRandomProvider());
         tp.setTeam(team);
