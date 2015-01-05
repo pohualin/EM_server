@@ -87,7 +87,7 @@ public class UserClientUserClientTeamRolesResource {
                             assembler
                                     .toResource(page,
                                             userClientUserClientTeamRoleResourceAssembler),
-                            page), HttpStatus.OK);
+                            page, null), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -199,7 +199,7 @@ public class UserClientUserClientTeamRolesResource {
                             assembler
                                     .toResource(page,
                                             userClientUserClientTeamRoleResourceAssembler),
-                            page), HttpStatus.OK);
+                            page, filter), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
