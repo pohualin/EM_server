@@ -5,7 +5,6 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.model.BaseResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamProvidersResource;
 import com.emmisolutions.emmimanager.web.rest.resource.TeamsResource;
-
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.TemplateVariable;
 import org.springframework.hateoas.TemplateVariables;
@@ -16,7 +15,6 @@ import org.springframework.hateoas.core.MappingDiscoverer;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.lang.reflect.Method;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -56,6 +54,16 @@ public class TeamResource extends BaseResource<Team> {
 		 UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(new TemplateVariables(
 				 new TemplateVariable("providerId", TemplateVariable.VariableType.REQUEST_PARAM)));
 		 return new Link(uriTemplate, link.getRel());
+	 }
+
+    public static Link clientTeams(Client client){
+        Link link = linkTo(methodOn(TeamsResource.class).clientTeams(client.getId(), null, null, null, null, (String[]) null)).withRel("teams");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
 	 }
 
 }
