@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+       
+       <changeSet id="fixing bad fk names" author="Vinay">
+        <dropForeignKeyConstraint baseTableName="client" constraintName="fk_client_users_id"/>
+        <addForeignKeyConstraint baseTableName="client" baseColumnNames="contract_owner_id"
+                                constraintName="fk_client_users"
+                                referencedTableName="users"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="client_audit" constraintName="fk_client_revision_info"/>
+        <addForeignKeyConstraint baseTableName="client_audit" baseColumnNames="revision"
+                                constraintName="fk_client_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="client_group_audit" constraintName="fk_client_group_audit_revision_info"/>
+        <addForeignKeyConstraint baseTableName="client_group_audit" baseColumnNames="revision"
+                                constraintName="fk_client_group_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="client_group_tag" constraintName="fk_client_group_tag"/>
+        <addForeignKeyConstraint baseTableName="client_group_tag" baseColumnNames="group_id"
+                                constraintName="fk_client_group_tag_client_group"
+                                referencedTableName="client_group"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="client_group_tag_audit" constraintName="fk_tag_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="client_group_tag_audit" baseColumnNames="revision"
+                                constraintName="fk_client_group_tag_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="client_location_audit" constraintName="fk_client_location_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="client_location_audit" baseColumnNames="revision"
+                                constraintName="fk_client_location_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="client_provider" constraintName="fk_provider_id"/>
+        <addForeignKeyConstraint baseTableName="client_provider" baseColumnNames="provider_id"
+                                constraintName="fk_client_provider_provider"
+                                referencedTableName="provider"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="client_provider_audit" constraintName="fk_client_provider_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="client_provider_audit" baseColumnNames="revision"
+                                constraintName="fk_client_provider_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="client_team" constraintName="fk_salesforce_team_account_id"/>
+        <addForeignKeyConstraint baseTableName="client_team" baseColumnNames="salesforce_account_id"
+                                constraintName="fk_client_team_salesforce_team"
+                                referencedTableName="salesforce_team"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="client_team_audit" constraintName="fk_client_team_audit_revision_revision_info"/>
+        <addForeignKeyConstraint baseTableName="client_team_audit" baseColumnNames="revision"
+                                constraintName="fk_client_team_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="client_team_audit" constraintName="fk_client_team_revision_info"/>
+        <dropForeignKeyConstraint baseTableName="client_team_location" constraintName="fk_client_team_location_team"/>
+        <addForeignKeyConstraint baseTableName="client_team_location" baseColumnNames="team_id"
+                                constraintName="fk_client_team_location_client_team"
+                                referencedTableName="client_team"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="client_team_location_audit" constraintName="fk_client_team_location_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="client_team_location_audit" baseColumnNames="revision"
+                                constraintName="fk_client_team_location_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="client_team_tag" constraintName="fk_client_tag_client_team_tag"/>
+        <addForeignKeyConstraint baseTableName="client_team_tag" baseColumnNames="tag_id"
+                                constraintName="fk_client_team_tag_client_group_tag"
+                                referencedTableName="client_group_tag"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="client_team_tag_audit" constraintName="fk_team_tag_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="client_team_tag_audit" baseColumnNames="revision"
+                                constraintName="fk_client_team_tag_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="language_audit" constraintName="fk_language_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="language_audit" baseColumnNames="revision"
+                                constraintName="fk_language_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="location" constraintName="fk_location_belongs_to_client"/>
+        <addForeignKeyConstraint baseTableName="location" baseColumnNames="client_id"
+                                constraintName="fk_location_client"
+                                referencedTableName="client"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="location_audit" constraintName="fk_location_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="location_audit" baseColumnNames="revision"
+                                constraintName="fk_location_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="provider" constraintName="fk_provider_reference_tag_specialty"/>
+        <addForeignKeyConstraint baseTableName="provider" baseColumnNames="reference_tag_specialty"
+                                constraintName="fk_provider_reference_tag"
+                                referencedTableName="reference_tag"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="provider_audit" constraintName="fk_provider_audit"/>
+        <addForeignKeyConstraint baseTableName="provider_audit" baseColumnNames="revision"
+                                constraintName="fk_provider_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="provider_team" constraintName="fk_provider_team_team_id"/>
+        <addForeignKeyConstraint baseTableName="provider_team" baseColumnNames="teams_id"
+                                constraintName="fk_provider_team_client_team"
+                                referencedTableName="client_team"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="reference_group" constraintName="fk_reference_group_reference_group_type_id"/>
+        <addForeignKeyConstraint baseTableName="reference_group" baseColumnNames="reference_group_type_id"
+                                constraintName="fk_reference_group_reference_group_type"
+                                referencedTableName="reference_group_type"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="reference_group_audit" constraintName="fk_reference_group_audit"/>
+        <addForeignKeyConstraint baseTableName="reference_group_audit" baseColumnNames="revision"
+                                constraintName="fk_reference_group_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="reference_group_type_audit" constraintName="fk_reference_group_type_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="reference_group_type_audit" baseColumnNames="revision"
+                                constraintName="fk_reference_group_type_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="reference_tag" constraintName="fk_reference_tag_reference_group_group_id"/>
+        <addForeignKeyConstraint baseTableName="reference_tag" baseColumnNames="group_id"
+                                constraintName="fk_reference_tag_reference_group"
+                                referencedTableName="reference_group"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="reference_tag_audit" constraintName="fk_reference_tag_audit"/>
+        <addForeignKeyConstraint baseTableName="reference_tag_audit" baseColumnNames="revision"
+                                constraintName="fk_reference_tag_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="strings_audit" constraintName="fk_strings_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="strings_audit" baseColumnNames="revision"
+                                constraintName="fk_strings_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="team_provider" constraintName="fk_team_provider_client_team"/>
+        <addForeignKeyConstraint baseTableName="team_provider" baseColumnNames="team_id"
+                                constraintName="fk_team_provider_client_team"
+                                referencedTableName="client_team"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="team_provider_team_location" constraintName="fk_team_pro_team_loc_loc_id"/>
+        <addForeignKeyConstraint baseTableName="team_provider_team_location" baseColumnNames="team_location_id"
+                                constraintName="fk_team_provider_team_location_client_team_location"
+                                referencedTableName="client_team_location"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_admin_role_audit" constraintName="fk_user_admin_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_admin_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_admin_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_admin_role_user_admin_permission" constraintName="fk_user_admin_role_user_admin_permission_permission"/>
+        <addForeignKeyConstraint baseTableName="user_admin_role_user_admin_permission" baseColumnNames="permission_name"
+                                constraintName="fk_user_admin_role_user_admin_permission_user_admin_permission"
+                                referencedTableName="user_admin_permission"
+                                referencedColumnNames="name"/>
+        <dropForeignKeyConstraint baseTableName="user_admin_user_admin_role" constraintName="fk_user_admin_user_admin_role_role"/>
+        <addForeignKeyConstraint baseTableName="user_admin_user_admin_role" baseColumnNames="user_admin_role_id"
+                                constraintName="fk_user_admin_user_admin_role_user_admin_role"
+                                referencedTableName="user_admin_role"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_admin_user_admin_role_audit" constraintName="fk_user_admin_user_admin_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_admin_user_admin_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_admin_user_admin_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_role" constraintName="fk_user_client_reference_role_type"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_role" baseColumnNames="reference_role_type_id"
+                                constraintName="fk_user_client_reference_role_user_client_reference_role_type"
+                                referencedTableName="user_client_reference_role_type"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_role_audit" constraintName="fk_user_client_reference_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_reference_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_role_permission" constraintName="fk_user_client_reference_role_permission_role"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_role_permission" baseColumnNames="reference_role_id"
+                                constraintName="fk_user_client_reference_role_permission_user_client_reference_role"
+                                referencedTableName="user_client_reference_role"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_role_type_audit" constraintName="fk_user_client_reference_role_type_auditrevision"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_role_type_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_reference_role_type_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_team_role" constraintName="fk_user_client_reference_team_role_type"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role" baseColumnNames="reference_role_type_id"
+                                constraintName="fk_user_client_reference_team_role_user_client_reference_team_role_type"
+                                referencedTableName="user_client_reference_team_role_type"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_team_role_audit" constraintName="fk_user_client_reference_team_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_reference_team_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_team_role_permission" constraintName="fk_user_client_reference_team_role_permission_role"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_permission" baseColumnNames="reference_role_id"
+                                constraintName="fk_user_client_reference_team_role_permission_user_client_reference_team_role"
+                                referencedTableName="user_client_reference_team_role"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_team_role_permission_audit" constraintName="fk_user_client_reference_team_role_permission_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_permission_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_reference_team_role_permission_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_reference_team_role_type_audit" constraintName="fk_user_client_reference_team_role_type_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_reference_team_role_type_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_reference_team_role_type_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_role" constraintName="fk_user_client_role_reference_role_type"/>
+        <addForeignKeyConstraint baseTableName="user_client_role" baseColumnNames="user_client_reference_role_type_id"
+                                constraintName="fk_user_client_role_user_client_reference_role_type"
+                                referencedTableName="user_client_reference_role_type"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_role_audit" constraintName="fk_user_client_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_role_user_client_permission" constraintName="fk_user_client_role_user_client_permission_permission"/>
+        <addForeignKeyConstraint baseTableName="user_client_role_user_client_permission" baseColumnNames="permission_name"
+                                constraintName="fk_user_client_role_user_client_permission_user_client_permission"
+                                referencedTableName="user_client_permission"
+                                referencedColumnNames="name"/>
+        <dropForeignKeyConstraint baseTableName="user_client_team_role" constraintName="fk_user_client_role_reference_team_role_type"/>
+        <addForeignKeyConstraint baseTableName="user_client_team_role" baseColumnNames="user_client_reference_team_role_type_id"
+                                constraintName="fk_user_client_team_role_user_client_reference_team_role_type"
+                                referencedTableName="user_client_reference_team_role_type"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_team_role_audit" constraintName="fk_user_client_team_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_team_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_team_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_team_role_user_client_team_permission" constraintName="fk_user_client_team_role_user_client_team_permission_permission"/>
+        <addForeignKeyConstraint baseTableName="user_client_team_role_user_client_team_permission" baseColumnNames="permission_name"
+                                constraintName="fk_user_client_team_role_user_client_team_permission_user_client_team_permission"
+                                referencedTableName="user_client_team_permission"
+                                referencedColumnNames="name"/>
+        <dropForeignKeyConstraint baseTableName="user_client_user_client_role" constraintName="fk_user_client_user_client_role"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_role" baseColumnNames="user_client_role_id"
+                                constraintName="fk_user_client_user_client_role_user_client_role"
+                                referencedTableName="user_client_role"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_user_client_role_audit" constraintName="fk_user_client_user_client_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_user_client_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="user_client_user_client_team_role" constraintName="fk_user_client_client_team"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role" baseColumnNames="client_team_id"
+                                constraintName="fk_user_client_user_client_team_role_client_team"
+                                referencedTableName="client_team"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_user_client_team_role" constraintName="fk_user_client_user_client_team_role"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role" baseColumnNames="user_client_team_role_id"
+                                constraintName="fk_user_client_user_client_team_role_user_client_team_role"
+                                referencedTableName="user_client_team_role"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="user_client_user_client_team_role_audit" constraintName="fk_user_client_user_client_team_role_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role_audit" baseColumnNames="revision"
+                                constraintName="fk_user_client_user_client_team_role_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+        <dropForeignKeyConstraint baseTableName="users" constraintName="fk_users_client_id"/>
+        <addForeignKeyConstraint baseTableName="users" baseColumnNames="client_id"
+                                constraintName="fk_users_client"
+                                referencedTableName="client"
+                                referencedColumnNames="id"/>
+        <dropForeignKeyConstraint baseTableName="users_audit" constraintName="fk_users_audit_revision"/>
+        <addForeignKeyConstraint baseTableName="users_audit" baseColumnNames="revision"
+                                constraintName="fk_users_audit_revision_info"
+                                referencedTableName="revision_info"
+                                referencedColumnNames="revision"/>
+       </changeSet>
+</databaseChangeLog>
