@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+        <changeSet id="add indexes for fks" author="Vinay">
+            <createIndex indexName="ix_client_client_region_id"
+                   tableName="client">
+                <column name="client_region_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_client_tier_id"
+                   tableName="client">
+                <column name="client_tier_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_client_type_id"
+                   tableName="client">
+                <column name="client_type_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_contract_owner_id"
+                   tableName="client">
+                <column name="contract_owner_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_audit_revision"
+                   tableName="client_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_group_reference_group_type_id"
+                   tableName="client_group">
+                <column name="reference_group_type_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_group_audit_revision"
+                   tableName="client_group_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_group_tag_group_id"
+                   tableName="client_group_tag">
+                <column name="group_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_group_tag_audit_revision"
+                   tableName="client_group_tag_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_location_location_id"
+                   tableName="client_location">
+                <column name="location_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_location_audit_revision"
+                   tableName="client_location_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_provider_provider_id"
+                   tableName="client_provider">
+                <column name="provider_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_provider_audit_revision"
+                   tableName="client_provider_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_region_audit_revision"
+                   tableName="client_region_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_team_salesforce_account_id"
+                   tableName="client_team">
+                <column name="salesforce_account_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_team_audit_revision"
+                   tableName="client_team_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_team_location_location_id"
+                   tableName="client_team_location">
+                <column name="location_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_team_location_team_id"
+                   tableName="client_team_location">
+                <column name="team_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_team_location_audit_revision"
+                   tableName="client_team_location_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_team_tag_tag_id"
+                   tableName="client_team_tag">
+                <column name="tag_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_team_tag_audit_revision"
+                   tableName="client_team_tag_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_tier_audit_revision"
+                   tableName="client_tier_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_client_type_audit_revision"
+                   tableName="client_type_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_language_audit_revision"
+                   tableName="language_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_location_client_id"
+                   tableName="location">
+                <column name="client_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_location_audit_revision"
+                   tableName="location_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_provider_reference_tag_specialty"
+                   tableName="provider">
+                <column name="reference_tag_specialty"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_provider_audit_revision"
+                   tableName="provider_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_provider_team_teams_id"
+                   tableName="provider_team">
+                <column name="teams_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_reference_group_reference_group_type_id"
+                   tableName="reference_group">
+                <column name="reference_group_type_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_reference_group_audit_revision"
+                   tableName="reference_group_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_reference_group_type_audit_revision"
+                   tableName="reference_group_type_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_reference_tag_group_id"
+                   tableName="reference_tag">
+                <column name="group_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_reference_tag_audit_revision"
+                   tableName="reference_tag_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_salesforce_client_audit_revision"
+                   tableName="salesforce_client_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_salesforce_team_audit_revision"
+                   tableName="salesforce_team_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_strings_audit_revision"
+                   tableName="strings_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_team_provider_team_id"
+                   tableName="team_provider">
+                <column name="team_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_team_provider_audit_revision"
+                   tableName="team_provider_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_team_provider_team_location_team_location_id"
+                   tableName="team_provider_team_location">
+                <column name="team_location_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_team_provider_team_location_audit_revision"
+                   tableName="team_provider_team_location_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_admin_role_audit_revision"
+                   tableName="user_admin_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_admin_role_user_admin_permission_permission_name"
+                   tableName="user_admin_role_user_admin_permission">
+                <column name="permission_name"  type="varchar(100)"/>
+            </createIndex>
+            <createIndex indexName="ix_user_admin_user_admin_role_user_admin_role_id"
+                   tableName="user_admin_user_admin_role">
+                <column name="user_admin_role_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_admin_user_admin_role_audit_revision"
+                   tableName="user_admin_user_admin_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_role_reference_role_type_id"
+                   tableName="user_client_reference_role">
+                <column name="reference_role_type_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_role_audit_revision"
+                   tableName="user_client_reference_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_role_permission_reference_role_id"
+                   tableName="user_client_reference_role_permission">
+                <column name="reference_role_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_role_type_audit_revision"
+                   tableName="user_client_reference_role_type_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_team_role_reference_role_type_id"
+                   tableName="user_client_reference_team_role">
+                <column name="reference_role_type_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_team_role_audit_revision"
+                   tableName="user_client_reference_team_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_team_role_permission_reference_role_id"
+                   tableName="user_client_reference_team_role_permission">
+                <column name="reference_role_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_team_role_permission_audit_revision"
+                   tableName="user_client_reference_team_role_permission_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_reference_team_role_type_audit_revision"
+                   tableName="user_client_reference_team_role_type_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_role_client_id"
+                   tableName="user_client_role">
+                <column name="client_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_role_user_client_reference_role_type_id"
+                   tableName="user_client_role">
+                <column name="user_client_reference_role_type_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_role_audit_revision"
+                   tableName="user_client_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_role_user_client_permission_permission_name"
+                   tableName="user_client_role_user_client_permission">
+                <column name="permission_name"  type="varchar(100)"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_team_role_user_client_reference_team_role_type_id"
+                   tableName="user_client_team_role">
+                <column name="user_client_reference_team_role_type_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_team_role_audit_revision"
+                   tableName="user_client_team_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_team_role_user_client_team_permission_permission_name"
+                   tableName="user_client_team_role_user_client_team_permission">
+                <column name="permission_name"  type="varchar(100)"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_user_client_role_user_client_role_id"
+                   tableName="user_client_user_client_role">
+                <column name="user_client_role_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_user_client_role_audit_revision"
+                   tableName="user_client_user_client_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_user_client_team_role_client_team_id"
+                   tableName="user_client_user_client_team_role">
+                <column name="client_team_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_user_client_team_role_user_client_team_role_id"
+                   tableName="user_client_user_client_team_role">
+                <column name="user_client_team_role_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_user_client_user_client_team_role_audit_revision"
+                   tableName="user_client_user_client_team_role_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_users_client_id"
+                   tableName="users">
+                <column name="client_id"  type="BIGINT"/>
+            </createIndex>
+            <createIndex indexName="ix_users_audit_revision"
+                   tableName="users_audit">
+                <column name="revision"  type="BIGINT"/>
+            </createIndex>            
+        </changeSet>
+</databaseChangeLog>        
