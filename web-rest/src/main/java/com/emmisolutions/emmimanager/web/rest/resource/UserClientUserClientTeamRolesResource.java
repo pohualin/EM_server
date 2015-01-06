@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.UserClientUserClientTeamRoleSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
@@ -11,6 +12,7 @@ import com.emmisolutions.emmimanager.web.rest.model.user.client.team.UserClientU
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +87,7 @@ public class UserClientUserClientTeamRolesResource {
                             assembler
                                     .toResource(page,
                                             userClientUserClientTeamRoleResourceAssembler),
-                            page), HttpStatus.OK);
+                            page, null), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -183,9 +186,11 @@ public class UserClientUserClientTeamRolesResource {
             @SortDefault(sort = "name") Sort sort,
             PagedResourcesAssembler<UserClientUserClientTeamRole> assembler,
             @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "term", required = false) String term) {
+            @RequestParam(value = "term", required = false) String term,
+            @RequestParam(value = "tagId", required = false) Long tagId) {
         UserClientUserClientTeamRoleSearchFilter filter = new UserClientUserClientTeamRoleSearchFilter(
-                new UserClient(userClientId), null, term);
+                new UserClient(userClientId), null, term,
+                tagId != null ? new Tag(tagId) : null);
         Page<UserClientUserClientTeamRole> page = userClientUserClientTeamRoleService
                 .findPossible(filter, pageable);
         if (page != null) {
@@ -194,7 +199,7 @@ public class UserClientUserClientTeamRolesResource {
                             assembler
                                     .toResource(page,
                                             userClientUserClientTeamRoleResourceAssembler),
-                            page), HttpStatus.OK);
+                            page, filter), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

@@ -16,6 +16,8 @@ public class UserClientUserClientTeamRoleSearchFilter {
 
     private StatusFilter status;
 
+    private Tag tag;
+
     private UserClient userClient;
 
     /**
@@ -35,7 +37,7 @@ public class UserClientUserClientTeamRoleSearchFilter {
      */
     public UserClientUserClientTeamRoleSearchFilter(UserClient userClient,
             String term) {
-        this(userClient, StatusFilter.ALL, term);
+        this(userClient, StatusFilter.ALL, term, null);
     }
 
     /**
@@ -47,12 +49,15 @@ public class UserClientUserClientTeamRoleSearchFilter {
      *            to filter
      * @param term
      *            to search
+     * @param tag
+     *            to use
      */
     public UserClientUserClientTeamRoleSearchFilter(UserClient userClient,
-            StatusFilter status, String term) {
+            StatusFilter status, String term, Tag tag) {
         this.userClient = userClient;
         this.term = term;
         this.status = status;
+        this.tag = tag;
     }
 
     /**
@@ -80,6 +85,15 @@ public class UserClientUserClientTeamRoleSearchFilter {
      */
     public UserClient getUserClient() {
         return userClient;
+    }
+
+    /**
+     * Return tag
+     * 
+     * @return tag
+     */
+    public Tag getTag() {
+        return tag;
     }
 
     /**
