@@ -135,7 +135,8 @@ public class TeamsResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+        @ApiImplicitParam(name = "status", defaultValue = "ACTIVE_ONLY", value = "status to look up", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamPage> clientTeams(@PathVariable Long clientId,
                                                 @PageableDefault(size = 50) Pageable pageable,
