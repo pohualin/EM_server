@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.resource;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -70,7 +71,8 @@ public class UserClientsResource {
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "status", defaultValue = "0", value = "user status filter", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "term", defaultValue = "0", value = "user name filter", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "term", defaultValue = "0", value = "user name filter", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "teamId", defaultValue = "0", value = "team id filter", dataType = "long", paramType = "query")
     })
     public ResponseEntity<UserClientPage> getUsers(
             @PathVariable(value = "clientId") Long clientId,
@@ -79,11 +81,13 @@ public class UserClientsResource {
             PagedResourcesAssembler<UserClient> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "term", required = false) String term,
-            @RequestParam(value = "teamId", required = false) Long teamId) {
+            @RequestParam(value = "teamId", required = false) Long teamId,
+            @RequestParam(value = "tagId", required = false) Long tagId) {
 
         UserClientSearchFilter filter = new UserClientSearchFilter(new Client(clientId),
                 fromStringOrActive(status), term);
         filter.setTeam(new Team(teamId));
+        filter.setTag(new Tag(tagId));
 
         Page<UserClient> userClients = userClientService.list(pageable, filter);
 
