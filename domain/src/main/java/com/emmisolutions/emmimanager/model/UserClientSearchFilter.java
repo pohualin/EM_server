@@ -19,6 +19,8 @@ public class UserClientSearchFilter {
 
     private Team team;
 
+    private Tag tag;
+
     /**
      * constructor
      */
@@ -68,6 +70,14 @@ public class UserClientSearchFilter {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
+    }
+
+    public Tag getTag() {
+        return tag;
     }
 
     /**
