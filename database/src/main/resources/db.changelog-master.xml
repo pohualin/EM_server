@@ -101,4 +101,6 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-em-491.xml"/>
 	
 	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-fix-fks.xml"/>
+	
+	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-add-indexes.xml"/>
 </databaseChangeLog>

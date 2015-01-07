@@ -1,16 +1,11 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
@@ -23,6 +18,8 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Root integration test harness
@@ -129,7 +126,7 @@ public abstract class BaseIntegrationTest {
      * @return list of tags
      */
     protected List<Tag> makeNewRandomTags(Group group, int count) {
-        List<Tag> tags = new ArrayList<Tag>();
+        List<Tag> tags = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Tag tag = new Tag();
             tag.setName(RandomStringUtils.randomAlphabetic(10));

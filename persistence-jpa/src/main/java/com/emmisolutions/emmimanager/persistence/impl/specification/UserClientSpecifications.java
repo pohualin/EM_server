@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
+import com.emmisolutions.emmimanager.model.TeamTag_;
+import com.emmisolutions.emmimanager.model.Team_;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
@@ -174,4 +176,24 @@ public class UserClientSpecifications {
         };
     }
 
+    /**
+     * Ensures that the UserClient has a team role for a team which is tagged using the client tag in the search filter.
+     *
+     * @param searchFilter where we get the Tag
+     * @return a specification where UserClient.teamRoles.team.teamTags.tag.id = searchFilter.getTag().getId();
+     */
+    public Specification<UserClient> hasRoleOnTeamWithClientTag(final UserClientSearchFilter searchFilter) {
+        return new Specification<UserClient>() {
+            @Override
+            public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (searchFilter != null && searchFilter.getTag() != null && searchFilter.getTag().getId() != null) {
+                    return cb.equal(root.join(UserClient_.teamRoles, JoinType.LEFT)
+                                    .join(UserClientUserClientTeamRole_.team, JoinType.LEFT)
+                                    .join(Team_.teamTags, JoinType.LEFT).get(TeamTag_.tag),
+                            searchFilter.getTag().getId());
+                }
+                return null;
+            }
+        };
+    }
 }

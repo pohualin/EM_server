@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
@@ -38,8 +36,8 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
      */
     @Test
     public void testCreate() {
-        Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam(null);
+        final Client client = makeNewRandomClient();
+        final Team team = makeNewRandomTeam(client);
         UserClient userClient = makeNewRandomUserClient(client);
         UserClientTeamRole userClientTeamRole = makeNewRandomUserClientTeamRole(client);
 
@@ -52,11 +50,33 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
                 .saveOrUpdate(entity);
         assertThat("entity created", created.getId(), is(notNullValue()));
 
-        UserClientSearchFilter filter = new UserClientSearchFilter();
-        filter.setClient(client);
-        filter.setTeam(team);
+        assertThat("the user client should be found when not filtering",
+                userClientPersistence.list(null, null), hasItem(userClient));
+
         assertThat("the user client should be found when the team is added to the filter",
-                userClientPersistence.list(null, filter), hasItem(userClient));
+                userClientPersistence.list(null, new UserClientSearchFilter() {{
+                    setClient(client);
+                    setTeam(team);
+                    setTag(new Tag());
+                }}), hasItem(userClient));
+
+        assertThat("tag filtering should not return the item",
+                userClientPersistence.list(null, new UserClientSearchFilter() {{
+                    setClient(client);
+                    setTeam(team);
+                    setTag(new Tag(1l));
+                }}), not(hasItem(userClient)));
+
+        // tag the team
+        final TeamTag teamTag = makeNewTeamTag(team, makeNewRandomTags(makeNewRandomGroup(client), 1).get(0));
+
+        assertThat("search by tag should now return the user client ",
+                userClientPersistence.list(null, new UserClientSearchFilter() {{
+                    setClient(client);
+                    setTeam(team);
+                    setTag(teamTag.getTag());
+                }}), hasItem(userClient));
+
     }
 
     /**
