@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
-import com.emmisolutions.emmimanager.model.Tag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamTag;
-import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -74,5 +71,5 @@ public interface TeamTagService {
      * @param statusToFind find active or inactive
      * @return teams
      */
-    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId, String statusToFind);
+    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId, TeamSearchFilter.StatusFilter statusToFind);
 }

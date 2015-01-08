@@ -255,7 +255,7 @@ public class TeamsResource {
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Team> assembler) {
 
-        String statusToFind = fromStringOrActive(status).name();
+        TeamSearchFilter.StatusFilter statusToFind = fromStringOrActive(status);
         Page<Team> teamsWithNoTeamTagsPage = teamTagService.findTeamsWithNoTeamTags(null,clientId,statusToFind);
         if (teamsWithNoTeamTagsPage.hasContent()) {
             PagedResources<TeamResource> teamTagResourceSupports = assembler.toResource(teamsWithNoTeamTagsPage, teamResourceAssembler);
