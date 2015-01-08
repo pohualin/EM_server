@@ -51,7 +51,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     public void testUserAdminRoles() {
     	Page<UserAdminRole> roles = userService.listRolesWithoutSystem(null);
         assertThat("the search roles return values", roles.getContent(), is(notNullValue()));
-        assertThat("the search roles return values", roles.getContent().size(), is(3) );
+        assertThat("the search roles return values", roles.getContent().size(), is(2) );
     }
     
     /**
