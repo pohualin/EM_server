@@ -63,11 +63,12 @@ public interface TeamTagPersistence {
     /**
      * select all teams that do not have teamtags
      *
-     * @param clientId to use
      * @param page pag object to use
+     * @param clientId to use
+     * @param statusToFind find active or inactive
      * @return teams
      */
-    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId);
+    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId, String statusToFind);
 
     /**
      * Find TeamTags with tag

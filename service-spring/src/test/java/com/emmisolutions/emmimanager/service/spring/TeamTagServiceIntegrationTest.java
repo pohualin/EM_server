@@ -336,7 +336,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
         teamTagService.saveSingleTeamTag(team1, tag1);
 
-        Page<Team> returnedTeams = teamTagService.findTeamsWithNoTeamTags(null, client.getId());
+        Page<Team> returnedTeams = teamTagService.findTeamsWithNoTeamTags(null, client.getId(), "ACTIVE_ONLY" );
         assertThat("team2 is returned", returnedTeams, hasItem(team2));
         assertThat("team1 is not returned", returnedTeams, not(hasItem(team1)));
     }

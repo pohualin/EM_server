@@ -245,15 +245,18 @@ public class TeamsResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "status", defaultValue = "ACTIVE_ONLY", value = "status to get", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamPage> teamsWithNoTeamTags(
             @PathVariable("clientId") Long clientId,
             @PageableDefault(size = 50) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
+            @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Team> assembler) {
 
-        Page<Team> teamsWithNoTeamTagsPage = teamTagService.findTeamsWithNoTeamTags(null,clientId);
+        String statusToFind = fromStringOrActive(status).name();
+        Page<Team> teamsWithNoTeamTagsPage = teamTagService.findTeamsWithNoTeamTags(null,clientId,statusToFind);
         if (teamsWithNoTeamTagsPage.hasContent()) {
             PagedResources<TeamResource> teamTagResourceSupports = assembler.toResource(teamsWithNoTeamTagsPage, teamResourceAssembler);
             TeamPage teamTagPage1 = new TeamPage(teamTagResourceSupports, teamsWithNoTeamTagsPage,null);

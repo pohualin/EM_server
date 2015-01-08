@@ -564,7 +564,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
         teamTagPersistence.saveTeamTag(teamTag1);
 
-        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(null, client1.getId());
+        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(null, client1.getId(), "INACTIVE_ONLY");
         assertThat("team2 was returned", returnedTeams, hasItem(team2));
         assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
     }
@@ -588,7 +588,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
         teamTagPersistence.saveTeamTag(teamTag1);
 
-        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(new PageRequest(0, 50, Sort.Direction.ASC, "id"), client1.getId());
+        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(new PageRequest(0, 50, Sort.Direction.ASC, "id"), client1.getId(), "ACTIVE_ONLY");
         assertThat("team2 was returned", returnedTeams, hasItem(team2));
         assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
     }
@@ -612,7 +612,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
         teamTagPersistence.saveTeamTag(teamTag1);
 
-        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(new PageRequest(0, 50, Sort.Direction.ASC, "id"), null);
+        Page<Team> returnedTeams = teamTagPersistence.findTeamsWithNoTeamTags(new PageRequest(0, 50, Sort.Direction.ASC, "id"), null, "ACTIVE_ONLY" );
         assertThat("returned null", returnedTeams, is(nullValue()));
     }
 

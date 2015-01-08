@@ -69,9 +69,10 @@ public interface TeamTagService {
     /**
      * select all teams that do not have teamtags
      *
-     * @param forThisClientId to use
      * @param page page object
+     * @param forThisClientId to use
+     * @param statusToFind find active or inactive
      * @return teams
      */
-    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId);
+    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId, String statusToFind);
 }

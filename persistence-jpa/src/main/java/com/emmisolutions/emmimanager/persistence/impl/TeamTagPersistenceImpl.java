@@ -95,10 +95,11 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     }
 
     @Override
-    public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId) {
+    public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId, String statusToFind) {
         if (clientId != null) {
             return teamTagRepository.findTeamsWithNoTeamTags(clientId,
-                    (page == null) ? new PageRequest(0, 50, Sort.Direction.ASC, "id") : page);
+                    statusToFind.equalsIgnoreCase("ACTIVE_ONLY"),
+                    (page == null) ? new PageRequest(0, 50, Sort.Direction.ASC, "id") : page );
         }
         return null;
     }

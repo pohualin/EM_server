@@ -101,7 +101,7 @@ public class TeamTagServiceImpl implements TeamTagService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId){
-        return teamTagPersistence.findTeamsWithNoTeamTags(page,forThisClientId);
+    public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId, String statusToFind){
+        return teamTagPersistence.findTeamsWithNoTeamTags(page,forThisClientId,statusToFind);
     }
 }
