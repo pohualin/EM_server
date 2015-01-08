@@ -35,5 +35,20 @@
                   separator=";"
                   tableName="user_admin_role_user_admin_permission"/>
 	</changeSet>
+	
+	<changeSet id="alter user_admin_role to have new column default_role" author="Paul">
+		<addColumn tableName="user_admin_role">
+			<column name="default_role" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="set Emmi User to default_role" author="Paul">
+		<update tableName="user_admin_role">
+			<column name="default_role">true</column>
+			<where>name = 'Emmi User'</where>
+		</update>
+	</changeSet>
 
 </databaseChangeLog>

@@ -119,10 +119,21 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("Should have one role ", god.getRoles(), is(notNullValue()));
         UserAdminRole role = god.getRoles().iterator().next().getUserAdminRole();
         assertThat("Role is the system role", role.getName(), is("SYSTEM"));
+        assertThat("Role is not a default role", role.isDefaultRole(), is(false));
 
         UserAdminPermission godPermission = new UserAdminPermission();
         godPermission.setName(UserAdminPermissionName.PERM_GOD);
         assertThat("Role has the god permission", role.getPermissions(), hasItem(godPermission));
+    }
+    
+    /**
+     * make sure Emmi User Role is default role
+     */
+    @Test
+    public void testEmmiUserIsDefaultRole() {
+        UserAdmin god = userPersistence.fetchUserWillFullPermissions("contract_owner2");
+        UserAdminRole role = god.getRoles().iterator().next().getUserAdminRole();
+        assertThat("Emmi User Role is a default role", role.isDefaultRole(), is(true));
     }
 
     /**
