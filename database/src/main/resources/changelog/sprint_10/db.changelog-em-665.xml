@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
-    
+
     <changeSet id="delete all existing admin user roles, admin roles and admin role permissions" author="Paul">
         <delete tableName="user_admin_role_user_admin_permission"/>
-    	<delete tableName="user_admin_user_admin_role">
-    		<where>created_by = 'system'</where>
-    	</delete>
+        <delete tableName="user_admin_user_admin_role">
+            <where>created_by = 'system'</where>
+        </delete>
         <delete tableName="user_admin_user_admin_role">
             <where>user_admin_role_id = 4</where>
         </delete>
-    	<delete tableName='user_admin_role'>
-    		<where>name = 'Contract Owner'</where>
-    	</delete>
-    	<update tableName='user_admin_role'>
-    		<column name="name">Emmi Super User</column>
-    		<where>name = 'Super User'</where>
-    	</update>
-    	<update tableName='user_admin_role'>
-    		<column name="name">Emmi User</column>
-    		<where>name = 'User'</where>
-    	</update>
+        <delete tableName='user_admin_role'>
+            <where>name = 'Contract Owner'</where>
+        </delete>
+        <update tableName='user_admin_role'>
+            <column name="name">Emmi Super User</column>
+            <where>name = 'Super User'</where>
+        </update>
+        <update tableName='user_admin_role'>
+            <column name="name">Emmi User</column>
+            <where>name = 'User'</where>
+        </update>
     </changeSet>
-    
+
     <changeSet id="load new admin user roles, admin roles and admin role permissions" author="Paul">
         <loadData encoding="UTF-8"
                   file="changelog/sprint_10/data/em-665/admin-user-roles.csv"
@@ -37,21 +37,21 @@
                   file="changelog/sprint_10/data/em-665/admin-role-permissions.csv"
                   separator=";"
                   tableName="user_admin_role_user_admin_permission"/>
-	</changeSet>
-	
-	<changeSet id="alter user_admin_role to have new column default_role" author="Paul">
-		<addColumn tableName="user_admin_role">
-			<column name="default_role" type="boolean" defaultValueBoolean="false">
+    </changeSet>
+
+    <changeSet id="alter user_admin_role to have new column default_role" author="Paul">
+        <addColumn tableName="user_admin_role">
+            <column name="default_role" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="set Emmi User to default_role" author="Paul">
-		<update tableName="user_admin_role">
-			<column name="default_role">true</column>
-			<where>name = 'Emmi User'</where>
-		</update>
-	</changeSet>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="set Emmi User to default_role" author="Paul">
+        <update tableName="user_admin_role">
+            <column name="default_role">true</column>
+            <where>name = 'Emmi User'</where>
+        </update>
+    </changeSet>
 
 </databaseChangeLog>
