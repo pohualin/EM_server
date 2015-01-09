@@ -153,7 +153,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
 
         teamTagPersistence.saveTeamTag(teamTag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ACTIVE_ONLY,TeamSearchFilter.TeamTagType.ALL);
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ACTIVE_ONLY,TeamSearchFilter.TeamTagType.UNTAGGED);
 
         Page<Team> returnedTeams = teamPersistence.list(null, filter);
         assertThat("team2 was returned", returnedTeams, hasItem(team2));
@@ -179,7 +179,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
 
         teamTagPersistence.saveTeamTag(teamTag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.INACTIVE_ONLY,TeamSearchFilter.TeamTagType.ALL);
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.INACTIVE_ONLY,TeamSearchFilter.TeamTagType.UNTAGGED);
 
         Page<Team> returnedTeams = teamPersistence.list(null, filter);
         assertThat("team2 was returned", returnedTeams, hasItem(team2));
@@ -206,7 +206,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
 
         teamTagPersistence.saveTeamTag(teamTag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ALL,TeamSearchFilter.TeamTagType.ALL);
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ALL,TeamSearchFilter.TeamTagType.UNTAGGED);
 
         Page<Team> returnedTeams = teamPersistence.list(null, filter);
         assertThat("team2 was returned", returnedTeams, hasItem(team2));
@@ -233,7 +233,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
 
         teamTagPersistence.saveTeamTag(teamTag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ACTIVE_ONLY,TeamSearchFilter.TeamTagType.ALL);
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ACTIVE_ONLY,TeamSearchFilter.TeamTagType.UNTAGGED);
         Page<Team> returnedTeams = teamPersistence.list(new PageRequest(0, 50, Sort.Direction.ASC, "id"), filter);
         assertThat("team2 was returned", returnedTeams, hasItem(team2));
         assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
