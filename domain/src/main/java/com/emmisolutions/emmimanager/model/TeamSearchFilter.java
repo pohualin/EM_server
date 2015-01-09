@@ -222,7 +222,7 @@ public class TeamSearchFilter {
      * Type of TeamTag to search for
      */
     public enum TeamTagType {
-        UNTAGGED;
+        UNTAGGED_ONLY, TAGGED_ONLY, ALL;
 
         /**
          * Create a TeamTagType from a string
@@ -238,7 +238,7 @@ public class TeamSearchFilter {
                     }
                 }
             }
-            return UNTAGGED;
+            return ALL;
         }
     }
 

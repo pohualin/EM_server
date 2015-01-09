@@ -99,7 +99,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 
         teamTagService.saveSingleTeamTag(team1, tag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.ACTIVE_ONLY, TeamSearchFilter.TeamTagType.UNTAGGED);
+        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.ACTIVE_ONLY, TeamSearchFilter.TeamTagType.UNTAGGED_ONLY);
         Page<Team> returnedTeams = teamService.list(null, filter);
         assertThat("team2 is returned", returnedTeams, hasItem(team2));
         assertThat("team1 is not returned", returnedTeams, not(hasItem(team1)));
@@ -121,7 +121,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 
         teamTagService.saveSingleTeamTag(team1, tag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.INACTIVE_ONLY,TeamSearchFilter.TeamTagType.UNTAGGED);
+        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.INACTIVE_ONLY,TeamSearchFilter.TeamTagType.UNTAGGED_ONLY);
         Page<Team> returnedTeams = teamService.list(null, filter);
         assertThat("team2 is returned", returnedTeams, hasItem(team2));
         assertThat("team1 is not returned", returnedTeams, not(hasItem(team1)));
@@ -144,7 +144,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 
         teamTagService.saveSingleTeamTag(team1, tag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.ALL, TeamSearchFilter.TeamTagType.UNTAGGED);
+        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.ALL, TeamSearchFilter.TeamTagType.UNTAGGED_ONLY);
         Page<Team> returnedTeams = teamService.list(null, filter);
         assertThat("team2 is returned", returnedTeams, hasItem(team2));
         assertThat("team3 is returned", returnedTeams, hasItem(team3));
