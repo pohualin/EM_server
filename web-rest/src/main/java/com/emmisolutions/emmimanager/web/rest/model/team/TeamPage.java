@@ -108,20 +108,4 @@ public class TeamPage extends PagedResource<TeamResource> {
             }
         }
     }
-
-    /**
-     * Find teams with no teamtags
-     *
-     * @param entity to search within
-     * @return link
-     */
-    public static Link createFullSearchLinkTeamsWithNoTeamTags(Client entity) {
-        Link link = linkTo(methodOn(TeamsResource.class).teamsWithNoTeamTags(entity.getId(), null, null, null)).withRel("teamsWithNoTeamTags");
-        UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
-        return new Link(uriTemplate, link.getRel());
-    }
 }

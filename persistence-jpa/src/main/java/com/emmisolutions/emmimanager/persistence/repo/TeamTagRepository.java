@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
@@ -48,13 +46,4 @@ public interface TeamTagRepository extends JpaRepository<TeamTag, Long>, JpaSpec
      */
     long deleteByTeamClientIdEquals(Long forThisClientId);
 
-    /**
-     * select all teams that do not have teamtags
-     *
-     * @param forThisClientId to use
-     * @param page page object
-     * @return teams
-     */
-    @Query("SELECT t FROM Team t LEFT JOIN t.teamTags tt WHERE tt.team IS NULL AND t.client.id = :forThisClientId")
-    Page<Team> findTeamsWithNoTeamTags(@Param("forThisClientId") Long forThisClientId, Pageable page);
 }
