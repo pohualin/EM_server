@@ -50,6 +50,10 @@ public class UserAdminRole extends AbstractAuditingEntity implements Serializabl
     private String name;
 
     @NotNull
+    @Column(name = "default_role", updatable = false, insertable = false, nullable = false)
+    private boolean defaultRole;
+    
+    @NotNull
     @Column(name = "system_role", updatable = false, insertable = false, nullable = false)
     private boolean systemRole;
 
@@ -123,6 +127,14 @@ public class UserAdminRole extends AbstractAuditingEntity implements Serializabl
             "id=" + id +
             ", name='" + name + '\'' +
             '}';
+    }
+
+    public boolean isDefaultRole() {
+        return defaultRole;
+    }
+
+    public void setDefaultRole(boolean defaultRole) {
+        this.defaultRole = defaultRole;
     }
 
     public boolean isSystemRole() {

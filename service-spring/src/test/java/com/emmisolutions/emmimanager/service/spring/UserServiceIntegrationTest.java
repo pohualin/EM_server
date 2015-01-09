@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     public void testUserAdminRoles() {
     	Page<UserAdminRole> roles = userService.listRolesWithoutSystem(null);
         assertThat("the search roles return values", roles.getContent(), is(notNullValue()));
-        assertThat("the search roles return values", roles.getContent().size(), is(3) );
+        assertThat("the search roles return values", roles.hasContent(), is(true) );
     }
     
     /**
@@ -77,8 +76,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         
         UserAdmin user1 = userService.fetchUserWillFullPermissions(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
-
-        assertThat("the users roles saved", user1.getRoles().size(), is(1));
+        assertThat("the users roles saved", user1.getRoles().iterator().next().getUserAdminRole(), is(role));
 
         user = userService.save(req); //execute again just to verify that is deleting the previous roles
         
@@ -86,7 +84,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         Page<UserAdmin> users = userService.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));
-        assertThat("the search user return values", users.getContent().size(), is(1) );
+        assertThat("the search user return values", users.getContent(), hasItem(user));
         
         UserAdmin findUser = users.getContent().iterator().next();
         assertThat("the users returned is the same user saved", findUser, is(user1));
