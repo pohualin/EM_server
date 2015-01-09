@@ -1,6 +1,9 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Tag;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
@@ -94,11 +97,5 @@ public class TeamTagServiceImpl implements TeamTagService {
         }
         teamTagSearchFilter.setTagSet(newTagSet);
         return teamTagPersistence.findTeamsWithTag(pageable, teamTagSearchFilter);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId, TeamSearchFilter.StatusFilter statusToFind){
-        return teamTagPersistence.findTeamsWithNoTeamTags(page,forThisClientId,statusToFind);
     }
 }

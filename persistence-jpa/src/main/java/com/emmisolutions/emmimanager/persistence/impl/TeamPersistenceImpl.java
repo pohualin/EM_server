@@ -41,7 +41,8 @@ public class TeamPersistenceImpl implements TeamPersistence {
         return teamRepository.findAll(where(teamSpecifications.usedByClient(filter))
                         .and(teamSpecifications.hasNames(filter))
                         .and(teamSpecifications.hasTeamTag(filter))
-                        .and(teamSpecifications.isInStatus(filter)),
+                        .and(teamSpecifications.isInStatus(filter))
+                        .and(teamSpecifications.hasNoTeamTags(filter)),
                 page == null ? new PageRequest(0, 50, Sort.Direction.ASC, "id") : page);
     }
 

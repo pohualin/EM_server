@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import org.springframework.data.domain.Page;
@@ -61,15 +60,6 @@ public interface TeamTagPersistence {
      */
     long removeTeamTagsThatAreNotAssociatedWith(Long clientId, Set<Long> groupIdsToKeep);
 
-    /**
-     * select all teams that do not have teamtags
-     *
-     * @param page pag object to use
-     * @param clientId to use
-     * @param statusToFind find active or inactive
-     * @return teams
-     */
-    Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId, TeamSearchFilter.StatusFilter statusToFind);
 
     /**
      * Find TeamTags with tag

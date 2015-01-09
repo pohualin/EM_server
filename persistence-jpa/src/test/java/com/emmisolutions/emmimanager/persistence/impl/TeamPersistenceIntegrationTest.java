@@ -1,27 +1,22 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import java.util.List;
-
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.ACTIVE_ONLY;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -44,6 +39,15 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
     ClientTypeRepository clientTypeRepository;
 
     ClientType clientType;
+
+    @Resource
+    TeamTagPersistence teamTagPersistence;
+
+    @Resource
+    TagPersistence tagPersistence;
+
+    @Resource
+    GroupPersistence groupPersistence;
 
     /**
      * Initialization method
@@ -128,6 +132,153 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         filter.setTag(tags.get(0));
         Page<Team> teamPageA = teamPersistence.list(null, filter);
         assertThat("should return some teams", teamPageA.hasContent(), is(true));
+    }
+
+    /**
+     * return teams with no teamtags
+     */
+    @Test
+    public void getTeamsWithNoTeamTags() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 1);
+        Team team2 = createTeam(client1, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ACTIVE_ONLY,TeamSearchFilter.TeamTagType.ALL);
+
+        Page<Team> returnedTeams = teamPersistence.list(null, filter);
+        assertThat("team2 was returned", returnedTeams, hasItem(team2));
+        assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
+    }
+
+    /**
+     * return inactive teams with no teamtags
+     */
+    @Test
+    public void getInactiveTeamsWithNoTeamTags() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 2);
+        Team team2 = createTeam(client1, 1);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.INACTIVE_ONLY,TeamSearchFilter.TeamTagType.ALL);
+
+        Page<Team> returnedTeams = teamPersistence.list(null, filter);
+        assertThat("team2 was returned", returnedTeams, hasItem(team2));
+        assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
+    }
+
+    /**
+     * return inactive teams with no teamtags
+     */
+    @Test
+    public void getAllTeamsWithNoTeamTags() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 2);
+        Team team2 = createTeam(client1, 1);
+        Team team3 = createTeam(client1, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ALL,TeamSearchFilter.TeamTagType.ALL);
+
+        Page<Team> returnedTeams = teamPersistence.list(null, filter);
+        assertThat("team2 was returned", returnedTeams, hasItem(team2));
+        assertThat("team3 was returned", returnedTeams, hasItem(team3));
+        assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
+    }
+
+    /**
+     * return teams with no teamtags and defined page
+     */
+    @Test
+    public void getTeamsWithNoTeamTagsAndDefinedPage() {
+        TeamTag teamTag1 = new TeamTag();
+
+        Client client1 = createClient("1");
+        Group group = createGroup(client1, "ninjas");
+
+        Tag tag1 = createTag(group);
+        Team team1 = createTeam(client1, 1);
+        Team team2 = createTeam(client1, 2);
+
+        teamTag1.setTag(tag1);
+        teamTag1.setTeam(team1);
+
+        teamTagPersistence.saveTeamTag(teamTag1);
+
+        TeamSearchFilter filter = new TeamSearchFilter(client1.getId(),TeamSearchFilter.StatusFilter.ACTIVE_ONLY,TeamSearchFilter.TeamTagType.ALL);
+        Page<Team> returnedTeams = teamPersistence.list(new PageRequest(0, 50, Sort.Direction.ASC, "id"), filter);
+        assertThat("team2 was returned", returnedTeams, hasItem(team2));
+        assertThat("team1 was not returned", returnedTeams, not(hasItem(team1)));
+    }
+
+    private Team createTeam(Client client, int i) {
+        Team team = new Team();
+        team.setName("Test Team" + i + RandomStringUtils.randomAlphanumeric(18));
+        team.setDescription("Test Team description");
+        team.setActive(i % 2 == 0);
+        team.setClient(client);
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
+        team = teamPersistence.save(team);
+        return team;
+    }
+
+    private Tag createTag(Group group) {
+        Tag tag = new Tag();
+        tag.setName("Test Tag " + RandomStringUtils.randomAlphanumeric(18));
+        tag.setGroup(group);
+        tag = tagPersistence.save(tag);
+        return tag;
+    }
+
+    private Group createGroup(Client client, String name) {
+        Group group = new Group();
+        group.setName("Test Group" + name);
+        group.setClient(client);
+        group = groupPersistence.save(group);
+        return group;
+    }
+
+    private Client createClient(String uniqueId) {
+        Client client = new Client();
+        client.setTier(new ClientTier(3l));
+        client.setContractEnd(LocalDate.now().plusYears(1));
+        client.setContractStart(LocalDate.now());
+        client.setRegion(new ClientRegion(1l));
+        client.setName("Test Client " + uniqueId);
+        client.setType(clientType);
+        client.setActive(false);
+        client.setContractOwner(superAdmin);
+        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
+        clientPersistence.save(client);
+        return client;
     }
 
     private Team makeTeamForClient(Client client, int i) {

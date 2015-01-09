@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +26,7 @@ import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
 import static com.emmisolutions.emmimanager.model.TeamSearchFilter.StatusFilter.fromStringOrActive;
+import static com.emmisolutions.emmimanager.model.TeamSearchFilter.TeamTagType.fromStringOrAll;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -116,7 +116,7 @@ public class TeamsResource {
         PagedResourcesAssembler<Team> assembler,
         @RequestParam(value = "name", required = false) String... names) {
 
-        return findTeams(pageable, assembler, null, status, names);
+        return findTeams(pageable, assembler, null, status, null, names);
     }
 
     /**
@@ -143,8 +143,9 @@ public class TeamsResource {
                                                 @SortDefault(sort = "id") Sort sort,
                                                 @RequestParam(value = "status", required = false) String status,
                                                 PagedResourcesAssembler<Team> assembler,
+                                                @RequestParam(value = "teamTagsType", required = false) String teamTagsType,
                                                 @RequestParam(value = "name", required = false) String... names) {
-        return findTeams(pageable, assembler, clientId, status, names);
+        return findTeams(pageable, assembler, clientId, status,teamTagsType, names);
     }
 
     /**
@@ -184,9 +185,9 @@ public class TeamsResource {
         return new ReferenceData();
     }
 
-    private ResponseEntity<TeamPage> findTeams(Pageable pageable, PagedResourcesAssembler<Team> assembler, Long clientId, String status, String... names) {
+    private ResponseEntity<TeamPage> findTeams(Pageable pageable, PagedResourcesAssembler<Team> assembler, Long clientId, String status, String teamTagsType, String... names) {
         // create the search filter
-        TeamSearchFilter teamSearchFilter = new TeamSearchFilter(clientId, fromStringOrActive(status), names);
+        TeamSearchFilter teamSearchFilter = new TeamSearchFilter(clientId, fromStringOrActive(status), fromStringOrAll(teamTagsType),names);
 
         // find the page of clients
         Page<Team> teamPage = teamService.list(pageable, teamSearchFilter);
@@ -226,41 +227,6 @@ public class TeamsResource {
         if (toFind != null) {
             return new ResponseEntity<>(
                 teamResourceAssembler.toResource(toFind), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
-
-    /**
-     * GET teams with no teamtags
-     * @param clientId       to use
-     * @param pageable       specification
-     * @param sort      sorting request
-     * @param assembler used to create the PagedResources
-     *
-     * @return List of Team objects or INTERNAL_SERVER_ERROR if the list is empty
-     */
-    @RequestMapping(value = "/clients/{clientId}/no-team-tags", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "status", defaultValue = "ACTIVE_ONLY", value = "status to get", dataType = "string", paramType = "query")
-    })
-    public ResponseEntity<TeamPage> teamsWithNoTeamTags(
-            @PathVariable("clientId") Long clientId,
-            @PageableDefault(size = 50) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
-            @RequestParam(value = "status", required = false) String status,
-            PagedResourcesAssembler<Team> assembler) {
-
-        TeamSearchFilter.StatusFilter statusToFind = fromStringOrActive(status);
-        Page<Team> teamsWithNoTeamTagsPage = teamTagService.findTeamsWithNoTeamTags(null,clientId,statusToFind);
-        if (teamsWithNoTeamTagsPage.hasContent()) {
-            PagedResources<TeamResource> teamTagResourceSupports = assembler.toResource(teamsWithNoTeamTagsPage, teamResourceAssembler);
-            TeamPage teamTagPage1 = new TeamPage(teamTagResourceSupports, teamsWithNoTeamTagsPage,null);
-            return new ResponseEntity<>(teamTagPage1, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

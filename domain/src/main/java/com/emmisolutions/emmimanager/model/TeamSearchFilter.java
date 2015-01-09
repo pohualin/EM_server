@@ -25,6 +25,8 @@ public class TeamSearchFilter {
 
     private Long clientId;
 
+    private TeamTagType teamTagType;
+
     /**
      * Constructor
      */
@@ -35,8 +37,7 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param names
-     *            to filter
+     * @param names to filter
      */
     public TeamSearchFilter(String... names) {
         this(StatusFilter.ALL, names);
@@ -45,10 +46,70 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param status
-     *            filter
-     * @param names
-     *            to filter
+     * @param teamTagType type of teamtags to filter
+     */
+    public TeamSearchFilter(TeamTagType teamTagType) {
+        this(StatusFilter.ALL);
+        if (teamTagType != null) {
+            this.teamTagType = teamTagType;
+        }
+    }
+
+    /**
+     * Constructor
+     *
+     * @param status      filter
+     * @param teamTagType type of teamtags to filter
+     */
+    public TeamSearchFilter(StatusFilter status, TeamTagType teamTagType) {
+        if (status != null) {
+            this.status = status;
+        }
+        if (teamTagType != null) {
+            this.teamTagType = teamTagType;
+        }
+    }
+
+    /**
+     * Constructor
+     *
+     * @param teamTagType type of teamtags to filter
+     */
+    public TeamSearchFilter(Long clientId, TeamTagType teamTagType) {
+        this(teamTagType);
+        this.clientId = clientId;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param status      filter
+     * @param teamTagType type of teamtags to filter
+     */
+    public TeamSearchFilter(Long clientId, StatusFilter status, TeamTagType teamTagType) {
+        this(status, teamTagType);
+        this.clientId = clientId;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param status      filter
+     * @param teamTagType type of teamtags to filter
+     */
+    public TeamSearchFilter(Long clientId, StatusFilter status, TeamTagType teamTagType, String... names) {
+        this(clientId, status, teamTagType);
+        if (names != null) {
+            this.names = new HashSet<>();
+            Collections.addAll(this.names, names);
+        }
+    }
+
+    /**
+     * Constructor
+     *
+     * @param status filter
+     * @param names  to filter
      */
     public TeamSearchFilter(StatusFilter status, String... names) {
         if (names != null) {
@@ -63,10 +124,8 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param status
-     *            filter
-     * @param names
-     *            filter
+     * @param status filter
+     * @param names  filter
      */
     public TeamSearchFilter(StatusFilter status, String names) {
         if (names != null) {
@@ -81,12 +140,9 @@ public class TeamSearchFilter {
     /**
      * Constructor
      *
-     * @param clientId
-     *            the client filter
-     * @param status
-     *            filter
-     * @param names
-     *            filters
+     * @param clientId the client filter
+     * @param status   filter
+     * @param names    filters
      */
     public TeamSearchFilter(Long clientId, StatusFilter status, String... names) {
         this(status, names);
@@ -113,6 +169,14 @@ public class TeamSearchFilter {
         return clientId;
     }
 
+    public TeamTagType getTeamTagType() {
+        return teamTagType;
+    }
+
+    public void setTeamTagType(TeamTagType teamTagType) {
+        this.teamTagType = teamTagType;
+    }
+
     /**
      * Team Statuses
      */
@@ -122,8 +186,7 @@ public class TeamSearchFilter {
         /**
          * Create a StatusFilter from a string
          *
-         * @param status
-         *            if the string matches or ALL
+         * @param status if the string matches or ALL
          * @return StatusFilter
          */
         public static StatusFilter fromStringOrAll(String status) {
@@ -140,8 +203,7 @@ public class TeamSearchFilter {
         /**
          * Create a StatusFilter from a string
          *
-         * @param status
-         *            if the string matches or ACTIVE
+         * @param status if the string matches or ACTIVE
          * @return StatusFilter
          */
         public static StatusFilter fromStringOrActive(String status) {
@@ -153,6 +215,30 @@ public class TeamSearchFilter {
                 }
             }
             return ACTIVE_ONLY;
+        }
+    }
+
+    /**
+     * Type of TeamTag to search for
+     */
+    public enum TeamTagType {
+        ALL;
+
+        /**
+         * Create a TeamTagType from a string
+         *
+         * @param type if the string matches or ALL
+         * @return StatusFilter
+         */
+        public static TeamTagType fromStringOrAll(String type) {
+            if (StringUtils.isNotBlank(type)) {
+                for (TeamTagType teamTagType : values()) {
+                    if (teamTagType.toString().equals(type.toUpperCase())) {
+                        return teamTagType;
+                    }
+                }
+            }
+            return ALL;
         }
     }
 

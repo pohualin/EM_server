@@ -1,6 +1,9 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Tag;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
 import com.emmisolutions.emmimanager.persistence.TagPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamTagPersistence;
@@ -89,16 +92,6 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
             }
         }
         return 0;
-    }
-
-    @Override
-    public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long clientId, TeamSearchFilter.StatusFilter statusToFind) {
-        if (clientId != null) {
-            return teamTagRepository.findTeamsWithNoTeamTags(clientId,
-                    statusToFind.name().equalsIgnoreCase("ACTIVE_ONLY"),
-                    (page == null) ? new PageRequest(0, 50, Sort.Direction.ASC, "id") : page );
-        }
-        return null;
     }
 
     @Override

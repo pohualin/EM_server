@@ -320,25 +320,4 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("afterSaveTeamTag4 team is not returned",returnedTeamTags,not(hasItem(afterSaveTeamTag4)));
     }
 
-    /**
-     * return teams with no teamtags
-     */
-    @Test
-    public void getTeamsWithNoTeamTags() {
-        Client client = createClient();
-        Group group1 = createGroup(client);
-
-        List<Tag> tagList = createTagList(group1, 2);
-        Tag tag1 = tagList.get(0);
-
-        Team team1 = createTeam(client);
-        Team team2 = createTeam(client);
-
-        teamTagService.saveSingleTeamTag(team1, tag1);
-
-        Page<Team> returnedTeams = teamTagService.findTeamsWithNoTeamTags(null, client.getId(), "ACTIVE_ONLY" );
-        assertThat("team2 is returned", returnedTeams, hasItem(team2));
-        assertThat("team1 is not returned", returnedTeams, not(hasItem(team1)));
-    }
-
 }
