@@ -101,7 +101,8 @@ public class UserPersistenceImpl implements UserPersistence {
             pageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
         }
         return userAdminRepository.findAll(
-                where(userSpecifications.hasNames(filter)), pageable);
+                where(userSpecifications.hasNames(filter)).and(
+                        userSpecifications.isContractOwner()), pageable);
     }
 
     @Override
