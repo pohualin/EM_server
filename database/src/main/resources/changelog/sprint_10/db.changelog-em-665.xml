@@ -9,10 +9,27 @@
 
     <changeSet id="delete all existing admin user roles, admin roles and admin role permissions" author="Paul">
         <delete tableName="user_admin_role_user_admin_permission"/>
-        <delete tableName="user_admin_user_admin_role"/>
+        <delete tableName="user_admin_user_admin_role">
+            <where>created_by = 'system'</where>
+        </delete>
+        <delete tableName="user_admin_user_admin_role">
+            <where>user_admin_role_id = 4</where>
+        </delete>
+        <delete tableName='user_admin_role'>
+            <where>name = 'Contract Owner'</where>
+        </delete>
+        <update tableName='user_admin_role'>
+            <column name="name">Emmi Super User</column>
+            <where>name = 'Super User'</where>
+        </update>
+        <update tableName='user_admin_role'>
+            <column name="name">Emmi User</column>
+            <where>name = 'User'</where>
+        </update>
     </changeSet>
 
     <changeSet id="after delete commits" author="Matt">
+        <delete tableName="user_admin_user_admin_role"/>
         <delete tableName='user_admin_role'>
             <where>name = 'Contract Owner'</where>
         </delete>
