@@ -8,10 +8,13 @@
     <property name="now" value="GETDATE()" dbms="mssql"/>
     
     <changeSet id="delete all existing admin user roles, admin roles and admin role permissions" author="Paul">
-    	<delete tableName="user_admin_role_user_admin_permission"></delete>
+        <delete tableName="user_admin_role_user_admin_permission"/>
     	<delete tableName="user_admin_user_admin_role">
     		<where>created_by = 'system'</where>
     	</delete>
+        <delete tableName="user_admin_user_admin_role">
+            <where>user_admin_role_id = 4</where>
+        </delete>
     	<delete tableName='user_admin_role'>
     		<where>name = 'Contract Owner'</where>
     	</delete>
