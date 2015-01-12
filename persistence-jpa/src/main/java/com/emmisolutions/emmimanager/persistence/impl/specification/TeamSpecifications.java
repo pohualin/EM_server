@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSearchFilter;
-import com.emmisolutions.emmimanager.model.TeamTag;
-import com.emmisolutions.emmimanager.model.Team_;
+import com.emmisolutions.emmimanager.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -108,13 +105,9 @@ public class TeamSpecifications {
             @Override
             public Predicate toPredicate(Root<Team> root,
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getTeamTagType() !=null && TeamSearchFilter.TeamTagType.ALL.equals(searchFilter.getTeamTagType())) {
-                    Expression<Set<TeamTag>> teamTags = root.get(Team_.teamTags);
-                    if (TeamSearchFilter.TeamTagType.TAGGED_ONLY.equals(searchFilter.getTeamTagType())) {
-                        return cb.isNotEmpty(teamTags);
-                    } else {
-                        return cb.isEmpty(teamTags);
-                    }
+                if (searchFilter != null && searchFilter.getTag() != null) {
+                    return cb.equal(root.join(Team_.teamTags).get(TeamTag_.tag)
+                            .get(Tag_.id), searchFilter.getTag().getId());
                 }
                 return null;
             }
@@ -132,7 +125,12 @@ public class TeamSpecifications {
             @Override
             public Predicate toPredicate(Root<Team> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (searchFilter != null && searchFilter.getTeamTagType() != null) {
-                    return cb.isEmpty(root.get(Team_.teamTags));
+                    Expression<Set<TeamTag>> teamTags = root.get(Team_.teamTags);
+                    if (TeamSearchFilter.TeamTagType.TAGGED_ONLY.equals(searchFilter.getTeamTagType())) {
+                        return cb.isNotEmpty(teamTags);
+                    } else {
+                        return cb.isEmpty(teamTags);
+                    }
                 }
                 return null;
             }
