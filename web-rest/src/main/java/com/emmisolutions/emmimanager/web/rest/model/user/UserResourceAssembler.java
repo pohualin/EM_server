@@ -11,6 +11,9 @@ import java.util.Set;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.TemplateVariable;
+import org.springframework.hateoas.TemplateVariables;
+import org.springframework.hateoas.UriTemplate;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
 import org.springframework.hateoas.core.DummyInvocationUtils;
 import org.springframework.hateoas.core.MappingDiscoverer;
@@ -27,6 +30,7 @@ import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.resource.AdminFunctionsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ClientsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.LocationsResource;
 import com.emmisolutions.emmimanager.web.rest.resource.ProvidersResource;
@@ -76,7 +80,27 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(UserPage.createFullSearchLink());
         ret.add(UserAdminRolePage.createUserAdminRolesLink());
         ret.add(createUserByIdLink());
+        
+        if(perms.contains(UserAdminPermissionName.PERM_GOD)){
+            ret.add(referenceTagsLinkForAdmin());
+        }
+        
         return ret;
+    }
+    
+    /**
+     * Creates link for GET of reference tags for admin functions
+     * @return the link
+     */
+    public Link referenceTagsLinkForAdmin(){
+        Link link = linkTo(methodOn(AdminFunctionsResource.class).getRefData(null, null, null)).withRel("referenceTags");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
+            ));
+        return new Link(uriTemplate, link.getRel());
     }
 
     /**
