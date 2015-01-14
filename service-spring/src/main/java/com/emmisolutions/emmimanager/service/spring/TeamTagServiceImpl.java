@@ -98,10 +98,4 @@ public class TeamTagServiceImpl implements TeamTagService {
         teamTagSearchFilter.setTagSet(newTagSet);
         return teamTagPersistence.findTeamsWithTag(pageable, teamTagSearchFilter);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Team> findTeamsWithNoTeamTags(Pageable page, Long forThisClientId){
-        return teamTagPersistence.findTeamsWithNoTeamTags(page,forThisClientId);
-    }
 }
