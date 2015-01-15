@@ -1,6 +1,6 @@
 <%@ taglib prefix="c"
            uri="http://java.sun.com/jsp/jstl/core" %>
-<c:url value="/webapi/authenticate" var="loginProcessingUrl"/>
+<c:url value="/webapi-client/authenticate" var="loginProcessingUrl"/>
 <form action="${loginProcessingUrl}" method="post">
     <fieldset>
         <legend>Client REST Server Login</legend>
