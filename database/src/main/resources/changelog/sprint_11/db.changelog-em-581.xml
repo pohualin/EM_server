@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add salt" author="Matt">
+        <addColumn tableName="users">
+            <column name="salt" type="varchar(32)"/>
+        </addColumn>
+        <addColumn tableName="users_audit">
+            <column name="salt" type="varchar(32)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="update super admin" author="Matt">
+        <update tableName="users">
+            <column name="password" value="2334FE288B4A0EBE68BD37C39B6FCAB98C90E983"/>
+            <column name="salt" value="61EFFC4A0F0C24361263EA6C9D038B78"/>
+            <where>login = 'super_admin'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="update password field length" author="Matt">
+        <renameColumn tableName="users"
+                      oldColumnName="password"
+                      newColumnName="password"
+                      columnDataType="varchar(40)"/>
+    </changeSet>
+
+    <changeSet id="create emmi super user" author="Matt">
+        <insert tableName="users">
+            <column name="login" value="emmi_super_user"/>
+            <column name="first_name" value="Emmi"/>
+            <column name="last_name" value="Administrator"/>
+            <column name="normalized_name" value="emmiadministrator"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="password" value="68A818084C2CAE25B3CCF98386615A3B3F605AA8"/>
+            <column name="salt" value="00E568C62C69E1A500FF41C16640F436"/>
+            <column name="user_type" value="A"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="grant emmi super user the correct role" author="Matt">
+        <sql><![CDATA[
+            INSERT INTO user_admin_user_admin_role (users_id, user_admin_role_id)
+              SELECT
+                u.id,
+                (SELECT id
+                 FROM user_admin_role
+                 WHERE name = 'Emmi Super User') AS user_admin_role_id
+              FROM (SELECT id
+                    FROM users
+                    WHERE login = 'emmi_super_user') AS u
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="add client user permission" author="Matt">
+        <insert tableName="user_client_permission">
+            <column name="name" value="PERM_CLIENT_USER"/>
+            <column name="rank" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

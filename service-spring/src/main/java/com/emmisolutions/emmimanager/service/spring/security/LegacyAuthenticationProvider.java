@@ -14,6 +14,7 @@ import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,13 +22,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Replacement for the DaoAuthentication provider to support legacy emmi passwords
+ * Replacement for the DaoAuthentication provider to support legacy emmi passwords.
+ * This class supports Emmi User Admins as well as Client Users.
  */
 @Component
 public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
@@ -42,8 +45,13 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
     PasswordEncoder passwordEncoder;
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    @Transactional
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        return super.authenticate(authentication);
+    }
 
+    @Override
+    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         if (authentication.getCredentials() == null) {
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
@@ -69,10 +77,6 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         UserAdmin userAdmin = userPersistence.reload(username);
-        UserClient userClient = userClientPersistence.fetchUserWillFullPermissions(username);
-        if (userAdmin == null && userClient == null) {
-            throw new UsernameNotFoundException("User " + username + " was not found.");
-        }
         if (userAdmin != null) {
             Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
             for (UserAdminUserAdminRole userAdminUserAdminRole : userAdmin.getRoles()) {
@@ -83,15 +87,20 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             return new org.springframework.security.core.userdetails.User(userAdmin.getLogin(), getPassword(userAdmin),
                     grantedAuthorities);
         } else {
+            UserClient userClient = userClientPersistence.fetchUserWillFullPermissions(username);
+            if (userClient == null) {
+                throw new UsernameNotFoundException("User " + username + " was not found.");
+            }
             Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
             for (UserClientUserClientRole clientRole : userClient.getClientRoles()) {
                 for (UserClientPermission permission : clientRole.getUserClientRole().getUserClientPermissions()) {
                     grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName().toString()));
                 }
             }
+            // granted team authorities are in the form of PERM_NAMEOFPERMISSION_TEAMID
             for (UserClientUserClientTeamRole teamRole : userClient.getTeamRoles()) {
                 for (UserClientTeamPermission permission : teamRole.getUserClientTeamRole().getUserClientTeamPermissions()) {
-                    grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName().toString()));
+                    grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName().toString() + "_" + teamRole.getTeam().getId()));
                 }
             }
             return new org.springframework.security.core.userdetails.User(userClient.getLogin(), getPassword(userClient),

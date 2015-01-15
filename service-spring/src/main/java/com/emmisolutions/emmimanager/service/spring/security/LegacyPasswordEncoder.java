@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,14 +18,14 @@ import java.security.spec.KeySpec;
 @Component
 public class LegacyPasswordEncoder implements PasswordEncoder {
 
-    private static int PASSWORD_BITS = 160;
+    private static int PASSWORD_BITS = 160; // maximum strength for SHA1
     /**
      * The password size is num bits * 1 byte/8 bits * 2 hex chars/byte.
      * So for SHA1 160 bit password we have 40 Hex characters.
      */
     public static int PASSWORD_SIZE = PASSWORD_BITS / 8 * 2;
-    public static int HASH_SIZE = 32;
-    private static int BYTES = HASH_SIZE / 2;
+    public static int SALT_SIZE = 32;
+    private static int SALT_BYTES = SALT_SIZE / 2;
 
     private SecureRandom random = new SecureRandom();
 
@@ -36,32 +37,35 @@ public class LegacyPasswordEncoder implements PasswordEncoder {
         } else {
             plainText = rawPassword.toString();
         }
-        byte[] salt = new byte[BYTES];
+        byte[] salt = new byte[SALT_BYTES];
         random.nextBytes(salt);
-        return String.valueOf(Hex.encode(hashPassword(plainText, salt)))
-                + String.valueOf(Hex.encode(salt));
+        return String.valueOf(Hex.encode(hashPassword(plainText, salt))).toUpperCase()
+                + String.valueOf(Hex.encode(salt)).toUpperCase();
     }
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        if (rawPassword == null || rawPassword.length() <= HASH_SIZE) {
-            // password must be longer than hash
+        if (StringUtils.isBlank(rawPassword)) {
+            // blank passwords should not match ever
             return false;
         }
-        if (encodedPassword == null || encodedPassword.length() == 0) {
-            // Empty encoded password
+        if (encodedPassword == null || encodedPassword.length() != PASSWORD_SIZE + SALT_SIZE) {
+            // bad encoded password
             return false;
         }
-        String hash = rawPassword.subSequence(rawPassword.length() - HASH_SIZE, rawPassword.length()).toString();
-        String plainText = rawPassword.subSequence(0, rawPassword.length() - HASH_SIZE).toString();
+        // split the encoded password into SALT and HASH
+        String salt = encodedPassword.subSequence(encodedPassword.length() - SALT_SIZE, encodedPassword.length()).toString();
+        String hash = encodedPassword.subSequence(0, encodedPassword.length() - SALT_SIZE).toString();
 
         // create the encoded Hex string from the password and hash
-        String hashedAttempt = new String(Hex.encode(hashPassword(plainText, Hex.decode(hash))));
-        return hashedAttempt.equalsIgnoreCase(encodedPassword);
+        String hashedAttempt = new String(Hex.encode(hashPassword(rawPassword, Hex.decode(salt))));
+
+        // compare the hex string created from the salt and raw password with the existing hash
+        return hashedAttempt.equalsIgnoreCase(hash);
     }
 
-    private byte[] hashPassword(String password, byte[] salt) {
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 64000, 160);
+    private byte[] hashPassword(CharSequence password, byte[] salt) {
+        KeySpec spec = new PBEKeySpec(password.toString().toCharArray(), salt, 64000, 160);
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             return factory.generateSecret(spec).getEncoded();
