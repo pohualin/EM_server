@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxLogoutSuccessHa
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,6 +46,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Resource
+    private AuthenticationProvider authenticationProvider;
+
+    @Resource
     PasswordEncoder passwordEncoder;
 
     private static final String REMEMBER_ME_KEY = "emSrm";
@@ -57,9 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Inject
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder);
+        auth.authenticationProvider(authenticationProvider);
     }
 
     @Override
