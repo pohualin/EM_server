@@ -61,6 +61,41 @@
         </insert>
     </changeSet>
 
+    <changeSet id="drop df constraints" author="Matt">
+        <dropDefaultValue tableName="users" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_user_client_team_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_user_client_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_team_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_team_role_type" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_team_role_permission" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_team_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_role_type" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_role_permission" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_admin_user_admin_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_admin_role" columnName="created_by"/>
+        <dropDefaultValue tableName="team_provider_team_location " columnName="created_by"/>
+        <dropDefaultValue tableName="team_provider" columnName="created_by"/>
+        <dropDefaultValue tableName="strings" columnName="created_by"/>
+        <dropDefaultValue tableName="salesforce_team" columnName="created_by"/>
+        <dropDefaultValue tableName="salesforce_client" columnName="created_by"/>
+        <dropDefaultValue tableName="reference_tag" columnName="created_by"/>
+        <dropDefaultValue tableName="reference_group_type " columnName="created_by"/>
+        <dropDefaultValue tableName="reference_group" columnName="created_by"/>
+        <dropDefaultValue tableName="provider" columnName="created_by"/>
+        <dropDefaultValue tableName="location" columnName="created_by"/>
+        <dropDefaultValue tableName="language" columnName="created_by"/>
+        <dropDefaultValue tableName="client_team_tag" columnName="created_by"/>
+        <dropDefaultValue tableName="client_team_location" columnName="created_by"/>
+        <dropDefaultValue tableName="client_team" columnName="created_by"/>
+        <dropDefaultValue tableName="client_provider" columnName="created_by"/>
+        <dropDefaultValue tableName="client_location" columnName="created_by"/>
+        <dropDefaultValue tableName="client_group_tag" columnName="created_by"/>
+        <dropDefaultValue tableName="client_group" columnName="created_by"/>
+        <dropDefaultValue tableName="client" columnName="created_by"/>
+    </changeSet>
+
     <changeSet id="update length of created/updated by" author="Matt">
         <modifyDataType tableName="users"
                         columnName="created_by"

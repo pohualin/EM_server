@@ -148,5 +148,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
                 Collections.unmodifiableCollection(auth.getAuthorities()),
                 hasItem(new SimpleGrantedAuthority(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI.toString()
                         + "_" + oneWithAllPermissionsLoaded.getTeamRoles().iterator().next().getTeam().getId())));
+
+        logout();
     }
 }
