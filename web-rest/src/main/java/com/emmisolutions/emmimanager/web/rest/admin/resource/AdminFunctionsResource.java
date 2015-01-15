@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.admin.model.resource;
+package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.ProviderService;

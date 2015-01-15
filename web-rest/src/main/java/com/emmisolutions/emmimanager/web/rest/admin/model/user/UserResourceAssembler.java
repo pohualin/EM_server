@@ -5,7 +5,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.resource.AdminFunctionsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
 import org.springframework.hateoas.*;
