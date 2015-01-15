@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.spring.security.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,9 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     UserClientPersistence userClientPersistence;
+
+    @Resource
+    SecurityUtils securityUtils;
 
     @Override
     @Transactional
@@ -80,5 +84,11 @@ public class UserClientServiceImpl implements UserClientService {
             }
         }
         return ret;
+    }
+
+    @Override
+    @Transactional
+    public UserClient loggedIn() {
+        return userClientPersistence.fetchUserWillFullPermissions(securityUtils.getCurrentLogin());
     }
 }

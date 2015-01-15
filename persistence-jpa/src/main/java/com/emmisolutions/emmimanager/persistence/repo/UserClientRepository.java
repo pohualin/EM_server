@@ -10,4 +10,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface UserClientRepository extends JpaRepository<UserClient, Long>,
         JpaSpecificationExecutor<UserClient> {
 
+        /**
+         * Find a user by the login
+         *
+         * @param login case insensitive comparison
+         * @return User or null
+         */
+        UserClient findByLoginIgnoreCase(String login);
+
 }

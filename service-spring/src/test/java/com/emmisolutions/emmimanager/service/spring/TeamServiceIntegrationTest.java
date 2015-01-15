@@ -143,7 +143,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 
         teamTagService.saveSingleTeamTag(team1, tag1);
 
-        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.ACTIVE_ONLY,TeamSearchFilter.TeamTagType.TAGGED_ONLY);
+        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.ACTIVE_ONLY, TeamSearchFilter.TeamTagType.TAGGED_ONLY);
         Page<Team> returnedTeams = teamService.list(null, filter);
         assertThat("team1 is returned", returnedTeams, hasItem(team1));
         assertThat("team2 is not returned", returnedTeams, not(hasItem(team2)));

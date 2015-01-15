@@ -40,12 +40,25 @@ public class UserClient extends User {
     }
 
     @OneToMany(mappedBy = "userClient")
-    @SuppressWarnings("unused")
     private Collection<UserClientUserClientRole> clientRoles;
 
     @OneToMany(mappedBy = "userClient")
-    @SuppressWarnings("unused")
     private Collection<UserClientUserClientTeamRole> teamRoles;
 
 
+    public Collection<UserClientUserClientRole> getClientRoles() {
+        return clientRoles;
+    }
+
+    public void setClientRoles(Collection<UserClientUserClientRole> clientRoles) {
+        this.clientRoles = clientRoles;
+    }
+
+    public Collection<UserClientUserClientTeamRole> getTeamRoles() {
+        return teamRoles;
+    }
+
+    public void setTeamRoles(Collection<UserClientUserClientTeamRole> teamRoles) {
+        this.teamRoles = teamRoles;
+    }
 }
