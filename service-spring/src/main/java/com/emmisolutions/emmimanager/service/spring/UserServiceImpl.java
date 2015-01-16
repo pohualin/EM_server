@@ -1,16 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
@@ -19,6 +8,15 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.UserService;
 import com.emmisolutions.emmimanager.service.spring.security.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An example of a Service class. It can only contact the persistence layer
@@ -40,9 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserAdmin save(UserAdminSaveRequest req) {
-    	
-    	Set<UserAdminUserAdminRole> roles = new HashSet<UserAdminUserAdminRole>();
-    	
+    	Set<UserAdminUserAdminRole> roles = new HashSet<>();
     	for (UserAdminRole userAdminRole : req.getRoles()) {
     		UserAdminUserAdminRole userAdminUserAdminRole = new UserAdminUserAdminRole();
     		userAdminUserAdminRole.setUserAdmin(req.getUserAdmin());

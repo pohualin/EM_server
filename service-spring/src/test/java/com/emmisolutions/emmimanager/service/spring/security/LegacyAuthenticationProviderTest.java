@@ -10,6 +10,7 @@ import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -47,6 +48,9 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     PasswordEncoder passwordEncoder;
 
     @Resource
+    UserDetailsService userDetailsService;
+
+    @Resource
     UserClientService userClientService;
 
     /**
@@ -80,8 +84,8 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     }
 
     /**
-     * Not found usernames will actually throw UsernameNotFoundException
-     * but due to the hiding of missing usernames (on purpose for security reasons)
+     * Not found user names will actually throw UsernameNotFoundException
+     * but due to the hiding of missing user names (on purpose for security reasons)
      * a BadCredentialsException should be thrown
      */
     @Test(expected = BadCredentialsException.class)
@@ -136,14 +140,15 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         assertThat("authentication is successful",
                 auth.isAuthenticated(), is(true));
 
-        // fetch the logged in user fully
+        // fetch the logged in user fully (simulates what spring security does after authentication)
         login(userClient.getLogin());
-        UserClient oneWithAllPermissionsLoaded = userClientService.loggedIn();
+        UserClient oneWithAllPermissionsLoaded = (UserClient) userDetailsService.getLoggedInUser();
 
         // check to see that the permissions and granted authorities match
         assertThat("client user has been granted client user permission",
                 Collections.unmodifiableCollection(auth.getAuthorities()),
-                hasItem(new SimpleGrantedAuthority(UserClientPermissionName.PERM_CLIENT_USER.toString())));
+                hasItem(new SimpleGrantedAuthority(UserClientPermissionName.PERM_CLIENT_USER.toString() +
+                        "_" + userClient.getClient().getId())));
         assertThat("client user has been granted team level user permission",
                 Collections.unmodifiableCollection(auth.getAuthorities()),
                 hasItem(new SimpleGrantedAuthority(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI.toString()

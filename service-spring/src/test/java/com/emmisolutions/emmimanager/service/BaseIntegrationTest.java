@@ -183,7 +183,7 @@ public abstract class BaseIntegrationTest {
      * @return a list of tags
      */
     protected List<Tag> makeNewRandomTags(Group group, int count) {
-        List<Tag> tags = new ArrayList<Tag>();
+        List<Tag> tags = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Tag tag = new Tag();
             tag.setName(RandomStringUtils.randomAlphabetic(10));
@@ -278,6 +278,7 @@ public abstract class BaseIntegrationTest {
         userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
         userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
         userClient.setPassword(RandomStringUtils.randomAlphanumeric(40));
+        userClient.setCredentialsNonExpired(true);
         UserClient savedUserClient = userClientService.create(userClient);
 
         // put the user client in a new client role with all permissions
@@ -309,6 +310,7 @@ public abstract class BaseIntegrationTest {
                 RandomStringUtils.randomAlphanumeric(40));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
+        userAdmin.setCredentialsNonExpired(true);
         UserAdminSaveRequest req = new UserAdminSaveRequest();
         req.setUserAdmin(userAdmin);
         req.getRoles().add(makeNewRandomUserAdminRole());

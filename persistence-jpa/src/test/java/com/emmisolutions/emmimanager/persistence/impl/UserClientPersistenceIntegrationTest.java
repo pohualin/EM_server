@@ -116,6 +116,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         Client clientA = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
+        userClient.setActive(false);
 
         UserClientSearchFilter filter = new UserClientSearchFilter(client, "");
         Page<UserClient> userClients = userClientPersistence.list(null, filter);
