@@ -46,10 +46,15 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(columnDefinition = "int")
     private Integer version;
 
-    @Column(length = 100, columnDefinition = "nvarchar(100)")
-    @Size(min = 0, max = 100)
+    @Column(length = 40, columnDefinition = "varchar(40)")
+    @Size(min = 0, max = 40)
     @XmlTransient
     private String password;
+
+    @Column(length = 32, columnDefinition = "varchar(32)")
+    @Size(min = 0, max = 32)
+    @XmlTransient
+    private String salt;
 
     @NotNull
     @Size(min = 0, max = 50)
@@ -194,5 +199,13 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

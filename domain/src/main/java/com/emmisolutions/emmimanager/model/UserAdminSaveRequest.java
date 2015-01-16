@@ -1,10 +1,10 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A request for User Admin save with the roles
@@ -12,7 +12,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
  */
 public class UserAdminSaveRequest {
 
-	private Set<UserAdminRole> roles = new HashSet<UserAdminRole>();
+    private Set<UserAdminRole> roles = new HashSet<>();
 
 	private UserAdmin userAdmin;
 	

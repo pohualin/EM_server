@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add salt" author="Matt">
+        <addColumn tableName="users">
+            <column name="salt" type="varchar(32)"/>
+        </addColumn>
+        <addColumn tableName="users_audit">
+            <column name="salt" type="varchar(32)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="update super admin" author="Matt">
+        <update tableName="users">
+            <column name="password" value="2334FE288B4A0EBE68BD37C39B6FCAB98C90E983"/>
+            <column name="salt" value="61EFFC4A0F0C24361263EA6C9D038B78"/>
+            <where>login = 'super_admin'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="update password field length" author="Matt">
+        <modifyDataType tableName="users"
+                        columnName="password"
+                        newDataType="varchar(40)"/>
+    </changeSet>
+
+    <changeSet id="create emmi super user" author="Matt">
+        <insert tableName="users">
+            <column name="login" value="emmi_super_user"/>
+            <column name="first_name" value="Emmi"/>
+            <column name="last_name" value="Administrator"/>
+            <column name="normalized_name" value="emmiadministrator"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="password" value="68A818084C2CAE25B3CCF98386615A3B3F605AA8"/>
+            <column name="salt" value="00E568C62C69E1A500FF41C16640F436"/>
+            <column name="user_type" value="A"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="grant emmi super user the correct role" author="Matt">
+        <sql><![CDATA[
+            INSERT INTO user_admin_user_admin_role (users_id, user_admin_role_id)
+              SELECT
+                u.id,
+                (SELECT id
+                 FROM user_admin_role
+                 WHERE name = 'Emmi Super User') AS user_admin_role_id
+              FROM (SELECT id
+                    FROM users
+                    WHERE login = 'emmi_super_user') AS u
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="add client user permission" author="Matt">
+        <insert tableName="user_client_permission">
+            <column name="name" value="PERM_CLIENT_USER"/>
+            <column name="rank" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="drop df constraints" author="Matt">
+        <dropDefaultValue tableName="users" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_user_client_team_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_user_client_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_team_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_team_role_type" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_team_role_permission" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_team_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_role_type" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_role_permission" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_reference_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_admin_user_admin_role" columnName="created_by"/>
+        <dropDefaultValue tableName="user_admin_role" columnName="created_by"/>
+        <dropDefaultValue tableName="team_provider_team_location " columnName="created_by"/>
+        <dropDefaultValue tableName="team_provider" columnName="created_by"/>
+        <dropDefaultValue tableName="strings" columnName="created_by"/>
+        <dropDefaultValue tableName="salesforce_team" columnName="created_by"/>
+        <dropDefaultValue tableName="salesforce_client" columnName="created_by"/>
+        <dropDefaultValue tableName="reference_tag" columnName="created_by"/>
+        <dropDefaultValue tableName="reference_group_type " columnName="created_by"/>
+        <dropDefaultValue tableName="reference_group" columnName="created_by"/>
+        <dropDefaultValue tableName="provider" columnName="created_by"/>
+        <dropDefaultValue tableName="location" columnName="created_by"/>
+        <dropDefaultValue tableName="language" columnName="created_by"/>
+        <dropDefaultValue tableName="client_team_tag" columnName="created_by"/>
+        <dropDefaultValue tableName="client_team_location" columnName="created_by"/>
+        <dropDefaultValue tableName="client_team" columnName="created_by"/>
+        <dropDefaultValue tableName="client_provider" columnName="created_by"/>
+        <dropDefaultValue tableName="client_location" columnName="created_by"/>
+        <dropDefaultValue tableName="client_group_tag" columnName="created_by"/>
+        <dropDefaultValue tableName="client_group" columnName="created_by"/>
+        <dropDefaultValue tableName="client" columnName="created_by"/>
+    </changeSet>
+
+    <changeSet id="update length of created/updated by" author="Matt">
+        <modifyDataType tableName="users"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="users"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_user_client_team_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_user_client_team_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_user_client_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_user_client_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_team_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_team_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_reference_team_role_type"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_reference_team_role_type"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_reference_team_role_permission"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_reference_team_role_permission"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_reference_team_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_reference_team_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_reference_role_type"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_reference_role_type"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_reference_role_permission"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_reference_role_permission"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_client_reference_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_client_reference_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_admin_user_admin_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="user_admin_user_admin_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="revision_info"
+                        columnName="username"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_admin_role"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="team_provider_team_location"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="team_provider"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="strings"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="salesforce_team"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="salesforce_client"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="reference_tag"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="reference_group_type"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="reference_group"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="provider"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="location"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="language"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_team_tag"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_team_location"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_team"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_provider"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_location"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_group_tag"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_group"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client"
+                        columnName="created_by"
+                        newDataType="nvarchar(255)"/>
+
+        <modifyDataType tableName="user_admin_role"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="team_provider_team_location"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="team_provider"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="strings"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="salesforce_team"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="salesforce_client"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="reference_tag"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="reference_group_type"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="reference_group"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="provider"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="location"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="language"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_team_tag"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_team_location"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_team"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_provider"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_location"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_group_tag"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client_group"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+        <modifyDataType tableName="client"
+                        columnName="last_modified_by"
+                        newDataType="nvarchar(255)"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -44,4 +44,12 @@ public interface UserClientPersistence {
      * @return a set of conflicting user clients
      */
     Set<UserClient> findConflictingUsers(UserClient userClient);
+
+    /**
+     * Fetches a UserClient with its full permission set loaded
+     *
+     * @param currentLogin the case insensitive login field
+     * @return a UserClient or null
+     */
+    UserClient fetchUserWillFullPermissions(String currentLogin);
 }
