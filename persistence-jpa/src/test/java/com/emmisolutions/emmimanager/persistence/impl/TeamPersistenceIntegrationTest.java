@@ -241,7 +241,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private Team createTeam(Client client, int i) {
         Team team = new Team();
-        team.setName("Test Team" + i + RandomStringUtils.randomAlphanumeric(18));
+        team.setName("Test Team" + i + RandomStringUtils.randomAlphabetic(18));
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);

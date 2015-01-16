@@ -105,8 +105,7 @@ public class TeamSpecifications {
             @Override
             public Predicate toPredicate(Root<Team> root,
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getTag() != null &&
-                        !TeamSearchFilter.TeamTagType.ALL.equals(searchFilter.getTeamTagType())) {
+                if (searchFilter != null && searchFilter.getTag() != null) {
                     return cb.equal(root.join(Team_.teamTags).get(TeamTag_.tag)
                             .get(Tag_.id), searchFilter.getTag().getId());
                 }
@@ -125,7 +124,7 @@ public class TeamSpecifications {
         return new Specification<Team>() {
             @Override
             public Predicate toPredicate(Root<Team> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getTag() != null
+                if (searchFilter != null && searchFilter.getTeamTagType() != null
                         && !TeamSearchFilter.TeamTagType.ALL.equals(searchFilter.getTeamTagType())) {
                     Expression<Set<TeamTag>> teamTags = root.get(Team_.teamTags);
                     if (TeamSearchFilter.TeamTagType.TAGGED_ONLY.equals(searchFilter.getTeamTagType())) {
