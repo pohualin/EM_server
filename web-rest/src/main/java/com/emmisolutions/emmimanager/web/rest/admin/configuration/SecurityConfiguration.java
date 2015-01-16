@@ -45,13 +45,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource
     private UserDetailsService userDetailsService;
 
-    @Resource
+    @Resource(name = "legacyAuthenticationProvider")
     private AuthenticationProvider authenticationProvider;
 
     @Resource
     PasswordEncoder passwordEncoder;
 
-    private static final String REMEMBER_ME_KEY = "emSrm";
+    public static final String REMEMBER_ME_KEY = "emSrm";
 
     /**
      * Setup the global authentication settings
@@ -70,40 +70,41 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-admin.jsp?error");
         http
                 .requestMatchers()
-                .antMatchers("/webapi/**")
-                .and()
+                    .antMatchers("/webapi/**")
+                    .and()
                 .exceptionHandling()
-                .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                        new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
-                .and()
+                    .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
+                            new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
+                    .and()
                 .rememberMe()
-                .key(REMEMBER_ME_KEY)
-                .and()
+                    .key(REMEMBER_ME_KEY)
+                    .userDetailsService(userDetailsService)
+                    .and()
                 .formLogin()
-                .loginPage("/login-admin.jsp")
-                .loginProcessingUrl("/webapi/authenticate")
-                .successHandler(ajaxAuthenticationSuccessHandler)
-                .failureHandler(ajaxAuthenticationFailureHandler)
-                .usernameParameter("j_username")
-                .passwordParameter("j_password")
-                .permitAll()
-                .and()
+                    .loginPage("/login-admin.jsp")
+                    .loginProcessingUrl("/webapi/authenticate")
+                    .successHandler(ajaxAuthenticationSuccessHandler)
+                    .failureHandler(ajaxAuthenticationFailureHandler)
+                    .usernameParameter("j_username")
+                    .passwordParameter("j_password")
+                    .permitAll()
+                    .and()
                 .logout()
-                .logoutUrl("/webapi/logout")
-                .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-                .and()
+                    .logoutUrl("/webapi/logout")
+                    .logoutSuccessHandler(ajaxLogoutSuccessHandler)
+                    .deleteCookies("JSESSIONID")
+                    .permitAll()
+                    .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
-                .antMatchers("/webapi").permitAll()
-                .antMatchers("/webapi.*").permitAll()
-                .antMatchers("/webapi/").permitAll()
-                .antMatchers("/webapi/messages").permitAll()
-                .antMatchers("/api-docs*").permitAll()
-                .antMatchers("/api-docs/**").permitAll()
-                .antMatchers("/webapi/**").authenticated();
+                    .antMatchers("/webapi").permitAll()
+                    .antMatchers("/webapi.*").permitAll()
+                    .antMatchers("/webapi/").permitAll()
+                    .antMatchers("/webapi/messages").permitAll()
+                    .antMatchers("/api-docs*").permitAll()
+                    .antMatchers("/api-docs/**").permitAll()
+                    .antMatchers("/webapi/**").authenticated();
     }
 
 }

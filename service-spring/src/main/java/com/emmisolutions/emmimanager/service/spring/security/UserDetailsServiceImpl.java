@@ -1,21 +1,19 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
 
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * The UserDetailsService implementation used by Spring Security.
@@ -26,20 +24,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Resource
     private UserPersistence userPersistence;
 
+    @Resource
+    private UserClientPersistence userClientPersistence;
+
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(final String login) {
-        UserAdmin userFromDatabase = userPersistence.reload(login);
-        if (userFromDatabase == null) {
-            throw new UsernameNotFoundException("User " + login + " was not found in the database");
+    public User loadUserByUsername(final String login) {
+        User ret = userPersistence.fetchUserWillFullPermissions(login);
+        if (ret == null) {
+            ret = userClientPersistence.fetchUserWillFullPermissions(login);
         }
-        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        for (UserAdminUserAdminRole userAdminUserAdminRole : userFromDatabase.getRoles()) {
-            for (UserAdminPermission permission : userAdminUserAdminRole.getUserAdminRole().getPermissions()) {
-                grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName().toString()));
+        if (ret == null || CollectionUtils.isEmpty(ret.getAuthorities())){
+            throw new UsernameNotFoundException("User " + login + " was not found.");
+        }
+        return ret;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getLoggedInUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        User user = null;
+        if (authentication != null) {
+            if (authentication.getPrincipal() instanceof User) {
+                user = (User) authentication.getPrincipal();
+            } else if (authentication.getPrincipal() instanceof String) {
+                user = loadUserByUsername((String) authentication.getPrincipal());
             }
         }
-        return new org.springframework.security.core.userdetails.User(userFromDatabase.getLogin(), userFromDatabase.getPassword(),
-                grantedAuthorities);
+        return user;
     }
 }

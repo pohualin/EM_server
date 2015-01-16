@@ -308,4 +308,36 @@
                         newDataType="nvarchar(255)"/>
     </changeSet>
 
+    <changeSet id="account expiration, locking and credential expiration" author="Matt">
+
+        <addColumn tableName="users">
+            <column name="account_non_expired" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_non_locked" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <!-- new accounts should have expired credentials -->
+            <column name="credentials_non_expired" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <!-- make sure existing users' passwords are not expired -->
+        <update tableName="users">
+            <column name="credentials_non_expired" valueBoolean="true"/>
+        </update>
+
+    </changeSet>
+
+    <changeSet id="audit table account expiration, locking and credential expiration" author="Matt">
+
+        <addColumn tableName="users_audit">
+            <column name="account_non_expired" type="boolean"/>
+            <column name="account_non_locked" type="boolean"/>
+            <column name="credentials_non_expired" type="boolean"/>
+        </addColumn>
+
+    </changeSet>
+
 </databaseChangeLog>

@@ -86,9 +86,4 @@ public class UserClientServiceImpl implements UserClientService {
         return ret;
     }
 
-    @Override
-    @Transactional
-    public UserClient loggedIn() {
-        return userClientPersistence.fetchUserWillFullPermissions(securityUtils.getCurrentLogin());
-    }
 }
