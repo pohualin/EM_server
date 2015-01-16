@@ -20,6 +20,13 @@ public class ClientAuthorizationRequest extends AuthorizationRequest {
         this.clientId = clientId;
     }
 
+    /**
+     * Make a new ClientAuthorizationRequest instance.
+     * This method is named this way to make SPeL code look good.
+     *
+     * @param clientId the client id
+     * @return a new instance of this class
+     */
     public ClientAuthorizationRequest _new(Long clientId) {
         return new ClientAuthorizationRequest(clientId);
     }

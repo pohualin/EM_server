@@ -24,6 +24,13 @@ public class TeamAuthorizationRequest extends AuthorizationRequest{
         this.teamId = teamId;
     }
 
+    /**
+     * Make a new TeamAuthorizationRequest instance.
+     * This method is named this way to make SPeL code look good.
+     *
+     * @param teamId the team id
+     * @return a new instance of this class
+     */
     public TeamAuthorizationRequest _new(Long teamId) {
         return new TeamAuthorizationRequest(teamId);
     }
