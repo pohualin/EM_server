@@ -46,11 +46,11 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     }
 
     @Override
-    public UserClient reload(Long userClientId) {
-        if (userClientId == null) {
+    public UserClient reload(UserClient userClient) {
+        if (userClient == null || userClient.getId() == null) {
             return null;
         }
-        return userClientRepository.findOne(userClientId);
+        return userClientRepository.findOne(userClient.getId());
     }
 
     @Override

@@ -171,7 +171,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("return null", userClientNull, is(nullValue()));
 
         assertThat("reload same UserClient object",
-                userClientPersistence.reload(userClient.getId()),
+                userClientPersistence.reload(userClient),
                 is(userClient));
     }
 

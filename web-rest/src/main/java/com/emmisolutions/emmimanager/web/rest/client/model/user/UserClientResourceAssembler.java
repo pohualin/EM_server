@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.UsersResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
                 perms);
-        ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
         return ret;
     }
 

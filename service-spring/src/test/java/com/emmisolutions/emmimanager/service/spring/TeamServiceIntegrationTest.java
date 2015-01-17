@@ -28,7 +28,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     TeamService teamService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     @Resource
     GroupService groupService;
@@ -53,7 +53,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void create() {
-        Client client = makeClient("clientTeam", "teamUser");
+        Client client = makeClient("clientTeam");
         clientService.create(client);
 
         Team team = makeTeamForClient(client);
@@ -71,14 +71,14 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void update() {
-        Client client = makeClient("clientTeam2", "teamUser1");
+        Client client = makeClient("clientTeam2");
         clientService.create(client);
 
         Team team = makeTeamForClient(client);
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
 
-        savedTeam.setClient(clientService.create(makeClient("a different client", "teamUser2")));
+        savedTeam.setClient(clientService.create(makeClient("a different client")));
         savedTeam = teamService.update(team);
         assertThat("client was not updated", savedTeam.getClient(), is(client));
     }
@@ -194,7 +194,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         return team;
     }
 
-    protected Client makeClient(String clientName, String username) {
+    protected Client makeClient(String clientName) {
         Client client = new Client();
         client.setType(new ClientType(4l));
         client.setContractStart(LocalDate.now());

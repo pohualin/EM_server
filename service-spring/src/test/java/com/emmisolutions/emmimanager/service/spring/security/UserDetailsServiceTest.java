@@ -4,7 +4,7 @@ import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.UserAdminService;
 import org.junit.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +25,7 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
     UserDetailsService userDetailsService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     /**
      * When a user has been created and not granted any roles, they
@@ -41,7 +41,7 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
     	UserAdminSaveRequest req = new UserAdminSaveRequest();
        	req.setUserAdmin(aUser);
        	req.setRoles(new HashSet<UserAdminRole>());
-        userService.save(req);
+        userAdminService.save(req);
 
         // loading a user without any roles should throw the exception
         userDetailsService.loadUserByUsername(login);

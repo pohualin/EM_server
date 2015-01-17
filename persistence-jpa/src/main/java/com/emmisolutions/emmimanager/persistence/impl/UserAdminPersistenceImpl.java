@@ -1,12 +1,15 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
+import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminUserAdminRoleRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,22 +17,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
-import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecifications;
-import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
-import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
-import com.emmisolutions.emmimanager.persistence.repo.UserAdminUserAdminRoleRepository;
+import javax.annotation.Resource;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
  * Repo to deal with user persistence.
  */
 @Repository
-public class UserPersistenceImpl implements UserPersistence {
+public class UserAdminPersistenceImpl implements UserAdminPersistence {
 
     @Resource
     UserAdminRoleRepository userAdminroleRepository;

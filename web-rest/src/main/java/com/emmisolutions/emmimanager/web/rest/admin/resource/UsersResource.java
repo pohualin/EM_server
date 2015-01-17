@@ -4,7 +4,8 @@ import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
-import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.UserAdminService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -36,7 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 public class UsersResource {
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     @Resource
     UserResourceAssembler userResourceAssembler;
@@ -46,6 +47,9 @@ public class UsersResource {
     
     @Resource 
     UserResourceForAssociationsAssembler userAdminResourceAssembler;
+
+    @Resource
+    UserDetailsService userDetailsService;
     
     /**
      * GET to retrieve authenticated user
@@ -55,7 +59,8 @@ public class UsersResource {
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<UserResource> authenticated() {
-        return new ResponseEntity<>(userResourceAssembler.toResource(userService.loggedIn()), HttpStatus.OK);
+        return new ResponseEntity<>(userResourceAssembler.toResource(
+                (UserAdmin) userDetailsService.getLoggedInUser()), HttpStatus.OK);
     }
     
     /**
@@ -82,7 +87,7 @@ public class UsersResource {
 
         UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.fromStringOrActive(status) , term);
 
-        Page<UserAdmin> users = userService.list(pageable, filter);
+        Page<UserAdmin> users = userAdminService.list(pageable, filter);
 
         if (users.hasContent()) {
             // create a ClientPage containing the response
@@ -105,7 +110,7 @@ public class UsersResource {
             "PERM_CREATE_NEW_USER"})
     public ResponseEntity<UserResource> createUser(@RequestBody UserAdminSaveRequest req) {
 
-    	UserAdmin savedUser = userService.save(req);
+    	UserAdmin savedUser = userAdminService.save(req);
         if (savedUser != null) {
             // created a user client successfully
             return new ResponseEntity<>(
@@ -129,8 +134,8 @@ public class UsersResource {
             "PERM_CREATE_NEW_USER"})
     public ResponseEntity<UserResource> updateUser(@RequestBody UserAdminSaveRequest req) {
 
-    	UserAdmin savedUser = userService.save(req);
-    	savedUser = userService.fetchUserWillFullPermissions(savedUser);
+    	UserAdmin savedUser = userAdminService.save(req);
+    	savedUser = userAdminService.fetchUserWillFullPermissions(savedUser);
         if (savedUser != null) {
             // created a user client successfully
             return new ResponseEntity<>(
@@ -154,7 +159,7 @@ public class UsersResource {
     public ResponseEntity<UserResource> get(@PathVariable("id") Long id) {
         UserAdmin toFind = new UserAdmin();
         toFind.setId(id);
-        toFind = userService.fetchUserWillFullPermissions(toFind);
+        toFind = userAdminService.fetchUserWillFullPermissions(toFind);
         if (toFind != null) {
             return new ResponseEntity<>(userResourceAssembler.toResource(toFind), HttpStatus.OK);
         } else {
@@ -181,7 +186,7 @@ public class UsersResource {
         @PageableDefault(size = 10, sort = {"name"}, direction = Sort.Direction.ASC) Pageable pageable,
         PagedResourcesAssembler<UserAdminRole> assembler) {
     	
-        Page<UserAdminRole> userRolePage = userService.listRolesWithoutSystem(pageable);
+        Page<UserAdminRole> userRolePage = userAdminService.listRolesWithoutSystem(pageable);
         if (userRolePage.hasContent()) {
             return new ResponseEntity<>(
                 new UserAdminRolePage(

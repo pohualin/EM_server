@@ -5,8 +5,8 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
 import com.emmisolutions.emmimanager.service.UserClientService;
@@ -39,7 +39,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     UserClientPersistence userClientPersistence;
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Resource
     UserClientRoleService userClientRoleService;
@@ -63,7 +63,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         String encodedPassword = passwordEncoder.encode(plainTextPassword);
         userAdmin.setPassword(encodedPassword.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         userAdmin.setSalt(encodedPassword.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
-        UserAdmin savedUserAdmin = userPersistence.saveOrUpdate(userAdmin);
+        UserAdmin savedUserAdmin = userAdminPersistence.saveOrUpdate(userAdmin);
         authenticationProvider.authenticate(
                 new UsernamePasswordAuthenticationToken(savedUserAdmin.getLogin(), "notThePassword"));
     }
@@ -78,7 +78,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         String encodedPassword = passwordEncoder.encode(plainTextPassword);
         userAdmin.setPassword(encodedPassword.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         userAdmin.setSalt(encodedPassword.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
-        UserAdmin savedUserAdmin = userPersistence.saveOrUpdate(userAdmin);
+        UserAdmin savedUserAdmin = userAdminPersistence.saveOrUpdate(userAdmin);
         authenticationProvider.authenticate(
                 new UsernamePasswordAuthenticationToken(savedUserAdmin.getLogin(), null));
     }
@@ -106,7 +106,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         String encodedPassword = passwordEncoder.encode(plainTextPassword);
         userAdmin.setPassword(encodedPassword.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         userAdmin.setSalt(encodedPassword.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
-        UserAdmin savedUserAdmin = userPersistence.saveOrUpdate(userAdmin);
+        UserAdmin savedUserAdmin = userAdminPersistence.saveOrUpdate(userAdmin);
 
         // authenticate the super user
         UsernamePasswordAuthenticationToken token =
@@ -131,28 +131,20 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         String encodedPassword = passwordEncoder.encode(plainTextPassword);
         userClient.setPassword(encodedPassword.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         userClient.setSalt(encodedPassword.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
-        UserClient savedUserClient = userClientPersistence.saveOrUpdate(userClient);
+        userClientPersistence.saveOrUpdate(userClient);
 
-        // authenticate the user
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(savedUserClient.getLogin(), plainTextPassword);
-        Authentication auth = authenticationProvider.authenticate(token);
-        assertThat("authentication is successful",
-                auth.isAuthenticated(), is(true));
+        // do a login
+        UserClient loggedInUser = (UserClient) login(userClient.getLogin(), plainTextPassword);
 
-        // fetch the logged in user fully (simulates what spring security does after authentication)
-        login(userClient.getLogin());
-        UserClient oneWithAllPermissionsLoaded = (UserClient) userDetailsService.getLoggedInUser();
-
-        // check to see that the permissions and granted authorities match
+        // check to see that the permissions and granted authorities are present for the client and team
         assertThat("client user has been granted client user permission",
-                Collections.unmodifiableCollection(auth.getAuthorities()),
+                Collections.unmodifiableCollection(loggedInUser.getAuthorities()),
                 hasItem(new SimpleGrantedAuthority(UserClientPermissionName.PERM_CLIENT_USER.toString() +
-                        "_" + userClient.getClient().getId())));
+                        "_" + loggedInUser.getClient().getId())));
         assertThat("client user has been granted team level user permission",
-                Collections.unmodifiableCollection(auth.getAuthorities()),
+                Collections.unmodifiableCollection(loggedInUser.getAuthorities()),
                 hasItem(new SimpleGrantedAuthority(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI.toString()
-                        + "_" + oneWithAllPermissionsLoaded.getTeamRoles().iterator().next().getTeam().getId())));
+                        + "_" + loggedInUser.getTeamRoles().iterator().next().getTeam().getId())));
 
         logout();
     }
