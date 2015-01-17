@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -27,28 +26,41 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active;
+    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired;
 
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
-    private List<UserClientPermissionName> permissions;
+    private List<String> permissions;
 
 
     public UserClientResource() {
     }
 
     /**
-     * Big constructor
+     * Wrapper constructor with parameters we need.
      *
-     * @param id          id
-     * @param version     version
-     * @param login       login
-     * @param firstName   first name
-     * @param lastName    last name
-     * @param email       email
-     * @param permissions permissions
+     * @param id                    id
+     * @param version               version
+     * @param login                 login
+     * @param firstName             first name
+     * @param lastName              last name
+     * @param email                 email
+     * @param accountNonExpired     account is not expired
+     * @param accountNonLocked      account is not locked
+     * @param credentialsNonExpired credentials are not expired
+     * @param permissions           permissions
      */
-    public UserClientResource(Long id, Integer version, String login, String firstName, String lastName, String email, boolean active, List<UserClientPermissionName> permissions) {
+    public UserClientResource(Long id,
+                              Integer version,
+                              String login,
+                              String firstName,
+                              String lastName,
+                              String email,
+                              boolean active,
+                              boolean accountNonExpired,
+                              boolean accountNonLocked,
+                              boolean credentialsNonExpired,
+                              List<String> permissions) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -56,6 +68,9 @@ public class UserClientResource extends ResourceSupport {
         this.lastName = lastName;
         this.email = email;
         this.active = active;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
         this.permissions = permissions;
     }
 

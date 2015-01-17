@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
@@ -12,13 +13,13 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -72,7 +73,7 @@ public abstract class BaseIntegrationTest {
     UserClientTeamRoleService userClientTeamRoleService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     @Resource
     UserAdminRoleRepository userAdminRoleRepository;
@@ -83,27 +84,26 @@ public abstract class BaseIntegrationTest {
     @Resource
     UserClientUserClientTeamRoleService userClientUserClientTeamRoleService;
 
-    /**
-     * Login as a user
-     *
-     * @param login
-     *            to login as
-     */
-    protected void login(String login) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(login, "******"));
-    }
+    @Resource
+    AuthenticationProvider authenticationProvider;
+
+    @Resource
+    UserDetailsService userDetailsService;
 
     /**
-     * Makes a UserDetails object with authorities
+     * Really logs in the user
      *
-     * @param login
-     *            to use
+     * @param login    the user's login
+     * @param password the users password
+     * @return the User
+     * @throws org.springframework.security.core.AuthenticationException if the login fails
      */
-    protected void login(String login, List<GrantedAuthority> authorityList) {
+    protected User login(String login, String password) {
         SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(new User(login, "****",
-                        authorityList), "******"));
+                authenticationProvider.authenticate(
+                        new UsernamePasswordAuthenticationToken(login, password)));
+
+        return userDetailsService.getLoggedInUser();
     }
 
     /**
@@ -135,7 +135,7 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Creates a brand new group
-     * 
+     *
      * @return random group
      */
     protected Group makeNewRandomGroup(Client client) {
@@ -175,15 +175,13 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Make a list of random Tags
-     * 
-     * @param group
-     *            to use
-     * @param count
-     *            to use
+     *
+     * @param group to use
+     * @param count to use
      * @return a list of tags
      */
     protected List<Tag> makeNewRandomTags(Group group, int count) {
-        List<Tag> tags = new ArrayList<Tag>();
+        List<Tag> tags = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Tag tag = new Tag();
             tag.setName(RandomStringUtils.randomAlphabetic(10));
@@ -195,11 +193,9 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Make a list of TeamTags
-     * 
-     * @param team
-     *            to use
-     * @param tags
-     *            to use
+     *
+     * @param team to use
+     * @param tags to use
      * @return list of teamTags
      */
     protected List<TeamTag> makeNewTeamTags(Team team, Set<Tag> tags) {
@@ -225,9 +221,8 @@ public abstract class BaseIntegrationTest {
     /**
      * Create a brand new UserClientRole with given client
      * that has all permissions
-     * 
-     * @param client
-     *            to use
+     *
+     * @param client to use
      * @return random UserClientRole
      */
     protected UserClientRole makeNewRandomUserClientRole(Client client) {
@@ -246,9 +241,8 @@ public abstract class BaseIntegrationTest {
     /**
      * Create a brand new UserClientTeamRole with given client
      * with all possible permissions
-     * 
-     * @param client
-     *            to use
+     *
+     * @param client to use
      * @return random UserClientTeamRole
      */
     protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
@@ -278,6 +272,7 @@ public abstract class BaseIntegrationTest {
         userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
         userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
         userClient.setPassword(RandomStringUtils.randomAlphanumeric(40));
+        userClient.setCredentialsNonExpired(true);
         UserClient savedUserClient = userClientService.create(userClient);
 
         // put the user client in a new client role with all permissions
@@ -309,10 +304,11 @@ public abstract class BaseIntegrationTest {
                 RandomStringUtils.randomAlphanumeric(40));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
+        userAdmin.setCredentialsNonExpired(true);
         UserAdminSaveRequest req = new UserAdminSaveRequest();
         req.setUserAdmin(userAdmin);
         req.getRoles().add(makeNewRandomUserAdminRole());
-        return userService.save(req);
+        return userAdminService.save(req);
     }
 
     /**

@@ -1,33 +1,29 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.GrantedAuthority;
-
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.UserAdminService;
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * An integration test that goes across a wired persistence layer as well
  */
-public class UserServiceIntegrationTest extends BaseIntegrationTest {
+public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     /**
      * Create without login
@@ -37,7 +33,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     	UserAdminSaveRequest req = new UserAdminSaveRequest();
        	req.setUserAdmin(new UserAdmin());
        	req.setRoles(new HashSet<UserAdminRole>());
-        UserAdmin user = userService.save(req);
+        UserAdmin user = userAdminService.save(req);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
     }
@@ -48,7 +44,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testUserAdminRoles() {
-    	Page<UserAdminRole> roles = userService.listRolesWithoutSystem(null);
+    	Page<UserAdminRole> roles = userAdminService.listRolesWithoutSystem(null);
         assertThat("the search roles return values", roles.getContent(), is(notNullValue()));
         assertThat("the search roles return values", roles.hasContent(), is(true) );
     }
@@ -62,51 +58,32 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         user.setFirstName("firstName1");
         user.setLastName("lastName");
         
-        Page<UserAdminRole> roles = userService.listRolesWithoutSystem(null);
+        Page<UserAdminRole> roles = userAdminService.listRolesWithoutSystem(null);
         UserAdminRole role = roles.getContent().iterator().next();
-        Set<UserAdminRole> adminRoles = new HashSet<UserAdminRole>();
+        Set<UserAdminRole> adminRoles = new HashSet<>();
         adminRoles.add(role);
         
     	UserAdminSaveRequest req = new UserAdminSaveRequest();
        	req.setUserAdmin(user);
        	req.setRoles(adminRoles);
-        user = userService.save(req);
+        user = userAdminService.save(req);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
         
-        UserAdmin user1 = userService.fetchUserWillFullPermissions(user);
+        UserAdmin user1 = userAdminService.fetchUserWillFullPermissions(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
         assertThat("the users roles saved", user1.getRoles().iterator().next().getUserAdminRole(), is(role));
 
-        user = userService.save(req); //execute again just to verify that is deleting the previous roles
+        user = userAdminService.save(req); //execute again just to verify that is deleting the previous roles
         
         UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.ALL , "firstName1");
-        Page<UserAdmin> users = userService.list(null, filter);
+        Page<UserAdmin> users = userAdminService.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));
         assertThat("the search user return values", users.getContent(), hasItem(user));
         
         UserAdmin findUser = users.getContent().iterator().next();
         assertThat("the users returned is the same user saved", findUser, is(user1));
-    }
-    
-    /**
-     * Make sure logged in user comes back from service layer utility
-     */
-    @Test
-    public void login(){
-        login("super_admin");
-        assertThat("super admin is logged in user", userService.loggedIn().getLogin(), is("super_admin"));
-    }
-
-    /**
-     * Make sure logged in user comes back from service layer utility.
-     * Different flows are tested here than the above login test.
-     */
-    @Test
-    public void loginUserDetails(){
-        login("super_admin", new ArrayList<GrantedAuthority>());
-        assertThat("super admin is logged in user", userService.loggedIn().getLogin(), is("super_admin"));
     }
 
 }

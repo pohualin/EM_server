@@ -1,37 +1,27 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
-
+import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
+import com.emmisolutions.emmimanager.model.user.admin.*;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
-import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
-import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
+import javax.annotation.Resource;
+import javax.validation.ConstraintViolationException;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for user persistence.
  */
-public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
+public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
         
     /**
      * Invalid user no login
@@ -39,7 +29,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test(expected = ConstraintViolationException.class)
     public void testConstraints() {
         // user is invalid without a login
-        userPersistence.saveOrUpdate(new UserAdmin());
+        userAdminPersistence.saveOrUpdate(new UserAdmin());
     }
 
     /**
@@ -48,7 +38,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void testUserAdminRoles() {
     	
-    	Page<UserAdminRole> roles = userPersistence.listRolesWithoutSystem(null);
+    	Page<UserAdminRole> roles = userAdminPersistence.listRolesWithoutSystem(null);
         assertThat("the search roles return values", roles.getContent(), is(notNullValue()));
         assertThat("the search roles return values", roles.hasContent(), is(true) );
 
@@ -62,26 +52,26 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         UserAdmin user = new UserAdmin("login", "pw");
         user.setFirstName("firstName");
         user.setLastName("lastName");
-        user = userPersistence.saveOrUpdate(user);
+        user = userAdminPersistence.saveOrUpdate(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
 
-        UserAdmin user1 = userPersistence.reload(user);
+        UserAdmin user1 = userAdminPersistence.reload(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
         
-        Page<UserAdminRole> roles = userPersistence.listRolesWithoutSystem(null);
-        Set userAdminUserAdminRoles = new HashSet<UserAdminUserAdminRole>();
+        Page<UserAdminRole> roles = userAdminPersistence.listRolesWithoutSystem(null);
+        Set<UserAdminUserAdminRole> userAdminUserAdminRoles = new HashSet<>();
         for(UserAdminRole role: roles.getContent()){
             UserAdminUserAdminRole uauar = new UserAdminUserAdminRole();
             uauar.setUserAdmin(user1);
             uauar.setUserAdminRole(role);
             userAdminUserAdminRoles.add(uauar);
         }
-        userPersistence.saveAll(userAdminUserAdminRoles);
+        userAdminPersistence.saveAll(userAdminUserAdminRoles);
         
         UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.ALL , "firstName");
-        Page<UserAdmin> users = userPersistence.list(null, filter);
+        Page<UserAdmin> users = userAdminPersistence.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));
         assertThat("the search user return values", users.getContent(), hasItem(user) );
@@ -101,11 +91,11 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
         UserAdmin user = new UserAdmin(login, "pw");
         user.setFirstName("firstName");
         user.setLastName("lastName");
-        user = userPersistence.saveOrUpdate(user);
+        user = userAdminPersistence.saveOrUpdate(user);
         assertThat("the user should get an id after persistence", user.getId(), is(notNullValue()));
         assertThat("the user should get a version after persistence", user.getVersion(), is(notNullValue()));
 
-        user = userPersistence.reload(login);
+        user = userAdminPersistence.reload(login);
         assertThat("user is found", user, is(notNullValue()));
         assertThat("username should be lowercase only", user.getLogin(), is(login.toLowerCase()));
     }
@@ -115,7 +105,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void proveExistenceOfGod() {
-        UserAdmin god = userPersistence.fetchUserWillFullPermissions("super_admin");
+        UserAdmin god = userAdminPersistence.fetchUserWillFullPermissions("super_admin");
         assertThat("Should have one role ", god.getRoles().size(), is(1));
         UserAdminRole role = god.getRoles().iterator().next().getUserAdminRole();
         assertThat("Role is the system role", role.getName(), is("SYSTEM"));
@@ -131,7 +121,7 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testEmmiUserIsDefaultRole() {
-        UserAdmin god = userPersistence.fetchUserWillFullPermissions("contract_owner2");
+        UserAdmin god = userAdminPersistence.fetchUserWillFullPermissions("contract_owner2");
         UserAdminRole role = god.getRoles().iterator().next().getUserAdminRole();
         assertThat("Emmi User Role is a default role", role.isDefaultRole(), is(true));
     }
@@ -141,8 +131,8 @@ public class UserPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void listPotentialContractOwners() {
-        UserAdmin contractOwner = userPersistence.reload("contract_owner");
-        Page<UserAdmin> ret = userPersistence.listPotentialContractOwners(null);
+        UserAdmin contractOwner = userAdminPersistence.reload("contract_owner");
+        Page<UserAdmin> ret = userAdminPersistence.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }

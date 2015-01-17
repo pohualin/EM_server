@@ -54,13 +54,6 @@ public interface UserClientService {
      */
     List<UserClientConflict> findConflictingUsers(UserClient userClient);
 
-    /**
-     * Retrieves the currently logged in UserClient
-     *
-     * @return the logged in UserClient
-     */
-    UserClient loggedIn();
-
 
     /**
      * A conflicting UserClient

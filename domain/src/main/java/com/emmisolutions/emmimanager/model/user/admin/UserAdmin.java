@@ -2,11 +2,13 @@ package com.emmisolutions.emmimanager.model.user.admin;
 
 import com.emmisolutions.emmimanager.model.user.User;
 import org.hibernate.envers.Audited;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A user with administrative roles.
@@ -52,5 +54,21 @@ public class UserAdmin extends User {
 
     public void setRoles(Set<UserAdminUserAdminRole> roles) {
         this.roles = roles;
+    }
+
+    private transient volatile List<GrantedAuthority> authorities;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (authorities == null){
+            List<GrantedAuthority> authorityList = new ArrayList<>();
+            for (UserAdminUserAdminRole userAdminUserAdminRole : getRoles()) {
+                for (UserAdminPermission permission : userAdminUserAdminRole.getUserAdminRole().getPermissions()) {
+                    authorityList.add(new SimpleGrantedAuthority(permission.getName().toString()));
+                }
+            }
+            authorities = Collections.unmodifiableList(authorityList);
+        }
+        return authorities;
     }
 }

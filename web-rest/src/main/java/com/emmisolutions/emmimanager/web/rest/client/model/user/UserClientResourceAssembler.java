@@ -1,11 +1,9 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
-import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
-import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.UsersResource;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,19 +15,17 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * Creates a UserResource from a UserClient
  */
-@Component("clientLevelUserClientResourceAssembler")
-public class UserClientResourceAssembler implements ResourceAssembler<UserClient, UserClientResource> {
+@Component("userClientAuthenticationResourceAssembler")
+public class UserClientResourceAssembler implements ResourceAssembler<User, UserClientResource> {
 
     @Override
-    public UserClientResource toResource(UserClient user) {
+    public UserClientResource toResource(User user) {
         if (user == null) {
             return null;
         }
-        List<UserClientPermissionName> perms = new ArrayList<>();
-        for (UserClientUserClientRole role : user.getClientRoles()) {
-            for (UserClientPermission permission : role.getUserClientRole().getUserClientPermissions()) {
-                perms.add(permission.getName());
-            }
+        List<String> perms = new ArrayList<>();
+        for (GrantedAuthority grantedAuthority : user.getAuthorities()) {
+            perms.add(grantedAuthority.getAuthority());
         }
         UserClientResource ret = new UserClientResource(
                 user.getId(),
@@ -39,8 +35,11 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.getLastName(),
                 user.getEmail(),
                 user.isActive(),
+                user.isAccountNonExpired(),
+                user.isAccountNonLocked(),
+                user.isCredentialsNonExpired(),
                 perms);
-        ret.add(linkTo(methodOn(UsersResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
         return ret;
     }
 

@@ -18,7 +18,7 @@ public interface UserClientPersistence {
      * @param userClientId to use
      * @return the user client
      */
-    UserClient reload(Long userClientId);
+    UserClient reload(UserClient userClientId);
 
     /**
      * Saves or updates the UserClient object
