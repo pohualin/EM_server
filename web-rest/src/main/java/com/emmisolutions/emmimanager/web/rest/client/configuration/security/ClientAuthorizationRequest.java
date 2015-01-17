@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.client.model.security;
+package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;

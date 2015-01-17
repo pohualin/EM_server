@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.client.model.security;
+package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
 import com.emmisolutions.emmimanager.model.Team;
 import org.springframework.security.core.GrantedAuthority;
