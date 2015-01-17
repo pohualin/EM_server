@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
 import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Resource
     UserClientPersistence userClientPersistence;

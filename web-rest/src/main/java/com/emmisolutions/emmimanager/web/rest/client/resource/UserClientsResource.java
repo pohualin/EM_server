@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -48,24 +47,20 @@ public class UserClientsResource {
             "hasPermission(@client._new(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team._new(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA')"
     )
-    public ResponseEntity<String> authenticated(@PathVariable Long clientId, @PathVariable Long teamId) {
+    public ResponseEntity<String> authorized(@PathVariable Long clientId, @PathVariable Long teamId) {
         return new ResponseEntity<>("AUTHORIZED for client: " + clientId + ", team: " + teamId, HttpStatus.OK);
     }
 
     /**
-     * GET to retrieve authenticated user
+     * GET to retrieve authenticated user.
      *
      * @return UserClientResource when authorized or 401 if the user is not authorized.
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER", "PERM_CLIENT_USER"})
+    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
-        User user = userDetailsService.getLoggedInUser();
-        if (user != null) {
-            return new ResponseEntity<>(userResourceAssembler.toResource(user), HttpStatus.OK);
-        }
-        // the user can't be retrieved
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(userResourceAssembler.toResource(userDetailsService.getLoggedInUser()),
+                HttpStatus.OK);
     }
 
 

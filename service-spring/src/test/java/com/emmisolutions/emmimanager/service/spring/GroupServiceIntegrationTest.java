@@ -2,12 +2,11 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -32,7 +31,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
     ClientService clientService;
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Resource
     GroupService groupService;
@@ -44,7 +43,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 
     @Before
     public void init() {
-        superAdmin = userPersistence.reload("super_admin");
+        superAdmin = userAdminPersistence.reload("super_admin");
     }
 
     /**

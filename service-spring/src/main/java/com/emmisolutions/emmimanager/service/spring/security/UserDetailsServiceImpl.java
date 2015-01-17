@@ -2,8 +2,8 @@ package com.emmisolutions.emmimanager.service.spring.security;
 
 
 import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Resource
-    private UserPersistence userPersistence;
+    private UserAdminPersistence userPersistence;
 
     @Resource
     private UserClientPersistence userClientPersistence;

@@ -1,32 +1,24 @@
 package com.emmisolutions.emmimanager.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * The User Service
  */
-public interface UserService {
+public interface UserAdminService {
 
     /**
      * Creates a new user admin or updates an existing user with the passed User object.
      *
-     * @param user request to save
+     * @param req request to save
      * @return the saved user
      */
     UserAdmin save(UserAdminSaveRequest req);
-
-    /**
-     * Fetch the currently logged in user.
-     *
-     * @return the User
-     */
-    UserAdmin loggedIn();
 
     /**
      * Reloads a User from persistent storage

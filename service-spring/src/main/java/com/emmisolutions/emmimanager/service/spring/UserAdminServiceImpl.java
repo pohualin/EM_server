@@ -5,9 +5,8 @@ import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
-import com.emmisolutions.emmimanager.service.UserService;
-import com.emmisolutions.emmimanager.service.spring.security.SecurityUtils;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
+import com.emmisolutions.emmimanager.service.UserAdminService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,16 +23,13 @@ import java.util.Set;
  * security annotations at the method level as well.
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class UserAdminServiceImpl implements UserAdminService {
 
     @Resource
     PasswordEncoder passwordEncoder;
 
     @Resource
-    UserPersistence userPersistence;
-
-    @Resource
-    SecurityUtils securityUtils;
+    UserAdminPersistence userAdminPersistence;
 
     @Override
     @Transactional
@@ -47,19 +43,13 @@ public class UserServiceImpl implements UserService {
     	}	
     	
     	UserAdmin user = req.getUserAdmin();
-    	user = userPersistence.saveOrUpdate(user);
+    	user = userAdminPersistence.saveOrUpdate(user);
     	if (roles.size() > 0){
-    		userPersistence.removeAllAdminRoleByUserAdmin(user);
-    		userPersistence.saveAll(roles);
+    		userAdminPersistence.removeAllAdminRoleByUserAdmin(user);
+    		userAdminPersistence.saveAll(roles);
     		user.setRoles(roles);
     	}
         return user;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserAdmin loggedIn() {
-        return userPersistence.fetchUserWillFullPermissions(securityUtils.getCurrentLogin());
     }
 
     @Override
@@ -68,7 +58,7 @@ public class UserServiceImpl implements UserService {
         if (user == null || user.getId() == null) {
             return null;
         }
-        return userPersistence.reload(user);
+        return userAdminPersistence.reload(user);
     }
  
     @Override
@@ -77,8 +67,8 @@ public class UserServiceImpl implements UserService {
         if (user == null || user.getId() == null) {
             return null;
         }
-        user = userPersistence.reload(user);
-        return userPersistence.fetchUserWillFullPermissions(user.getLogin());
+        user = userAdminPersistence.reload(user);
+        return userAdminPersistence.fetchUserWillFullPermissions(user.getLogin());
     }
     
     /**
@@ -89,12 +79,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public Page<UserAdmin> list(Pageable page, UserAdminSearchFilter userSearchFilter) {
-        return userPersistence.list(page, userSearchFilter);
+        return userAdminPersistence.list(page, userSearchFilter);
     }
 
 	@Override
 	public Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable) {
-		return userPersistence.listRolesWithoutSystem(pageable) ;
+		return userAdminPersistence.listRolesWithoutSystem(pageable) ;
 	}     
     
 }
