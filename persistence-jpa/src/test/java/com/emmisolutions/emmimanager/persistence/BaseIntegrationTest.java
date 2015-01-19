@@ -32,7 +32,7 @@ import java.util.List;
 public abstract class BaseIntegrationTest {
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Resource
     GroupPersistence groupPersistence;
@@ -245,10 +245,10 @@ public abstract class BaseIntegrationTest {
     protected UserAdmin makeNewRandomUserAdmin() {
         UserAdmin userAdmin = new UserAdmin(
                 RandomStringUtils.randomAlphabetic(255),
-                RandomStringUtils.randomAlphanumeric(100));
+                RandomStringUtils.randomAlphanumeric(40));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(50));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(50));
-        return userPersistence.saveOrUpdate(userAdmin);
+        return userAdminPersistence.saveOrUpdate(userAdmin);
     }
 
 }

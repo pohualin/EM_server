@@ -37,12 +37,8 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    @Transactional
     public UserClient reload(UserClient userClient) {
-        if (userClient == null || userClient.getId() == null) {
-            return null;
-        }
-        return userClientPersistence.reload(userClient.getId());
+        return userClientPersistence.reload(userClient);
     }
 
     @Override
@@ -81,4 +77,5 @@ public class UserClientServiceImpl implements UserClientService {
         }
         return ret;
     }
+
 }

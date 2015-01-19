@@ -21,7 +21,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
     TeamLocationPersistence teamLocationPersistence;
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Resource
     ClientPersistence clientPersistence;
@@ -41,7 +41,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
 
     @Before
     public void init() {
-        superAdmin = userPersistence.reload("super_admin");
+        superAdmin = userAdminPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
     }
 

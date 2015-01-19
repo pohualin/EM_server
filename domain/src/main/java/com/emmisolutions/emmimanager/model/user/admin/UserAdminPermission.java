@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.model.user.admin;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * This is an application permission.
@@ -15,6 +13,18 @@ public class UserAdminPermission {
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserAdminPermissionName name;
+
+    public UserAdminPermission() {
+    }
+
+    /**
+     * Make a permission by name
+     *
+     * @param name to use
+     */
+    public UserAdminPermission(UserAdminPermissionName name) {
+        this.name = name;
+    }
 
     public UserAdminPermissionName getName() {
         return name;

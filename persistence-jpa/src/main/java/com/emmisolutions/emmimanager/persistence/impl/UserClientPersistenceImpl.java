@@ -46,11 +46,11 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     }
 
     @Override
-    public UserClient reload(Long userClientId) {
-        if (userClientId == null) {
+    public UserClient reload(UserClient userClient) {
+        if (userClient == null || userClient.getId() == null) {
             return null;
         }
-        return userClientRepository.findOne(userClientId);
+        return userClientRepository.findOne(userClient.getId());
     }
 
     @Override
@@ -77,6 +77,16 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                         where(userClientSpecifications.hasLogin(userClient))
                                 .or(userClientSpecifications.hasEmail(userClient))
                                 .and(userClientSpecifications.isNot(userClient))));
+    }
+
+    @Override
+    public UserClient fetchUserWillFullPermissions(String currentLogin) {
+        UserClient userClient = userClientRepository.findByLoginIgnoreCase(currentLogin);
+        if (userClient != null) {
+            userClient.getClientRoles().size();
+            userClient.getTeamRoles().size();
+        }
+        return userClient;
     }
 
 }

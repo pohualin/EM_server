@@ -16,8 +16,7 @@ public interface UserClientService {
     /**
      * Creates a new UserClient with the passed UserClient object.
      *
-     * @param user
-     *            to create
+     * @param user to create
      * @return the created user
      */
     UserClient create(UserClient user);
@@ -25,8 +24,7 @@ public interface UserClientService {
     /**
      * Reload an existing client user with the passed userClientId.
      *
-     * @param userClient
-     *            to use
+     * @param userClient to use
      * @return the existing UserClient
      */
     UserClient reload(UserClient userClient);
@@ -34,8 +32,7 @@ public interface UserClientService {
     /**
      * Update an existing UserClient with the passed in UserClient object.
      *
-     * @param user
-     *            to update
+     * @param user to update
      * @return the created user
      */
     UserClient update(UserClient user);
@@ -43,8 +40,7 @@ public interface UserClientService {
     /**
      * Find existing UserClient with the passed in UserClientSearchFilter.
      *
-     * @param filter
-     *            to search
+     * @param filter to search
      * @return pageable UserClient
      */
     Page<UserClient> list(Pageable pageable, UserClientSearchFilter filter);
@@ -53,11 +49,11 @@ public interface UserClientService {
      * Find an existing UserClient objects that would conflict with the saving
      * of the passed user client
      *
-     * @param userClient
-     *            to check for conflicts
+     * @param userClient to check for conflicts
      * @return a list of conflicts
      */
     List<UserClientConflict> findConflictingUsers(UserClient userClient);
+
 
     /**
      * A conflicting UserClient
@@ -99,7 +95,7 @@ public interface UserClientService {
             UserClientConflict that = (UserClientConflict) o;
             return reason == that.reason
                     && !(userClient != null ? !userClient
-                            .equals(that.userClient) : that.userClient != null);
+                    .equals(that.userClient) : that.userClient != null);
         }
 
         @Override

@@ -18,7 +18,7 @@ public interface UserClientPersistence {
      * @param userClientId to use
      * @return the user client
      */
-    UserClient reload(Long userClientId);
+    UserClient reload(UserClient userClientId);
 
     /**
      * Saves or updates the UserClient object
@@ -44,4 +44,12 @@ public interface UserClientPersistence {
      * @return a set of conflicting user clients
      */
     Set<UserClient> findConflictingUsers(UserClient userClient);
+
+    /**
+     * Fetches a UserClient with its full permission set loaded
+     *
+     * @param currentLogin the case insensitive login field
+     * @return a UserClient or null
+     */
+    UserClient fetchUserWillFullPermissions(String currentLogin);
 }
