@@ -82,4 +82,23 @@ public class TeamTagSpecifications {
             }
         };
     }
+
+    /**
+     * Ensures that the TeamTag team is in a particular status
+     *
+     * @param searchFilter used to find the status
+     * @return the specification as a filter predicate
+     */
+    public Specification<TeamTag> isInStatus(final TeamTagSearchFilter searchFilter) {
+        return new Specification<TeamTag>() {
+            @Override
+            public Predicate toPredicate(Root<TeamTag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (searchFilter != null && TeamTagSearchFilter.StatusFilter.ALL != searchFilter.getStatus()) {
+                    Predicate temp = cb.equal(root.get(TeamTag_.team).get(Team_.active), TeamSearchFilter.StatusFilter.ACTIVE_ONLY.toString().equals(searchFilter.getStatus().toString()));
+                    return temp;
+                }
+                return null;
+            }
+        };
+    }
 }

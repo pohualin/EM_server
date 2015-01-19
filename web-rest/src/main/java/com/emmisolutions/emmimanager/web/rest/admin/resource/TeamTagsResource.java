@@ -188,7 +188,8 @@ public class TeamTagsResource {
             @PageableDefault(size = 50) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
             PagedResourcesAssembler<TeamTag> assembler,
-            @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
+            @RequestParam(value = "tagIds", required = false) List<Long> tagIds,
+            @RequestParam(value = "status", required = false) String status) {
         TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter();
 
         Set<Tag> tagSet = new HashSet<>();
@@ -200,6 +201,7 @@ public class TeamTagsResource {
 
         teamTagSearchFilter.setTagSet(tagSet);
         teamTagSearchFilter.setClientId(clientId);
+        teamTagSearchFilter.setStatus(TeamTagSearchFilter.StatusFilter.fromStringOrActive(status));
         Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(pageable, teamTagSearchFilter);
         if (teamTagPage.hasContent()) {
             PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
