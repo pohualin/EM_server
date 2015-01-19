@@ -130,6 +130,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         }
         TeamSearchFilter filter = new TeamSearchFilter();
         filter.setTag(tags.get(0));
+        filter.setTeamTagType(TeamSearchFilter.TeamTagType.TAGGED_ONLY);
         Page<Team> teamPageA = teamPersistence.list(null, filter);
         assertThat("should return some teams", teamPageA.hasContent(), is(true));
     }
