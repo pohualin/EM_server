@@ -203,6 +203,10 @@ public class ClientPasswordConfigurationServiceImpl implements
                     .setPasswordRepetitions(clientPasswordConfiguration
                             .getDefaultPasswordConfiguration()
                             .getDefaultPasswordRepetitions());
+            passwordConfiguration
+                    .setPasswordReset(clientPasswordConfiguration
+                            .getDefaultPasswordConfiguration()
+                            .isDefaultPasswordReset());
         }
         return passedBack;
     }

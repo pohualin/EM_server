@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="add self service reset to default password configuration table" author="Paul">
+    	<addColumn tableName="default_password_configuration">
+    		<column name="default_password_reset" type="boolean" />
+    		<column name="password_reset_changeable" type="boolean" />
+    	</addColumn>
+    	<update tableName="default_password_configuration">
+    		<column name="default_password_reset">true</column>
+    		<column name="password_reset_changeable">true</column>
+    	</update>
+    	<addNotNullConstraint tableName="default_password_configuration" columnName="default_password_reset" columnDataType="boolean" />
+    	<addNotNullConstraint tableName="default_password_configuration" columnName="password_reset_changeable" columnDataType="boolean" />
+    	
+    	<addColumn tableName="default_password_configuration_audit">
+    		<column name="passwordReset" type="boolean" />
+    		<column name="passwordResetChangeable" type="boolean" />
+    	</addColumn>
+    	
+    	<addColumn tableName="password_configuration">
+    		<column name="password_reset" type="boolean" />
+    	</addColumn>
+    	
+    	<addColumn tableName="password_configuration_audit">
+    		<column name="password_reset" type="boolean" />
+    	</addColumn>
+    </changeSet>
+    
+</databaseChangeLog>

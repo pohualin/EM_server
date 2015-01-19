@@ -59,6 +59,9 @@ public class PasswordConfiguration extends AbstractAuditingEntity implements
 
     @Column(name = "special_chars", columnDefinition = "boolean", nullable = false)
     private boolean specialChars;
+    
+    @Column(name = "password_reset", columnDefinition = "boolean", nullable = false)
+    private boolean passwordReset;
 
     @Column(name = "lockout_attempts", columnDefinition = "int", nullable = false)
     private int lockoutAttemps;
@@ -190,6 +193,14 @@ public class PasswordConfiguration extends AbstractAuditingEntity implements
 
     public void setPasswordExpirationDaysReminder(int passwordExpirationDaysReminder) {
         this.passwordExpirationDaysReminder = passwordExpirationDaysReminder;
+    }
+
+    public boolean isPasswordReset() {
+        return passwordReset;
+    }
+
+    public void setPasswordReset(boolean passwordReset) {
+        this.passwordReset = passwordReset;
     }
 
 }

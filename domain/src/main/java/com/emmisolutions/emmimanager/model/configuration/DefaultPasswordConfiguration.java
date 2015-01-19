@@ -101,6 +101,12 @@ public class DefaultPasswordConfiguration extends AbstractAuditingEntity
     @Column(name = "special_chars_changeable", columnDefinition = "boolean", nullable = false)
     private boolean specialCharsChangeable;
 
+    @Column(name = "default_password_reset", columnDefinition = "boolean", nullable = false)
+    private boolean defaultPasswordReset;
+
+    @Column(name = "password_reset_changeable", columnDefinition = "boolean", nullable = false)
+    private boolean passwordResetChangeable;
+
     @Column(name = "default_lockout_attempts", columnDefinition = "int", nullable = false)
     private int defaultLockoutAttemps;
 
@@ -190,7 +196,8 @@ public class DefaultPasswordConfiguration extends AbstractAuditingEntity
         return defaultPasswordExpirationDays;
     }
 
-    public void setDefaultPasswordExpirationDays(int defaultPasswordExpirationDays) {
+    public void setDefaultPasswordExpirationDays(
+            int defaultPasswordExpirationDays) {
         this.defaultPasswordExpirationDays = defaultPasswordExpirationDays;
     }
 
@@ -444,6 +451,22 @@ public class DefaultPasswordConfiguration extends AbstractAuditingEntity
     public void setPasswordExpirationDaysReminderMax(
             int passwordExpirationDaysReminderMax) {
         this.passwordExpirationDaysReminderMax = passwordExpirationDaysReminderMax;
+    }
+
+    public boolean isDefaultPasswordReset() {
+        return defaultPasswordReset;
+    }
+
+    public void setDefaultPasswordReset(boolean defaultPasswordReset) {
+        this.defaultPasswordReset = defaultPasswordReset;
+    }
+
+    public boolean isPasswordResetChangeable() {
+        return passwordResetChangeable;
+    }
+
+    public void setPasswordResetChangeable(boolean passwordResetChangeable) {
+        this.passwordResetChangeable = passwordResetChangeable;
     }
 
 }
