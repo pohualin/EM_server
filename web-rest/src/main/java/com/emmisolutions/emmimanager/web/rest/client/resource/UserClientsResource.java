@@ -43,9 +43,9 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/auth-test/{clientId}/{teamId}", method = RequestMethod.GET)
     @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_USER') or " +
-            "hasPermission(@client._new(#clientId), 'PERM_CLIENT_USER') or " +
-            "hasPermission(@client._new(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team._new(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA')"
+            "hasPermission(@client.id(#clientId), 'PERM_CLIENT_USER') or " +
+            "hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA')"
     )
     public ResponseEntity<String> authorized(@PathVariable Long clientId, @PathVariable Long teamId) {
         return new ResponseEntity<>("AUTHORIZED for client: " + clientId + ", team: " + teamId, HttpStatus.OK);
