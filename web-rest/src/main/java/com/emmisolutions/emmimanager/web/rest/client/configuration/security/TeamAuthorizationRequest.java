@@ -31,7 +31,7 @@ public class TeamAuthorizationRequest extends AuthorizationRequest{
      * @param teamId the team id
      * @return a new instance of this class
      */
-    public TeamAuthorizationRequest _new(Long teamId) {
+    public TeamAuthorizationRequest id(Long teamId) {
         return new TeamAuthorizationRequest(teamId);
     }
 

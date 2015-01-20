@@ -27,7 +27,7 @@ public class ClientAuthorizationRequest extends AuthorizationRequest {
      * @param clientId the client id
      * @return a new instance of this class
      */
-    public ClientAuthorizationRequest _new(Long clientId) {
+    public ClientAuthorizationRequest id(Long clientId) {
         return new ClientAuthorizationRequest(clientId);
     }
 
