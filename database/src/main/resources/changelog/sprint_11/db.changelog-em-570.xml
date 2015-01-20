@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="add ip restrict config table" author="Paul">
+    	<createTable tableName="ip_restrict_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ip_restrict_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="client_restrict_configuration_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ip_range_start" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ip_range_end" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable tableName="ip_restrict_configuration_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="client_restrict_configuration_id" type="bigint"/>
+            <column name="description" type="nvarchar(255)"/>
+            <column name="ip_range_start" type="nvarchar(255)"/>
+            <column name="ip_range_end" type="nvarchar(255)"/>
+        </createTable>
+        <addPrimaryKey tableName="ip_restrict_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_ip_restrict_configuration_audit"/>
+        <addForeignKeyConstraint baseTableName="ip_restrict_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_ip_restrict_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+		<createIndex indexName="ix_ip_restrict_configuration_audit_revision"
+					 tableName="ip_restrict_configuration_audit">
+            <column name="revision"  type="bigint"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="add email restrict config table" author="Paul">
+    	<createTable tableName="email_restrict_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_email_restrict_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="client_restrict_configuration_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_ending" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable tableName="email_restrict_configuration_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="client_restrict_configuration_id" type="bigint"/>
+            <column name="description" type="nvarchar(255)"/>
+            <column name="email_ending" type="nvarchar(255)"/>
+        </createTable>
+        <addPrimaryKey tableName="email_restrict_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_email_restrict_configuration_audit"/>
+        <addForeignKeyConstraint baseTableName="email_restrict_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_email_restrict_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+		<createIndex indexName="ix_email_restrict_configuration_audit_revision"
+					 tableName="email_restrict_configuration_audit">
+            <column name="revision"  type="bigint"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="add client restrict config table" author="Paul">
+    	<createTable tableName="client_restrict_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_restrict_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ip_config_restrict" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_config_restrict" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="client_restrict_configuration"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_client_restrict_configuration_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+		<createIndex indexName="ix_client_restrict_configuration_client"
+					 tableName="client_restrict_configuration">
+            <column name="client_id"  type="bigint"/>
+        </createIndex>
+        
+        <createTable tableName="client_restrict_configuration_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="client_id" type="bigint"/>
+            <column name="ip_config_restrict" type="boolean"/>
+            <column name="email_config_restrict" type="boolean"/>
+        </createTable>
+        <addPrimaryKey tableName="client_restrict_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_client_restrict_configuration_audit"/>
+        <addForeignKeyConstraint baseTableName="client_restrict_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_restrict_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+		<createIndex indexName="ix_client_restrict_configuration_audit_revision"
+					 tableName="client_restrict_configuration_audit">
+            <column name="revision"  type="bigint"/>
+        </createIndex>
+    </changeSet>
+
+	<changeSet id="add foreign keys for ip_restrict_config and email_restrict_config" author="Paul">
+		<addForeignKeyConstraint baseTableName="ip_restrict_configuration"
+                                 baseColumnNames="client_restrict_configuration_id"
+                                 constraintName="fk_ip_restrict_configuration_client_restrict_configuration"
+                                 referencedTableName="client_restrict_configuration"
+                                 referencedColumnNames="id"/>
+		<createIndex indexName="ix_ip_restrict_configuration_client_restrict_configuration"
+					 tableName="ip_restrict_configuration">
+            <column name="client_restrict_configuration_id"  type="bigint"/>
+        </createIndex>
+        
+		<addForeignKeyConstraint baseTableName="email_restrict_configuration"
+                                 baseColumnNames="client_restrict_configuration_id"
+                                 constraintName="fk_email_restrict_configuration_client_restrict_configuration"
+                                 referencedTableName="client_restrict_configuration"
+                                 referencedColumnNames="id"/>
+		<createIndex indexName="ix_email_restrict_configuration_client_restrict_configuration"
+					 tableName="email_restrict_configuration">
+           <column name="client_restrict_configuration_id"  type="bigint"/>
+        </createIndex>
+	</changeSet>
+
+</databaseChangeLog>
