@@ -66,7 +66,6 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(UserPage.createFullSearchLink());
         ret.add(UserAdminRolePage.createUserAdminRolesLink());
         ret.add(createUserByIdLink());
-        ret.add(linkTo(methodOn(UserClientPasswordResource.class).updatePassword(user.getId(), null)).withRel("updatePassword"));
         if (perms.contains(UserAdminPermissionName.PERM_GOD)) {
             ret.add(referenceTagsLinkForAdmin());
         }
