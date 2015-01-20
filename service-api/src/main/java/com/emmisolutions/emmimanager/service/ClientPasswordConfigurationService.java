@@ -11,8 +11,7 @@ public interface ClientPasswordConfigurationService {
     /**
      * Delete the existing ClientPasswordConfiguration
      */
-    public ClientPasswordConfiguration delete(
-            ClientPasswordConfiguration clientPasswordConfiguration);
+    public void delete(ClientPasswordConfiguration clientPasswordConfiguration);
 
     /**
      * Get the ClientPasswordConfiguration for a Client

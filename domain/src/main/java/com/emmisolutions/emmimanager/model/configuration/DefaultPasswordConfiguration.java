@@ -34,8 +34,8 @@ public class DefaultPasswordConfiguration extends AbstractAuditingEntity
     private Integer version;
 
     @NotNull
-    @Column(name = "system_default", updatable = false, insertable = false, nullable = false)
-    private boolean systemDefault;
+    @Column(name = "active", nullable = false)
+    private boolean active;
 
     @NotNull
     @Column(columnDefinition = "nvarchar(255)", nullable = false)
@@ -176,20 +176,20 @@ public class DefaultPasswordConfiguration extends AbstractAuditingEntity
         this.version = version;
     }
 
-    public boolean isSystemDefault() {
-        return systemDefault;
-    }
-
-    public void setSystemDefault(boolean systemDefault) {
-        this.systemDefault = systemDefault;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public int getDefaultPasswordExpirationDays() {

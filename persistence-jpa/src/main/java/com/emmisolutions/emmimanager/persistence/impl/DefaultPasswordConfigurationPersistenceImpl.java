@@ -25,10 +25,10 @@ public class DefaultPasswordConfigurationPersistenceImpl implements
     DefaultPasswordConfigurationSpecifications defaultPasswordConfigurationSpecifications;
 
     @Override
-    public DefaultPasswordConfiguration findSystemDefault() {
+    public DefaultPasswordConfiguration findActive() {
         return defaultPasswordConfigurationRepository
                 .findOne(where(defaultPasswordConfigurationSpecifications
-                        .isSystemDefault()));
+                        .isActive()));
     }
 
     @Override

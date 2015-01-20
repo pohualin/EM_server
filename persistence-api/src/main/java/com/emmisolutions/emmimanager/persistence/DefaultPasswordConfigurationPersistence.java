@@ -8,11 +8,11 @@ import com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfigur
 public interface DefaultPasswordConfigurationPersistence {
 
     /**
-     * Find system default DefaultPasswordConfiguration
+     * Find active DefaultPasswordConfiguration
      * 
-     * @return system default DefaultPasswordConfiguration
+     * @return active DefaultPasswordConfiguration
      */
-    public DefaultPasswordConfiguration findSystemDefault();
+    public DefaultPasswordConfiguration findActive();
 
     /**
      * Reload DefaultPasswordConfiguration by passed in id

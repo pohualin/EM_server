@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.model.configuration;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,9 +46,61 @@ public class ClientPasswordConfiguration extends AbstractAuditingEntity
     @JoinColumn(name = "default_password_configuration_id", nullable = false)
     private DefaultPasswordConfiguration defaultPasswordConfiguration;
 
-    @OneToOne
-    @JoinColumn(name = "password_configuration_id")
-    private PasswordConfiguration passwordConfiguration;
+    @NotNull
+    @Column(columnDefinition = "nvarchar(255)", nullable = false)
+    private String name;
+
+    @NotNull
+    @Column(name = "password_expiration_days", columnDefinition = "int", nullable = false)
+    private int passwordExpirationDays;
+
+    @NotNull
+    @Column(name = "password_repetitions", columnDefinition = "int", nullable = false)
+    private int passwordRepetitions;
+
+    @NotNull
+    @Column(name = "days_between_password_change", columnDefinition = "int", nullable = false)
+    private int daysBetweenPasswordChange;
+
+    @NotNull
+    @Column(name = "password_length", columnDefinition = "int", nullable = false)
+    private int passwordLength;
+
+    @NotNull
+    @Column(name = "uppercase_letters", columnDefinition = "boolean", nullable = false)
+    private boolean uppercaseLetters;
+
+    @NotNull
+    @Column(name = "lowercase_letters", columnDefinition = "boolean", nullable = false)
+    private boolean lowercaseLetters;
+
+    @NotNull
+    @Column(name = "numbers", columnDefinition = "boolean", nullable = false)
+    private boolean numbers;
+
+    @NotNull
+    @Column(name = "special_chars", columnDefinition = "boolean", nullable = false)
+    private boolean specialChars;
+
+    @NotNull
+    @Column(name = "password_reset", columnDefinition = "boolean", nullable = false)
+    private boolean passwordReset;
+
+    @NotNull
+    @Column(name = "lockout_attempts", columnDefinition = "int", nullable = false)
+    private int lockoutAttemps;
+
+    @NotNull
+    @Column(name = "lockout_reset", columnDefinition = "int", nullable = false)
+    private int lockoutReset;
+
+    @NotNull
+    @Column(name = "idle_time", columnDefinition = "int", nullable = false)
+    private int idleTime;
+
+    @NotNull
+    @Column(name = "password_expiration_days_reminder", columnDefinition = "int", nullable = false)
+    private int passwordExpirationDaysReminder;
 
     /**
      * Default constructor
@@ -99,13 +152,117 @@ public class ClientPasswordConfiguration extends AbstractAuditingEntity
         this.defaultPasswordConfiguration = defaultPasswordConfiguration;
     }
 
-    public PasswordConfiguration getPasswordConfiguration() {
-        return passwordConfiguration;
+    public String getName() {
+        return name;
     }
 
-    public void setPasswordConfiguration(
-            PasswordConfiguration passwordConfiguration) {
-        this.passwordConfiguration = passwordConfiguration;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getPasswordExpirationDays() {
+        return passwordExpirationDays;
+    }
+
+    public void setPasswordExpirationDays(int passwordExpirationDays) {
+        this.passwordExpirationDays = passwordExpirationDays;
+    }
+
+    public int getPasswordRepetitions() {
+        return passwordRepetitions;
+    }
+
+    public void setPasswordRepetitions(int passwordRepetitions) {
+        this.passwordRepetitions = passwordRepetitions;
+    }
+
+    public int getDaysBetweenPasswordChange() {
+        return daysBetweenPasswordChange;
+    }
+
+    public void setDaysBetweenPasswordChange(int daysBetweenPasswordChange) {
+        this.daysBetweenPasswordChange = daysBetweenPasswordChange;
+    }
+
+    public int getPasswordLength() {
+        return passwordLength;
+    }
+
+    public void setPasswordLength(int passwordLength) {
+        this.passwordLength = passwordLength;
+    }
+
+    public boolean hasUppercaseLetters() {
+        return uppercaseLetters;
+    }
+
+    public void setUppercaseLetters(boolean uppercaseLetters) {
+        this.uppercaseLetters = uppercaseLetters;
+    }
+
+    public boolean hasLowercaseLetters() {
+        return lowercaseLetters;
+    }
+
+    public void setLowercaseLetters(boolean lowercaseLetters) {
+        this.lowercaseLetters = lowercaseLetters;
+    }
+
+    public boolean hasNumbers() {
+        return numbers;
+    }
+
+    public void setNumbers(boolean numbers) {
+        this.numbers = numbers;
+    }
+
+    public boolean hasSpecialChars() {
+        return specialChars;
+    }
+
+    public void setSpecialChars(boolean specialChars) {
+        this.specialChars = specialChars;
+    }
+
+    public int getLockoutAttemps() {
+        return lockoutAttemps;
+    }
+
+    public void setLockoutAttemps(int lockoutAttemps) {
+        this.lockoutAttemps = lockoutAttemps;
+    }
+
+    public int getLockoutReset() {
+        return lockoutReset;
+    }
+
+    public void setLockoutReset(int lockoutReset) {
+        this.lockoutReset = lockoutReset;
+    }
+
+    public int getIdleTime() {
+        return idleTime;
+    }
+
+    public void setIdleTime(int idleTime) {
+        this.idleTime = idleTime;
+    }
+
+    public int getPasswordExpirationDaysReminder() {
+        return passwordExpirationDaysReminder;
+    }
+
+    public void setPasswordExpirationDaysReminder(
+            int passwordExpirationDaysReminder) {
+        this.passwordExpirationDaysReminder = passwordExpirationDaysReminder;
+    }
+
+    public boolean isPasswordReset() {
+        return passwordReset;
+    }
+
+    public void setPasswordReset(boolean passwordReset) {
+        this.passwordReset = passwordReset;
     }
 
 }

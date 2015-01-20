@@ -43,21 +43,10 @@ public class ClientPasswordConfigurationsResource {
      */
     @RequestMapping(value = "/client_password_configuration/{id}", method = RequestMethod.DELETE)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
-    public ResponseEntity<ClientPasswordConfigurationResource> delete(
-            @PathVariable("id") Long clientPasswordConfigurationId) {
-
-        ClientPasswordConfiguration returned = clientPasswordConfigurationService
+    public void delete(@PathVariable("id") Long clientPasswordConfigurationId) {
+        clientPasswordConfigurationService
                 .delete(new ClientPasswordConfiguration(
                         clientPasswordConfigurationId));
-
-        if (returned == null) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-            return new ResponseEntity<>(
-                    clientPasswordConfigurationResourceAssembler
-                            .toResource(returned),
-                    HttpStatus.OK);
-        }
     }
 
     /**

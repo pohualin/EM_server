@@ -19,16 +19,15 @@ import com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfigur
 public class DefaultPasswordConfigurationSpecifications {
 
     /**
-     * adding "system_default  = true" to where clause
+     * adding "active  = true" to where clause
      */
-    public Specification<DefaultPasswordConfiguration> isSystemDefault() {
+    public Specification<DefaultPasswordConfiguration> isActive() {
         return new Specification<DefaultPasswordConfiguration>() {
             @Override
             public Predicate toPredicate(
                     Root<DefaultPasswordConfiguration> root,
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
-                return cb.equal(
-                        root.get(DefaultPasswordConfiguration_.systemDefault),
+                return cb.equal(root.get(DefaultPasswordConfiguration_.active),
                         true);
             }
         };

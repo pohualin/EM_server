@@ -27,10 +27,10 @@ public class DefaultPasswordConfigurationPersistenceIntegrationTest extends
     @Test
     public void testFindSystemDefault() {
         DefaultPasswordConfiguration systemDefault = defaultPasswordConfigurationPersistence
-                .findSystemDefault();
-        assertThat("system default found", systemDefault, is(notNullValue()));
-        assertThat("system default should be true",
-                systemDefault.isSystemDefault(), is(true));
+                .findActive();
+        assertThat("active default password configuration found", systemDefault, is(notNullValue()));
+        assertThat("active should be true", systemDefault.isActive(),
+                is(true));
     }
 
     /**
@@ -63,10 +63,10 @@ public class DefaultPasswordConfigurationPersistenceIntegrationTest extends
     @Test
     public void testSave() {
         DefaultPasswordConfiguration systemDefault = defaultPasswordConfigurationPersistence
-                .findSystemDefault();
-        systemDefault.setSystemDefault(false);
+                .findActive();
+        systemDefault.setActive(false);
         defaultPasswordConfigurationPersistence.saveOrUpdate(systemDefault);
-        assertThat("system default should be false",
-                systemDefault.isSystemDefault(), is(false));
+        assertThat("system default should be false", systemDefault.isActive(),
+                is(false));
     }
 }

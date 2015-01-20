@@ -120,7 +120,13 @@
 			<column name="password_expiration_days_reminder_max" type="int">
                 <constraints nullable="false" />
             </column>						
-            <column name="system_default" type="boolean" defaultValueBoolean="false">
+            <column name="default_password_reset" type="boolean">
+            	<constraints nullable="false" />
+            </column>
+    		<column name="password_reset_changeable" type="boolean">
+    			<constraints nullable="false" />
+    		</column>
+    		<column name="active" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false" />
             </column>
     	</createTable>
@@ -166,9 +172,13 @@
 			<column name="default_password_expiration_days_reminder" type="int" />
 			<column name="password_expiration_days_reminder_min" type="int" />
 			<column name="password_expiration_days_reminder_max" type="int" />
+			<column name="passwordReset" type="boolean" />
+    		<column name="passwordResetChangeable" type="boolean" />
     	</createTable>
+    	
     	<addPrimaryKey tableName="default_password_configuration_audit" columnNames="id, revision"
                        constraintName="pk_default_password_configuration_audit"/>
+		
 		<addForeignKeyConstraint baseTableName="default_password_configuration_audit"
                                  baseColumnNames="revision"
                                  constraintName="fk_default_password_configuration_audit_revision"
@@ -180,10 +190,10 @@
         </createIndex>
     </changeSet>
     
-    <changeSet id="create password configuration table" author="Paul">
-    	<createTable tableName="password_configuration">
+    <changeSet id="create client password configuration table" author="Paul">
+    	<createTable tableName="client_password_configuration">
     		<column name="id" autoIncrement="true" type="bigint">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_password_configuration"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_password_configuration"/>
             </column>
             <column name="created_by" type="nvarchar(50)" defaultValue="system">
                 <constraints nullable="false"/>
@@ -194,6 +204,12 @@
             <column name="last_modified_by" type="nvarchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="default_password_configuration_id" type="bigint">
+            	<constraints nullable="false" />
+            </column>
             <column name="name" type="nvarchar(255)">
             	<constraints nullable="false" />
             </column>
@@ -233,65 +249,11 @@
 			<column name="password_expiration_days_reminder" type="int">
                 <constraints nullable="false" />
             </column>
-    	</createTable>
-    	
-    	<createTable tableName="password_configuration_audit">
-    		<column name="id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="revision" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="revision_type" type="tinyint"/>
-            <column name="name" type="nvarchar(255)"/>
-            <column name="password_expiration_days" type="int" />
-            <column name="password_repetitions" type="int" />
-            <column name="days_between_password_change" type="int" />
-			<column name="password_length" type="int" />
-			<column name="uppercase_letters" type="boolean" />
-			<column name="lowercase_letters" type="boolean" />
-			<column name="numbers" type="boolean" />
-			<column name="special_chars" type="boolean" />
-			<column name="lockout_attempts" type="int" />
-			<column name="lockout_reset" type="int" />
-			<column name="idle_time" type="int" />
-			<column name="password_expiration_days_reminder" type="int" />
-    	</createTable>
-    	<addPrimaryKey tableName="password_configuration_audit" columnNames="id, revision"
-                       constraintName="pk_password_configuration_audit"/>
-		<addForeignKeyConstraint baseTableName="password_configuration_audit"
-                                 baseColumnNames="revision"
-                                 constraintName="fk_password_configuration_audit_revision"
-                                 referencedTableName="revision_info"
-                                 referencedColumnNames="revision"/>
-		<createIndex indexName="ix_password_configuration_audit_revision"
-               tableName="password_configuration_audit">
-            <column name="revision" type="BIGINT"/>
-        </createIndex> 
-    </changeSet>
-    
-    <changeSet id="create client password configuration table" author="Paul">
-    	<createTable tableName="client_password_configuration">
-    		<column name="id" autoIncrement="true" type="bigint">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_password_configuration"/>
-            </column>
-            <column name="created_by" type="nvarchar(50)" defaultValue="system">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="timestamp" defaultValueDate="${now}">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified_by" type="nvarchar(50)"/>
-            <column name="last_modified_date" type="timestamp"/>
-            <column name="version" type="int"/>
-            <column name="client_id" type="bigint">
-                <constraints nullable="false" />
-            </column>
-            <column name="default_password_configuration_id" type="bigint">
+            <column name="password_reset" type="boolean">
             	<constraints nullable="false" />
             </column>
-            <column name="password_configuration_id" type="bigint" />
     	</createTable>
+		
 		<addForeignKeyConstraint baseTableName="client_password_configuration"
                                  baseColumnNames="client_id"
                                  constraintName="fk_client_password_configuration_client"
@@ -311,17 +273,7 @@
                tableName="client_password_configuration">
             <column name="client_id" type="BIGINT"/>
         </createIndex> 
-                                 
-		<addForeignKeyConstraint baseTableName="client_password_configuration"
-                                 baseColumnNames="password_configuration_id"
-                                 constraintName="fk_client_password_configuration_password_configuration"
-                                 referencedTableName="password_configuration"
-                                 referencedColumnNames="id"/>
-		<createIndex indexName="ix_client_password_configuration_password_configuration"
-               tableName="client_password_configuration">
-            <column name="client_id" type="BIGINT"/>
-        </createIndex> 
-    	
+        
     	<createTable tableName="client_password_configuration_audit">
     		<column name="id" type="bigint">
                 <constraints nullable="false"/>
@@ -332,10 +284,25 @@
             <column name="revision_type" type="tinyint"/>
             <column name="client_id" type="bigint"/>
             <column name="default_password_configuration_id" type="bigint" />
-            <column name="password_configuration_id" type="bigint" />
+            <column name="name" type="nvarchar(255)"/>
+            <column name="password_expiration_days" type="int" />
+            <column name="password_repetitions" type="int" />
+            <column name="days_between_password_change" type="int" />
+			<column name="password_length" type="int" />
+			<column name="uppercase_letters" type="boolean" />
+			<column name="lowercase_letters" type="boolean" />
+			<column name="numbers" type="boolean" />
+			<column name="special_chars" type="boolean" />
+			<column name="lockout_attempts" type="int" />
+			<column name="lockout_reset" type="int" />
+			<column name="idle_time" type="int" />
+			<column name="password_expiration_days_reminder" type="int" />
+			<column name="password_reset" type="boolean" />
     	</createTable>
+    	
     	<addPrimaryKey tableName="client_password_configuration_audit" columnNames="id, revision"
                        constraintName="pk_client_password_configuration_audit"/>
+		
         <addForeignKeyConstraint baseTableName="client_password_configuration_audit"
                                  baseColumnNames="revision"
                                  constraintName="fk_client_password_configuration_audit_revision"

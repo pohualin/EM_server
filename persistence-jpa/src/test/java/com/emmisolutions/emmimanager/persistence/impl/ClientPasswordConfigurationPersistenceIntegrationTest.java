@@ -51,7 +51,7 @@ public class ClientPasswordConfigurationPersistenceIntegrationTest extends
     }
 
     /**
-     * Test save Test reload
+     * Test save, reload and delete
      */
     @Test
     public void testSave() {
@@ -61,6 +61,7 @@ public class ClientPasswordConfigurationPersistenceIntegrationTest extends
         configuration
                 .setDefaultPasswordConfiguration(defaultPasswordConfigurationPersistence
                         .reload(1l));
+        populateFromDefault(configuration);
         configuration = clientPasswordConfigurationPersistence
                 .saveOrUpdate(configuration);
         assertThat("save configuration successfully", configuration.getId(),
@@ -70,6 +71,11 @@ public class ClientPasswordConfigurationPersistenceIntegrationTest extends
                 .reload(configuration.getId());
         assertThat("reload configuration successfully", reload.getId(),
                 is(notNullValue()));
+
+        clientPasswordConfigurationPersistence.delete(reload.getId());
+        assertThat("reload configuration successfully",
+                clientPasswordConfigurationPersistence.reload(reload.getId()),
+                is(nullValue()));
     }
 
     /**
@@ -83,6 +89,7 @@ public class ClientPasswordConfigurationPersistenceIntegrationTest extends
         configuration
                 .setDefaultPasswordConfiguration(defaultPasswordConfigurationPersistence
                         .reload(1l));
+        populateFromDefault(configuration);
         configuration = clientPasswordConfigurationPersistence
                 .saveOrUpdate(configuration);
 
@@ -93,5 +100,44 @@ public class ClientPasswordConfigurationPersistenceIntegrationTest extends
         assertThat(
                 "should find one ClientPasswordConfiguration with the passed in client",
                 findByClient.getClient(), is(client));
+    }
+
+    private void populateFromDefault(ClientPasswordConfiguration configuration) {
+        configuration.setDaysBetweenPasswordChange(configuration
+                .getDefaultPasswordConfiguration()
+                .getDefaultDaysBetweenPasswordChange());
+        configuration.setIdleTime(configuration
+                .getDefaultPasswordConfiguration().getDefaultIdleTime());
+        configuration.setLockoutAttemps(configuration
+                .getDefaultPasswordConfiguration().getDefaultLockoutAttemps());
+        configuration.setLockoutReset(configuration
+                .getDefaultPasswordConfiguration().getDefaultLockoutReset());
+        configuration
+                .setLowercaseLetters(configuration
+                        .getDefaultPasswordConfiguration()
+                        .hasDefaultLowercaseLetters());
+        configuration.setName(configuration.getDefaultPasswordConfiguration()
+                .getName());
+        configuration.setNumbers(configuration
+                .getDefaultPasswordConfiguration().hasDefaultNumbers());
+        configuration.setPasswordExpirationDays(configuration
+                .getDefaultPasswordConfiguration()
+                .getDefaultPasswordExpirationDays());
+        configuration.setPasswordExpirationDaysReminder(configuration
+                .getDefaultPasswordConfiguration()
+                .getDefaultPasswordExpirationDaysReminder());
+        configuration.setPasswordLength(configuration
+                .getDefaultPasswordConfiguration().getDefaultPasswordLength());
+        configuration.setPasswordRepetitions(configuration
+                .getDefaultPasswordConfiguration()
+                .getDefaultPasswordRepetitions());
+        configuration.setPasswordReset(configuration
+                .getDefaultPasswordConfiguration().isDefaultPasswordReset());
+        configuration.setSpecialChars(configuration
+                .getDefaultPasswordConfiguration().hasDefaultSpecialChars());
+        configuration
+                .setUppercaseLetters(configuration
+                        .getDefaultPasswordConfiguration()
+                        .hasDefaultUppercaseLetters());
     }
 }

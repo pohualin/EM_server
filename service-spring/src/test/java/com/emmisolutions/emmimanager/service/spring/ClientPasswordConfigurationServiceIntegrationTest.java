@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
@@ -24,164 +23,57 @@ public class ClientPasswordConfigurationServiceIntegrationTest extends
     ClientPasswordConfigurationService clientPasswordConfigurationService;
 
     /**
-     * Test negative findByClient
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testFindByClientWithoutClient() {
-        clientPasswordConfigurationService.get(null);
-    }
-
-    /**
-     * Test negative findByClient
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testFindByClientWithoutClientId() {
-        clientPasswordConfigurationService.get(new Client());
-    }
-
-    /**
-     * Test findByClient
-     */
-    @Test
-    public void testFindByClient() {
-        // Test All Default
-        Client client = makeNewRandomClient();
-        Client newClient = new Client();
-        newClient.setId(client.getId());
-        ClientPasswordConfiguration allDefault = clientPasswordConfigurationService
-                .get(newClient);
-
-        assertThat("should contain passed in Client", allDefault.getClient(),
-                is(client));
-
-        assertThat("should contain system default password configuration",
-                allDefault.getDefaultPasswordConfiguration().isSystemDefault(),
-                is(true));
-
-        assertThat(
-                "should contain password configuration composed from default password configuration",
-                allDefault.getDefaultPasswordConfiguration().getName() == allDefault
-                        .getPasswordConfiguration().getName(), is(true));
-
-        assertThat("should return null if no client found",
-                clientPasswordConfigurationService.get(new Client(100l)),
-                is(nullValue()));
-
-    }
-
-    /**
-     * Test negative save
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testSaveWithoutClient() {
-        ClientPasswordConfiguration configurationWithoutClient = new ClientPasswordConfiguration();
-        clientPasswordConfigurationService.save(configurationWithoutClient);
-    }
-
-    /**
-     * Test negative save
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testSaveWithoutClientId() {
-        ClientPasswordConfiguration configurationWithoutClientId = new ClientPasswordConfiguration();
-        configurationWithoutClientId.setClient(new Client());
-        clientPasswordConfigurationService.save(configurationWithoutClientId);
-    }
-
-    /**
-     * Test negative save
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testSaveWithoutDefaultPasswordConfiguration() {
-        ClientPasswordConfiguration configurationWithoutDefaultPasswordConfiguration = new ClientPasswordConfiguration();
-        configurationWithoutDefaultPasswordConfiguration
-                .setClient(makeNewRandomClient());
-        clientPasswordConfigurationService
-                .save(configurationWithoutDefaultPasswordConfiguration);
-    }
-
-    /**
-     * Test save
+     * Test get, save, reload, delete
      */
     @Test
     public void testSave() {
-        // Test save with system default DefaultPasswordConfiguration and
-        // customized PasswordConfiguration
         Client client = makeNewRandomClient();
-        ClientPasswordConfiguration configurationWithSystemDefault = clientPasswordConfigurationService
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                 .get(client);
-        configurationWithSystemDefault.getPasswordConfiguration().setName(
-                "Configuration with System Default");
-        configurationWithSystemDefault = clientPasswordConfigurationService
-                .save(configurationWithSystemDefault);
-
-        assertThat(
-                "should contain password configuration with new name",
-                configurationWithSystemDefault.getPasswordConfiguration()
-                        .getName()
-                        .equalsIgnoreCase("Configuration with System Default"),
+        assertThat("should contain default password configuration",
+                configuration.getDefaultPasswordConfiguration().isActive(),
                 is(true));
+        assertThat("should contain password configuration with default value",
+                configuration.getName(), is("System Default"));
 
-        ClientPasswordConfiguration updateSomeField = configurationWithSystemDefault;
-        updateSomeField.getPasswordConfiguration().setName("A New Name");
-        updateSomeField = clientPasswordConfigurationService
-                .save(updateSomeField);
+        configuration.setName("Configuration with New Name");
+        configuration = clientPasswordConfigurationService.save(configuration);
+
         assertThat("should contain password configuration with new name",
-                updateSomeField.getPasswordConfiguration().getName()
-                        .equalsIgnoreCase("A New Name"), is(true));
+                configuration.getName(), is("Configuration with New Name"));
 
         ClientPasswordConfiguration reload = clientPasswordConfigurationService
-                .reload(new ClientPasswordConfiguration(
-                        configurationWithSystemDefault.getId()));
-        assertThat(
-                "reload should have latest name",
-                reload.getPasswordConfiguration().getName()
-                        .equalsIgnoreCase("A New Name"), is(true));
+                .reload(new ClientPasswordConfiguration(configuration.getId()));
+        ClientPasswordConfiguration getInserted = clientPasswordConfigurationService
+                .get(client);
+        assertThat("reload the same instance", reload.getId(),
+                is(configuration.getId()));
+        assertThat("reload and get the same instance", reload.getId(),
+                is(getInserted.getId()));
 
         clientPasswordConfigurationService.delete(reload);
     }
 
-    /**
-     * Test negative delete
-     */
     @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadDeleteWithoutClientPasswordConfiguration() {
+    public void testNegativeDeleteWithNull() {
         clientPasswordConfigurationService.delete(null);
     }
 
-    /**
-     * Test negative delete
-     */
     @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadDeleteWithoutClientPasswordConfigurationId() {
+    public void testNegativeDeleteWithNullId() {
         clientPasswordConfigurationService
                 .delete(new ClientPasswordConfiguration());
     }
 
-    /**
-     * Test negative delete
-     */
     @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadDeleteWithoutBadClientPasswordConfiguration() {
-        ClientPasswordConfiguration toDelete = clientPasswordConfigurationService
-                .get(makeNewRandomClient());
-        clientPasswordConfigurationService.delete(toDelete);
-    }
-
-    /**
-     * Test negative reload
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadReload() {
+    public void testNegativeReloadWithNull() {
         clientPasswordConfigurationService.reload(null);
     }
 
-    /**
-     * Test negative reload
-     */
     @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadReloadWithoutId() {
+    public void testNegativeReloadWithNullId() {
         clientPasswordConfigurationService
                 .reload(new ClientPasswordConfiguration());
     }
+
 }
