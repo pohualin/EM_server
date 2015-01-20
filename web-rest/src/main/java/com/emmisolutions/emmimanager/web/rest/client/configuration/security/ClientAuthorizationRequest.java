@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.client.model.security;
+package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class ClientAuthorizationRequest extends AuthorizationRequest {
      * @param clientId the client id
      * @return a new instance of this class
      */
-    public ClientAuthorizationRequest _new(Long clientId) {
+    public ClientAuthorizationRequest id(Long clientId) {
         return new ClientAuthorizationRequest(clientId);
     }
 
