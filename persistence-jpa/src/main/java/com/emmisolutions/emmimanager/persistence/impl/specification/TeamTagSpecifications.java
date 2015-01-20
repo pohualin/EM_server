@@ -93,7 +93,7 @@ public class TeamTagSpecifications {
         return new Specification<TeamTag>() {
             @Override
             public Predicate toPredicate(Root<TeamTag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && TeamTagSearchFilter.StatusFilter.ALL != searchFilter.getStatus()) {
+                if (searchFilter != null && searchFilter.getStatus() !=null && !TeamTagSearchFilter.StatusFilter.ALL.equals(searchFilter.getStatus())) {
                     return cb.equal(root.get(TeamTag_.team).get(Team_.active), TeamSearchFilter.StatusFilter.ACTIVE_ONLY.toString().equals(searchFilter.getStatus().toString()));
                 }
                 return null;

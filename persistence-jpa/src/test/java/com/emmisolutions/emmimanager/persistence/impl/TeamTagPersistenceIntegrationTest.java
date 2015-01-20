@@ -94,7 +94,6 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         tagSet.add(tag1);
         tagSet.add(tag2);
         searchFilter.setTagSet(tagSet);
-        searchFilter.setStatus(TeamTagSearchFilter.StatusFilter.ALL);
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("no teams were returned", teamsWithTag.getContent().size(), is(0));
     }
@@ -126,7 +125,6 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         HashSet<Tag> tagSet = new HashSet<>();
         searchFilter.setTagSet(tagSet);
         searchFilter.setClientId(client.getId());
-        searchFilter.setStatus(TeamTagSearchFilter.StatusFilter.ALL);
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("no teams were returned", teamsWithTag.getContent().size(), is(2));
     }
@@ -152,7 +150,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
         Tag tag = createTag(group);
 
-        Team team = createTeam(client, 1);
+        Team team = createTeam(client, 2);
 
         teamTag.setTag(tag);
         teamTag.setTeam(team);
@@ -169,7 +167,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         HashSet<Tag> tagSet = new HashSet<>();
         tagSet.add(tag);
         searchFilter.setTagSet(tagSet);
-        searchFilter.setStatus(TeamTagSearchFilter.StatusFilter.ALL);
+        searchFilter.setStatus(TeamTagSearchFilter.StatusFilter.ACTIVE_ONLY);
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("we can find the team tag by the team tag id",
                 teamsWithTag,
@@ -226,7 +224,6 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         tagSet.add(tag1);
         tagSet.add(tag2);
         searchFilter.setTagSet(tagSet);
-        searchFilter.setStatus(TeamTagSearchFilter.StatusFilter.ALL);
         Page<TeamTag> returnedTeamTags = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
         assertThat("afterSaveTeamTag2 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag2));
@@ -286,7 +283,6 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         tagSet.add(tagPersistence.reload(tag2));
         tagSet.add(tagPersistence.reload(tag3));
         searchFilter.setTagSet(tagSet);
-        searchFilter.setStatus(TeamTagSearchFilter.StatusFilter.ALL);
         Page<TeamTag> returnedTeamTags = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("afterSaveTeamTag1 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag1));
         assertThat("afterSaveTeamTag2 team is returned", returnedTeamTags, hasItem(afterSaveTeamTag2));
