@@ -1,9 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import com.emmisolutions.emmimanager.model.Tag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamTag;
-import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.TeamTagService;
@@ -52,6 +50,9 @@ public class TeamTagsResource {
 
     @Resource
     TagService tagService;
+
+    @Resource
+    ClientService clientService;
 
     /**
      * GET to search for TeamTags
@@ -200,9 +201,11 @@ public class TeamTagsResource {
         }
 
         teamTagSearchFilter.setTagSet(tagSet);
-        teamTagSearchFilter.setClientId(clientId);
+        teamTagSearchFilter.setClient(clientService.reload(new Client(clientId)));
         teamTagSearchFilter.setStatus(TeamTagSearchFilter.StatusFilter.fromStringOrActive(status));
+
         Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(pageable, teamTagSearchFilter);
+
         if (teamTagPage.hasContent()) {
             PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
             TeamTagPage teamTagPage1 = new TeamTagPage(teamTagResourceSupports, teamTagPage, teamTagSearchFilter);

@@ -15,7 +15,7 @@ import java.util.Set;
 public class TeamTagSearchFilter {
 
     private TeamTag teamTag;
-    private Long clientId;
+    private Client client;
     private Set<Tag> tagSet;
     private StatusFilter status;
     private TeamTagType teamTagType;
@@ -50,20 +50,12 @@ public class TeamTagSearchFilter {
         this.tagSet = tagSet;
     }
 
-//    public Client getClient() {
-//        return client;
-//    }
-//
-//    public void setClient(Client client) {
-//        this.client = client;
-//    }
-
-    public Long getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public StatusFilter getStatus() {

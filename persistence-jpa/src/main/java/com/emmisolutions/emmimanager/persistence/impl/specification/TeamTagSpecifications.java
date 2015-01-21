@@ -21,7 +21,7 @@ public class TeamTagSpecifications {
      * @param searchFilter to search
      * @return the specification as a filter predicate
      */
-    public Specification<TeamTag> getOrs(final TeamTagSearchFilter searchFilter) {
+    public Specification<TeamTag> tagsFollowRequirementsLogic(final TeamTagSearchFilter searchFilter) {
         return new Specification<TeamTag>() {
             @Override
             public Predicate toPredicate(Root<TeamTag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -75,7 +75,7 @@ public class TeamTagSpecifications {
                     return cb.and(cb.or(tagPredicate.toArray(new Predicate[tagPredicate.size()])),
                             root.get(TeamTag_.team).in(goodTeams));
                 } else if (searchFilter != null) {
-                    return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClientId());
+                    return cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id), searchFilter.getClient().getId());
                 } else {
                     return null;
                 }

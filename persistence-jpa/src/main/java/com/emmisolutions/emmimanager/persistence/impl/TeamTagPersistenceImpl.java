@@ -98,7 +98,7 @@ public class TeamTagPersistenceImpl implements TeamTagPersistence {
     @Transactional(readOnly = true)
     public Page<TeamTag> findTeamsWithTag(Pageable page, TeamTagSearchFilter teamTagSearchFilter) {
         return teamTagRepository.findAll(where(
-                        teamTagSpecifications.getOrs(teamTagSearchFilter))
+                        teamTagSpecifications.tagsFollowRequirementsLogic(teamTagSearchFilter))
                         .and(teamTagSpecifications.isInStatus(teamTagSearchFilter)),
                 page == null ? new PageRequest(0, 50, Sort.Direction.ASC, "id") : page);
     }

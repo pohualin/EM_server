@@ -124,7 +124,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet = new HashSet<>();
         searchFilter.setTagSet(tagSet);
-        searchFilter.setClientId(client.getId());
+        searchFilter.setClient(client);
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("no teams were returned", teamsWithTag.getContent().size(), is(2));
     }
