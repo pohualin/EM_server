@@ -48,11 +48,9 @@ public class ClientRestrictConfigurationServiceImpl implements
 
     @Override
     public ClientRestrictConfiguration getByClient(Client client) {
-        if (client == null || client.getId() == null) {
-            throw new InvalidDataAccessApiUsageException(
-                    "Client or clientId can not be null.");
-        }
-        return clientRestrictConfigurationPersistence.findByClient(client);
+        Client reloadClient = clientService.reload(client);
+        return clientRestrictConfigurationPersistence
+                .findByClient(reloadClient);
     }
 
     @Override

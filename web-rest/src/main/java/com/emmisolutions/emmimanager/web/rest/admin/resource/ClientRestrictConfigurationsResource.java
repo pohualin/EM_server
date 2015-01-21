@@ -42,9 +42,9 @@ public class ClientRestrictConfigurationsResource {
                 .getByClient(new Client(clientId));
         if (found != null) {
             // found a clientRestrictConfiguration successfully
-            return new ResponseEntity<>(
+            return new ResponseEntity<ClientRestrictConfigurationResource>(
                     clientRestrictConfigurationAssembler.toResource(found),
-                    HttpStatus.FOUND);
+                    HttpStatus.OK);
         } else {
             // nothing found, create a new one
             ClientRestrictConfiguration created = new ClientRestrictConfiguration();
@@ -52,7 +52,7 @@ public class ClientRestrictConfigurationsResource {
             created = clientRestrictConfigurationService.create(created);
             if (created != null) {
                 // create a clientRestrictConfiguration successfully
-                return new ResponseEntity<>(
+                return new ResponseEntity<ClientRestrictConfigurationResource>(
                         clientRestrictConfigurationAssembler
                                 .toResource(created),
                         HttpStatus.CREATED);
@@ -71,7 +71,7 @@ public class ClientRestrictConfigurationsResource {
         ClientRestrictConfiguration clientRestrictConfiguration = clientRestrictConfigurationService
                 .reload(new ClientRestrictConfiguration(id));
         if (clientRestrictConfiguration != null) {
-            return new ResponseEntity<>(
+            return new ResponseEntity<ClientRestrictConfigurationResource>(
                     clientRestrictConfigurationAssembler
                             .toResource(clientRestrictConfiguration),
                     HttpStatus.OK);
