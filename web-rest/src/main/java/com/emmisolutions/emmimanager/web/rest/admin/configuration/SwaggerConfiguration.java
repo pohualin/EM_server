@@ -22,7 +22,9 @@ import java.util.Date;
 @Configuration
 @EnableSwagger
 public class SwaggerConfiguration {
-    public static final String DEFAULT_INCLUDE_PATTERN = "/webapi.*";
+    public static final String ADMIN_WEBAPI = "/webapi.*";
+
+    public static final String CLIENT_WEBAPI = "/webapi-client.*";
 
 
     /**
@@ -39,7 +41,7 @@ public class SwaggerConfiguration {
             .alternateTypeRules(Alternates.newRule(LocalDate.class, Date.class),
                 Alternates.newRule(DateTime.class, Date.class))
             .ignoredParameterTypes(PagedResourcesAssembler.class, Pageable.class, Sort.class)
-            .includePatterns(DEFAULT_INCLUDE_PATTERN);
+                .includePatterns(ADMIN_WEBAPI, CLIENT_WEBAPI);
     }
 
     /**
