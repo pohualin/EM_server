@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.user.client;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.team.UserClientUserClientTeamRoleResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientUserClientRolesResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
 import org.springframework.hateoas.ResourceAssembler;
@@ -30,6 +31,8 @@ public class UserClientResourceAssembler implements
                 .createPossibleTeamsLink(entity));
         ret.add(UserClientUserClientTeamRoleResourceAssembler
                 .createGetUserClientUserClientTeamRolesLink(entity));
+        ret.add(linkTo(methodOn(UserClientPasswordResource.class)
+                .set(entity.getId(), null)).withRel("changePassword"));
         ret.setEntity(entity);
         return ret;
     }

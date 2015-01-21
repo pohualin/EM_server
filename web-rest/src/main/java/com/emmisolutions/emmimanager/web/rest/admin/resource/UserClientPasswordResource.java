@@ -32,10 +32,10 @@ public class UserClientPasswordResource {
      * @param password   where the new password is located
      * @return OK if everything updates successfully
      */
-    @RequestMapping(value = "/users/{userId}/password/update", method = RequestMethod.POST, consumes = {
+    @RequestMapping(value = "/user_client/{userId}/password/set", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER"})
-    public ResponseEntity<Void> updatePassword(@PathVariable Long userId, @RequestBody UserClientPassword password) {
+    public ResponseEntity<Void> set(@PathVariable Long userId, @RequestBody UserClientPassword password) {
         UserClient toUpdate = new UserClient(userId);
         toUpdate.setPassword(password.getPassword());
         userClientPasswordService.updatePassword(toUpdate);

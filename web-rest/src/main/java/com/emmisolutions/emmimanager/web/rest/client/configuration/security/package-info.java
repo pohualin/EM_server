@@ -23,4 +23,4 @@
  * the team id (#teamId) which is on the method signature.
  *
  */
-package com.emmisolutions.emmimanager.web.rest.client.model.security;
+package com.emmisolutions.emmimanager.web.rest.client.configuration.security;

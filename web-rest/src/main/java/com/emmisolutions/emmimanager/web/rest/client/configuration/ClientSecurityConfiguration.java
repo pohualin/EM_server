@@ -31,7 +31,8 @@ import javax.inject.Inject;
  */
 @Configuration
 @ComponentScan(basePackages = {
-        "com.emmisolutions.emmimanager.web.rest.admin.security"
+        "com.emmisolutions.emmimanager.web.rest.admin.security",
+        "com.emmisolutions.emmimanager.web.rest.client.configuration.security"
 })
 @EnableWebSecurity
 @Order(200)
