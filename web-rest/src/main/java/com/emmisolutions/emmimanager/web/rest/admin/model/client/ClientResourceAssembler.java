@@ -11,6 +11,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.team.UserClientTeamRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
+
 import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ret.add(linkTo(methodOn(ClientTeamRolesAdminResource.class).referenceData()).withRel("teamRolesReferenceData"));
         ret.add(TeamTagPage.createFullSearchLinkTeamTagsWithTags(entity));
         ret.add(createFullUsersSearchLink(entity));
+        ret.add(linkTo(methodOn(ClientPasswordConfigurationsResource.class).getByClient(entity.getId())).withRel("passwordConfiguration"));
         ret.add(linkTo(methodOn(ClientRestrictConfigurationsResource.class).getByClient(entity.getId())).withRel("restrictConfiguration"));
         ret.setEntity(entity);
         return ret;
