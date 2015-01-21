@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
+import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -27,6 +28,8 @@ public class UserClientResource extends ResourceSupport {
     private String email;
 
     private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired;
+
+    private ClientResource clientResource;
 
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
@@ -60,6 +63,7 @@ public class UserClientResource extends ResourceSupport {
                               boolean accountNonExpired,
                               boolean accountNonLocked,
                               boolean credentialsNonExpired,
+                              ClientResource clientResource,
                               List<String> permissions) {
         this.id = id;
         this.version = version;
@@ -71,6 +75,7 @@ public class UserClientResource extends ResourceSupport {
         this.accountNonExpired = accountNonExpired;
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
+        this.clientResource = clientResource;
         this.permissions = permissions;
     }
 
