@@ -5,7 +5,7 @@ import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
@@ -37,7 +37,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 	ReferenceGroupRepository referenceGroupRepository;
 
 	@Resource
-	UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
 	@Resource
 	TeamPersistence teamPersistence;
@@ -99,7 +99,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
 		provider.setActive(false);
 		provider.setSpecialty(getSpecialty());
-		provider = providerPersistence.save(provider);
+		providerPersistence.save(provider);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
 		provider.setActive(false);
 		provider.setSpecialty(getSpecialty());
-		provider = providerPersistence.save(provider);
+		providerPersistence.save(provider);
 	}
 
  	/**

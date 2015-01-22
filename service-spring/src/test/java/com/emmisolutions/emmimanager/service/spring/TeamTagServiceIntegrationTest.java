@@ -35,7 +35,7 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
     TeamService teamService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
 
     private Client createClient() {
@@ -181,11 +181,10 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void testSaveSingleTeamTagWithNullTag() {
         Client client = createClient();
-        Tag tag = null;
         Team team1 = createTeam(client);
         team1.setId(1l);
 
-        assertThat("null was returned", teamTagService.saveSingleTeamTag(team1, tag), is(nullValue()));
+        assertThat("null was returned", teamTagService.saveSingleTeamTag(team1, null), is(nullValue()));
     }
 
     /**
@@ -197,9 +196,8 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
         Group group = createGroup(client);
         List<Tag> tagList = createTagList(group, 1);
         Tag tag = tagList.get(0);
-        Team team1 = null;
 
-        teamTagService.saveSingleTeamTag(team1, tag);
+        teamTagService.saveSingleTeamTag(null, tag);
     }
 
     /**

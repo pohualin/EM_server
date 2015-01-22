@@ -4,6 +4,8 @@ import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,6 +14,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * A user represents a person who logs in to the system and uses it.
@@ -30,7 +33,7 @@ import java.io.Serializable;
 @DiscriminatorColumn(
         name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @XmlRootElement(name = "user")
-public class User extends AbstractAuditingEntity implements Serializable {
+public class User extends AbstractAuditingEntity implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,17 +49,31 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(columnDefinition = "int")
     private Integer version;
 
-    @Column(length = 100, columnDefinition = "nvarchar(100)")
-    @Size(min = 0, max = 100)
+    @Column(length = 40, columnDefinition = "varchar(40)")
+    @Size(min = 0, max = 40)
     @XmlTransient
     private String password;
+
+    @Column(length = 32, columnDefinition = "varchar(32)")
+    @Size(min = 0, max = 32)
+    @XmlTransient
+    private String salt;
 
     @NotNull
     @Size(min = 0, max = 50)
     @Column(name = "first_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String firstName;
 
-    private boolean active;
+    private boolean active = true;
+
+    @Column(name = "account_non_expired")
+    private boolean accountNonExpired = true;
+
+    @Column(name = "account_non_locked")
+    private boolean accountNonLocked = true;
+
+    @Column(name = "credentials_non_expired")
+    private boolean credentialsNonExpired = false;
 
     @NotNull
     @Size(min = 0, max = 50)
@@ -148,8 +165,18 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return id != null ? id.hashCode() : 0;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
     }
 
     public void setPassword(String password) {
@@ -194,5 +221,45 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return active;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
     }
 }

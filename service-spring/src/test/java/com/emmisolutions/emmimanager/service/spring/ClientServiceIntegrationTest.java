@@ -5,10 +5,10 @@ import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.UserAdminService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -30,10 +30,10 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     ClientService clientService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     /**
      * Not all required fields
@@ -67,7 +67,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void create() {
-        Client client = clientService.create(makeClient("toCreate", "me"));
+        Client client = clientService.create(makeClient("toCreate"));
         assertThat("client was created successfully", client.getId(), is(notNullValue()));
 
         assertThat("can find the client", clientService.list(new ClientSearchFilter("toCreate")),
@@ -83,7 +83,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void update() {
         final String clientName = "forUpdating";
-        clientService.create(makeClient(clientName, "update_user"));
+        clientService.create(makeClient(clientName));
         Page<Client> page = clientService.list(new ClientSearchFilter(INACTIVE_ONLY, clientName));
         Client toUpdate = page.getContent().iterator().next();
         Integer version = toUpdate.getVersion();
@@ -110,13 +110,13 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void contractUserFetch(){
-        UserAdmin contractOwner = userPersistence.reload("contract_owner");
+        UserAdmin contractOwner = userAdminPersistence.reload("contract_owner");
         Page<UserAdmin> ret = clientService.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }
 
-    private Client makeClient(String clientName, String username){
+    private Client makeClient(String clientName){
         Client client = new Client();
         client.setType(new ClientType(1l));
         client.setContractStart(LocalDate.now());

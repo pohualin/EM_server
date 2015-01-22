@@ -8,7 +8,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.SalesForceService;
-import com.emmisolutions.emmimanager.service.UserService;
+import com.emmisolutions.emmimanager.service.UserAdminService;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
     ClientService clientService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     /**
      * This is a full stack kind of test: find a real sf account, make a client using
@@ -46,7 +46,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         assertThat("response does not have an id", salesForceSearchResponse.getAccounts().get(0).getId(), is(nullValue()));
 
         // create a client with this sf account number
-        Client client = clientService.create(makeClient("clientName", "sfUser", salesForceSearchResponse.getAccounts().get(0).getAccountNumber()));
+        Client client = clientService.create(makeClient("clientName", salesForceSearchResponse.getAccounts().get(0).getAccountNumber()));
 
         // ensure that the find returns the client name
         SalesForce sf = client.getSalesForceAccount();
@@ -67,7 +67,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClientName(), is(nullValue()));
     }
 
-    private Client makeClient(String clientName, String username, String accountNumber){
+    private Client makeClient(String clientName, String accountNumber){
         Client client = new Client();
         client.setType(new ClientType(2l));
         client.setContractStart(LocalDate.now());

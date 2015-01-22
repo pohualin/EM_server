@@ -28,7 +28,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     TeamService teamService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     @Resource
     GroupService groupService;
@@ -53,7 +53,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void create() {
-        Client client = makeClient("clientTeam", "teamUser");
+        Client client = makeClient("clientTeam");
         clientService.create(client);
 
         Team team = makeTeamForClient(client);
@@ -71,14 +71,14 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void update() {
-        Client client = makeClient("clientTeam2", "teamUser1");
+        Client client = makeClient("clientTeam2");
         clientService.create(client);
 
         Team team = makeTeamForClient(client);
         Team savedTeam = teamService.create(team);
         assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
 
-        savedTeam.setClient(clientService.create(makeClient("a different client", "teamUser2")));
+        savedTeam.setClient(clientService.create(makeClient("a different client")));
         savedTeam = teamService.update(team);
         assertThat("client was not updated", savedTeam.getClient(), is(client));
     }
@@ -128,6 +128,28 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
+     * return active teams with  teamtags
+     */
+    @Test
+    public void getTeamTags() {
+        Client client = createClient();
+        Group group1 = createGroup(client);
+
+        List<Tag> tagList = createTagList(group1, 2);
+        Tag tag1 = tagList.get(0);
+
+        Team team1 = createTeam(client, true);
+        Team team2 = createTeam(client, true);
+
+        teamTagService.saveSingleTeamTag(team1, tag1);
+
+        TeamSearchFilter filter = new TeamSearchFilter(client.getId(), TeamSearchFilter.StatusFilter.ACTIVE_ONLY, TeamSearchFilter.TeamTagType.TAGGED_ONLY);
+        Page<Team> returnedTeams = teamService.list(null, filter);
+        assertThat("team1 is returned", returnedTeams, hasItem(team1));
+        assertThat("team2 is not returned", returnedTeams, not(hasItem(team2)));
+    }
+
+    /**
      * return active and inactive teams with no teamtags
      */
     @Test
@@ -172,7 +194,7 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         return team;
     }
 
-    protected Client makeClient(String clientName, String username) {
+    protected Client makeClient(String clientName) {
         Client client = new Client();
         client.setType(new ClientType(4l));
         client.setContractStart(LocalDate.now());

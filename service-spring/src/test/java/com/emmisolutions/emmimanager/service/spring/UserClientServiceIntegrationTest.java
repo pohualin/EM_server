@@ -5,8 +5,8 @@ import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.UserClientService;
-import com.emmisolutions.emmimanager.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -30,7 +30,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     UserClientService userClientService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
 
     /**
      * Create without client and login

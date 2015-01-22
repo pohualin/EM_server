@@ -116,6 +116,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         Client clientA = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
+        userClient.setActive(false);
 
         UserClientSearchFilter filter = new UserClientSearchFilter(client, "");
         Page<UserClient> userClients = userClientPersistence.list(null, filter);
@@ -170,7 +171,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("return null", userClientNull, is(nullValue()));
 
         assertThat("reload same UserClient object",
-                userClientPersistence.reload(userClient.getId()),
+                userClientPersistence.reload(userClient),
                 is(userClient));
     }
 
