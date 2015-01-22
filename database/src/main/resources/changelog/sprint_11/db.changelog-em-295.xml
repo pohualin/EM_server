@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create default password configuration table" author="Paul">
+    	<createTable tableName="default_password_configuration">
+    		<column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_default_password_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="name" type="nvarchar(255)">
+            	<constraints nullable="false"  />
+            </column>
+            <column name="default_password_expiration_days" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="password_expiration_days_min" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="password_expiration_days_max" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="default_password_repetitions" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="password_repetitions_min" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="password_repetitions_max" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="default_days_between_password_change" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="days_between_password_change_min" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="days_between_password_change_max" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="default_password_length" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="password_length_min" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="password_length_max" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="default_uppercase_letters" type="boolean">
+                <constraints nullable="false" />
+            </column>
+			<column name="uppercase_letters_changeable" type="boolean">
+                <constraints nullable="false" />
+            </column>	
+			<column name="default_lowercase_letters" type="boolean">
+                <constraints nullable="false" />
+            </column>			
+			<column name="lowercase_letters_changeable" type="boolean">
+                <constraints nullable="false" />
+            </column>	
+			<column name="default_numbers" type="boolean">
+                <constraints nullable="false" />
+            </column>			
+			<column name="numbers_changeable" type="boolean">
+                <constraints nullable="false" />
+            </column>		
+			<column name="default_special_chars" type="boolean">
+                <constraints nullable="false" />
+            </column>			
+			<column name="special_chars_changeable" type="boolean">
+                <constraints nullable="false" />
+            </column>			
+			<column name="default_lockout_attempts" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="lockout_attempts_min" type="int">
+                <constraints nullable="false" />
+            </column>						
+			<column name="lockout_attempts_max" type="int">
+                <constraints nullable="false" />
+            </column>							
+			<column name="default_lockout_reset" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="lockout_reset_min" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="lockout_reset_max" type="int">
+                <constraints nullable="false" />
+            </column>						
+			<column name="default_idle_time" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="idle_time_min" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="idle_time_max" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="default_password_expiration_days_reminder" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="password_expiration_days_reminder_min" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="password_expiration_days_reminder_max" type="int">
+                <constraints nullable="false" />
+            </column>						
+            <column name="default_password_reset" type="boolean">
+            	<constraints nullable="false" />
+            </column>
+    		<column name="password_reset_changeable" type="boolean">
+    			<constraints nullable="false" />
+    		</column>
+    		<column name="active" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+    	</createTable>
+    	
+    	<createTable tableName="default_password_configuration_audit">
+    		<column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="name" type="nvarchar(255)" />
+            <column name="default_password_expiration_days" type="int" />
+            <column name="password_expiration_days_min" type="int" />
+            <column name="password_expiration_days_max" type="int" />
+            <column name="default_password_repetitions" type="int" />
+            <column name="password_repetitions_min" type="int" />
+            <column name="password_repetitions_max" type="int" />
+			<column name="default_days_between_password_change" type="int" />
+			<column name="days_between_password_change_min" type="int" />
+			<column name="days_between_password_change_max" type="int" />
+			<column name="default_password_length" type="int" />
+			<column name="password_length_min" type="int" />
+			<column name="password_length_max" type="int" />
+			<column name="default_uppercase_letters" type="boolean" />
+			<column name="uppercase_letters_changeable" type="boolean" />
+			<column name="default_lowercase_letters" type="boolean" />
+			<column name="lowercase_letters_changeable" type="boolean" />
+			<column name="default_numbers" type="boolean" />
+			<column name="numbers_changeable" type="boolean" />
+			<column name="default_special_chars" type="boolean" />
+			<column name="special_chars_changeable" type="boolean" />
+			<column name="default_lockout_attempts" type="int" />
+			<column name="lockout_attempts_min" type="int" />
+			<column name="lockout_attempts_max" type="int" />
+			<column name="default_lockout_reset" type="int" />
+			<column name="lockout_reset_min" type="int" />
+			<column name="lockout_reset_max" type="int" />
+			<column name="default_idle_time" type="int" />
+			<column name="idle_time_min" type="int" />
+			<column name="idle_time_max" type="int" />
+			<column name="default_password_expiration_days_reminder" type="int" />
+			<column name="password_expiration_days_reminder_min" type="int" />
+			<column name="password_expiration_days_reminder_max" type="int" />
+			<column name="passwordReset" type="boolean" />
+    		<column name="passwordResetChangeable" type="boolean" />
+    	</createTable>
+    	
+    	<addPrimaryKey tableName="default_password_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_default_password_configuration_audit"/>
+		
+		<addForeignKeyConstraint baseTableName="default_password_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_default_password_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+		<createIndex indexName="ix_default_password_configuration_audit_revision"
+               tableName="default_password_configuration_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="create client password configuration table" author="Paul">
+    	<createTable tableName="client_password_configuration">
+    		<column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_password_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="default_password_configuration_id" type="bigint">
+            	<constraints nullable="false" />
+            </column>
+            <column name="name" type="nvarchar(255)">
+            	<constraints nullable="false" />
+            </column>
+            <column name="password_expiration_days" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="password_repetitions" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="days_between_password_change" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="password_length" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="uppercase_letters" type="boolean">
+                <constraints nullable="false" />
+            </column>								
+			<column name="lowercase_letters" type="boolean">
+                <constraints nullable="false" />
+            </column>		
+			<column name="numbers" type="boolean">
+                <constraints nullable="false" />
+            </column>	
+			<column name="special_chars" type="boolean">
+                <constraints nullable="false" />
+            </column>						
+			<column name="lockout_attempts" type="int">
+                <constraints nullable="false" />
+            </column>							
+			<column name="lockout_reset" type="int">
+                <constraints nullable="false" />
+            </column>						
+			<column name="idle_time" type="int">
+                <constraints nullable="false" />
+            </column>			
+			<column name="password_expiration_days_reminder" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="password_reset" type="boolean">
+            	<constraints nullable="false" />
+            </column>
+    	</createTable>
+		
+		<addForeignKeyConstraint baseTableName="client_password_configuration"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_client_password_configuration_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+		<createIndex indexName="ix_client_password_configuration_client"
+               tableName="client_password_configuration">
+            <column name="client_id" type="BIGINT"/>
+        </createIndex> 
+                                 
+		<addForeignKeyConstraint baseTableName="client_password_configuration"
+                                 baseColumnNames="default_password_configuration_id"
+                                 constraintName="fk_client_password_configuration_default_password_configuration"
+                                 referencedTableName="default_password_configuration"
+                                 referencedColumnNames="id"/>
+		<createIndex indexName="ix_client_password_configuration_default_password_configuration"
+               tableName="client_password_configuration">
+            <column name="client_id" type="BIGINT"/>
+        </createIndex> 
+        
+    	<createTable tableName="client_password_configuration_audit">
+    		<column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="client_id" type="bigint"/>
+            <column name="default_password_configuration_id" type="bigint" />
+            <column name="name" type="nvarchar(255)"/>
+            <column name="password_expiration_days" type="int" />
+            <column name="password_repetitions" type="int" />
+            <column name="days_between_password_change" type="int" />
+			<column name="password_length" type="int" />
+			<column name="uppercase_letters" type="boolean" />
+			<column name="lowercase_letters" type="boolean" />
+			<column name="numbers" type="boolean" />
+			<column name="special_chars" type="boolean" />
+			<column name="lockout_attempts" type="int" />
+			<column name="lockout_reset" type="int" />
+			<column name="idle_time" type="int" />
+			<column name="password_expiration_days_reminder" type="int" />
+			<column name="password_reset" type="boolean" />
+    	</createTable>
+    	
+    	<addPrimaryKey tableName="client_password_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_client_password_configuration_audit"/>
+		
+        <addForeignKeyConstraint baseTableName="client_password_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_password_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+		<createIndex indexName="ix_client_password_configuration_audit_revision"
+               tableName="client_password_configuration_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex> 
+    </changeSet>
+    
+    <changeSet id="load default password configuration reference data" author="Paul">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_11/data/em-295/default-password-configuration.csv"
+                  separator=";"
+                  tableName="default_password_configuration"/>
+    </changeSet>
+
+</databaseChangeLog>
