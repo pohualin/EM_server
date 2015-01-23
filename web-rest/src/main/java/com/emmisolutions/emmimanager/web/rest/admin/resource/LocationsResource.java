@@ -59,7 +59,7 @@ public class LocationsResource {
      * @return ClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/locations/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_VIEW"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<LocationResource> get(@PathVariable("id") Long id) {
         Location toFind = new Location();
         toFind.setId(id);
@@ -81,7 +81,7 @@ public class LocationsResource {
             method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<LocationResource> create(@RequestBody Location location) {
         location = locationService.create(location);
         if (location == null) {
@@ -101,7 +101,7 @@ public class LocationsResource {
             method = RequestMethod.PUT,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_EDIT"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<LocationResource> update(@RequestBody Location location) {
         location = locationService.update(null, location);
         if (location == null) {
@@ -123,7 +123,7 @@ public class LocationsResource {
      */
     @RequestMapping(value = "/locations",
             method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name="size",  value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name="page",  value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -160,7 +160,7 @@ public class LocationsResource {
      * @return ReferenceData
      */
     @RequestMapping(value = "/locations/ref", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_LOCATION_LIST", "PERM_LOCATION_EDIT"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public LocationReferenceData getReferenceData() {
         return new LocationReferenceData();
     }
@@ -176,7 +176,7 @@ public class LocationsResource {
      */
     @RequestMapping(value = "/locations/{id}/clients",
             method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("finds existing ClientLocations")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
