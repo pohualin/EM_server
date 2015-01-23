@@ -74,7 +74,7 @@ public class ClientLocationsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/locations",
         method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("finds existing ClientLocations")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -109,7 +109,7 @@ public class ClientLocationsResource {
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "update a Location using the client", notes = "This method updates the Location, not the ClientLocation. As such, it allows for updates to the belongsTo relationship.")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_EDIT"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<LocationResource> update(@PathVariable Long clientId, @RequestBody Location location) {
         location = locationService.update(new Client(clientId), location);
         if (location == null) {
@@ -131,7 +131,7 @@ public class ClientLocationsResource {
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "creates a brand new location and associates it to an existing client")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientLocationResource> create(@PathVariable Long clientId, @RequestBody Location location) {
         ClientLocation clientLocation = clientLocationService.createLocationAndAssociateTo(new Client(clientId), location);
         if (clientLocation == null) {
@@ -157,7 +157,7 @@ public class ClientLocationsResource {
     @RequestMapping(value = "/clients/{clientId}/locations/associate",
         method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible locations that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -202,7 +202,7 @@ public class ClientLocationsResource {
     @RequestMapping(value = "/clients/{clientId}/locations/associateWithoutCL",
         method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible locations that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -243,7 +243,7 @@ public class ClientLocationsResource {
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation("create a new ClientLocation on a Client for each existing Location in a Set")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<ClientLocationResource>> associate(@PathVariable Long clientId, @RequestBody Set<Location> locations) {
         Set<ClientLocation> clientLocations = clientLocationService.create(new Client(clientId), locations);
         if (clientLocations == null || clientLocations.isEmpty()) {
@@ -266,7 +266,7 @@ public class ClientLocationsResource {
      * @return ClientLocationResource or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/locations/{clientLocationId}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_VIEW"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("view a ClientLocation by id")
     public ResponseEntity<ClientLocationResource> view(@PathVariable Long clientId, @PathVariable Long clientLocationId) {
         ClientLocation clientLocation = clientLocationService.reload(new ClientLocation(clientLocationId));
@@ -284,7 +284,7 @@ public class ClientLocationsResource {
      * @param clientLocationId the association to remove
      */
     @RequestMapping(value = "/clients/{clientId}/locations/{clientLocationId}", method = RequestMethod.DELETE)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_LOCATION_DELETE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("delete a ClientLocation by id")
     public void delete(@PathVariable Long clientId, @PathVariable Long clientLocationId) {
         clientLocationService.remove(new ClientLocation(clientLocationId));
@@ -300,7 +300,7 @@ public class ClientLocationsResource {
      * @return page of Teams or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/locations/{clientLocationId}/teams", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_PROVIDER_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("view Teams using ClientProvider")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),

@@ -73,7 +73,7 @@ public class ClientProvidersResource {
      */
     @RequestMapping(value = "/clients/{clientId}/providers",
         method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("finds existing ClientProviders")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -107,7 +107,7 @@ public class ClientProvidersResource {
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "creates a brand new provider and associates it to an existing client")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientProviderResource> create(@PathVariable Long clientId, @RequestBody ClientProvider provider) {
         provider.setClient(new Client(clientId));
         ClientProvider clientProvider = clientProviderService.create(provider);
@@ -134,7 +134,7 @@ public class ClientProvidersResource {
     @RequestMapping(value = "/clients/{clientId}/providers/associate",
         method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible providers that can be associated to a client", notes = "The object will come back with a link, if it is currently associated to the passed client. If it is not currently in use at the passed client, the link will be null.")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -175,7 +175,7 @@ public class ClientProvidersResource {
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation("create a new ClientProvider on a Client for each existing Provider in a Set")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<ClientProviderResource>> associate(@PathVariable Long clientId, @RequestBody Set<Provider> providers) {
         Set<ClientProvider> clientProviders = clientProviderService.create(new Client(clientId), providers);
         if (clientProviders == null || clientProviders.isEmpty()) {
@@ -197,7 +197,7 @@ public class ClientProvidersResource {
      * @return ClientProviderResource or NO_CONTENT
      */
     @RequestMapping(value = "/client_providers/{clientProviderId}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_VIEW"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("view a ClientProvider by id")
     public ResponseEntity<ClientProviderResource> view(@PathVariable Long clientProviderId) {
         ClientProvider clientProvider = clientProviderService.reload(new ClientProvider(clientProviderId));
@@ -214,7 +214,7 @@ public class ClientProvidersResource {
      * @param clientProviderId the association to remove
      */
     @RequestMapping(value = "/client_providers/{clientProviderId}", method = RequestMethod.DELETE)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_DELETE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("delete a ClientProvider by id")
     public void delete(@PathVariable Long clientProviderId) {
         clientProviderService.remove(new ClientProvider(clientProviderId));
@@ -229,7 +229,7 @@ public class ClientProvidersResource {
      * @return page of Teams or NO_CONTENT
      */
     @RequestMapping(value = "/client_providers/{clientProviderId}/teams", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_PROVIDER_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("view Teams using ClientProvider")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -262,7 +262,7 @@ public class ClientProvidersResource {
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
     @ApiOperation(value = "update a Provider using the client", notes = "This method updates the Provider and the ClientProvider")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_EDIT"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientProviderResource> update(@PathVariable Long clientProviderId,
                                                          @RequestBody ClientProvider clientProvider) {
         clientProvider = clientProviderService.update(clientProvider);
@@ -282,7 +282,7 @@ public class ClientProvidersResource {
      */
     @RequestMapping(value = "/clients/{clientId}/providers/{providerId}", method = RequestMethod.GET)
     @ApiOperation(value = "find ClientProvider by client id and provider id")
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_PROVIDER_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientProviderResource> findByClientIdProviderId(@PathVariable Long clientId, @PathVariable Long providerId) {
         ClientProvider clientProvider = clientProviderService.findByClientIdProviderId(clientId, providerId);
         if (clientProvider == null) {
