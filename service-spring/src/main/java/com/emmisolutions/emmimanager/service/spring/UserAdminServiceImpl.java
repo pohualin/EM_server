@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.UserAdminService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +32,9 @@ public class UserAdminServiceImpl implements UserAdminService {
     @Resource
     UserAdminPersistence userAdminPersistence;
 
+    @Resource
+    UserDetailsService userDetailsService;
+
     @Override
     @Transactional
     public UserAdmin save(UserAdminSaveRequest req) {
@@ -41,10 +45,26 @@ public class UserAdminServiceImpl implements UserAdminService {
     		userAdminUserAdminRole.setUserAdminRole(userAdminRole);
     		roles.add(userAdminUserAdminRole);
     	}	
-    	
+
     	UserAdmin user = req.getUserAdmin();
+
+        boolean modificationOfLoggedInUser = false;
+        if (user.getId() != null) {
+            UserAdmin userFromDb = userAdminPersistence.reload(user);
+            if (userFromDb != null) {
+                modificationOfLoggedInUser = userFromDb.equals(userDetailsService.getLoggedInUser());
+                // don't allow password change on update
+                user.setPassword(userFromDb.getPassword());
+                user.setSalt(userFromDb.getSalt());
+                user.setCredentialsNonExpired(true);
+            }
+        }
+
+        // save the updates
     	user = userAdminPersistence.saveOrUpdate(user);
-    	if (roles.size() > 0){
+
+        // don't allow a user to escalate or change their own role
+        if (!modificationOfLoggedInUser && roles.size() > 0){
     		userAdminPersistence.removeAllAdminRoleByUserAdmin(user);
     		userAdminPersistence.saveAll(roles);
     		user.setRoles(roles);

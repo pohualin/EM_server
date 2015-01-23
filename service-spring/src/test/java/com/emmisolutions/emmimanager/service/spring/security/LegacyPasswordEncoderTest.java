@@ -44,13 +44,16 @@ public class LegacyPasswordEncoderTest extends BaseIntegrationTest {
 //    @Test
     public void createAdminPasswords() {
         String super_admin = passwordEncoder.encode("W9CJrPfl23UbLPwaWYqcTv");
-
         LOGGER.debug("sa password: {}", super_admin.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         LOGGER.debug("sa salt: {}", super_admin.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
 
         String emmi_super_user = passwordEncoder.encode("password");
         LOGGER.debug("emmi super user password: {}", emmi_super_user.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         LOGGER.debug("emmi super user salt: {}", emmi_super_user.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
+
+        String qa_admin_user = passwordEncoder.encode("Best2QAs!Ever");
+        LOGGER.debug("qa admin user password: {}", qa_admin_user.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
+        LOGGER.debug("qa admin user salt: {}", qa_admin_user.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
     }
 
     /**
