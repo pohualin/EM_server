@@ -1,6 +1,25 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Location;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.TeamLocationTeamProviderSaveRequest;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
@@ -8,17 +27,7 @@ import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersist
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.emmisolutions.emmimanager.service.TeamProviderService;
 
 /**
  * Implementation of TeamLocationService
@@ -32,6 +41,9 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     @Resource
     TeamPersistence teamPersistence;
 
+    @Resource
+    TeamProviderService teamProviderService;
+    
     @Resource
     LocationService locationService;
 
@@ -64,8 +76,13 @@ public class TeamLocationServiceImpl implements TeamLocationService {
 
 				for (TeamProvider teamProvider : req.getProviders()) {
 					TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
-					tptl.setTeamProvider(teamProvider);
-					tptl.setTeamLocation(teamLocation);
+					TeamProvider teamProviderFromDb = teamProviderService.reload(teamProvider);
+					TeamLocation teamLocationFromDb = teamLocationPersistence.reload(teamLocation);
+					if(teamProviderFromDb == null || teamLocationFromDb == null) {
+			            throw new InvalidDataAccessApiUsageException("TeamProvider and TeamLocation must exist in the database");
+					}
+					tptl.setTeamProvider(teamProviderFromDb);
+					tptl.setTeamLocation(teamLocationFromDb);
 					teamProviderTeamLocationsToSave.add(tptl);
 				}
 
