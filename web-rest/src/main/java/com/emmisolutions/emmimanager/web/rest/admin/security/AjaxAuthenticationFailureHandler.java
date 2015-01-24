@@ -19,7 +19,7 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getClass().getSimpleName());
         } else {
             super.onAuthenticationFailure(request, response, exception);
         }
