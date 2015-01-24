@@ -9,7 +9,7 @@ import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordC
 public interface UserClientPasswordService {
 
     /**
-     * Update the UserClient password.
+     * Update the UserClient password and expire it at the same time.
      *
      * @param user the user to be updated
      */
