@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
@@ -42,7 +43,7 @@ import java.util.List;
  */
 @Configuration
 @ComponentScan(basePackages = {
-    "com.emmisolutions.emmimanager.service.configuration",
+        "com.emmisolutions.emmimanager.service.configuration",
         "com.emmisolutions.emmimanager.web.rest.admin.resource",
         "com.emmisolutions.emmimanager.web.rest.admin.model",
         "com.emmisolutions.emmimanager.web.rest.client.resource",
@@ -75,13 +76,14 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
     @Bean
     public RestHandlerExceptionResolver restExceptionResolver() {
         return RestHandlerExceptionResolver.builder()
-            .messageSource(httpErrorMessageSource())
-            .defaultContentType(MediaType.APPLICATION_JSON)
-            .addErrorMessageHandler(EmptyResultDataAccessException.class, HttpStatus.NOT_FOUND)
-            .addErrorMessageHandler(OptimisticLockingFailureException.class, HttpStatus.CONFLICT)
-            .addErrorMessageHandler(AccessDeniedException.class, HttpStatus.FORBIDDEN)
-            .addHandler(Exception.class, new UncaughtExceptionRestExceptionHandler())
-            .build();
+                .messageSource(httpErrorMessageSource())
+                .defaultContentType(MediaType.APPLICATION_JSON)
+                .addErrorMessageHandler(EmptyResultDataAccessException.class, HttpStatus.NOT_FOUND)
+                .addErrorMessageHandler(OptimisticLockingFailureException.class, HttpStatus.CONFLICT)
+                .addErrorMessageHandler(AccessDeniedException.class, HttpStatus.FORBIDDEN)
+                .addHandler(AuthenticationException.class, new AuthenticationExceptionHandler())
+                .addHandler(Exception.class, new UncaughtExceptionRestExceptionHandler())
+                .build();
     }
 
     /**
@@ -99,6 +101,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
 
     /**
      * Exception handler resolver
+     *
      * @return resolver
      */
     @Bean
@@ -174,6 +177,28 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
             StringWriter sw = new StringWriter();
             ex.printStackTrace(new PrintWriter(sw));
             m.setDetail(sw.toString());
+            return m;
+        }
+    }
+
+    /**
+     * This class creates a specialized class for credentials issues
+     */
+    @SuppressWarnings("all")
+    private class AuthenticationExceptionHandler extends AbstractRestExceptionHandler<AuthenticationException, ErrorMessage> {
+        /**
+         * Constructor which sets 401 error
+         */
+        private AuthenticationExceptionHandler() {
+            super(HttpStatus.UNAUTHORIZED);
+        }
+
+        @Override
+        public ErrorMessage createBody(AuthenticationException ex, HttpServletRequest req) {
+            ErrorMessage m = new ErrorMessage();
+            m.setTitle("AuthenticationException");
+            m.setStatus(getStatus());
+            m.setDetail(ex.getClass().getSimpleName());
             return m;
         }
     }

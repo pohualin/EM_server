@@ -1,7 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -21,8 +19,6 @@ import java.io.IOException;
 @Component
 public class PreAuthenticatedAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreAuthenticatedAuthenticationEntryPoint.class);
-
     /**
      * Always returns a 401 error code to the client.
      *
@@ -33,9 +29,8 @@ public class PreAuthenticatedAuthenticationEntryPoint implements AuthenticationE
      * @throws ServletException if there's a problem
      */
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException arg2) throws IOException,
-        ServletException {
-        LOGGER.debug("Pre-authenticated entry point called. Rejecting access");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
+            ServletException {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, arg2.getClass().getSimpleName());
     }
 
 }
