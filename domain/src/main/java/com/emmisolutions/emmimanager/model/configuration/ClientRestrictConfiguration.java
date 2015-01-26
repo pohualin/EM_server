@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model;
+package com.emmisolutions.emmimanager.model.configuration;
 
 import java.io.Serializable;
 
@@ -11,9 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.envers.Audited;
+
+import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+import com.emmisolutions.emmimanager.model.Client;
 
 /**
  * A ClientRestrictConfiguration defined for a specific Client.
@@ -28,6 +32,9 @@ public class ClientRestrictConfiguration extends AbstractAuditingEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "bigint")
     private Long id;
+    
+    @Version
+    private Integer version;
 
     @OneToOne
     @JoinColumn(name = "client_id", nullable = false, foreignKey = @ForeignKey(name = "fk_client_restrict_configuration_client"))
@@ -63,6 +70,14 @@ public class ClientRestrictConfiguration extends AbstractAuditingEntity
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public Client getClient() {

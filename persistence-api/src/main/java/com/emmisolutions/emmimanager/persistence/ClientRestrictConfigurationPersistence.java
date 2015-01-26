@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 
 /**
  * Persistence API for ClientRestrictConfiguration

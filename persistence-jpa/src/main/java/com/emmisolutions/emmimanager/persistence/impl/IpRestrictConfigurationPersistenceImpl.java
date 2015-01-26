@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.IpRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.IpRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.IpRestrictConfigurationSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.IpRestrictConfigurationRepository;

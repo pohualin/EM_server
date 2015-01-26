@@ -1,12 +1,13 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -26,6 +27,7 @@ public class ClientRestrictConfigurationServiceImpl implements
     ClientRestrictConfigurationPersistence clientRestrictConfigurationPersistence;
 
     @Override
+    @Transactional
     public ClientRestrictConfiguration create(
             ClientRestrictConfiguration clientRestrictConfiguration) {
         Client client = clientService.reload(clientRestrictConfiguration
@@ -36,6 +38,7 @@ public class ClientRestrictConfigurationServiceImpl implements
     }
 
     @Override
+    @Transactional
     public void delete(ClientRestrictConfiguration clientRestrictConfiguration) {
         if (clientRestrictConfiguration == null
                 || clientRestrictConfiguration.getId() == null) {
@@ -47,6 +50,7 @@ public class ClientRestrictConfigurationServiceImpl implements
     }
 
     @Override
+    @Transactional
     public ClientRestrictConfiguration getByClient(Client client) {
         Client reloadClient = clientService.reload(client);
         return clientRestrictConfigurationPersistence
@@ -54,6 +58,7 @@ public class ClientRestrictConfigurationServiceImpl implements
     }
 
     @Override
+    @Transactional
     public ClientRestrictConfiguration reload(
             ClientRestrictConfiguration clientRestrictConfiguration) {
         if (clientRestrictConfiguration == null
@@ -66,6 +71,7 @@ public class ClientRestrictConfigurationServiceImpl implements
     }
 
     @Override
+    @Transactional
     public ClientRestrictConfiguration update(
             ClientRestrictConfiguration clientRestrictConfiguration) {
         if (clientRestrictConfiguration == null

@@ -5,7 +5,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRestrictConfigurationRepository;
 

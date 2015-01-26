@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model;
+package com.emmisolutions.emmimanager.model.configuration;
 
 import java.io.Serializable;
 
@@ -11,10 +11,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.envers.Audited;
+
+import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 
 /**
  * IpRestrictConfiguration defined for a specific ClientRestrictConfiguration.
@@ -29,13 +32,15 @@ public class IpRestrictConfiguration extends AbstractAuditingEntity implements
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "bigint")
     private Long id;
+    
+    @Version
+    private Integer version;
 
     @ManyToOne
     @JoinColumn(name = "client_restrict_configuration_id", nullable = false, foreignKey = @ForeignKey(name = "fk_ip_restrict_configuration_client_restrict_configuration"))
     private ClientRestrictConfiguration clientRestrictConfiguration;
 
-    @NotNull
-    @Column(name = "description", length = 255, columnDefinition = "nvarchar(255)", nullable = false)
+    @Column(name = "description", length = 255, columnDefinition = "nvarchar(255)")
     @Size(min = 0, max = 255)
     private String description;
 
@@ -71,6 +76,14 @@ public class IpRestrictConfiguration extends AbstractAuditingEntity implements
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public ClientRestrictConfiguration getClientRestrictConfiguration() {

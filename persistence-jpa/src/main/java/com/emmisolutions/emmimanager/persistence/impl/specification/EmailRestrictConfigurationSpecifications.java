@@ -8,15 +8,15 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
-import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration_;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration_;
 
 /**
  * This is the specification class that allows for filtering of
- * IpRestrictConfiguration objects.
+ * EmailRestrictConfiguration objects.
  */
 @Component
-public class IpRestrictConfigurationSpecifications {
+public class EmailRestrictConfigurationSpecifications {
 
     /**
      * Method to generate Specification with clientRestrictConfigurationId
@@ -25,16 +25,16 @@ public class IpRestrictConfigurationSpecifications {
      *            to use
      * @return Specification with clientRestrictConfigurationId
      */
-    public Specification<IpRestrictConfiguration> isClientRestrictConfiguration(
+    public Specification<EmailRestrictConfiguration> isClientRestrictConfiguration(
             final Long clientRestrictConfigurationId) {
-        return new Specification<IpRestrictConfiguration>() {
+        return new Specification<EmailRestrictConfiguration>() {
             @Override
-            public Predicate toPredicate(Root<IpRestrictConfiguration> root,
+            public Predicate toPredicate(Root<EmailRestrictConfiguration> root,
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (clientRestrictConfigurationId != null) {
                     return cb
                             .equal(root
-                                    .get(IpRestrictConfiguration_.clientRestrictConfiguration),
+                                    .get(EmailRestrictConfiguration_.clientRestrictConfiguration),
                                     clientRestrictConfigurationId);
                 }
                 return null;

@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 
@@ -96,22 +96,6 @@ public class ClientRestrictConfigurationServiceIntegrationTest extends
     public void testNegativeDeleteWithNullId() {
         clientRestrictConfigurationService
                 .delete(new ClientRestrictConfiguration());
-    }
-
-    /**
-     * Test negative getByClient
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeGetByClientWithNull() {
-        clientRestrictConfigurationService.getByClient(null);
-    }
-
-    /**
-     * Test negative getByClient
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeGetByClientWithNullId() {
-        clientRestrictConfigurationService.getByClient(new Client());
     }
 
     /**

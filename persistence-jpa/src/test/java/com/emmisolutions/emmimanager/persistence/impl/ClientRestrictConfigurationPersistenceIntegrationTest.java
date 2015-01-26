@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import org.junit.Test;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
 

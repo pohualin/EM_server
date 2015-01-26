@@ -11,18 +11,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * HATEOAS wrapper for ClientRestrictConfiguration, essentially a DTO instead of
+ * HATEOAS wrapper for EmailRestrictConfiguration, essentially a DTO instead of
  * a wrapper.
  */
-@XmlRootElement(name = "client-restrict-configuration")
+@XmlRootElement(name = "email-restrict-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientRestrictConfigurationResource extends ResourceSupport {
+public class EmailRestrictConfigurationResource extends ResourceSupport {
 
-    private ClientRestrictConfiguration entity;
+    private EmailRestrictConfiguration entity;
 
     /**
      * Override to change the link property name for serialization
@@ -36,11 +36,11 @@ public class ClientRestrictConfigurationResource extends ResourceSupport {
         return super.getLinks();
     }
 
-    public ClientRestrictConfiguration getEntity() {
+    public EmailRestrictConfiguration getEntity() {
         return entity;
     }
 
-    public void setEntity(ClientRestrictConfiguration entity) {
+    public void setEntity(EmailRestrictConfiguration entity) {
         this.entity = entity;
     }
 

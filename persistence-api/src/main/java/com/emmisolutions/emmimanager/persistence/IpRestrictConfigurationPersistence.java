@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.persistence;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.IpRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 
 /**
  * Persistence API for IpRestrictConfiguration

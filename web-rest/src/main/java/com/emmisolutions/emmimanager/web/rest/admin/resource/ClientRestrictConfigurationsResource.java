@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientRestrictConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientRestrictConfigurationResourceAssembler;
@@ -34,6 +34,14 @@ public class ClientRestrictConfigurationsResource {
     @Resource
     ClientRestrictConfigurationResourceAssembler clientRestrictConfigurationAssembler;
 
+    /**
+     * Get ClientRestrictConfiguration by Client
+     * 
+     * @param clientId
+     *            to lookup
+     * @return an existing ClientRestrictCongifuration or create one if non
+     *         exists
+     */
     @RequestMapping(value = "/clients/{clientId}/client_restrict_configuration", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientRestrictConfigurationResource> getByClient(
@@ -64,6 +72,13 @@ public class ClientRestrictConfigurationsResource {
         }
     }
 
+    /**
+     * Get an ClientRestrictConfiguration by id
+     * 
+     * @param id
+     *            to reload
+     * @return an existing ClientRestrictConfiguration
+     */
     @RequestMapping(value = "/client_restrict_configuration/{id}", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientRestrictConfigurationResource> get(
@@ -81,6 +96,15 @@ public class ClientRestrictConfigurationsResource {
 
     }
 
+    /**
+     * Update an existing ClientRestrictConfiguration
+     * 
+     * @param id
+     *            to reload
+     * @param clientRestrictConfiguration
+     *            to update
+     * @return an updated ClientRestrictConfiguration
+     */
     @RequestMapping(value = "/client_restrict_configuration/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })

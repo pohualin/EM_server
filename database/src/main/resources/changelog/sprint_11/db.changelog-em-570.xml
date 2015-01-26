@@ -191,5 +191,10 @@
            <column name="client_restrict_configuration_id"  type="bigint"/>
         </createIndex>
 	</changeSet>
+	
+	<changeSet id="drop null contraint" author="Paul">
+		<dropNotNullConstraint tableName="email_restrict_configuration" columnName="description" columnDataType="nvarchar(255)" />
+		<dropNotNullConstraint tableName="ip_restrict_configuration" columnName="description" columnDataType="nvarchar(255)" />
+	</changeSet>
 
 </databaseChangeLog>

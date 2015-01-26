@@ -11,22 +11,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
-import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.IpRestrictConfigurationPersistence;
+import com.emmisolutions.emmimanager.persistence.EmailRestrictConfigurationPersistence;
 
 /**
- * Integration test for IpRestrictConfigurationPersistence
+ * Integration test for EmailRestrictConfigurationPersistence
  */
-public class IpRestrictConfigurationPersistenceIntegrationTest extends
+public class EmailRestrictConfigurationPersistenceIntegrationTest extends
         BaseIntegrationTest {
 
     @Resource
     ClientRestrictConfigurationPersistence clientRestrictConfigurationPersistence;
 
     @Resource
-    IpRestrictConfigurationPersistence ipRestrictConfigurationPersistence;
+    EmailRestrictConfigurationPersistence emailRestrictConfigurationPersistence;
 
     /**
      * Test list
@@ -35,52 +35,51 @@ public class IpRestrictConfigurationPersistenceIntegrationTest extends
     public void testList() {
         ClientRestrictConfiguration clientRestrictConfiguration = new ClientRestrictConfiguration();
         clientRestrictConfiguration.setClient(makeNewRandomClient());
-        clientRestrictConfiguration.setIpConfigRestrict(true);
+        clientRestrictConfiguration.setEmailConfigRestrict(true);
         clientRestrictConfiguration.setEmailConfigRestrict(false);
         clientRestrictConfiguration = clientRestrictConfigurationPersistence
                 .saveOrUpdate(clientRestrictConfiguration);
 
-        IpRestrictConfiguration configuration = new IpRestrictConfiguration();
+        EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
         configuration
                 .setClientRestrictConfiguration(clientRestrictConfiguration);
-        configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
-        configuration.setIpRangeEnd("192.168.1.255");
-        configuration.setIpRangeStart("192.168.1.1");
-        configuration = ipRestrictConfigurationPersistence
+        // configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
+        configuration.setEmailEnding("emmisolutions.com");
+        configuration = emailRestrictConfigurationPersistence
                 .saveOrUpdate(configuration);
 
-        IpRestrictConfiguration configurationA = new IpRestrictConfiguration();
+        EmailRestrictConfiguration configurationA = new EmailRestrictConfiguration();
         configurationA
                 .setClientRestrictConfiguration(clientRestrictConfiguration);
         configurationA.setDescription(RandomStringUtils.randomAlphabetic(255));
-        configurationA.setIpRangeEnd("192.170.1.255");
-        configurationA.setIpRangeStart("192.170.1.1");
-        configurationA = ipRestrictConfigurationPersistence
+        configurationA.setEmailEnding("emmisolutions.net");
+        configurationA = emailRestrictConfigurationPersistence
                 .saveOrUpdate(configuration);
 
-        Page<IpRestrictConfiguration> listOfIpConfig = ipRestrictConfigurationPersistence
+        Page<EmailRestrictConfiguration> listOfEmailConfig = emailRestrictConfigurationPersistence
                 .list(new PageRequest(0, 10),
                         clientRestrictConfiguration.getId());
 
-        assertThat("should contain configuration", listOfIpConfig.getContent(),
-                hasItem(configuration));
+        assertThat("should contain configuration",
+                listOfEmailConfig.getContent(), hasItem(configuration));
         assertThat("should contain configurationA",
-                listOfIpConfig.getContent(), hasItem(configurationA));
+                listOfEmailConfig.getContent(), hasItem(configurationA));
 
-        Page<IpRestrictConfiguration> listOfIpConfigA = ipRestrictConfigurationPersistence
+        Page<EmailRestrictConfiguration> listOfEmailConfigA = emailRestrictConfigurationPersistence
                 .list(null, clientRestrictConfiguration.getId());
 
         assertThat("should contain configuration",
-                listOfIpConfigA.getContent(), hasItem(configuration));
+                listOfEmailConfigA.getContent(), hasItem(configuration));
         assertThat("should contain configurationA",
-                listOfIpConfigA.getContent(), hasItem(configurationA));
+                listOfEmailConfigA.getContent(), hasItem(configurationA));
 
-        Page<IpRestrictConfiguration> listOfIpConfigB = ipRestrictConfigurationPersistence
+        Page<EmailRestrictConfiguration> listOfEmailConfigB = emailRestrictConfigurationPersistence
                 .list(new PageRequest(0, 10), null);
+
         assertThat("should contain configuration",
-                listOfIpConfigB.getContent(), hasItem(configuration));
+                listOfEmailConfigB.getContent(), hasItem(configuration));
         assertThat("should contain configurationA",
-                listOfIpConfigB.getContent(), hasItem(configurationA));
+                listOfEmailConfigB.getContent(), hasItem(configurationA));
     }
 
     /**
@@ -90,40 +89,39 @@ public class IpRestrictConfigurationPersistenceIntegrationTest extends
     public void testSave() {
         ClientRestrictConfiguration clientRestrictConfiguration = new ClientRestrictConfiguration();
         clientRestrictConfiguration.setClient(makeNewRandomClient());
-        clientRestrictConfiguration.setIpConfigRestrict(true);
+        clientRestrictConfiguration.setEmailConfigRestrict(true);
         clientRestrictConfiguration.setEmailConfigRestrict(false);
         clientRestrictConfiguration = clientRestrictConfigurationPersistence
                 .saveOrUpdate(clientRestrictConfiguration);
 
-        IpRestrictConfiguration configuration = new IpRestrictConfiguration();
+        EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
         configuration
                 .setClientRestrictConfiguration(clientRestrictConfiguration);
         configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
-        configuration.setIpRangeEnd("192.168.1.255");
-        configuration.setIpRangeStart("192.168.1.1");
-        configuration = ipRestrictConfigurationPersistence
+        configuration.setEmailEnding("emmisolutions.com");
+        configuration = emailRestrictConfigurationPersistence
                 .saveOrUpdate(configuration);
 
-        assertThat("IpRestrictConfiguration should be saved.",
+        assertThat("EmailRestrictConfiguration should be saved.",
                 configuration.getId(), is(notNullValue()));
 
         assertThat(
-                "IpRestrictConfiguration should be saved with ip range start.",
-                configuration.getIpRangeStart(), is("192.168.1.1"));
+                "EmailRestrictConfiguration should be saved with email range start.",
+                configuration.getEmailEnding(), is("emmisolutions.com"));
 
-        IpRestrictConfiguration reload = ipRestrictConfigurationPersistence
+        EmailRestrictConfiguration reload = emailRestrictConfigurationPersistence
                 .reload(configuration.getId());
         assertThat("should reload the same configuration",
                 configuration.getId() == reload.getId(), is(true));
 
-        reload.setIpRangeStart("192.168.1.0");
-        IpRestrictConfiguration update = ipRestrictConfigurationPersistence
+        reload.setEmailEnding("emmisolutions.net");
+        EmailRestrictConfiguration update = emailRestrictConfigurationPersistence
                 .saveOrUpdate(reload);
-        assertThat("should update the ip config start",
-                update.getIpRangeStart(), is("192.168.1.0"));
+        assertThat("should update the email config start",
+                update.getEmailEnding(), is("emmisolutions.net"));
 
-        ipRestrictConfigurationPersistence.delete(configuration.getId());
-        IpRestrictConfiguration reloadAfterDelete = ipRestrictConfigurationPersistence
+        emailRestrictConfigurationPersistence.delete(configuration.getId());
+        EmailRestrictConfiguration reloadAfterDelete = emailRestrictConfigurationPersistence
                 .reload(configuration.getId());
         assertThat("should reload the same configuration",
                 configuration.getId() == reload.getId(), is(true));

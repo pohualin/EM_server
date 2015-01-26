@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 
 /**
  * Service to deal with ClientRestrictConfiguration
