@@ -64,8 +64,7 @@ public class UserClientsResource {
      * @return UserClientPage
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -111,8 +110,7 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/users", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<UserClientResource> createUser(
             @PathVariable Long clientId, @RequestBody UserClient userClient) {
 
@@ -146,8 +144,7 @@ public class UserClientsResource {
      * @return UserClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/user_client/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER",})
     public ResponseEntity<UserClientResource> get(@PathVariable("id") Long id) {
         UserClient userClient = userClientService.reload(new UserClient(id));
         if (userClient != null) {
@@ -170,8 +167,7 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/user_client/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
-            "PERM_CLIENT_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<UserClientResource> update(
             @PathVariable("id") Long id, @RequestBody UserClient userClient) {
 

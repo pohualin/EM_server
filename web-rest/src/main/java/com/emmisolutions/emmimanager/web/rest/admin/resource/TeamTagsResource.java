@@ -1,9 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import com.emmisolutions.emmimanager.model.Tag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamTag;
-import com.emmisolutions.emmimanager.model.TeamTagSearchFilter;
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.service.TeamTagService;
@@ -53,6 +51,9 @@ public class TeamTagsResource {
     @Resource
     TagService tagService;
 
+    @Resource
+    ClientService clientService;
+
     /**
      * GET to search for TeamTags
      *
@@ -65,7 +66,7 @@ public class TeamTagsResource {
      * @return ClientPage or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -107,7 +108,7 @@ public class TeamTagsResource {
     @RequestMapping(value = "/teams/{teamId}/tags", method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public java.util.List<TeamTag> create(@PathVariable("teamId") Long teamId, @RequestBody Set<Tag> tagSet) {
         Team toFind = new Team();
         toFind.setId(teamId);
@@ -124,7 +125,7 @@ public class TeamTagsResource {
     @RequestMapping(value = "teamTags/{teamTagId}", method = RequestMethod.DELETE,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamTagResource> deleteTeamTag(@PathVariable("teamTagId") Long teamTagId) {
         TeamTag teamTag = new TeamTag();
         teamTag.setId(teamTagId);
@@ -143,7 +144,7 @@ public class TeamTagsResource {
     @RequestMapping(value = "/teams/{teamId}/saveTag", method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_CREATE"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamTagResource> saveTeamTag(@PathVariable("teamId") Long teamId, @RequestBody Tag tag) {
         Team toFind = new Team();
         toFind.setId(teamId);
@@ -158,7 +159,7 @@ public class TeamTagsResource {
      * @return TeamTagResource or NO_CONTENT
      */
     @RequestMapping(value = "/teamTags/{teamTagId}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_TAG_VIEW"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamTagResource> getTeamTag(@PathVariable("teamTagId") Long teamTagId) {
         TeamTag toFind = new TeamTag();
         toFind.setId(teamTagId);
@@ -177,7 +178,7 @@ public class TeamTagsResource {
      * @return List of TeamTag objects or INTERNAL_SERVER_ERROR if the list is empty
      */
     @RequestMapping(value = "/clients/{clientId}/team-tags", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_GROUP_EDIT", "PERM_TAG_EDIT"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -188,7 +189,8 @@ public class TeamTagsResource {
             @PageableDefault(size = 50) Pageable pageable,
             @SortDefault(sort = "id") Sort sort,
             PagedResourcesAssembler<TeamTag> assembler,
-            @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
+            @RequestParam(value = "tagIds", required = false) List<Long> tagIds,
+            @RequestParam(value = "status", required = false) String status) {
         TeamTagSearchFilter teamTagSearchFilter = new TeamTagSearchFilter();
 
         Set<Tag> tagSet = new HashSet<>();
@@ -199,8 +201,11 @@ public class TeamTagsResource {
         }
 
         teamTagSearchFilter.setTagSet(tagSet);
-        teamTagSearchFilter.setClientId(clientId);
+        teamTagSearchFilter.setClient(clientService.reload(new Client(clientId)));
+        teamTagSearchFilter.setStatus(TeamTagSearchFilter.StatusFilter.fromStringOrActive(status));
+
         Page<TeamTag> teamTagPage = teamTagService.findTeamsWithTag(pageable, teamTagSearchFilter);
+
         if (teamTagPage.hasContent()) {
             PagedResources<TeamTagResource> teamTagResourceSupports = assembler.toResource(teamTagPage, teamTagResourceAssembler);
             TeamTagPage teamTagPage1 = new TeamTagPage(teamTagResourceSupports, teamTagPage, teamTagSearchFilter);

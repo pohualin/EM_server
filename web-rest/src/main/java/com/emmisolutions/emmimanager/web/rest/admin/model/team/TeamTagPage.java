@@ -63,13 +63,14 @@ public class TeamTagPage extends PagedResource<TeamTagResource> {
     }
 
     public static Link createFullSearchLinkTeamTagsWithTags(Client entity) {
-        Link link = linkTo(methodOn(TeamTagsResource.class).teamTagsWithTags(entity.getId(), null, null, null, null)).withRel("teamTagsWithTags");
+        Link link = linkTo(methodOn(TeamTagsResource.class).teamTagsWithTags(entity.getId(), null, null, null,null,null)).withRel("teamTagsWithTags");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                     new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                     new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                     new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                    new TemplateVariable("tagIds", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+                    new TemplateVariable("tagIds", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                    new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 

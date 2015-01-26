@@ -52,7 +52,7 @@ public class TagsResource {
      * @return TagPage or NO_CONTENT
      */
     @RequestMapping(value = "/groups/{groupId}/tags", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TAG_LIST"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -82,7 +82,7 @@ public class TagsResource {
      * @return TagResource or NO_CONTENT on fail
      */
     @RequestMapping(value = "/tags/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TAG_VIEW"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<TagResource> getTagById(@PathVariable("id") Long id) {
         Tag tag = new Tag();
         tag.setId(id);

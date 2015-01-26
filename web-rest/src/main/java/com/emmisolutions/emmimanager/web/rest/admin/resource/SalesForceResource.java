@@ -36,7 +36,7 @@ public class SalesForceResource {
      * @return a SalesForceSearchResponseResource
      */
     @RequestMapping(value = "/sf/find", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_CLIENT_CREATE", "PERM_CLIENT_EDIT"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<SalesForceSearchResponseResource> find(@RequestParam(value = "q", required = false) String searchString) {
         SalesForceSearchResponse searchResponse = salesForceService.find(searchString);
         return findAccounts(searchString, searchResponse, false);
@@ -49,7 +49,7 @@ public class SalesForceResource {
      * @return SalesForceSearchResponseResource object
      */
     @RequestMapping(value = "/teams/sf/find", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_TEAM_CREATE", "PERM_TEAM_EDIT"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<SalesForceSearchResponseResource> findForTeam(@RequestParam(value = "q", required = false) String searchString) {
         SalesForceSearchResponse searchResponse = salesForceService.findForTeam(searchString);
         return findAccounts(searchString, searchResponse, true);
