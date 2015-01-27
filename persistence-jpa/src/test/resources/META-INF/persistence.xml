@@ -54,6 +54,7 @@
             <property name="org.hibernate.envers.audit_table_suffix" value="_audit"/>
             <property name="org.hibernate.envers.revision_field_name" value="revision"/>
             <property name="org.hibernate.envers.revision_type_field_name" value="revision_type"/>
+            <property name="jadira.usertype.useJdbc42Apis" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>
