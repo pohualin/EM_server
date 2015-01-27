@@ -41,8 +41,7 @@ public class ClientRestrictConfigurationServiceIntegrationTest extends
         assertThat("reload should be the same instance", reload.getId(),
                 is(config.getId()));
 
-        ClientRestrictConfiguration configToUpdate = new ClientRestrictConfiguration();
-        configToUpdate.setId(config.getId());
+        ClientRestrictConfiguration configToUpdate = reload;
         configToUpdate.setIpConfigRestrict(false);
         configToUpdate.setEmailConfigRestrict(true);
         configToUpdate = clientRestrictConfigurationService
