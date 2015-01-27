@@ -34,7 +34,7 @@ public class IpRestrictConfigurationPersistenceImpl implements
 
     @Override
     public Page<IpRestrictConfiguration> list(Pageable pageable,
-            Long clientRestrictConfigurationId) {
+            Long clientId) {
         Pageable toUse = pageable;
         if (pageable == null) {
             toUse = new PageRequest(0, 10);
@@ -42,7 +42,7 @@ public class IpRestrictConfigurationPersistenceImpl implements
         return ipRestrictConfigurationRepository
                 .findAll(
                         where(ipRestrictConfigurationSpecifications
-                                .isClientRestrictConfiguration(clientRestrictConfigurationId)),
+                                .isClient(clientId)),
                         toUse);
     }
 

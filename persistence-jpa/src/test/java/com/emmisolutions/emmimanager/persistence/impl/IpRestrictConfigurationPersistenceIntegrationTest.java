@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
@@ -10,7 +12,7 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
@@ -33,16 +35,10 @@ public class IpRestrictConfigurationPersistenceIntegrationTest extends
      */
     @Test
     public void testList() {
-        ClientRestrictConfiguration clientRestrictConfiguration = new ClientRestrictConfiguration();
-        clientRestrictConfiguration.setClient(makeNewRandomClient());
-        clientRestrictConfiguration.setIpConfigRestrict(true);
-        clientRestrictConfiguration.setEmailConfigRestrict(false);
-        clientRestrictConfiguration = clientRestrictConfigurationPersistence
-                .saveOrUpdate(clientRestrictConfiguration);
+        Client client = makeNewRandomClient();
 
         IpRestrictConfiguration configuration = new IpRestrictConfiguration();
-        configuration
-                .setClientRestrictConfiguration(clientRestrictConfiguration);
+        configuration.setClient(client);
         configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
         configuration.setIpRangeEnd("192.168.1.255");
         configuration.setIpRangeStart("192.168.1.1");
@@ -50,8 +46,7 @@ public class IpRestrictConfigurationPersistenceIntegrationTest extends
                 .saveOrUpdate(configuration);
 
         IpRestrictConfiguration configurationA = new IpRestrictConfiguration();
-        configurationA
-                .setClientRestrictConfiguration(clientRestrictConfiguration);
+        configurationA.setClient(client);
         configurationA.setDescription(RandomStringUtils.randomAlphabetic(255));
         configurationA.setIpRangeEnd("192.170.1.255");
         configurationA.setIpRangeStart("192.170.1.1");
@@ -59,8 +54,7 @@ public class IpRestrictConfigurationPersistenceIntegrationTest extends
                 .saveOrUpdate(configuration);
 
         Page<IpRestrictConfiguration> listOfIpConfig = ipRestrictConfigurationPersistence
-                .list(new PageRequest(0, 10),
-                        clientRestrictConfiguration.getId());
+                .list(new PageRequest(0, 10), client.getId());
 
         assertThat("should contain configuration", listOfIpConfig.getContent(),
                 hasItem(configuration));
@@ -68,7 +62,7 @@ public class IpRestrictConfigurationPersistenceIntegrationTest extends
                 listOfIpConfig.getContent(), hasItem(configurationA));
 
         Page<IpRestrictConfiguration> listOfIpConfigA = ipRestrictConfigurationPersistence
-                .list(null, clientRestrictConfiguration.getId());
+                .list(null, client.getId());
 
         assertThat("should contain configuration",
                 listOfIpConfigA.getContent(), hasItem(configuration));
@@ -88,16 +82,10 @@ public class IpRestrictConfigurationPersistenceIntegrationTest extends
      */
     @Test
     public void testSave() {
-        ClientRestrictConfiguration clientRestrictConfiguration = new ClientRestrictConfiguration();
-        clientRestrictConfiguration.setClient(makeNewRandomClient());
-        clientRestrictConfiguration.setIpConfigRestrict(true);
-        clientRestrictConfiguration.setEmailConfigRestrict(false);
-        clientRestrictConfiguration = clientRestrictConfigurationPersistence
-                .saveOrUpdate(clientRestrictConfiguration);
+        Client client = makeNewRandomClient();
 
         IpRestrictConfiguration configuration = new IpRestrictConfiguration();
-        configuration
-                .setClientRestrictConfiguration(clientRestrictConfiguration);
+        configuration.setClient(client);
         configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
         configuration.setIpRangeEnd("192.168.1.255");
         configuration.setIpRangeStart("192.168.1.1");

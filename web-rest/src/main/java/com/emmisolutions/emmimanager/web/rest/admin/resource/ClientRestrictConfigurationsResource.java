@@ -54,21 +54,12 @@ public class ClientRestrictConfigurationsResource {
                     clientRestrictConfigurationAssembler.toResource(found),
                     HttpStatus.OK);
         } else {
-            // nothing found, create a new one
+            // nothing found, create a new one but don't save
             ClientRestrictConfiguration created = new ClientRestrictConfiguration();
             created.setClient(new Client(clientId));
-            created = clientRestrictConfigurationService.create(created);
-            if (created != null) {
-                // create a clientRestrictConfiguration successfully
-                return new ResponseEntity<ClientRestrictConfigurationResource>(
-                        clientRestrictConfigurationAssembler
-                                .toResource(created),
-                        HttpStatus.CREATED);
-
-            } else {
-                // error clientRestrictConfiguration creation
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return new ResponseEntity<ClientRestrictConfigurationResource>(
+                    clientRestrictConfigurationAssembler.toResource(created),
+                    HttpStatus.OK);
         }
     }
 
@@ -94,6 +85,33 @@ public class ClientRestrictConfigurationsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
+    }
+
+    /**
+     * Create a new ClientRestrictConfiguration for a client
+     * 
+     * @param clientId
+     *            to use
+     * @param clientRestrictConfiguration
+     *            to save
+     * @return saved ClientRestrictConfiguration
+     */
+    @RequestMapping(value = "/clients/{clientId}/client_restrict_configuration", method = RequestMethod.POST, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    public ResponseEntity<ClientRestrictConfigurationResource> save(
+            @PathVariable("clientId") Long clientId,
+            @RequestBody ClientRestrictConfiguration clientRestrictConfiguration) {
+
+        ClientRestrictConfiguration saved = clientRestrictConfigurationService
+                .create(clientRestrictConfiguration);
+        if (saved != null) {
+            return new ResponseEntity<>(
+                    clientRestrictConfigurationAssembler.toResource(saved),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

@@ -24,12 +24,11 @@ public interface IpRestrictConfigurationPersistence {
      * 
      * @param pageable
      *            to use
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to lookup
      * @return a page of IpRestrictConfiguration
      */
-    public Page<IpRestrictConfiguration> list(Pageable pageable,
-            Long clientRestrictConfigurationId);
+    public Page<IpRestrictConfiguration> list(Pageable pageable, Long clientId);
 
     /**
      * Reload IpRestricConfiguration by id

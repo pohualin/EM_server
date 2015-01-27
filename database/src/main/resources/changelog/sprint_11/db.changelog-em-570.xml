@@ -12,7 +12,7 @@
             <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_ip_restrict_configuration"/>
             </column>
-            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+            <column name="created_by" type="nvarchar(255)" defaultValue="system">
                 <constraints nullable="false"/>
             </column>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
@@ -21,12 +21,10 @@
             <column name="last_modified_by" type="nvarchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
-            <column name="client_restrict_configuration_id" type="bigint">
+            <column name="client_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="nvarchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="description" type="nvarchar(255)" />
             <column name="ip_range_start" type="nvarchar(255)">
                 <constraints nullable="false"/>
             </column>
@@ -43,7 +41,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="tinyint"/>
-            <column name="client_restrict_configuration_id" type="bigint"/>
+            <column name="client_id" type="bigint"/>
             <column name="description" type="nvarchar(255)"/>
             <column name="ip_range_start" type="nvarchar(255)"/>
             <column name="ip_range_end" type="nvarchar(255)"/>
@@ -66,7 +64,7 @@
             <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_email_restrict_configuration"/>
             </column>
-            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+            <column name="created_by" type="nvarchar(255)" defaultValue="system">
                 <constraints nullable="false"/>
             </column>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
@@ -75,12 +73,10 @@
             <column name="last_modified_by" type="nvarchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
-            <column name="client_restrict_configuration_id" type="bigint">
+            <column name="client_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="description" type="nvarchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="description" type="nvarchar(255)" />
             <column name="email_ending" type="nvarchar(255)">
                 <constraints nullable="false"/>
             </column>
@@ -94,7 +90,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="tinyint"/>
-            <column name="client_restrict_configuration_id" type="bigint"/>
+            <column name="client_id" type="bigint"/>
             <column name="description" type="nvarchar(255)"/>
             <column name="email_ending" type="nvarchar(255)"/>
         </createTable>
@@ -116,7 +112,7 @@
             <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_restrict_configuration"/>
             </column>
-            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+            <column name="created_by" type="nvarchar(255)" defaultValue="system">
                 <constraints nullable="false"/>
             </column>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
@@ -172,29 +168,24 @@
 
 	<changeSet id="add foreign keys for ip_restrict_config and email_restrict_config" author="Paul">
 		<addForeignKeyConstraint baseTableName="ip_restrict_configuration"
-                                 baseColumnNames="client_restrict_configuration_id"
-                                 constraintName="fk_ip_restrict_configuration_client_restrict_configuration"
-                                 referencedTableName="client_restrict_configuration"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_ip_restrict_configuration_client"
+                                 referencedTableName="client"
                                  referencedColumnNames="id"/>
-		<createIndex indexName="ix_ip_restrict_configuration_client_restrict_configuration"
+		<createIndex indexName="ix_ip_restrict_configuration_client"
 					 tableName="ip_restrict_configuration">
-            <column name="client_restrict_configuration_id"  type="bigint"/>
+            <column name="client_id"  type="bigint"/>
         </createIndex>
         
 		<addForeignKeyConstraint baseTableName="email_restrict_configuration"
-                                 baseColumnNames="client_restrict_configuration_id"
-                                 constraintName="fk_email_restrict_configuration_client_restrict_configuration"
-                                 referencedTableName="client_restrict_configuration"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_email_restrict_configuration_client"
+                                 referencedTableName="client"
                                  referencedColumnNames="id"/>
-		<createIndex indexName="ix_email_restrict_configuration_client_restrict_configuration"
+		<createIndex indexName="ix_email_restrict_configuration_client"
 					 tableName="email_restrict_configuration">
-           <column name="client_restrict_configuration_id"  type="bigint"/>
+           <column name="client_id"  type="bigint"/>
         </createIndex>
-	</changeSet>
-	
-	<changeSet id="drop null contraint" author="Paul">
-		<dropNotNullConstraint tableName="email_restrict_configuration" columnName="description" columnDataType="nvarchar(255)" />
-		<dropNotNullConstraint tableName="ip_restrict_configuration" columnName="description" columnDataType="nvarchar(255)" />
 	</changeSet>
 
 </databaseChangeLog>

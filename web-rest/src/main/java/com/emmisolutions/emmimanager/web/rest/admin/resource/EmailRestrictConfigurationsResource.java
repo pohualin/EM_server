@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.EmailRestrictConfigurationPage;
@@ -45,10 +45,9 @@ public class EmailRestrictConfigurationsResource {
     EmailRestrictConfigurationResourceAssembler emailRestrictConfigurationAssembler;
 
     /**
-     * Get a page of EmailRestrictConfiguration for a
-     * ClientRestrictConfiguration
+     * Get a page of EmailRestrictConfiguration for a Client
      * 
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to lookup
      * @param pageable
      *            to use
@@ -58,22 +57,20 @@ public class EmailRestrictConfigurationsResource {
      *            to use
      * @return an EmailRestrictConfigurationPage
      */
-    @RequestMapping(value = "/client_restrict_configuration/{id}/email_restrict_configurations", method = RequestMethod.GET)
+    @RequestMapping(value = "/client/{id}/email_restrict_configurations", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "emailEnding,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
     public ResponseEntity<EmailRestrictConfigurationPage> list(
-            @PathVariable("id") Long clientRestrictConfigurationId,
+            @PathVariable("id") Long clientId,
             @PageableDefault(size = 10, sort = "emailEnding", direction = Direction.ASC) Pageable pageable,
             @SortDefault(sort = "emailEnding", direction = Direction.ASC) Sort sort,
             PagedResourcesAssembler<EmailRestrictConfiguration> assembler) {
 
         Page<EmailRestrictConfiguration> page = emailRestrictConfigurationService
-                .getByClientRestrictConfiguration(pageable,
-                        new ClientRestrictConfiguration(
-                                clientRestrictConfigurationId));
+                .getByClient(pageable, new Client(clientId));
 
         if (page.hasContent()) {
             // create a EmailRestrictConfigurationPage containing the response
@@ -89,21 +86,19 @@ public class EmailRestrictConfigurationsResource {
     /**
      * Create a brand new EmailRestrictConfiguration
      * 
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to assign
      * @param emailRestrictConfiguration
      *            to create
      * @return a created EmailRestrictConfiguration
      */
-    @RequestMapping(value = "/client_restrict_configuration/{id}/email_restrict_configurations", method = RequestMethod.POST, consumes = {
+    @RequestMapping(value = "/client/{id}/email_restrict_configurations", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
     public ResponseEntity<EmailRestrictConfigurationResource> create(
-            @PathVariable("id") Long clientRestrictConfigurationId,
+            @PathVariable("id") Long clientId,
             @RequestBody EmailRestrictConfiguration emailRestrictConfiguration) {
-        emailRestrictConfiguration
-                .setClientRestrictConfiguration(new ClientRestrictConfiguration(
-                        clientRestrictConfigurationId));
+        emailRestrictConfiguration.setClient(new Client(clientId));
         EmailRestrictConfiguration created = emailRestrictConfigurationService
                 .create(emailRestrictConfiguration);
         if (created != null) {

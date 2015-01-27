@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 
 /**
@@ -30,15 +30,14 @@ public interface EmailRestrictConfigurationService {
     public void delete(EmailRestrictConfiguration emailRestrictConfiguration);
 
     /**
-     * Get a page of EmailRestrictConfiguration by ClientRestrictConfiguration
+     * Get a page of EmailRestrictConfiguration by Client
      * 
-     * @param clientRestrictConfiguration
+     * @param client
      *            to lookup
      * @return a page of EmailRestrictConfiguration
      */
-    public Page<EmailRestrictConfiguration> getByClientRestrictConfiguration(
-            Pageable pageable,
-            ClientRestrictConfiguration clientRestrictConfiguration);
+    public Page<EmailRestrictConfiguration> getByClient(Pageable pageable,
+            Client client);
 
     /**
      * Reload an existing EmailRestrictConfiguration

@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
@@ -35,14 +35,10 @@ public class IpRestrictConfigurationServiceIntegrationTest extends
      */
     @Test
     public void testCreateReloadUpdateDelete() {
-        ClientRestrictConfiguration config = new ClientRestrictConfiguration();
-        config.setClient(makeNewRandomClient());
-        config = clientRestrictConfigurationService.create(config);
-
-        assertThat("config saved with id", config.getId(), is(notNullValue()));
+        Client client = makeNewRandomClient();
 
         IpRestrictConfiguration ipConfig = new IpRestrictConfiguration();
-        ipConfig.setClientRestrictConfiguration(config);
+        ipConfig.setClient(client);
         ipConfig.setIpRangeStart("192.168.1.1");
         ipConfig.setIpRangeEnd("192.168.1.254");
         ipConfig.setDescription(RandomStringUtils.randomAlphabetic(255));
@@ -74,26 +70,24 @@ public class IpRestrictConfigurationServiceIntegrationTest extends
      */
     @Test
     public void testGetByClientRestrictConfiguration() {
-        ClientRestrictConfiguration config = new ClientRestrictConfiguration();
-        config.setClient(makeNewRandomClient());
-        config = clientRestrictConfigurationService.create(config);
+        Client client = makeNewRandomClient();
 
         IpRestrictConfiguration ipConfig = new IpRestrictConfiguration();
-        ipConfig.setClientRestrictConfiguration(config);
+        ipConfig.setClient(client);
         ipConfig.setIpRangeStart("192.168.1.1");
         ipConfig.setIpRangeEnd("192.168.1.254");
         ipConfig.setDescription(RandomStringUtils.randomAlphabetic(255));
         ipConfig = ipRestrictConfigurationService.create(ipConfig);
 
         IpRestrictConfiguration ipConfigA = new IpRestrictConfiguration();
-        ipConfigA.setClientRestrictConfiguration(config);
+        ipConfigA.setClient(client);
         ipConfigA.setIpRangeStart("192.68.1.1");
         ipConfigA.setIpRangeEnd("192.68.1.254");
         ipConfigA.setDescription(RandomStringUtils.randomAlphabetic(255));
         ipConfigA = ipRestrictConfigurationService.create(ipConfigA);
 
         Page<IpRestrictConfiguration> page = ipRestrictConfigurationService
-                .getByClientRestrictConfiguration(null, config);
+                .getByClient(null, client);
 
         assertThat("return page should include ip config", page.getContent(),
                 hasItem(ipConfig));
@@ -140,8 +134,7 @@ public class IpRestrictConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeGetNull() {
-        ipRestrictConfigurationService.getByClientRestrictConfiguration(null,
-                null);
+        ipRestrictConfigurationService.getByClient(null, null);
     }
 
     /**
@@ -149,8 +142,7 @@ public class IpRestrictConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeGetNullId() {
-        ipRestrictConfigurationService.getByClientRestrictConfiguration(null,
-                new ClientRestrictConfiguration());
+        ipRestrictConfigurationService.getByClient(null, new Client());
     }
 
     /**

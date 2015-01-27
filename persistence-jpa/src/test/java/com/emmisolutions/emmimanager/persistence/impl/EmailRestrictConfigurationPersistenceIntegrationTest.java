@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
@@ -10,7 +12,7 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
@@ -33,32 +35,24 @@ public class EmailRestrictConfigurationPersistenceIntegrationTest extends
      */
     @Test
     public void testList() {
-        ClientRestrictConfiguration clientRestrictConfiguration = new ClientRestrictConfiguration();
-        clientRestrictConfiguration.setClient(makeNewRandomClient());
-        clientRestrictConfiguration.setEmailConfigRestrict(true);
-        clientRestrictConfiguration.setEmailConfigRestrict(false);
-        clientRestrictConfiguration = clientRestrictConfigurationPersistence
-                .saveOrUpdate(clientRestrictConfiguration);
+        Client client = makeNewRandomClient();
 
         EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
-        configuration
-                .setClientRestrictConfiguration(clientRestrictConfiguration);
+        configuration.setClient(client);
         // configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
         configuration.setEmailEnding("emmisolutions.com");
         configuration = emailRestrictConfigurationPersistence
                 .saveOrUpdate(configuration);
 
         EmailRestrictConfiguration configurationA = new EmailRestrictConfiguration();
-        configurationA
-                .setClientRestrictConfiguration(clientRestrictConfiguration);
+        configurationA.setClient(client);
         configurationA.setDescription(RandomStringUtils.randomAlphabetic(255));
         configurationA.setEmailEnding("emmisolutions.net");
         configurationA = emailRestrictConfigurationPersistence
                 .saveOrUpdate(configuration);
 
         Page<EmailRestrictConfiguration> listOfEmailConfig = emailRestrictConfigurationPersistence
-                .list(new PageRequest(0, 10),
-                        clientRestrictConfiguration.getId());
+                .list(new PageRequest(0, 10), client.getId());
 
         assertThat("should contain configuration",
                 listOfEmailConfig.getContent(), hasItem(configuration));
@@ -66,7 +60,7 @@ public class EmailRestrictConfigurationPersistenceIntegrationTest extends
                 listOfEmailConfig.getContent(), hasItem(configurationA));
 
         Page<EmailRestrictConfiguration> listOfEmailConfigA = emailRestrictConfigurationPersistence
-                .list(null, clientRestrictConfiguration.getId());
+                .list(null, client.getId());
 
         assertThat("should contain configuration",
                 listOfEmailConfigA.getContent(), hasItem(configuration));
@@ -87,16 +81,10 @@ public class EmailRestrictConfigurationPersistenceIntegrationTest extends
      */
     @Test
     public void testSave() {
-        ClientRestrictConfiguration clientRestrictConfiguration = new ClientRestrictConfiguration();
-        clientRestrictConfiguration.setClient(makeNewRandomClient());
-        clientRestrictConfiguration.setEmailConfigRestrict(true);
-        clientRestrictConfiguration.setEmailConfigRestrict(false);
-        clientRestrictConfiguration = clientRestrictConfigurationPersistence
-                .saveOrUpdate(clientRestrictConfiguration);
+        Client client = makeNewRandomClient();
 
         EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
-        configuration
-                .setClientRestrictConfiguration(clientRestrictConfiguration);
+        configuration.setClient(client);
         configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
         configuration.setEmailEnding("emmisolutions.com");
         configuration = emailRestrictConfigurationPersistence

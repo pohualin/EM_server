@@ -8,10 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.EmailRestrictConfigurationPersistence;
-import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 
 /**
@@ -23,7 +23,7 @@ public class EmailRestrictConfigurationServiceImpl implements
         EmailRestrictConfigurationService {
 
     @Resource
-    ClientRestrictConfigurationService clientRestrictConfigurationService;
+    ClientService clientService;
 
     @Resource
     EmailRestrictConfigurationPersistence emailRestrictConfigurationPersistence;
@@ -32,10 +32,9 @@ public class EmailRestrictConfigurationServiceImpl implements
     @Transactional
     public EmailRestrictConfiguration create(
             EmailRestrictConfiguration emailRestrictConfiguration) {
-        ClientRestrictConfiguration reload = clientRestrictConfigurationService
-                .reload(emailRestrictConfiguration
-                        .getClientRestrictConfiguration());
-        emailRestrictConfiguration.setClientRestrictConfiguration(reload);
+        Client reload = clientService.reload(emailRestrictConfiguration
+                .getClient());
+        emailRestrictConfiguration.setClient(reload);
         return emailRestrictConfigurationPersistence
                 .saveOrUpdate(emailRestrictConfiguration);
     }
@@ -54,16 +53,14 @@ public class EmailRestrictConfigurationServiceImpl implements
 
     @Override
     @Transactional
-    public Page<EmailRestrictConfiguration> getByClientRestrictConfiguration(
-            Pageable pageable,
-            ClientRestrictConfiguration clientRestrictConfiguration) {
-        if (clientRestrictConfiguration == null
-                || clientRestrictConfiguration.getId() == null) {
+    public Page<EmailRestrictConfiguration> getByClient(Pageable pageable,
+            Client client) {
+        if (client == null || client.getId() == null) {
             throw new InvalidDataAccessApiUsageException(
-                    "ClientRestrictConfiguration or clientRestrictConfigurationId can not be null.");
+                    "Client or clientId can not be null.");
         }
         return emailRestrictConfigurationPersistence.list(pageable,
-                clientRestrictConfiguration.getId());
+                client.getId());
     }
 
     @Override
@@ -88,13 +85,10 @@ public class EmailRestrictConfigurationServiceImpl implements
             throw new InvalidDataAccessApiUsageException(
                     "EmailRestrictConfiguration or emailRestrictConfigurationId can not be null.");
         }
-        ClientRestrictConfiguration reloadClientConfig = clientRestrictConfigurationService
-                .reload(emailRestrictConfiguration
-                        .getClientRestrictConfiguration());
-        emailRestrictConfiguration
-                .setClientRestrictConfiguration(reloadClientConfig);
+        Client reloadClient = clientService.reload(emailRestrictConfiguration
+                .getClient());
+        emailRestrictConfiguration.setClient(reloadClient);
         return emailRestrictConfigurationPersistence
                 .saveOrUpdate(emailRestrictConfiguration);
     }
-
 }

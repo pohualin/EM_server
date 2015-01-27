@@ -24,12 +24,12 @@ public interface EmailRestrictConfigurationPersistence {
      * 
      * @param pageable
      *            to use
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to lookup
      * @return a page of EmailRestrictConfiguration
      */
     public Page<EmailRestrictConfiguration> list(Pageable pageable,
-            Long clientRestrictConfigurationId);
+            Long clientId);
 
     /**
      * Reload EmailRestricConfiguration by id

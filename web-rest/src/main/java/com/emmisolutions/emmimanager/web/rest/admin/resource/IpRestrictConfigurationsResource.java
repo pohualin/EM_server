@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.IpRestrictConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationPage;
@@ -45,9 +45,9 @@ public class IpRestrictConfigurationsResource {
     IpRestrictConfigurationResourceAssembler ipRestrictConfigurationAssembler;
 
     /**
-     * Get a page of IpRestrictConfiguration for a ClientRestrictConfiguration
+     * Get a page of IpRestrictConfiguration for a Client
      * 
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to lookup
      * @param pageable
      *            to use
@@ -57,22 +57,20 @@ public class IpRestrictConfigurationsResource {
      *            to use
      * @return an IpRestrictConfigurationPage
      */
-    @RequestMapping(value = "/client_restrict_configuration/{id}/ip_restrict_configurations", method = RequestMethod.GET)
+    @RequestMapping(value = "/client/{id}/ip_restrict_configurations", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "ipRangeStart,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
     public ResponseEntity<IpRestrictConfigurationPage> list(
-            @PathVariable("id") Long clientRestrictConfigurationId,
+            @PathVariable("id") Long clientId,
             @PageableDefault(size = 10, sort = "ipRangeStart", direction = Direction.ASC) Pageable pageable,
             @SortDefault(sort = "ipRangeStart", direction = Direction.ASC) Sort sort,
             PagedResourcesAssembler<IpRestrictConfiguration> assembler) {
 
         Page<IpRestrictConfiguration> page = ipRestrictConfigurationService
-                .getByClientRestrictConfiguration(pageable,
-                        new ClientRestrictConfiguration(
-                                clientRestrictConfigurationId));
+                .getByClient(pageable, new Client(clientId));
 
         if (page.hasContent()) {
             // create a IpRestrictConfigurationPage containing the response
@@ -88,21 +86,19 @@ public class IpRestrictConfigurationsResource {
     /**
      * Create a brand new IpRestrictConfiguration
      * 
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to assign
      * @param ipRestrictConfiguration
      *            to create
      * @return a created IpRestrictConfiguration
      */
-    @RequestMapping(value = "/client_restrict_configuration/{id}/ip_restrict_configurations", method = RequestMethod.POST, consumes = {
+    @RequestMapping(value = "/client/{id}/ip_restrict_configurations", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
     public ResponseEntity<IpRestrictConfigurationResource> create(
-            @PathVariable("id") Long clientRestrictConfigurationId,
+            @PathVariable("id") Long clientId,
             @RequestBody IpRestrictConfiguration ipRestrictConfiguration) {
-        ipRestrictConfiguration
-                .setClientRestrictConfiguration(new ClientRestrictConfiguration(
-                        clientRestrictConfigurationId));
+        ipRestrictConfiguration.setClient(new Client(clientId));
         IpRestrictConfiguration created = ipRestrictConfigurationService
                 .create(ipRestrictConfiguration);
         if (created != null) {

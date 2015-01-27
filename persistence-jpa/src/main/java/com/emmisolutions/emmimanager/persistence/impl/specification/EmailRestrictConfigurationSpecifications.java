@@ -19,23 +19,22 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 public class EmailRestrictConfigurationSpecifications {
 
     /**
-     * Method to generate Specification with clientRestrictConfigurationId
+     * Method to generate Specification with clientId
      * 
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to use
-     * @return Specification with clientRestrictConfigurationId
+     * @return Specification with clientId
      */
-    public Specification<EmailRestrictConfiguration> isClientRestrictConfiguration(
-            final Long clientRestrictConfigurationId) {
+    public Specification<EmailRestrictConfiguration> isClient(
+            final Long clientId) {
         return new Specification<EmailRestrictConfiguration>() {
             @Override
             public Predicate toPredicate(Root<EmailRestrictConfiguration> root,
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (clientRestrictConfigurationId != null) {
-                    return cb
-                            .equal(root
-                                    .get(EmailRestrictConfiguration_.clientRestrictConfiguration),
-                                    clientRestrictConfigurationId);
+                if (clientId != null) {
+                    return cb.equal(
+                            root.get(EmailRestrictConfiguration_.client),
+                            clientId);
                 }
                 return null;
             }

@@ -34,16 +34,14 @@ public class EmailRestrictConfigurationPersistenceImpl implements
 
     @Override
     public Page<EmailRestrictConfiguration> list(Pageable pageable,
-            Long clientRestrictConfigurationId) {
+            Long clientId) {
         Pageable toUse = pageable;
         if (pageable == null) {
             toUse = new PageRequest(0, 10);
         }
-        return emailRestrictConfigurationRepository
-                .findAll(
-                        where(emailRestrictConfigurationSpecifications
-                                .isClientRestrictConfiguration(clientRestrictConfigurationId)),
-                        toUse);
+        return emailRestrictConfigurationRepository.findAll(
+                where(emailRestrictConfigurationSpecifications
+                        .isClient(clientId)), toUse);
     }
 
     @Override

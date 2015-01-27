@@ -8,10 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.IpRestrictConfigurationPersistence;
-import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.IpRestrictConfigurationService;
 
 /**
@@ -23,7 +23,7 @@ public class IpRestrictConfigurationServiceImpl implements
         IpRestrictConfigurationService {
 
     @Resource
-    ClientRestrictConfigurationService clientRestrictConfigurationService;
+    ClientService clientService;
 
     @Resource
     IpRestrictConfigurationPersistence ipRestrictConfigurationPersistence;
@@ -32,10 +32,9 @@ public class IpRestrictConfigurationServiceImpl implements
     @Transactional
     public IpRestrictConfiguration create(
             IpRestrictConfiguration ipRestrictConfiguration) {
-        ClientRestrictConfiguration reload = clientRestrictConfigurationService
-                .reload(ipRestrictConfiguration
-                        .getClientRestrictConfiguration());
-        ipRestrictConfiguration.setClientRestrictConfiguration(reload);
+        Client reload = clientService.reload(ipRestrictConfiguration
+                .getClient());
+        ipRestrictConfiguration.setClient(reload);
         return ipRestrictConfigurationPersistence
                 .saveOrUpdate(ipRestrictConfiguration);
     }
@@ -54,16 +53,14 @@ public class IpRestrictConfigurationServiceImpl implements
 
     @Override
     @Transactional
-    public Page<IpRestrictConfiguration> getByClientRestrictConfiguration(
-            Pageable pageable,
-            ClientRestrictConfiguration clientRestrictConfiguration) {
-        if (clientRestrictConfiguration == null
-                || clientRestrictConfiguration.getId() == null) {
+    public Page<IpRestrictConfiguration> getByClient(Pageable pageable,
+            Client client) {
+        if (client == null || client.getId() == null) {
             throw new InvalidDataAccessApiUsageException(
-                    "ClientRestrictConfiguration or clientRestrictConfigurationId can not be null.");
+                    "Client or clientId can not be null.");
         }
-        return ipRestrictConfigurationPersistence.list(pageable,
-                clientRestrictConfiguration.getId());
+        return ipRestrictConfigurationPersistence
+                .list(pageable, client.getId());
     }
 
     @Override
@@ -88,11 +85,9 @@ public class IpRestrictConfigurationServiceImpl implements
             throw new InvalidDataAccessApiUsageException(
                     "IpRestrictConfiguration or ipRestrictConfigurationId can not be null.");
         }
-        ClientRestrictConfiguration reloadClientConfig = clientRestrictConfigurationService
-                .reload(ipRestrictConfiguration
-                        .getClientRestrictConfiguration());
-        ipRestrictConfiguration
-                .setClientRestrictConfiguration(reloadClientConfig);
+        Client reloadClientConfig = clientService
+                .reload(ipRestrictConfiguration.getClient());
+        ipRestrictConfiguration.setClient(reloadClientConfig);
         return ipRestrictConfigurationPersistence
                 .saveOrUpdate(ipRestrictConfiguration);
     }

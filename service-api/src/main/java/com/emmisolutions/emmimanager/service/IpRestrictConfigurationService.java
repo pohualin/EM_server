@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 
 /**
@@ -30,15 +30,14 @@ public interface IpRestrictConfigurationService {
     public void delete(IpRestrictConfiguration ipRestrictConfiguration);
 
     /**
-     * Get a page of IpRestrictConfiguration by ClientRestrictConfiguration
+     * Get a page of IpRestrictConfiguration by Client
      * 
-     * @param clientRestrictConfiguration
+     * @param client
      *            to lookup
      * @return a page of IpRestrictConfiguration
      */
-    public Page<IpRestrictConfiguration> getByClientRestrictConfiguration(
-            Pageable pageable,
-            ClientRestrictConfiguration clientRestrictConfiguration);
+    public Page<IpRestrictConfiguration> getByClient(Pageable pageable,
+            Client client);
 
     /**
      * Reload an existing IpRestrictConfiguration

@@ -19,23 +19,20 @@ import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration
 public class IpRestrictConfigurationSpecifications {
 
     /**
-     * Method to generate Specification with clientRestrictConfigurationId
+     * Method to generate Specification with clientId
      * 
-     * @param clientRestrictConfigurationId
+     * @param clientId
      *            to use
-     * @return Specification with clientRestrictConfigurationId
+     * @return Specification with clientId
      */
-    public Specification<IpRestrictConfiguration> isClientRestrictConfiguration(
-            final Long clientRestrictConfigurationId) {
+    public Specification<IpRestrictConfiguration> isClient(final Long clientId) {
         return new Specification<IpRestrictConfiguration>() {
             @Override
             public Predicate toPredicate(Root<IpRestrictConfiguration> root,
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (clientRestrictConfigurationId != null) {
-                    return cb
-                            .equal(root
-                                    .get(IpRestrictConfiguration_.clientRestrictConfiguration),
-                                    clientRestrictConfigurationId);
+                if (clientId != null) {
+                    return cb.equal(root.get(IpRestrictConfiguration_.client),
+                            clientId);
                 }
                 return null;
             }

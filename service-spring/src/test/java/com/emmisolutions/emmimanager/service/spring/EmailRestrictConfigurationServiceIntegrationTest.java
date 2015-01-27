@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
@@ -35,14 +35,10 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
      */
     @Test
     public void testCreateReloadUpdateDelete() {
-        ClientRestrictConfiguration config = new ClientRestrictConfiguration();
-        config.setClient(makeNewRandomClient());
-        config = clientRestrictConfigurationService.create(config);
-
-        assertThat("config saved with id", config.getId(), is(notNullValue()));
+        Client client = makeNewRandomClient();
 
         EmailRestrictConfiguration emailConfig = new EmailRestrictConfiguration();
-        emailConfig.setClientRestrictConfiguration(config);
+        emailConfig.setClient(client);
         emailConfig.setEmailEnding("emmisolutions.com");
         emailConfig.setDescription(RandomStringUtils.randomAlphabetic(255));
         emailConfig = emailRestrictConfigurationService.create(emailConfig);
@@ -74,24 +70,22 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
      */
     @Test
     public void testGetByClientRestrictConfiguration() {
-        ClientRestrictConfiguration config = new ClientRestrictConfiguration();
-        config.setClient(makeNewRandomClient());
-        config = clientRestrictConfigurationService.create(config);
+        Client client = makeNewRandomClient();
 
         EmailRestrictConfiguration emailConfig = new EmailRestrictConfiguration();
-        emailConfig.setClientRestrictConfiguration(config);
+        emailConfig.setClient(client);
         emailConfig.setEmailEnding("emmisolutions.com");
         emailConfig.setDescription(RandomStringUtils.randomAlphabetic(255));
         emailConfig = emailRestrictConfigurationService.create(emailConfig);
 
         EmailRestrictConfiguration emailConfigA = new EmailRestrictConfiguration();
-        emailConfigA.setClientRestrictConfiguration(config);
+        emailConfigA.setClient(client);
         emailConfigA.setEmailEnding("emmisolutions.com");
         emailConfigA.setDescription(RandomStringUtils.randomAlphabetic(255));
         emailConfigA = emailRestrictConfigurationService.create(emailConfigA);
 
         Page<EmailRestrictConfiguration> page = emailRestrictConfigurationService
-                .getByClientRestrictConfiguration(null, config);
+                .getByClient(null, client);
 
         assertThat("return page should include email config",
                 page.getContent(), hasItem(emailConfig));
@@ -140,8 +134,7 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeGetNull() {
-        emailRestrictConfigurationService.getByClientRestrictConfiguration(
-                null, null);
+        emailRestrictConfigurationService.getByClient(null, null);
     }
 
     /**
@@ -149,8 +142,7 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeGetNullId() {
-        emailRestrictConfigurationService.getByClientRestrictConfiguration(
-                null, new ClientRestrictConfiguration());
+        emailRestrictConfigurationService.getByClient(null, new Client());
     }
 
     /**
