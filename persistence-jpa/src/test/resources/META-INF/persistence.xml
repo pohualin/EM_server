@@ -9,6 +9,9 @@
         <class>com.emmisolutions.emmimanager.model.audit.UsernameRevisionEntity</class>
         <class>com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.user.admin.UserAdmin</class>
         <class>com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission</class>
         <class>com.emmisolutions.emmimanager.model.user.admin.UserAdminRole</class>
