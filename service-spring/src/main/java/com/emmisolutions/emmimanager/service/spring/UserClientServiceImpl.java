@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,20 @@ public class UserClientServiceImpl implements UserClientService {
     @Override
     @Transactional
     public UserClient create(UserClient userClient) {
+        // ensure new creation
+        userClient.setId(null);
+        userClient.setVersion(null);
+
+        // no password
+        userClient.setPassword(null);
+        userClient.setSalt(null);
+
+        // create activation key
+        userClient.setActivationKey(RandomStringUtils.randomAlphanumeric(40));
+
+        // user is not activated
+        userClient.setActivated(false);
+
         return userClientPersistence.saveOrUpdate(userClient);
     }
 
@@ -49,9 +64,17 @@ public class UserClientServiceImpl implements UserClientService {
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
-        // do not allow for client or password changes
+
+        // do not allow for security related fields to be changed on update
         userClient.setClient(inDb.getClient());
         userClient.setPassword(inDb.getPassword());
+        userClient.setSalt(inDb.getSalt());
+        userClient.setActivationKey(inDb.getActivationKey());
+        userClient.setActivated(inDb.getActivated());
+        userClient.setCredentialsNonExpired(inDb.isCredentialsNonExpired());
+        userClient.setAccountNonExpired(inDb.isAccountNonExpired());
+        userClient.setAccountNonLocked(inDb.isAccountNonLocked());
+
         return userClientPersistence.saveOrUpdate(userClient);
     }
 
