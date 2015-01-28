@@ -1,16 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroup_;
-import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import org.hibernate.annotations.QueryHints;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
-
 import javax.annotation.Resource;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -18,6 +7,18 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
+import org.hibernate.annotations.QueryHints;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
+
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroup_;
+import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 
 /**
  *  ReferenceGroupPersistence implementation
@@ -50,4 +51,17 @@ public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence 
 		}
 		return groups;
 	}
+	
+	@Override
+	public ReferenceGroup save(ReferenceGroup group){
+	    return referenceGroupRepository.save(group);
+	}
+	
+    @Override
+    public ReferenceGroup reload(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return referenceGroupRepository.findOne(id);
+    }
 }

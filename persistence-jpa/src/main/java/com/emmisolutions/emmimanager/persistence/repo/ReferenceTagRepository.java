@@ -1,10 +1,14 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
-import com.emmisolutions.emmimanager.model.ReferenceTag;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
 
 /**
  * Spring Data Repo for Reference Tag
@@ -19,4 +23,11 @@ public interface ReferenceTagRepository extends JpaRepository<ReferenceTag, Long
      * @return Page<ReferenceTag>
      */
     Page<ReferenceTag> findAllByGroupTypeName(String name, Pageable pageable);
+    
+    /**
+     * Finds all reference tags for the given reference group
+     * @param group referenceGroup to search on
+     * @return Set<ReferenceTag>
+     */
+    Set<ReferenceTag> findAllByGroup(ReferenceGroup group);
 }
