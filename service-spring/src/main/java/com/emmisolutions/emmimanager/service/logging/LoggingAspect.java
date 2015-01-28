@@ -30,7 +30,7 @@ public class LoggingAspect {
     /**
      * Get all public methods in the service package
      */
-    @Pointcut("execution(public * com.emmisolutions.emmimanager.service..*.*(..)))")
+    @Pointcut("execution(public * com.emmisolutions.emmimanager.service.spring..*.*(..)))")
     public void loggingPointcut() {
     }
 

@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +24,25 @@ import java.util.List;
 @DiscriminatorValue("C")
 public class UserClient extends User {
 
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "client_id",
+            foreignKey = @ForeignKey(name = "fk_client_id"))
+    private Client client;
+
+    @OneToMany(mappedBy = "userClient")
+    private Collection<UserClientUserClientRole> clientRoles;
+
+    @OneToMany(mappedBy = "userClient")
+    private Collection<UserClientUserClientTeamRole> teamRoles;
+
+    @Size(max = 40)
+    @Column(name = "activation_key", length = 40, columnDefinition = "nvarchar(40)")
+    private String activationKey;
+
+    @Column
+    private Boolean activated = false;
+
     public UserClient() {
 
     }
@@ -31,12 +51,6 @@ public class UserClient extends User {
         super.setId(id);
     }
 
-    @ManyToOne
-    @NotNull
-    @JoinColumn(name = "client_id",
-            foreignKey = @ForeignKey(name = "fk_client_id"))
-    private Client client;
-
     public Client getClient() {
         return client;
     }
@@ -44,13 +58,6 @@ public class UserClient extends User {
     public void setClient(Client client) {
         this.client = client;
     }
-
-    @OneToMany(mappedBy = "userClient")
-    private Collection<UserClientUserClientRole> clientRoles;
-
-    @OneToMany(mappedBy = "userClient")
-    private Collection<UserClientUserClientTeamRole> teamRoles;
-
 
     public Collection<UserClientUserClientRole> getClientRoles() {
         return clientRoles;
@@ -102,4 +109,19 @@ public class UserClient extends User {
         return authorities;
     }
 
+    public String getActivationKey() {
+        return activationKey;
+    }
+
+    public void setActivationKey(String activationKey) {
+        this.activationKey = activationKey;
+    }
+
+    public Boolean getActivated() {
+        return activated;
+    }
+
+    public void setActivated(Boolean activated) {
+        this.activated = activated;
+    }
 }
