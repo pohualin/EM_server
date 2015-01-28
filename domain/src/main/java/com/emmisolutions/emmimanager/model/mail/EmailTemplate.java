@@ -22,7 +22,7 @@ public class EmailTemplate extends AbstractAuditingEntity {
     @Version
     private Integer version;
 
-    @Column(length = 5120, columnDefinition = "nvarchar(5120)", nullable = false)
+    @Column(length = 4000, columnDefinition = "nvarchar(4000)", nullable = false)
     private String content;
 
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
