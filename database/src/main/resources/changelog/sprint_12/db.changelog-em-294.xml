@@ -23,7 +23,7 @@
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
 
-            <column name="content" type="nvarchar(5120)">
+            <column name="content" type="nvarchar(4000)">
                 <constraints nullable="false"/>
             </column>
             <column name="type" type="varchar(100)">
