@@ -113,5 +113,7 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-admin-passwords.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-294.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-joined-strategy.xml"/>
 	
 </databaseChangeLog>

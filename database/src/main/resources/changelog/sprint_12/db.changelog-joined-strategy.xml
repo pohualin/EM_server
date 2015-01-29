@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create subclass tables" author="matt">
+
+        <createTable tableName="user_admin">
+            <column name="id" type="bigint">
+                <constraints nullable="false"
+                             primaryKey="true" primaryKeyName="pk_user_admin"/>
+            </column>
+            <column name="login" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(40)"/>
+            <column name="salt" type="varchar(32)"/>
+            <column name="email" type="nvarchar(255)"/>
+        </createTable>
+
+        <createTable tableName="user_admin_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login" type="nvarchar(255)"/>
+            <column name="password" type="varchar(40)"/>
+            <column name="salt" type="varchar(32)"/>
+            <column name="email" type="nvarchar(255)"/>
+        </createTable>
+        <addPrimaryKey tableName="user_admin_audit" columnNames="id, revision"
+                       constraintName="pk_user_admin_audit"/>
+
+        <createTable tableName="user_client">
+            <column name="id" type="bigint">
+                <constraints nullable="false"
+                             primaryKey="true" primaryKeyName="pk_user_client"/>
+            </column>
+            <column name="login" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(40)"/>
+            <column name="salt" type="varchar(32)"/>
+            <column name="email" type="nvarchar(255)"/>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="activated" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="activation_key" type="nvarchar(40)"/>
+        </createTable>
+
+        <createTable tableName="user_client_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login" type="nvarchar(255)"/>
+            <column name="password" type="varchar(40)"/>
+            <column name="salt" type="varchar(32)"/>
+            <column name="email" type="nvarchar(255)"/>
+            <column name="client_id" type="bigint"/>
+            <column name="activated" type="boolean"/>
+            <column name="activation_key" type="nvarchar(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="user_client_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_audit"/>
+
+    </changeSet>
+
+    <changeSet id="create unique indices non mssql" author="Matt" dbms="h2, postgres, mysql">
+
+        <createIndex tableName="user_client" indexName="ix_user_client_activation_key" unique="true">
+            <column name="activation_key" type="nvarchar(40)"/>
+        </createIndex>
+
+        <createIndex tableName="user_client" indexName="ix_user_client_email" unique="true">
+            <column name="email" type="nvarchar(255)"/>
+        </createIndex>
+
+        <createIndex tableName="user_admin" indexName="ix_user_admin_email" unique="true">
+            <column name="email" type="nvarchar(255)"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="create unique indices mssql" author="Matt" dbms="mssql">
+
+        <sql><![CDATA[
+            create unique index ix_user_client_activation_key on user_client(activation_key) where activation_key is not null
+        ]]></sql>
+        <sql><![CDATA[
+            create unique index ix_user_client_email on user_client(email) where email is not null
+        ]]></sql>
+        <sql><![CDATA[
+            create unique index ix_user_admin_email on user_admin(email) where email is not null
+        ]]></sql>
+
+    </changeSet>
+
+    <changeSet id="common fks and indices" author="matt">
+
+        <addForeignKeyConstraint baseTableName="user_client"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_user_client_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="user_client" indexName="ix_user_client_client_id">
+            <column name="client_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="user_client"
+                                 baseColumnNames="id"
+                                 constraintName="fk_user_client_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="user_client" indexName="ix_user_client_users_id">
+            <column name="id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="user_client_audit"
+                                 baseColumnNames="id, revision"
+                                 constraintName="fk_user_client_audit_users_audit"
+                                 referencedTableName="users_audit"
+                                 referencedColumnNames="id, revision"/>
+        <createIndex tableName="user_client_audit" indexName="ix_user_client_audit_users_audit_id_revision">
+            <column name="id"/>
+            <column name="revision"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="user_admin"
+                                 baseColumnNames="id"
+                                 constraintName="fk_user_admin_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="user_admin" indexName="ix_user_admin_users_id">
+            <column name="id"/>
+        </createIndex>
+
+
+        <addForeignKeyConstraint baseTableName="user_admin_audit"
+                                 baseColumnNames="id, revision"
+                                 constraintName="fk_user_admin_audit_users_audit"
+                                 referencedTableName="users_audit"
+                                 referencedColumnNames="id, revision"/>
+        <createIndex tableName="user_admin_audit" indexName="ix_user_admin_audit_users_audit_id_revision">
+            <column name="id"/>
+            <column name="revision"/>
+        </createIndex>
+
+
+        <addUniqueConstraint tableName="user_client" columnNames="login"
+                             constraintName="uk_user_client_login"/>
+        <addUniqueConstraint tableName="user_admin" columnNames="login"
+                             constraintName="uk_user_admin_login"/>
+
+    </changeSet>
+
+    <changeSet id="copy data from existing" author="matt">
+
+        <sql><![CDATA[
+                INSERT INTO user_admin (id, login, password, salt, email)
+                  SELECT
+                    u.id,
+                    u.login,
+                    u.password,
+                    u.salt,
+                    u.email
+                  FROM users u
+                  WHERE u.user_type = 'A';
+        ]]></sql>
+
+        <sql><![CDATA[
+                INSERT INTO user_client (id, login, password, salt, email, client_id, activated, activation_key)
+                  SELECT
+                    u.id,
+                    u.login,
+                    u.password,
+                    u.salt,
+                    u.email,
+                    u.client_id,
+                    false,
+                    u.activation_key
+                  FROM users u
+                  WHERE u.user_type = 'C';
+        ]]></sql>
+
+    </changeSet>
+
+    <changeSet id="re-point existing foreign keys" author="matt">
+
+        <dropForeignKeyConstraint baseTableName="user_client_user_client_team_role"
+                                  constraintName="fk_user_client_user_client_team_role_users"/>
+
+        <!--<dropForeignKeyConstraint baseTableName="user_client_user_client_role"-->
+        <!--constraintName="fk_user_client_user_client_role_users"/>-->
+
+        <dropForeignKeyConstraint baseTableName="user_admin_user_admin_role"
+                                  constraintName="fk_user_admin_user_admin_role_users"/>
+
+        <dropForeignKeyConstraint baseTableName="client"
+                                  constraintName="fk_client_users"/>
+
+        <renameColumn tableName="user_client_user_client_team_role"
+                      oldColumnName="users_id"
+                      newColumnName="user_client_id"
+                      columnDataType="bigint"/>
+
+        <renameColumn tableName="user_client_user_client_role"
+                      oldColumnName="users_id"
+                      newColumnName="user_client_id"
+                      columnDataType="bigint"/>
+
+        <renameColumn tableName="user_admin_user_admin_role"
+                      oldColumnName="users_id"
+                      newColumnName="user_admin_id"
+                      columnDataType="bigint"/>
+
+        <renameColumn tableName="user_client_user_client_team_role_audit"
+                      oldColumnName="users_id"
+                      newColumnName="user_client_id"
+                      columnDataType="bigint"/>
+
+        <renameColumn tableName="user_client_user_client_role_audit"
+                      oldColumnName="users_id"
+                      newColumnName="user_client_id"
+                      columnDataType="bigint"/>
+
+        <renameColumn tableName="user_admin_user_admin_role_audit"
+                      oldColumnName="users_id"
+                      newColumnName="user_admin_id"
+                      columnDataType="bigint"/>
+
+    </changeSet>
+
+    <changeSet id="add fks to new points" author="matt">
+
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role"
+                                 baseColumnNames="user_client_id"
+                                 referencedTableName="user_client"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_user_client_user_client_team_role_user_client"/>
+        <createIndex tableName="user_client_user_client_team_role"
+                     indexName="ix_user_client_user_client_team_role_user_client_id">
+            <column name="user_client_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="user_client_user_client_role"
+                                 baseColumnNames="user_client_id"
+                                 referencedTableName="user_client"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_user_client_user_client_role_user_client"/>
+        <createIndex tableName="user_client_user_client_role"
+                     indexName="ix_user_client_user_client_role_user_client_id">
+            <column name="user_client_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="user_admin_user_admin_role"
+                                 baseColumnNames="user_admin_id"
+                                 referencedTableName="user_admin"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_user_admin_user_admin_role_user_admin"/>
+        <createIndex tableName="user_admin_user_admin_role" indexName="ix_user_admin_user_admin_role_user_admin_id">
+            <column name="user_admin_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="client"
+                                 baseColumnNames="contract_owner_id"
+                                 referencedTableName="user_admin"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_client_user_admin"/>
+        <createIndex tableName="client" indexName="ix_client_user_admin_id">
+            <column name="contract_owner_id"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="drop fk_users_client" author="matt">
+        <preConditions>
+            <foreignKeyConstraintExists
+                    foreignKeyName="fk_users_client"
+                    foreignKeyTableName="users"/>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="users"
+                                  constraintName="fk_users_client"/>
+    </changeSet>
+
+    <changeSet id="drop ix_users_client_id" author="matt">
+        <preConditions>
+            <indexExists indexName="ix_users_client_id"
+                         tableName="users"/>
+        </preConditions>
+        <dropIndex tableName="users" indexName="ix_users_client_id"/>
+    </changeSet>
+
+    <changeSet id="drop ix_users_email" author="matt">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="ix_users_email"
+                         tableName="users"/>
+        </preConditions>
+        <dropIndex tableName="users" indexName="ix_users_email"/>
+    </changeSet>
+
+    <changeSet id="drop ix_users_activation_key" author="matt">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="ix_users_activation_key"
+                         tableName="users"/>
+        </preConditions>
+        <dropIndex tableName="users" indexName="ix_users_activation_key"/>
+    </changeSet>
+
+    <changeSet id="drop uk_users_login" author="matt">
+        <dropUniqueConstraint tableName="users" uniqueColumns="login"
+                              constraintName="uk_users_login"/>
+    </changeSet>
+
+    <changeSet id="remove old columns" author="matt">
+
+        <dropColumn tableName="users" columnName="login"/>
+        <dropColumn tableName="users" columnName="email"/>
+        <dropColumn tableName="users" columnName="password"/>
+        <dropColumn tableName="users" columnName="client_id"/>
+        <dropColumn tableName="users" columnName="salt"/>
+        <dropColumn tableName="users" columnName="activation_key"/>
+        <dropColumn tableName="users" columnName="activated"/>
+
+        <dropColumn tableName="users_audit" columnName="login"/>
+        <dropColumn tableName="users_audit" columnName="email"/>
+        <dropColumn tableName="users_audit" columnName="password"/>
+        <dropColumn tableName="users_audit" columnName="client_id"/>
+        <dropColumn tableName="users_audit" columnName="salt"/>
+        <dropColumn tableName="users_audit" columnName="activation_key"/>
+        <dropColumn tableName="users_audit" columnName="activated"/>
+
+    </changeSet>
+
+</databaseChangeLog>
