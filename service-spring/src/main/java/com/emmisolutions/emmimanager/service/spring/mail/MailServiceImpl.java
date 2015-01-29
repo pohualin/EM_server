@@ -35,7 +35,7 @@ public class MailServiceImpl implements MailService {
     @Resource
     private TemplateEngine templateEngine;
 
-    @Value("${mail.activation.from:\"EmmiManager Activation\" <no_reply@emmisolutions.com>}")
+    @Value("${mail.activation.from:Emmimanager Activation <no_reply@emmisolutions.com>}")
     private String activationFrom;
 
     @Value("${mail.server.use:true}")
@@ -58,7 +58,7 @@ public class MailServiceImpl implements MailService {
         if (matcher.find()) {
             subject = StringUtils.trimToNull(matcher.group(1));
         }
-        String to = String.format("\"%s\" <%s>", StringUtils.defaultIfBlank(user.getFullName(), user.getEmail()), user.getEmail());
+        String to = String.format("%s <%s>", StringUtils.defaultIfBlank(user.getFullName(), user.getEmail()), user.getEmail());
         sendEmail(to, activationFrom, subject, content, false, true);
     }
 
@@ -77,6 +77,7 @@ public class MailServiceImpl implements MailService {
             LOGGER.debug("|Subject: {}", subject);
             LOGGER.debug("|Body: {}", content.replaceAll("[\\t\\n\\r]", ""));
             LOGGER.debug("========================EMAIL END==========================");
+            LOGGER.debug("Sending to mail server: {}...", useMailServer);
             if (useMailServer) {
                 javaMailSender.send(mimeMessage);
             }
