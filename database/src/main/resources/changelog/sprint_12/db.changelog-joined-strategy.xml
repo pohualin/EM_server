@@ -188,7 +188,7 @@
                     u.salt,
                     u.email,
                     u.client_id,
-                    false,
+                    false as activated,
                     u.activation_key
                   FROM users u
                   WHERE u.user_type = 'C';
