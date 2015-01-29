@@ -38,7 +38,7 @@ public class MailServiceImpl implements MailService {
     @Value("${mail.activation.from:\"EmmiManager Activation\" <no_reply@emmisolutions.com>}")
     private String activationFrom;
 
-    @Value("${mail.server.use:false}")
+    @Value("${mail.server.use:true}")
     private boolean useMailServer;
 
     @Async
