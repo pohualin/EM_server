@@ -18,7 +18,7 @@
     <Environment name="salesforce.url" value="https://cs13.salesforce.com/services/Soap/c/31.0" type="java.lang.String"/>
 
     <!-- email server settings -->
-    <Environment name="mail.server.use" value="false" type="java.lang.String"/>
+    <Environment name="mail.server.use" value="true" type="java.lang.String"/>
     <Environment name="mail.activation.from" value="no_reply@emmisolutions.com" type="java.lang.String"/>
     <Environment name="mail.host" value="127.0.0.1" type="java.lang.String"/>
     <Environment name="mail.port" value="25" type="java.lang.String"/>
