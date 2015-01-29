@@ -35,10 +35,10 @@ public class MailServiceImpl implements MailService {
     @Resource
     private TemplateEngine templateEngine;
 
-    @Value("${mail.activation.from:no_reply@emmisolutions.com}")
+    @Value("${mail.activation.from:\"EmmiManager Activation\" <no_reply@emmisolutions.com>}")
     private String activationFrom;
 
-    @Value("${mail.server.use:true}")
+    @Value("${mail.server.use:false}")
     private boolean useMailServer;
 
     @Async
@@ -58,7 +58,8 @@ public class MailServiceImpl implements MailService {
         if (matcher.find()) {
             subject = StringUtils.trimToNull(matcher.group(1));
         }
-        sendEmail(user.getEmail(), activationFrom, subject, content, false, true);
+        String to = String.format("\"%s\" <%s>", StringUtils.defaultIfBlank(user.getFullName(), user.getEmail()), user.getEmail());
+        sendEmail(to, activationFrom, subject, content, false, true);
     }
 
     private void sendEmail(String to, String from, String subject, String content, boolean isMultipart, boolean isHtml) {

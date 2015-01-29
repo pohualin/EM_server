@@ -18,15 +18,15 @@
     <Environment name="salesforce.url" value="https://cs13.salesforce.com/services/Soap/c/31.0" type="java.lang.String"/>
 
     <!-- email server settings -->
-    <Environment name="mail.server.use" value="true" type="java.lang.String"/>
-    <Environment name="mail.activation.from" value="no_reply@emmisolutions.com" type="java.lang.String"/>
-    <Environment name="mail.host" value="127.0.0.1" type="java.lang.String"/>
-    <Environment name="mail.port" value="25" type="java.lang.String"/>
-    <Environment name="mail.user" value="mail user name" type="java.lang.String"/>
-    <Environment name="mail.password" value="the password" type="java.lang.String"/>
-    <Environment name="mail.protocol" value="smtp" type="java.lang.String"/>
-    <Environment name="mail.tls" value="false" type="java.lang.String"/>
-    <Environment name="mail.auth" value="false" type="java.lang.String"/>
+    <!--<Environment name="mail.server.use" value="true" type="java.lang.String"/>-->
+    <!--<Environment name="mail.activation.from" value="no_reply@emmisolutions.com" type="java.lang.String"/>-->
+    <!--<Environment name="mail.host" value="127.0.0.1" type="java.lang.String"/>-->
+    <!--<Environment name="mail.port" value="25" type="java.lang.String"/>-->
+    <!--<Environment name="mail.user" value="mail user name" type="java.lang.String"/>-->
+    <!--<Environment name="mail.password" value="the password" type="java.lang.String"/>-->
+    <!--<Environment name="mail.protocol" value="smtp" type="java.lang.String"/>-->
+    <!--<Environment name="mail.tls" value="false" type="java.lang.String"/>-->
+    <!--<Environment name="mail.auth" value="false" type="java.lang.String"/>-->
 
 
     <!-- For application logging but data source definition using the above resource/environment variables -->
