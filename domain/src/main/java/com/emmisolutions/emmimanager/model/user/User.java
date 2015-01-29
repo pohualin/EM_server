@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.model.user;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.security.core.GrantedAuthority;
@@ -117,8 +118,8 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
      * @return the full name or blank
      */
     public String getFullName() {
-        return StringUtils.trimToEmpty(StringUtils.defaultString(getFirstName()) +
-                " " + StringUtils.defaultString(getLastName()));
+        return WordUtils.capitalizeFully(StringUtils.trimToEmpty(StringUtils.defaultString(getFirstName()) +
+                " " + StringUtils.defaultString(getLastName())));
     }
 
     public void setFirstName(String firstName) {
