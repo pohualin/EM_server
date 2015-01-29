@@ -179,6 +179,9 @@
                   WHERE u.user_type = 'A';
         ]]></sql>
 
+    </changeSet>
+
+    <changeSet id="copy data part 2 non mssql" author="matt" dbms="h2, mysql, postgresql">
         <sql><![CDATA[
                 INSERT INTO user_client (id, login, password, salt, email, client_id, activated, activation_key)
                   SELECT
@@ -193,7 +196,23 @@
                   FROM users u
                   WHERE u.user_type = 'C';
         ]]></sql>
+    </changeSet>
 
+    <changeSet id="copy data part 2 mssql" author="matt" dbms="mssql">
+        <sql><![CDATA[
+                INSERT INTO user_client (id, login, password, salt, email, client_id, activated, activation_key)
+                  SELECT
+                    u.id,
+                    u.login,
+                    u.password,
+                    u.salt,
+                    u.email,
+                    u.client_id,
+                    0 as activated,
+                    u.activation_key
+                  FROM users u
+                  WHERE u.user_type = 'C';
+        ]]></sql>
     </changeSet>
 
     <changeSet id="re-point existing foreign keys" author="matt">
