@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
-import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,8 +51,11 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
         // make sure password matches the hashed password
         String presentedPassword = authentication.getCredentials().toString();
         String password = userDetails.getPassword();
-        if (userDetails instanceof User){
-            password += ((User) userDetails).getSalt();
+        if (userDetails instanceof UserClient) {
+            password += ((UserClient) userDetails).getSalt();
+        }
+        if (userDetails instanceof UserAdmin) {
+            password += ((UserAdmin) userDetails).getSalt();
         }
         if (!passwordEncoder.matches(presentedPassword, password)) {
             throw new BadCredentialsException(messages.getMessage(

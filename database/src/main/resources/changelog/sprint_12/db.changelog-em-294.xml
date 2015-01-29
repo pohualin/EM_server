@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="make email template table" author="Matt">
+
+        <createTable tableName="email_template">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_email_template"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+
+            <column name="content" type="nvarchar(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="email_template" columnNames="type"
+                             constraintName="uk_email_template_type"/>
+
+    </changeSet>
+
+    <changeSet id="add activation key" author="Matt">
+
+        <addColumn tableName="users">
+            <column name="activation_key" type="nvarchar(40)"/>
+            <column name="activated" type="boolean"/>
+        </addColumn>
+
+        <addColumn tableName="users_audit">
+            <column name="activation_key" type="nvarchar(40)"/>
+            <column name="activated" type="boolean"/>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="create unique index activation for non mssql" author="Matt" dbms="h2, postgres, mysql">
+        <createIndex tableName="users" indexName="ix_users_activation_key" unique="true">
+            <column name="activation_key" type="nvarchar(40)"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="create unique activation index mssql" author="Matt" dbms="mssql">
+        <sql>create unique index ix_users_activation_key on users(activation_key) where activation_key is not null</sql>
+    </changeSet>
+
+    <changeSet id="create activation email template" author="Matt">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_12/data/em-294/activation-email.data"
+                  tableName="email_template"
+                  separator="~"/>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -7,10 +7,12 @@ import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivationResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,8 @@ import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
 import static com.emmisolutions.emmimanager.model.UserClientSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -50,6 +54,9 @@ public class UserClientsResource {
 
     @Resource
     UserClientConflictResourceAssembler userClientConflictResourceAssembler;
+
+    @Resource
+    MailService mailService;
 
     /**
      * Get a page of UserClient that satisfy the search criteria
@@ -121,6 +128,10 @@ public class UserClientsResource {
         if (conflictingUserClient == null) {
             UserClient savedUserClient = userClientService.create(userClient);
             if (savedUserClient != null) {
+                // send activation email
+                mailService.sendActivationEmail(savedUserClient, linkTo(methodOn(UserClientsActivationResource.class)
+                        .activate(savedUserClient.getActivationKey())).withSelfRel().getHref());
+
                 // created a user client successfully
                 return new ResponseEntity<>(
                         userClientResourceAssembler.toResource(userClient),
