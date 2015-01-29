@@ -77,7 +77,7 @@
 
     </changeSet>
 
-    <changeSet id="create unique indices non mssql" author="Matt" dbms="h2, postgres, mysql">
+    <changeSet id="create unique indices non mssql" author="Matt" dbms="h2, mysql">
 
         <createIndex tableName="user_client" indexName="ix_user_client_activation_key" unique="true">
             <column name="activation_key" type="nvarchar(40)"/>
@@ -93,7 +93,7 @@
 
     </changeSet>
 
-    <changeSet id="create unique indices mssql" author="Matt" dbms="mssql">
+    <changeSet id="create partial indices" author="Matt" dbms="mssql, postgresql">
 
         <sql><![CDATA[
             create unique index ix_user_client_activation_key on user_client(activation_key) where activation_key is not null
