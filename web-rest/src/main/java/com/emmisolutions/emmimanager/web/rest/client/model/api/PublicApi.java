@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.client.model.api;
 
 import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.ApiResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivationResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,6 +33,7 @@ public class PublicApi extends ResourceSupport {
         add(new Link(self.getHref() + "/authenticate", "authenticate"));
         add(new Link(self.getHref() + "/logout", "logout"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).changeExpiredPassword(null)).withRel("expiredPassword"));
+        add(linkTo(methodOn(UserClientsActivationResource.class).activate(null)).withRel("activate"));
         add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
     }
 

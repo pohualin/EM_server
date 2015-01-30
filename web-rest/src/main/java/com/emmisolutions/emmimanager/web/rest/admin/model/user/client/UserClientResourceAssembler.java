@@ -33,6 +33,8 @@ public class UserClientResourceAssembler implements
                 .createGetUserClientUserClientTeamRolesLink(entity));
         ret.add(linkTo(methodOn(UserClientPasswordResource.class)
                 .set(entity.getId(), null)).withRel("changePassword"));
+        ret.add(linkTo(methodOn(UserClientsResource.class)
+                .sendActivationEmail(entity.getId())).withRel("sendActivationEmail"));
         ret.setEntity(entity);
         return ret;
     }

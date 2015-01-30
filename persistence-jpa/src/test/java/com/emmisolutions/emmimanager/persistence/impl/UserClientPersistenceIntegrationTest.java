@@ -255,4 +255,30 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
     }
 
+    /**
+     * Happy path for activation key setup
+     */
+    @Test
+    public void findByActivationKey() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setActivationKey("whatever");
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("find by activation key should work",
+                userClientPersistence.findByActivationKey(userClient.getActivationKey()),
+                is(userClient)
+        );
+    }
+
+    /**
+     * Null activation code searching
+     */
+    @Test
+    public void findByNullActivationKey() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("no activation key on user should return null value",
+                userClientPersistence.findByActivationKey(userClient.getActivationKey()),
+                is(nullValue())
+        );
+    }
+
 }

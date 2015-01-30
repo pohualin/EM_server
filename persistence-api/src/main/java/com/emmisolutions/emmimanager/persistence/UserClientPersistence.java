@@ -29,7 +29,7 @@ public interface UserClientPersistence {
     UserClient saveOrUpdate(UserClient user);
 
     /**
-     * Find a page of UserClient based on pagable and filter
+     * Find a page of UserClient based on pageable and filter
      *
      * @param pageable contains pageable information
      * @param filter   contains search criteria
@@ -52,4 +52,12 @@ public interface UserClientPersistence {
      * @return a UserClient or null
      */
     UserClient fetchUserWillFullPermissions(String currentLogin);
+
+    /**
+     * Finds a UserClient by its activation code
+     *
+     * @param activationKey to find by
+     * @return a UserClient or null
+     */
+    UserClient findByActivationKey(String activationKey);
 }

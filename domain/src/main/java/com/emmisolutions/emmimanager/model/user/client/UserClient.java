@@ -70,8 +70,8 @@ public class UserClient extends User {
     @Column(name = "activation_key", length = 40, columnDefinition = "nvarchar(40)")
     private String activationKey;
 
-    @Column
-    private Boolean activated = false;
+    @Column(name = "activated", nullable = false)
+    private boolean activated;
 
     public UserClient() {
 
@@ -147,14 +147,6 @@ public class UserClient extends User {
         this.activationKey = activationKey;
     }
 
-    public Boolean getActivated() {
-        return activated;
-    }
-
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
-
     public String getLogin() {
         return login;
     }
@@ -191,5 +183,13 @@ public class UserClient extends User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 }

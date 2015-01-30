@@ -21,4 +21,12 @@ public interface UserClientPasswordService {
      * @param expiredPasswordChangeRequest specifies the update
      */
     void changeExpiredPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
+
+    /**
+     * Encodes whatever password is currently on the UserClient
+     *
+     * @param userClient to find the password
+     * @return UserClient with both password and salt populated
+     */
+    public UserClient encodePassword(UserClient userClient);
 }

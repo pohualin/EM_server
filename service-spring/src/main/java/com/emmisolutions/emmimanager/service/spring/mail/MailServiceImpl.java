@@ -35,7 +35,7 @@ public class MailServiceImpl implements MailService {
     @Resource
     private TemplateEngine templateEngine;
 
-    @Value("${mail.activation.from:Emmimanager Activation <no_reply@emmisolutions.com>}")
+    @Value("${mail.activation.from:EmmiManager Activation <no_reply@emmisolutions.com>}")
     private String activationFrom;
 
     @Value("${mail.server.use:true}")
