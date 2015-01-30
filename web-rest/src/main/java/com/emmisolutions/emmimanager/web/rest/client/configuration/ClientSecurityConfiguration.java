@@ -125,7 +125,8 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi-client.*").permitAll()
                     .antMatchers("/webapi-client/").permitAll()
                     .antMatchers("/webapi-client/messages").permitAll()
-                    .antMatchers("/webapi-client//password/expired").permitAll()
+                .antMatchers("/webapi-client/password/expired").permitAll()
+                .antMatchers("/webapi-client/activate").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()
                     .antMatchers("/webapi-client/**").authenticated();
