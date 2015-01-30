@@ -208,7 +208,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		clientService.create(client);
 
     	Provider provider = new Provider();
-		provider.setFirstName("Mary");
+		provider.setFirstName(RandomStringUtils.randomAlphabetic(255));
 		provider.setMiddleName("Broadway");
 		provider.setLastName("Poppins");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
@@ -246,7 +246,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("two team providers were removed", teamProviderService.delete(client, provider), is(2l));
         assertThat("teamProviders are deleted", teamProviderService.findTeamProvidersByTeam(null, savedTeam).getTotalElements(), is(0l));
         
-        ProviderSearchFilter providerSearchFilter = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, "mary");
+        ProviderSearchFilter providerSearchFilter = new ProviderSearchFilter(StatusFilter.ACTIVE_ONLY, provider.getFirstName());
         Page<TeamProvider> tproviders = teamProviderService.findPossibleProvidersToAdd(savedTeam2, providerSearchFilter, null);
         assertThat("teamProviders are found", tproviders.getTotalElements(), is(1l));
         assertThat("teamProviders are found", tproviders.iterator().next().getProvider().getId(), is(notNullValue()));
