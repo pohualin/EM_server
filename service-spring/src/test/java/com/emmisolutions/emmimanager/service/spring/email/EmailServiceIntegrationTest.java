@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring.email;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import org.junit.Test;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -20,12 +21,14 @@ import static org.junit.Assert.assertThat;
  */
 public class EmailServiceIntegrationTest extends BaseIntegrationTest {
 
-
     @Resource
     MailService mailService;
 
     @Resource
     JavaMailSenderImpl javaMailSender;
+
+    @Resource
+    UserClientService userClientService;
 
     /**
      * Ensure that an activation email is sent out to the user
@@ -36,7 +39,8 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void sendActivationEmail() throws IOException, MessagingException {
         // make a new user
-        UserClient user = makeNewRandomUserClient(null);
+        UserClient user = userClientService
+                .addActivationKey(makeNewRandomUserClient(null));
 
         setEmailMailServerUser(user.getEmail());
 
