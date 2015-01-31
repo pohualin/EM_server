@@ -7,12 +7,15 @@ import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivationResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,11 +26,14 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
 import static com.emmisolutions.emmimanager.model.UserClientSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -50,6 +56,14 @@ public class UserClientsResource {
 
     @Resource
     UserClientConflictResourceAssembler userClientConflictResourceAssembler;
+
+    @Resource
+    MailService mailService;
+
+    @Value("${client.application.entry.point:/client.html}")
+    String clientEntryPoint;
+
+    private static final String ACTIVATION_LOCATION = "#/activate/%s";
 
     /**
      * Get a page of UserClient that satisfy the search criteria
@@ -121,6 +135,7 @@ public class UserClientsResource {
         if (conflictingUserClient == null) {
             UserClient savedUserClient = userClientService.create(userClient);
             if (savedUserClient != null) {
+
                 // created a user client successfully
                 return new ResponseEntity<>(
                         userClientResourceAssembler.toResource(userClient),
@@ -137,6 +152,28 @@ public class UserClientsResource {
         }
     }
 
+    @RequestMapping(value = "/user_client/{id}/activation/email", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    public ResponseEntity<Void> sendActivationEmail(@PathVariable Long id) {
+
+        // update the activation token, invalidating others
+        UserClient savedUserClient = userClientService.addActivationKey(new UserClient(id));
+
+        // get the proper url (the way we make hateoas links), then replace the path with the client entry point
+        String activationHref =
+                UriComponentsBuilder.fromHttpUrl(
+                        linkTo(methodOn(UserClientsActivationResource.class)
+                                .activate(null)).withSelfRel().getHref())
+                        .replacePath(clientEntryPoint + String.format(ACTIVATION_LOCATION, savedUserClient.getActivationKey()))
+                        .build(false)
+                        .toUriString();
+
+        // send the email (asynchronously)
+        mailService.sendActivationEmail(savedUserClient, activationHref);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     /**
      * GET a single UserClient
      *
@@ -144,7 +181,7 @@ public class UserClientsResource {
      * @return UserClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/user_client/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER",})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<UserClientResource> get(@PathVariable("id") Long id) {
         UserClient userClient = userClientService.reload(new UserClient(id));
         if (userClient != null) {

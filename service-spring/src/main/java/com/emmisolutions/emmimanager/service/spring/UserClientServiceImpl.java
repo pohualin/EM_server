@@ -2,9 +2,12 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -30,9 +33,23 @@ public class UserClientServiceImpl implements UserClientService {
     @Resource
     UserClientPersistence userClientPersistence;
 
+    @Resource
+    UserClientPasswordService userClientPasswordService;
+
     @Override
     @Transactional
     public UserClient create(UserClient userClient) {
+        // ensure new creation
+        userClient.setId(null);
+        userClient.setVersion(null);
+
+        // no password
+        userClient.setPassword(null);
+        userClient.setSalt(null);
+
+        // user is not activated
+        userClient.setActivated(false);
+
         return userClientPersistence.saveOrUpdate(userClient);
     }
 
@@ -49,16 +66,24 @@ public class UserClientServiceImpl implements UserClientService {
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
-        // do not allow for client or password changes
+
+        // do not allow for security related fields to be changed on update
         userClient.setClient(inDb.getClient());
         userClient.setPassword(inDb.getPassword());
+        userClient.setSalt(inDb.getSalt());
+        userClient.setActivationKey(inDb.getActivationKey());
+        userClient.setActivated(inDb.isActivated());
+        userClient.setCredentialsNonExpired(inDb.isCredentialsNonExpired());
+        userClient.setAccountNonExpired(inDb.isAccountNonExpired());
+        userClient.setAccountNonLocked(inDb.isAccountNonLocked());
+
         return userClientPersistence.saveOrUpdate(userClient);
     }
 
     @Override
     @Transactional
     public Page<UserClient> list(Pageable pageable,
-            UserClientSearchFilter filter) {
+                                 UserClientSearchFilter filter) {
         return userClientPersistence.list(pageable, filter);
     }
 
@@ -76,6 +101,38 @@ public class UserClientServiceImpl implements UserClientService {
             }
         }
         return ret;
+    }
+
+    @Override
+    public UserClient activate(ActivationRequest activationRequest) {
+        UserClient userClient = null;
+        if (activationRequest != null) {
+            userClient = userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
+            if (userClient != null) {
+                userClient.setActivated(true);
+                userClient.setActivationKey(null);
+                userClient.setPassword(activationRequest.getNewPassword());
+                userClient.setCredentialsNonExpired(true);
+                userClientPersistence.saveOrUpdate(
+                        userClientPasswordService.encodePassword(userClient));
+            }
+        }
+        return userClient;
+    }
+
+    @Override
+    @Transactional
+    public UserClient addActivationKey(UserClient userClient) {
+        UserClient fromDb = reload(userClient);
+        if (fromDb == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
+        }
+        // update the activation key, only for not yet activated users
+        if (!fromDb.isActivated()) {
+            fromDb.setActivationKey(RandomStringUtils.randomAlphanumeric(40));
+        }
+        return userClientPersistence.saveOrUpdate(fromDb);
     }
 
 }

@@ -48,6 +48,7 @@
         <class>com.emmisolutions.emmimanager.model.TeamLocation</class>
 		<class>com.emmisolutions.emmimanager.model.TeamProviderTeamLocation</class>
         <class>com.emmisolutions.emmimanager.model.ClientProvider</class>
+        <class>com.emmisolutions.emmimanager.model.mail.EmailTemplate</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>

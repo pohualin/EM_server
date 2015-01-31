@@ -60,7 +60,8 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         }
     }
 
-    private UserClient encodePassword(UserClient userClient) {
+    @Override
+    public UserClient encodePassword(UserClient userClient) {
         String encodedPasswordPlusSalt = passwordEncoder.encode(userClient.getPassword());
         userClient.setPassword(encodedPasswordPlusSalt.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         userClient.setSalt(encodedPasswordPlusSalt.substring(LegacyPasswordEncoder.PASSWORD_SIZE));

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Audited
 @Entity
 @Table(name = "user_client_user_client_team_role", uniqueConstraints = @UniqueConstraint(columnNames = {
-        "users_id", "client_team_id", "user_client_team_role_id" }, name = "uk_user_client_user_client_team_role"))
+        "user_client_id", "client_team_id", "user_client_team_role_id"}, name = "uk_user_client_user_client_team_role"))
 public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
     /**
@@ -27,8 +27,8 @@ public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
     /**
      * Constructor with id
-     * 
-     * @param id
+     *
+     * @param id the id
      */
     public UserClientUserClientTeamRole(Long id) {
         this.id = id;
@@ -50,7 +50,7 @@ public class UserClientUserClientTeamRole extends AbstractAuditingEntity {
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "users_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_user_client_user_client_team_role_users"))
+    @JoinColumn(name = "user_client_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_user_client_user_client_team_role_users"))
     private UserClient userClient;
 
     public Long getId() {

@@ -89,4 +89,12 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         return userClient;
     }
 
+    @Override
+    public UserClient findByActivationKey(String activationKey) {
+        if (StringUtils.isNotBlank(activationKey)) {
+            return userClientRepository.findByActivationKey(activationKey);
+        }
+        return null;
+    }
+
 }
