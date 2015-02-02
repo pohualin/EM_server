@@ -1,10 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,7 +59,12 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         group.setType(groupType);
         groupSaveReqOne.setReferenceGroup(group);
         refGroupSaveRequests.add(groupSaveReqOne);
-        Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupSaveRequests);
+        Set<ReferenceGroup> groups = new HashSet();
+        for(RefGroupSaveRequest request: refGroupSaveRequests){
+            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
+            groups.add(savedGroup);
+        }
+        
         assertThat("Reference Groups are saved", groups.size(), is(1));
     }
 
@@ -89,7 +94,11 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         groupSaveReqOne.setReferenceTags(tagList);
         refGroupSaveRequests.add(groupSaveReqOne);
 
-        Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupSaveRequests);
+        Set<ReferenceGroup> groups = new HashSet();
+        for(RefGroupSaveRequest request: refGroupSaveRequests){
+            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
+            groups.add(savedGroup);
+        }
         assertThat("Reference Group is saved", groups.size(), is(1));
         assertThat("The name of original group saved is: ", groups.iterator().next().getName(), is("Godard Retrospective"));
         
@@ -132,7 +141,11 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void createNewReferenceGroupWithReferenceTags(){
-        Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupWithTags());
+        Set<ReferenceGroup> groups = new HashSet();
+        for(RefGroupSaveRequest request: refGroupWithTags()){
+            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
+            groups.add(savedGroup);
+        }
         assertThat("One Reference Group is saved: ", groups.size(), is(1));
     }
     
@@ -141,8 +154,12 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void updateGroups(){
-        Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupWithTags());
-        assertThat("Updated number of tags is: ", groups.size(), is(1));
+        Set<ReferenceGroup> groups = new HashSet();
+        for(RefGroupSaveRequest request: refGroupWithTags()){
+            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
+            groups.add(savedGroup);
+        }
+        assertThat("One group was saved: ", groups.size(), is(1));
 
         ReferenceGroup one = groups.iterator().next();
 
@@ -172,7 +189,11 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         
         refGroupSaveRequests.add(groupSaveReqOne);
         refGroupSaveRequests.add(groupSaveReqTwo);
-        Set<ReferenceGroup> refreshedGroups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupSaveRequests);
+        Set<ReferenceGroup> refreshedGroups = new HashSet();
+        for(RefGroupSaveRequest request: refGroupSaveRequests){
+            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
+            refreshedGroups.add(savedGroup);
+        }
         assertThat("Updated number of tags is: ", refreshedGroups.size(), is(2));
         
         for (ReferenceGroup group1: refreshedGroups){
@@ -187,11 +208,14 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void updateGroupsWithDelete(){
-        Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupWithTags());
-        assertThat("Updated number of tags is: ", groups.size(), is(1));
+        Set<ReferenceGroup> groups = new HashSet();
+        for(RefGroupSaveRequest request: refGroupWithTags()){
+            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
+            groups.add(savedGroup);
+        }
+        assertThat("Saved one group: ", groups.size(), is(1));
 
         ReferenceGroup one = groups.iterator().next();
-        one.getTags().clear();
         
         final ReferenceTag newTag = new ReferenceTag();
         newTag.setName("Weekend");
@@ -224,8 +248,12 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         
         refGroupSaveRequests.add(groupSaveReqOne);
         refGroupSaveRequests.add(groupSaveReqTwo);
-        Set<ReferenceGroup> refreshedGroups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupSaveRequests);
-        assertThat("Updated number of tags is: ", refreshedGroups.size(), is(2));
+        Set<ReferenceGroup> refreshedGroups = new HashSet();
+        for(RefGroupSaveRequest request: refGroupSaveRequests){
+            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
+            refreshedGroups.add(savedGroup);
+        }
+        assertThat("Two groups saved: ", refreshedGroups.size(), is(2));
         
         for (ReferenceGroup group1: refreshedGroups){
             if (group1.getId().equals(one.getId())){

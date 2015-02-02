@@ -23,4 +23,7 @@ public interface ReferenceTagPersistence {
      * @return
      */
     Set<ReferenceTag> findAllByGroup(ReferenceGroup group);
+    
+    ReferenceTag reload(ReferenceTag tag);
+
 }

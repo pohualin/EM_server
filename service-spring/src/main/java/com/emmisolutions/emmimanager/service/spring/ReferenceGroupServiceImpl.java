@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -63,43 +61,37 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 	    }
 	    return referenceGroupPersistence.reload(id);
 	}
-		
+
     @Override
     @Transactional
-    public Set<ReferenceGroup> saveReferenceGroupsAndReferenceTags(List<RefGroupSaveRequest> groupSaveRequests) {
-        Set<ReferenceGroup> groups = new HashSet<>();
-        ensureGroupsAndTagsAreValid(groupSaveRequests);
-        for (RefGroupSaveRequest request : groupSaveRequests) {
-            if (request.getReferenceGroup() != null) {
-                ReferenceGroup savedGroup;
-                if (request.getReferenceGroup().getId() == null) {
-                    savedGroup = save(request.getReferenceGroup());
-                } else {
-                    savedGroup = request.getReferenceGroup();
-                }
-                List<ReferenceTag> savedTags = new ArrayList<ReferenceTag>();
-                ReferenceTag reftag;
-                if (request.getReferenceTags() != null) {
-                    for (ReferenceTag t : request.getReferenceTags()) {
-                        if (t != null && t.getId() == null) {
-                            reftag = saveTagForGroup(t, savedGroup);
-                        } else {
-                            reftag = t;
-                        }
-                        savedTags.add(reftag);
-                    }
-                }
+    public ReferenceGroup saveReferenceGroupAndReferenceTags(RefGroupSaveRequest groupSaveRequest) {
+        ensureGroupsAndTagsAreValid(groupSaveRequest);
+        ReferenceGroup savedGroup = referenceGroupPersistence.reload(groupSaveRequest.getReferenceGroup().getId());
+        if (savedGroup == null) {
+            savedGroup = save(groupSaveRequest.getReferenceGroup());
+        }
 
-                if (savedTags == null || savedTags.isEmpty()) {
-                    throw new InvalidDataAccessApiUsageException("Tags cannot be null");
+        if (groupSaveRequest.getReferenceTags() != null) {
+            ReferenceTag reftag;
+            savedGroup.getTags().clear();
+            for (ReferenceTag t : groupSaveRequest.getReferenceTags()) {
+                ReferenceTag fromDb = referenceTagPersistence.reload(t);
+                if (fromDb == null) {
+                    reftag = saveTagForGroup(t, savedGroup);
+                } else {
+                    reftag = fromDb;
                 }
-                savedGroup.getTags().addAll(savedTags);
-                groups.add(savedGroup);
+                savedGroup.getTags().add(reftag);
             }
         }
-        return groups;
-    }
 
+        if (savedGroup.getTags() == null || savedGroup.getTags().isEmpty()) {
+            throw new InvalidDataAccessApiUsageException("Tags cannot be null");
+        }
+
+        return savedGroup;
+    }
+    
     private ReferenceTag saveTagForGroup(ReferenceTag tag, ReferenceGroup group) {
         ReferenceTag t = new ReferenceTag();
         if (tag != null) {
@@ -113,21 +105,19 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
         return referenceTagPersistence.save(t);
     }
     
-    private void ensureGroupsAndTagsAreValid(List<RefGroupSaveRequest> saveRequests) {
+    private void ensureGroupsAndTagsAreValid(RefGroupSaveRequest saveRequest) {
         Set<String> groupNames = new HashSet<>();
-        for (RefGroupSaveRequest saveRequest : saveRequests) {
-            Set<String> tagsInAGroup = new HashSet<>();
-            if (saveRequest.getReferenceGroup() != null) {
-                String normalizedName = normalizeName(saveRequest.getReferenceGroup().getName());
-                if (StringUtils.isBlank(normalizedName) || !groupNames.add(normalizedName)) {
-                    throw new IllegalArgumentException("Group name: '" + saveRequest.getReferenceGroup().getName() + "' is null, only contains special characters or is a duplicate");
-                }
-                if (saveRequest.getReferenceTags() != null) {
-                    for (ReferenceTag tag : saveRequest.getReferenceTags()) {
-                        String normalizedTagName = normalizeName(tag.getName());
-                        if (StringUtils.isBlank(normalizedTagName) || !tagsInAGroup.add(normalizedTagName)) {
-                            throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' is null, only contains special characters or is a duplicate within group: " + saveRequest.getReferenceGroup().getName());
-                        }
+        Set<String> tagsInAGroup = new HashSet<>();
+        if (saveRequest.getReferenceGroup() != null) {
+            String normalizedName = normalizeName(saveRequest.getReferenceGroup().getName());
+            if (StringUtils.isBlank(normalizedName) || !groupNames.add(normalizedName)) {
+                throw new IllegalArgumentException("Group name: '" + saveRequest.getReferenceGroup().getName() + "' is null, only contains special characters or is a duplicate");
+            }
+            if (saveRequest.getReferenceTags() != null) {
+                for (ReferenceTag tag : saveRequest.getReferenceTags()) {
+                    String normalizedTagName = normalizeName(tag.getName());
+                    if (StringUtils.isBlank(normalizedTagName) || !tagsInAGroup.add(normalizedTagName)) {
+                        throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' is null, only contains special characters or is a duplicate within group: " + saveRequest.getReferenceGroup().getName());
                     }
                 }
             }

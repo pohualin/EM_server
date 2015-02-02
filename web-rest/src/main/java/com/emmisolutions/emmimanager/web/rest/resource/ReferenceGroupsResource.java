@@ -67,12 +67,12 @@ public class ReferenceGroupsResource {
     
     @RequestMapping(value="/referenceGroups", method = RequestMethod.POST)
     @RolesAllowed({"PERM_GOD"})
-    public ResponseEntity<Set<ReferenceGroup>> createReferenceGroup(@RequestBody List<RefGroupSaveRequest> groupSaveRequests){
-        Set<ReferenceGroup> refGroups = referenceGroupService.saveReferenceGroupsAndReferenceTags(groupSaveRequests);
-        if (refGroups == null || refGroups.isEmpty()) {
+    public ResponseEntity<ReferenceGroup> createReferenceGroup(@RequestBody RefGroupSaveRequest groupSaveRequest){
+        ReferenceGroup refGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveRequest);
+        if (refGroup == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            return new ResponseEntity<>(refGroups, HttpStatus.OK);
+            return new ResponseEntity<>(refGroup, HttpStatus.OK);
         }
     }
 }

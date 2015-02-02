@@ -1,8 +1,5 @@
 package com.emmisolutions.emmimanager.service;
 
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -37,11 +34,11 @@ public interface ReferenceGroupService {
     ReferenceGroup reload(Long id);
     
     /**
-     * POST to create reference groups and their associative tags
+     * POST to create reference group and its tags
      * @param groupSaveRequests
      * @return
      */
-    Set<ReferenceGroup> saveReferenceGroupsAndReferenceTags(List<RefGroupSaveRequest> groupSaveRequests);
+    ReferenceGroup saveReferenceGroupAndReferenceTags(RefGroupSaveRequest groupSaveRequests);
 
     /**
      * saves a given reference group
@@ -49,5 +46,5 @@ public interface ReferenceGroupService {
      * @return
      */
     ReferenceGroup save(ReferenceGroup group);
-    
+
 }

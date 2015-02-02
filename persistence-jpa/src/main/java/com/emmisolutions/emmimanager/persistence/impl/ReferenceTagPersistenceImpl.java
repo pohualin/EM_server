@@ -32,4 +32,13 @@ ReferenceGroupRepository referenceGroupRepository;
     public Set<ReferenceTag> findAllByGroup(ReferenceGroup group){
         return referenceTagRepository.findAllByGroup(group);
     }
+    
+    @Override
+    public ReferenceTag reload(ReferenceTag tag){
+        if (tag.getId() == null){
+            return null;
+        }
+        return referenceTagRepository.findOne(tag.getId());
+    }
+        
 }
