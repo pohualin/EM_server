@@ -18,17 +18,4 @@ public interface ReferenceTagService {
      * @return
      */
     Set<ReferenceTag> findAllTagsByGroup(ReferenceGroup group);
-
-    /**
-     * creates a new reference tag
-     * @param tag to create
-     * @return
-     */
-    ReferenceTag create(ReferenceTag tag);
-    
-    /**
-     * deletes a given reference tag
-     * @param tag to delete
-     */
-    void deleteReferenceTag(ReferenceTag tag);
 }

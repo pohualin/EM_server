@@ -52,5 +52,4 @@ ReferenceGroupRepository referenceGroupRepository;
     public Set<ReferenceTag> findAllByGroup(ReferenceGroup group){
         return referenceTagRepository.findAllByGroup(group);
     }
-
 }

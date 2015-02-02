@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
+import com.emmisolutions.emmimanager.service.ReferenceTagService;
 import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupResource;
 import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupResourceAssembler;

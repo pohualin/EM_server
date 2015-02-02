@@ -1,9 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
@@ -47,7 +47,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     /**
      * Saving a reference group with no tags should throw an error
      */
-    @Test (expected = IllegalArgumentException.class)
+    @Test (expected = InvalidDataAccessApiUsageException.class)
     public void createNewReferenceGroupWithNoTags(){
         List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
         ReferenceGroupType groupType = new ReferenceGroupType();
@@ -61,19 +61,6 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         refGroupSaveRequests.add(groupSaveReqOne);
         Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupSaveRequests);
         assertThat("Reference Groups are saved", groups.size(), is(1));
-    }
-    
-    /**
-     * Delete of a reference tag
-     */
-    @Test
-    public void deleteReferenceTag(){
-        Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupWithTags());
-        assertThat("One Reference Group is saved: ", groups.size(), is(1));
-        assertThat("Three Reference Tags are saved: ", groups.iterator().next().getTags().size(), is(3));
-        referenceTagService.deleteReferenceTag(groups.iterator().next().getTags().iterator().next());
-        Set<ReferenceTag> tags2 = referenceTagService.findAllTagsByGroup(groups.iterator().next());
-        assertThat("Updated number of tags is: ", tags2.size(), is(2));
     }
 
     /**
@@ -150,22 +137,100 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     }
     
     /**
-     * test adding a new tag to an existing ref group
+     * update groups
      */
     @Test
-    public void addNewReferenceTagToExistingReferenceGroup(){
+    public void updateGroups(){
         Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupWithTags());
-        assertThat("One Reference Group is saved: ", groups.size(), is(1));
-        assertThat("Three Reference Tags is saved: ", groups.iterator().next().getTags().size(), is(3));
+        assertThat("Updated number of tags is: ", groups.size(), is(1));
 
-        ReferenceGroup existingGroup = groups.iterator().next();
-        ReferenceTag tagToAdd = new ReferenceTag();
-        tagToAdd.setName("A Woman Is A Woman");
-        tagToAdd.setGroup(existingGroup);
-        ReferenceTag savedTag = referenceTagService.create(tagToAdd);
-        assertThat("One Reference Group is saved: ",savedTag.getId(), is(notNullValue()));
+        ReferenceGroup one = groups.iterator().next();
 
-        Set<ReferenceTag> tags = referenceTagService.findAllTagsByGroup(existingGroup);
-        assertThat("Updated number of tags is: ", tags.size(), is(4));
+        List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
+        List<ReferenceTag> tagList = new ArrayList<>();
+
+        ReferenceGroupType groupType = new ReferenceGroupType();
+        groupType.setName("REFERENCE DATA");
+        groupType= referenceGroupTypeRepository.save(groupType);
+
+        RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
+        ReferenceGroup group = new ReferenceGroup();
+        group.setName("Francois Truffaut");
+        group.setType(groupType);
+        ReferenceTag tagOne = new ReferenceTag();
+        tagOne.setName("Jules And Jim");
+        ReferenceTag tagTwo = new ReferenceTag();
+        tagTwo.setName("The 400 Blows");
+        tagList.add(tagOne);
+        tagList.add(tagTwo);
+        groupSaveReqOne.setReferenceGroup(group);
+        groupSaveReqOne.setReferenceTags(tagList);
+        
+        RefGroupSaveRequest groupSaveReqTwo = new RefGroupSaveRequest();        
+        groupSaveReqTwo.setReferenceGroup(groups.iterator().next());
+        groupSaveReqTwo.setReferenceTags(new ArrayList (groups.iterator().next().getTags()));
+        
+        refGroupSaveRequests.add(groupSaveReqOne);
+        refGroupSaveRequests.add(groupSaveReqTwo);
+        Set<ReferenceGroup> refreshedGroups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupSaveRequests);
+        assertThat("Updated number of tags is: ", refreshedGroups.size(), is(2));
+        
+        for (ReferenceGroup group1: refreshedGroups){
+            if (group1.getId().equals(one.getId())){
+            assertThat("tags remained equal:", group1.getTags().size(), is(3));
+            }
+        }
+    }
+    
+    /**
+     * test update group and delete tags
+     */
+    @Test
+    public void updateGroupsWithDelete(){
+        Set<ReferenceGroup> groups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupWithTags());
+        assertThat("Updated number of tags is: ", groups.size(), is(1));
+
+        ReferenceGroup one = groups.iterator().next();
+        one.getTags().clear();
+        
+        final ReferenceTag newTag = new ReferenceTag();
+        newTag.setName("Weekend");
+
+        List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
+        List<ReferenceTag> tagList = new ArrayList<>();
+
+        ReferenceGroupType groupType = new ReferenceGroupType();
+        groupType.setName("REFERENCE DATA");
+        groupType= referenceGroupTypeRepository.save(groupType);
+
+        RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
+        ReferenceGroup group = new ReferenceGroup();
+        group.setName("Francois Truffaut");
+        group.setType(groupType);
+        ReferenceTag tagOne = new ReferenceTag();
+        tagOne.setName("Jules And Jim");
+        ReferenceTag tagTwo = new ReferenceTag();
+        tagTwo.setName("The 400 Blows");
+        tagList.add(tagOne);
+        tagList.add(tagTwo);
+        groupSaveReqOne.setReferenceGroup(group);
+        groupSaveReqOne.setReferenceTags(tagList);
+        
+        RefGroupSaveRequest groupSaveReqTwo = new RefGroupSaveRequest();        
+        groupSaveReqTwo.setReferenceGroup(one);
+        groupSaveReqTwo.setReferenceTags(new ArrayList<ReferenceTag>() {{ 
+            add(newTag); 
+            }});
+        
+        refGroupSaveRequests.add(groupSaveReqOne);
+        refGroupSaveRequests.add(groupSaveReqTwo);
+        Set<ReferenceGroup> refreshedGroups = referenceGroupService.saveReferenceGroupsAndReferenceTags(refGroupSaveRequests);
+        assertThat("Updated number of tags is: ", refreshedGroups.size(), is(2));
+        
+        for (ReferenceGroup group1: refreshedGroups){
+            if (group1.getId().equals(one.getId())){
+            assertThat("tags remained equal:", group1.getTags().size(), is(1));
+            }
+        }
     }
 }
