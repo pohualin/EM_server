@@ -23,12 +23,13 @@ public class ReferenceTagPersistenceImpl implements ReferenceTagPersistence {
 ReferenceTagRepository referenceTagRepository;
 @Resource
 ReferenceGroupRepository referenceGroupRepository;
-	
-	@Override
+
+    @Override
 	public ReferenceTag save(ReferenceTag tag){
 	    return referenceTagRepository.save(tag);
 	}
-	
+    
+    /*
 	@Override
 	public ReferenceTag reload(Long id){
 	if (id == null) {
@@ -46,7 +47,7 @@ ReferenceGroupRepository referenceGroupRepository;
     public void delete(ReferenceTag tag){
         referenceTagRepository.delete(tag);
         referenceTagRepository.flush();
-    }
+    }*/
     
     @Override
     public Set<ReferenceTag> findAllByGroup(ReferenceGroup group){
