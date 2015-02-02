@@ -73,6 +73,9 @@ public class UserClient extends User {
     @Column(name = "activated", nullable = false)
     private boolean activated;
 
+    @Column(name = "never_logged_in")
+    private boolean neverLoggedIn = true;
+
     public UserClient() {
 
     }
@@ -191,5 +194,13 @@ public class UserClient extends User {
 
     public void setActivated(boolean activated) {
         this.activated = activated;
+    }
+
+    public boolean isNeverLoggedIn() {
+        return neverLoggedIn;
+    }
+
+    public void setNeverLoggedIn(boolean neverLoggedIn) {
+        this.neverLoggedIn = neverLoggedIn;
     }
 }

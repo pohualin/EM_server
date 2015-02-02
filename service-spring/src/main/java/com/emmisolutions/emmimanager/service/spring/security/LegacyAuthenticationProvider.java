@@ -61,6 +61,14 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
+        if (userDetails instanceof UserClient) {
+            // mark that the user has logged in successfully
+            UserClient userClient = ((UserClient) userDetails);
+            if (userClient.isNeverLoggedIn()) {
+                userClient.setNeverLoggedIn(false);
+                userClientPersistence.saveOrUpdate(userClient);
+            }
+        }
     }
 
     /**
