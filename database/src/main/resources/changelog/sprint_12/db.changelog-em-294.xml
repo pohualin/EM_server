@@ -68,4 +68,13 @@
 
     </changeSet>
 
+    <changeSet id="update activation email" author="Matt">
+        <loadUpdateData
+                encoding="UTF-8"
+                file="changelog/sprint_12/data/em-775/activation-email.data"
+                primaryKey="type"
+                separator="~"
+                tableName="email_template"/>
+    </changeSet>
+
 </databaseChangeLog>
