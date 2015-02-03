@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
@@ -13,8 +14,7 @@ import org.springframework.security.authentication.CredentialsExpiredException;
 
 import javax.annotation.Resource;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -147,4 +147,40 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         }});
     }
 
+    /**
+     * Ensures that a user is properly activated.
+     */
+    @Test
+    public void passwordReset() {
+        String password = "password";
+
+        UserClient userClient = userClientPasswordService.resetPassword(
+                new ResetPasswordRequest(userClientService.addResetTokenTo(makeNewRandomUserClient(null))
+                        .getPasswordResetToken(), password));
+
+        assertThat("user has reset password",
+                userClient.getPasswordResetToken(),
+                is(nullValue())
+        );
+        assertThat("user can now login", login(userClient.getLogin(), password),
+                is((User) userClient));
+        logout();
+    }
+
+    /**
+     * When the user to be reset cannot be found, null
+     * should come back.
+     */
+    @Test
+    public void badPasswordReset() {
+        assertThat("user is not reset",
+                userClientPasswordService.resetPassword(null),
+                is(nullValue())
+        );
+
+        assertThat("user is not reset",
+                userClientPasswordService.resetPassword(new ResetPasswordRequest()),
+                is(nullValue())
+        );
+    }
 }

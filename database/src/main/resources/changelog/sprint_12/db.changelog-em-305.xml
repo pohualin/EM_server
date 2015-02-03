@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create reset email template" author="Matt">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_12/data/em-305/reset-email.data"
+                  tableName="email_template"
+                  separator="~"/>
+
+    </changeSet>
+
+    <changeSet id="add reset token persistence" author="Matt">
+        <addColumn tableName="user_client">
+            <column name="password_reset_token" type="nvarchar(40)"/>
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="password_reset_token" type="nvarchar(40)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="remove PERM_CLIENT_USER permission" author="Matt">
+        <delete tableName="user_client_role_user_client_permission">
+            <where>permission_name = 'PERM_CLIENT_USER'</where>
+        </delete>
+
+        <delete tableName="user_client_permission">
+            <where>name = 'PERM_CLIENT_USER'</where>
+        </delete>
+    </changeSet>
+
+</databaseChangeLog>
