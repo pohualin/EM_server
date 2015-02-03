@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlEnum;
 @XmlEnum(String.class)
 public enum UserClientPermissionName {
     PERM_CLIENT_SUPER_USER,
-    PERM_CLIENT_USER,
     PERM_CLIENT_CREATE_NEW_USER,
     PERM_CLIENT_ACTIVATE_USER,
     PERM_CLIENT_DEACTIVATE_USER,

@@ -25,4 +25,12 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
      * @return UserClient or null
      */
     UserClient findByActivationKey(String activationKey);
+
+    /**
+     * Finds a UserClient by password reset token
+     *
+     * @param resetToken the key
+     * @return UserClient or null
+     */
+    UserClient findByPasswordResetToken(String resetToken);
 }

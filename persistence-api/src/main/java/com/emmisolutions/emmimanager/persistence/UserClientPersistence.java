@@ -60,4 +60,12 @@ public interface UserClientPersistence {
      * @return a UserClient or null
      */
     UserClient findByActivationKey(String activationKey);
+
+    /**
+     * Finds a UserClient by its password reset token
+     *
+     * @param resetToken to find by
+     * @return a UserClient or null
+     */
+    UserClient findByResetToken(String resetToken);
 }

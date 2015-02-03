@@ -34,7 +34,10 @@ public class UserClientResourceAssembler implements
         ret.add(linkTo(methodOn(UserClientPasswordResource.class)
                 .set(entity.getId(), null)).withRel("changePassword"));
         ret.add(linkTo(methodOn(UserClientsResource.class)
-                .sendActivationEmail(entity.getId())).withRel("sendActivationEmail"));
+                .activate(entity.getId())).withRel("activate"));
+        ret.add(linkTo(methodOn(UserClientsResource.class)
+                .resetPassword(entity.getId())).withRel("resetPassword"));
+
         ret.setEntity(entity);
         return ret;
     }

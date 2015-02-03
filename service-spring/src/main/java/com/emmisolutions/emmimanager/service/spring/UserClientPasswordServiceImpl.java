@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
@@ -68,5 +69,20 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         return userClient;
     }
 
+    @Override
+    @Transactional
+    public UserClient resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        if (resetPasswordRequest != null) {
+            UserClient userClient =
+                    userClientPersistence.findByResetToken(resetPasswordRequest.getResetToken());
+            if (userClient != null) {
+                userClient.setPasswordResetToken(null);
+                userClient.setPassword(resetPasswordRequest.getNewPassword());
+                userClient.setCredentialsNonExpired(true);
+                return userClientPersistence.saveOrUpdate(encodePassword(userClient));
+            }
+        }
+        return null;
+    }
 
 }

@@ -227,15 +227,16 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Make sure a new activation key is created
+     * Make sure a new activation key is created only on not activated clients
      */
+    @Test
     public void activationKey() {
-        UserClient userClient = makeNewRandomUserClient(null);
+        UserClient userClient = userClientService.addActivationKey(makeNewRandomUserClient(null));
         assertThat("activation key is created",
-                userClientService.addActivationKey(userClient).getActivationKey(),
+                userClient.getActivationKey(),
                 is(notNullValue()));
 
-        userClientService.activate(new ActivationRequest(userClient.getActivationKey(), "whatever"));
+        userClient = userClientService.activate(new ActivationRequest(userClient.getActivationKey(), "whatever"));
 
         assertThat("activation key is not created for already activated users",
                 userClientService.addActivationKey(userClient).getActivationKey(),
@@ -248,6 +249,26 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void badActivationKey() {
         userClientService.addActivationKey(null);
+    }
+
+
+    /**
+     * Make sure a new password reset key is created
+     */
+    @Test
+    public void resetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("reset token is created",
+                userClientService.addResetTokenTo(userClient).getPasswordResetToken(),
+                is(notNullValue()));
+    }
+
+    /**
+     * Add reset token to nothing should be an exception
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badResetToken() {
+        userClientService.addResetTokenTo(null);
     }
 
 }
