@@ -37,12 +37,12 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 	public Page<ReferenceGroup> loadReferenceGroups(Pageable page) {
 		return referenceGroupPersistence.loadReferenceGroups(page);
 	}
-	
-	   @Override
-	    @Transactional
-	    public ReferenceGroup save(ReferenceGroup group) {
-	        return referenceGroupPersistence.save(group);
-	    }
+
+	@Override
+    @Transactional
+    public ReferenceGroup save(ReferenceGroup group) {
+        return referenceGroupPersistence.save(group);
+    }
 	
 	@Override
 	@Transactional

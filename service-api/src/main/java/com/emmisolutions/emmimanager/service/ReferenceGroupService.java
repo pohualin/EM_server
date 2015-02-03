@@ -11,6 +11,7 @@ import com.emmisolutions.emmimanager.model.ReferenceGroup;
  *
  */
 public interface ReferenceGroupService {
+    
     /**
      * loads reference groups
      * 

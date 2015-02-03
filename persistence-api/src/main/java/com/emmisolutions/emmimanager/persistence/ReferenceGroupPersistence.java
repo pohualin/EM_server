@@ -10,13 +10,13 @@ import com.emmisolutions.emmimanager.model.ReferenceGroup;
  */
 public interface ReferenceGroupPersistence {
 
-	/**
-	 * loads reference groups
-	 *
-	 * @param page specification
-	 * @return Page<ReferenceGroup>
-	 */
-	Page<ReferenceGroup> loadReferenceGroups(Pageable page);
+    /**
+     * loads reference groups
+     *
+     * @param page specification
+     * @return Page<ReferenceGroup>
+     */
+    Page<ReferenceGroup> loadReferenceGroups(Pageable page);
 	
 	/**
 	 * Saved a given ReferenceGroup

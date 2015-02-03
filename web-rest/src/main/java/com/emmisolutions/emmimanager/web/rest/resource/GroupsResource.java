@@ -138,28 +138,4 @@ public class GroupsResource {
             return new ResponseEntity<>(groupResourceAssembler.toResource(group), HttpStatus.OK);
         }
     }
-
-    /**
-     * GET to retrieve ReferenceGroup data.
-     *
-     * @param pageable  paged request
-     * @param sort      sorting request
-     * @param assembler used to create PagedResources
-     * @return groupPage matching the search request
-     */
-    @RequestMapping(value = "/referenceGroups", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_GROUP_VIEW"})
-    public ResponseEntity<ReferenceGroupPage> getRefGroups(@PageableDefault(size = 50) Pageable pageable,
-                                                           @SortDefault(sort = "id") Sort sort,
-                                                           PagedResourcesAssembler<ReferenceGroup> assembler) {
-
-        Page<ReferenceGroup> groupPage = referenceGroupService.loadReferenceGroups(pageable);
-
-        if (groupPage.hasContent()) {
-            return new ResponseEntity<>(new ReferenceGroupPage(assembler.toResource(groupPage, referenceGroupResourceAssembler), groupPage), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
-
 }

@@ -49,7 +49,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Reference Groups are loaded",
             referenceGroupService.loadReferenceGroups(null).getTotalElements(), is(not(0l)));
     }
-    
+
     /**
      * Saving a reference group with no tags should throw an error
      */
