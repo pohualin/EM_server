@@ -10,8 +10,13 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
@@ -35,6 +40,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     
     @Resource 
     ReferenceGroupTypeRepository referenceGroupTypeRepository;
+    
     /**
      * Make sure we can load a page of reference groups
      */
@@ -49,7 +55,6 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test (expected = InvalidDataAccessApiUsageException.class)
     public void createNewReferenceGroupWithNoTags(){
-        List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
         ReferenceGroupType groupType = new ReferenceGroupType();
         groupType.setName("Film");
         groupType= referenceGroupTypeRepository.save(groupType);
@@ -58,14 +63,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         group.setName("New Wave");
         group.setType(groupType);
         groupSaveReqOne.setReferenceGroup(group);
-        refGroupSaveRequests.add(groupSaveReqOne);
-        Set<ReferenceGroup> groups = new HashSet();
-        for(RefGroupSaveRequest request: refGroupSaveRequests){
-            ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
-            groups.add(savedGroup);
-        }
-        
-        assertThat("Reference Groups are saved", groups.size(), is(1));
+        ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
     }
 
     /**
@@ -248,7 +246,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         
         refGroupSaveRequests.add(groupSaveReqOne);
         refGroupSaveRequests.add(groupSaveReqTwo);
-        Set<ReferenceGroup> refreshedGroups = new HashSet();
+        Set<ReferenceGroup> refreshedGroups = new HashSet <ReferenceGroup>();
         for(RefGroupSaveRequest request: refGroupSaveRequests){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             refreshedGroups.add(savedGroup);
@@ -260,5 +258,30 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
             assertThat("tags remained equal:", group1.getTags().size(), is(1));
             }
         }
+    }
+    
+    @Test
+    public void testGetAllTagsForGroup(){
+        ReferenceGroupType groupType = new ReferenceGroupType();
+        groupType.setName(RandomStringUtils.randomAlphanumeric(8));
+        groupType= referenceGroupTypeRepository.save(groupType);
+        RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
+        ReferenceGroup group = new ReferenceGroup();
+        group.setName(RandomStringUtils.randomAlphanumeric(8));
+        group.setType(groupType);
+        final ReferenceTag tagOne = new ReferenceTag();
+        tagOne.setName(RandomStringUtils.randomAlphanumeric(8));
+        groupSaveReqOne.setReferenceGroup(group);
+        groupSaveReqOne.setReferenceTags(new ArrayList<ReferenceTag>() {{
+            add(tagOne);
+        }}
+        );
+        ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
+        Pageable page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        Page<ReferenceTag> tags = referenceTagService.findAllTagsByGroup(savedGroup, page);
+        assertThat("Page of tags returned:", tags.getTotalElements(), is(1l));
+        Page<ReferenceTag> tagsWithNoPageLimit = referenceTagService.findAllTagsByGroup(savedGroup, null);
+        assertThat("Page of tags returned:", tagsWithNoPageLimit.getTotalElements(), is(1l));
+
     }
 }

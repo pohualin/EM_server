@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.persistence.ReferenceTagPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 
 /**
@@ -22,8 +21,6 @@ public class ReferenceTagPersistenceImpl implements ReferenceTagPersistence {
 
 @Resource
 ReferenceTagRepository referenceTagRepository;
-@Resource
-ReferenceGroupRepository referenceGroupRepository;
 
     @Override
 	public ReferenceTag save(ReferenceTag tag){
@@ -32,11 +29,12 @@ ReferenceGroupRepository referenceGroupRepository;
     
     @Override
     public Page<ReferenceTag> findAllByGroup(ReferenceGroup group, Pageable page){
-        if (page == null) {
+        Pageable toSend = page;
+        if (toSend == null) {
             // default pagination request if none
-            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+            toSend = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return referenceTagRepository.findAllByGroup(group, page);
+        return referenceTagRepository.findAllByGroup(group, toSend);
     }
     
     @Override
@@ -46,5 +44,4 @@ ReferenceGroupRepository referenceGroupRepository;
         }
         return referenceTagRepository.findOne(tag.getId());
     }
-        
 }
