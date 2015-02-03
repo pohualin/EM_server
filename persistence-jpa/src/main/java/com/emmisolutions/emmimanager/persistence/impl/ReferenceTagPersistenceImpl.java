@@ -1,9 +1,11 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import java.util.Set;
-
 import javax.annotation.Resource;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
@@ -29,8 +31,12 @@ ReferenceGroupRepository referenceGroupRepository;
 	}
     
     @Override
-    public Set<ReferenceTag> findAllByGroup(ReferenceGroup group){
-        return referenceTagRepository.findAllByGroup(group);
+    public Page<ReferenceTag> findAllByGroup(ReferenceGroup group, Pageable page){
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        }
+        return referenceTagRepository.findAllByGroup(group, page);
     }
     
     @Override

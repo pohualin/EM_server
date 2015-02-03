@@ -1,10 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.Set;
-
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
@@ -26,7 +26,7 @@ public class ReferenceTagServiceImpl implements ReferenceTagService {
 
     @Override
     @Transactional
-    public Set<ReferenceTag> findAllTagsByGroup(ReferenceGroup group) {
-        return referenceTagPersistence.findAllByGroup(group);
+    public Page<ReferenceTag> findAllTagsByGroup(ReferenceGroup group, Pageable page) {
+        return referenceTagPersistence.findAllByGroup(group, page);
     }
 }

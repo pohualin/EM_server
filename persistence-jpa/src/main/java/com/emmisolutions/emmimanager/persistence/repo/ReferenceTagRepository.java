@@ -1,7 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
-import java.util.Set;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +27,5 @@ public interface ReferenceTagRepository extends JpaRepository<ReferenceTag, Long
      * @param group referenceGroup to search on
      * @return Set<ReferenceTag>
      */
-    Set<ReferenceTag> findAllByGroup(ReferenceGroup group);
+    Page<ReferenceTag> findAllByGroup(ReferenceGroup group, Pageable page);
 }

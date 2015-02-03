@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
@@ -17,5 +18,5 @@ public interface ReferenceTagService {
      * @param group - to find tags associated with
      * @return
      */
-    Set<ReferenceTag> findAllTagsByGroup(ReferenceGroup group);
+    Page<ReferenceTag> findAllTagsByGroup(ReferenceGroup group, Pageable page);
 }

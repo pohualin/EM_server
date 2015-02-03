@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
@@ -22,7 +23,7 @@ public interface ReferenceTagPersistence {
      * @param group to find tags associated with
      * @return
      */
-    Set<ReferenceTag> findAllByGroup(ReferenceGroup group);
+    Page<ReferenceTag> findAllByGroup(ReferenceGroup group, Pageable page);
     
     /**
      * reloads a given reference tag
