@@ -14,7 +14,7 @@ import org.springframework.hateoas.UriTemplate;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
-import com.emmisolutions.emmimanager.web.rest.resource.ReferenceGroupsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ReferenceGroupsResource;
 
 /**
  * A HATEOAS wrapper for a page of ReferenceGroupResource objects.
