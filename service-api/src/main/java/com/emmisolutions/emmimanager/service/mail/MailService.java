@@ -15,4 +15,13 @@ public interface MailService {
      */
     void sendActivationEmail(UserClient user, String activationUrl);
 
+
+    /**
+     * Sends an password reset email to a user
+     *
+     * @param user             to send an activation to
+     * @param passwordResetUrl for the links to actually activate
+     */
+    void sendPasswordResetEmail(UserClient user, String passwordResetUrl);
+
 }

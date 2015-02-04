@@ -70,6 +70,10 @@ public class UserClient extends User {
     @Column(name = "activation_key", length = 40, columnDefinition = "nvarchar(40)")
     private String activationKey;
 
+    @Size(max = 40)
+    @Column(name = "password_reset_token", length = 40, columnDefinition = "nvarchar(40)")
+    private String passwordResetToken;
+
     @Column(name = "activated", nullable = false)
     private boolean activated;
 
@@ -202,5 +206,13 @@ public class UserClient extends User {
 
     public void setNeverLoggedIn(boolean neverLoggedIn) {
         this.neverLoggedIn = neverLoggedIn;
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
     }
 }

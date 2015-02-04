@@ -35,23 +35,37 @@ public class MailServiceImpl implements MailService {
     @Resource
     private TemplateEngine templateEngine;
 
-    @Value("${mail.activation.from:EmmiManager Activation <no_reply@emmisolutions.com>}")
+    @Value("${mail.activation.from:EmmiManager Activation <no_reply_act@emmisolutions.com>}")
     private String activationFrom;
+
+    @Value("${mail.password_reset.from:EmmiManager Password Reset <no_reply_pw@emmisolutions.com>}")
+    private String passwordResetFrom;
 
     @Value("${mail.server.use:true}")
     private boolean useMailServer;
 
     @Async
+    @Override
     public void sendActivationEmail(UserClient user, String activationUrl) {
-        if (user == null || StringUtils.isBlank(user.getActivationKey()) ||
-                StringUtils.isBlank(activationUrl) || StringUtils.isBlank(user.getEmail())) {
+        sendTemplateBasedEmail(activationFrom, user, activationUrl, EmailTemplateType.ACTIVATION);
+    }
+
+    @Async
+    @Override
+    public void sendPasswordResetEmail(UserClient user, String passwordResetUrl) {
+        sendTemplateBasedEmail(passwordResetFrom, user, passwordResetUrl, EmailTemplateType.PASSWORD_RESET);
+    }
+
+    private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type) {
+        if (user == null || StringUtils.isBlank(url) ||
+                StringUtils.isBlank(user.getEmail()) || type == null) {
             return;
         }
         Context context = new Context();
         context.setVariable("user", user);
-        context.setVariable("activationUrl", activationUrl);
-        String content = templateEngine.process("db:" + EmailTemplateType.ACTIVATION.toString(), context);
-        String subject = "New User Account Confirmation";
+        context.setVariable("activationUrl", url);
+        String content = templateEngine.process("db:" + type.toString(), context);
+        String subject = "Action Required";
 
         // override default title
         Matcher matcher = titleFinderInTemplates.matcher(content);
@@ -59,7 +73,7 @@ public class MailServiceImpl implements MailService {
             subject = StringUtils.trimToNull(matcher.group(1));
         }
         String to = String.format("%s <%s>", StringUtils.defaultIfBlank(user.getFullName(), user.getEmail()), user.getEmail());
-        sendEmail(to, activationFrom, subject, content, false, true);
+        sendEmail(to, from, subject, content, false, true);
     }
 
     private void sendEmail(String to, String from, String subject, String content, boolean isMultipart, boolean isHtml) {

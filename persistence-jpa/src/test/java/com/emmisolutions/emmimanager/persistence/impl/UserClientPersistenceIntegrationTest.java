@@ -281,4 +281,30 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         );
     }
 
+    /**
+     * Happy path for reset token setup
+     */
+    @Test
+    public void findByResetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPasswordResetToken("whatever");
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("find by activation key should work",
+                userClientPersistence.findByResetToken(userClient.getPasswordResetToken()),
+                is(userClient)
+        );
+    }
+
+    /**
+     * Null reset code searching
+     */
+    @Test
+    public void findByNullResetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("no activation key on user should return null value",
+                userClientPersistence.findByActivationKey(userClient.getPasswordResetToken()),
+                is(nullValue())
+        );
+    }
+
 }
