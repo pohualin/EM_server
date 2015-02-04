@@ -44,7 +44,7 @@ public class PublicApi extends ResourceSupport {
                 UriComponentsBuilder.fromHttpUrl(self.getHref())
                         .replacePath(clientEntryPoint)
                         .build(false)
-                        .toUriString(), "client_app_entry_url"));
+                        .toUriString(), "clientAppEntryUrl"));
         me.add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
         return me;
     }
