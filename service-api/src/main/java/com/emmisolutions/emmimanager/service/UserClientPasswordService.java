@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 
 /**
  * Administrative Service API for UserClient password management
@@ -29,4 +30,13 @@ public interface UserClientPasswordService {
      * @return UserClient with both password and salt populated
      */
     public UserClient encodePassword(UserClient userClient);
+
+    /**
+     * Reset a user's password
+     *
+     * @param resetPasswordRequest request to reset the password
+     * @return the UserClient with a reset password
+     */
+    UserClient resetPassword(ResetPasswordRequest resetPasswordRequest);
+
 }

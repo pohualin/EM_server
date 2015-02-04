@@ -7,11 +7,13 @@ import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,9 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
+
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -76,7 +81,6 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setCredentialsNonExpired(inDb.isCredentialsNonExpired());
         userClient.setAccountNonExpired(inDb.isAccountNonExpired());
         userClient.setAccountNonLocked(inDb.isAccountNonLocked());
-
         return userClientPersistence.saveOrUpdate(userClient);
     }
 
@@ -104,20 +108,21 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
+    @Transactional
     public UserClient activate(ActivationRequest activationRequest) {
-        UserClient userClient = null;
         if (activationRequest != null) {
-            userClient = userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
+            UserClient userClient =
+                    userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
             if (userClient != null) {
                 userClient.setActivated(true);
                 userClient.setActivationKey(null);
                 userClient.setPassword(activationRequest.getNewPassword());
                 userClient.setCredentialsNonExpired(true);
-                userClientPersistence.saveOrUpdate(
+                return userClientPersistence.saveOrUpdate(
                         userClientPasswordService.encodePassword(userClient));
             }
         }
-        return userClient;
+        return null;
     }
 
     @Override
@@ -130,8 +135,25 @@ public class UserClientServiceImpl implements UserClientService {
         }
         // update the activation key, only for not yet activated users
         if (!fromDb.isActivated()) {
-            fromDb.setActivationKey(RandomStringUtils.randomAlphanumeric(40));
+            fromDb.setActivationKey(
+                    passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
+                            .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         }
+        return userClientPersistence.saveOrUpdate(fromDb);
+    }
+
+    @Override
+    @Transactional
+    public UserClient addResetTokenTo(UserClient userClient) {
+        UserClient fromDb = userClientPersistence.reload(userClient);
+        if (fromDb == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
+        }
+        // update the activation key, only for not yet activated users
+        fromDb.setPasswordResetToken(
+                passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
+                        .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         return userClientPersistence.saveOrUpdate(fromDb);
     }
 

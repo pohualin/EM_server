@@ -63,7 +63,9 @@ public class UserClientsResource {
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
 
-    private static final String ACTIVATION_LOCATION = "#/activate/%s";
+    private static final String ACTIVATION_CLIENT_APPLICATION_URI = "#/activate/%s";
+
+    private static final String RESET_PASSWORD_CLIENT_APPLICATION_URI = "#/reset_password/%s";
 
     /**
      * Get a page of UserClient that satisfy the search criteria
@@ -152,9 +154,15 @@ public class UserClientsResource {
         }
     }
 
-    @RequestMapping(value = "/user_client/{id}/activation/email", method = RequestMethod.GET)
+
+    /**
+     * Send an activation email
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/user_client/{id}/activate", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
-    public ResponseEntity<Void> sendActivationEmail(@PathVariable Long id) {
+    public ResponseEntity<Void> activate(@PathVariable Long id) {
 
         // update the activation token, invalidating others
         UserClient savedUserClient = userClientService.addActivationKey(new UserClient(id));
@@ -164,12 +172,40 @@ public class UserClientsResource {
                 UriComponentsBuilder.fromHttpUrl(
                         linkTo(methodOn(UserClientsActivationResource.class)
                                 .activate(null)).withSelfRel().getHref())
-                        .replacePath(clientEntryPoint + String.format(ACTIVATION_LOCATION, savedUserClient.getActivationKey()))
+                        .replacePath(clientEntryPoint + String.format(ACTIVATION_CLIENT_APPLICATION_URI, savedUserClient.getActivationKey()))
                         .build(false)
                         .toUriString();
 
         // send the email (asynchronously)
         mailService.sendActivationEmail(savedUserClient, activationHref);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Creates a new reset password token and sends it to the user if it can
+     *
+     * @param id of the user
+     * @return void
+     */
+    @RequestMapping(value = "/user_client/{id}/resetPassword", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    public ResponseEntity<Void> resetPassword(@PathVariable Long id) {
+
+        // update the reset token, invalidating others
+        UserClient savedUserClient = userClientService.addResetTokenTo(new UserClient(id));
+
+        // get the proper url (the way we make hateoas links), then replace the path with the client entry point
+        String resetRef =
+                UriComponentsBuilder.fromHttpUrl(
+                        linkTo(methodOn(UserClientsResource.class)
+                                .resetPassword(id)).withSelfRel().getHref())
+                        .replacePath(clientEntryPoint + String.format(RESET_PASSWORD_CLIENT_APPLICATION_URI, savedUserClient.getPasswordResetToken()))
+                        .build(false)
+                        .toUriString();
+
+        // send the reset email (asynchronously)
+        mailService.sendPasswordResetEmail(savedUserClient, resetRef);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

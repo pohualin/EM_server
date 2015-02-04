@@ -72,6 +72,14 @@ public interface UserClientService {
     UserClient addActivationKey(UserClient userClient);
 
     /**
+     * Add a reset token to the UserClient
+     *
+     * @param userClient on which to add the reset token
+     * @return the saved UserClient
+     */
+    UserClient addResetTokenTo(UserClient userClient);
+
+    /**
      * A conflicting UserClient
      */
     public class UserClientConflict {
