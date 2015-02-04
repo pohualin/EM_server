@@ -7,7 +7,7 @@ import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.web.rest.resource.ReferenceGroupsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ReferenceGroupsResource;
 
 /**
  * Responsible for creating a GroupResource (which has links) from a Group
