@@ -42,15 +42,17 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         user.setNormalizedName(matchCriteria.normalizedName(
                 user.getFirstName(), user.getLastName(), user.getLogin(),
                 user.getEmail()));
+        // make sure null is saved for blank email
+        user.setEmail(StringUtils.stripToNull(user.getEmail()));
         return userClientRepository.save(user);
     }
 
     @Override
-    public UserClient reload(Long userClientId) {
-        if (userClientId == null) {
+    public UserClient reload(UserClient userClient) {
+        if (userClient == null || userClient.getId() == null) {
             return null;
         }
-        return userClientRepository.findOne(userClientId);
+        return userClientRepository.findOne(userClient.getId());
     }
 
     @Override
@@ -77,6 +79,32 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                         where(userClientSpecifications.hasLogin(userClient))
                                 .or(userClientSpecifications.hasEmail(userClient))
                                 .and(userClientSpecifications.isNot(userClient))));
+    }
+
+    @Override
+    public UserClient fetchUserWillFullPermissions(String currentLogin) {
+        UserClient userClient = userClientRepository.findByLoginIgnoreCase(currentLogin);
+        if (userClient != null) {
+            userClient.getClientRoles().size();
+            userClient.getTeamRoles().size();
+        }
+        return userClient;
+    }
+
+    @Override
+    public UserClient findByActivationKey(String activationKey) {
+        if (StringUtils.isNotBlank(activationKey)) {
+            return userClientRepository.findByActivationKey(activationKey);
+        }
+        return null;
+    }
+
+    @Override
+    public UserClient findByResetToken(String resetToken) {
+        if (StringUtils.isNotBlank(resetToken)) {
+            return userClientRepository.findByPasswordResetToken(resetToken);
+        }
+        return null;
     }
 
 }

@@ -124,11 +124,12 @@ public class TeamSpecifications {
         return new Specification<Team>() {
             @Override
             public Predicate toPredicate(Root<Team> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getTeamTagType() != null) {
+                if (searchFilter != null && searchFilter.getTeamTagType() != null
+                        && !TeamSearchFilter.TeamTagType.ALL.equals(searchFilter.getTeamTagType())) {
                     Expression<Set<TeamTag>> teamTags = root.get(Team_.teamTags);
                     if (TeamSearchFilter.TeamTagType.TAGGED_ONLY.equals(searchFilter.getTeamTagType())) {
                         return cb.isNotEmpty(teamTags);
-                    } else {
+                    } else if(TeamSearchFilter.TeamTagType.UNTAGGED_ONLY.equals(searchFilter.getTeamTagType())){
                         return cb.isEmpty(teamTags);
                     }
                 }

@@ -2,12 +2,11 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.TagService;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -32,7 +31,7 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 	TagService tagService;
 
 	@Resource
-	UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
 	@Resource
 	ClientService clientService;
@@ -41,7 +40,7 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Before
 	public void init() {
-		superAdmin = userPersistence.reload("super_admin");
+		superAdmin = userAdminPersistence.reload("super_admin");
 	}
 
 	private Group createGroup() {
@@ -76,11 +75,11 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		Tag tagOne = new Tag();
 		Tag tagTwo = new Tag();
 		tagOne.setName("TagOne");
-		tagTwo.setName("TagTwo");;
+		tagTwo.setName("TagTwo");
 		tagOne.setGroup(group);
 		tagTwo.setGroup(group);
 
-		List<Tag> tags = new ArrayList<Tag>();
+		List<Tag> tags = new ArrayList<>();
 
 		tags.add(tagOne);
 		tags.add(tagTwo);
@@ -105,7 +104,7 @@ public class TagServiceIntegrationTest extends BaseIntegrationTest {
 		group.setName("TestGroup");
 		group = groupService.save(group);
 
-		List<Tag> tags = new ArrayList<Tag>();
+		List<Tag> tags = new ArrayList<>();
 
 		Tag one = new Tag();
 		Tag two = new Tag();

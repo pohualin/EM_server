@@ -105,4 +105,21 @@
 	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-add-indexes.xml"/>
 	
 	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-em-665.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-581.xml"/>
+    
+	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-295.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-294.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-joined-strategy.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-admin-passwords.xml"/>
+	
+	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-570.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-655.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-305.xml"/>
+	
 </databaseChangeLog>

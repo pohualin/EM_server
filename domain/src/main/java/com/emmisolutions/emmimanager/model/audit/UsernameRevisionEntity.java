@@ -26,7 +26,7 @@ public class UsernameRevisionEntity {
     @RevisionTimestamp
     private long timestamp;
 
-    @Size(min = 0, max = 50)
+    @Size(min = 0, max = 255)
     private String username;
 
     public String getUsername() {

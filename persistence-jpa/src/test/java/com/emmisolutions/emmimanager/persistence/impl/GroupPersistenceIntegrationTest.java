@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -35,7 +34,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
     GroupPersistence groupPersistence;
 
 	@Resource
-	UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
 	@Resource
 	GroupRepository groupRepository;
@@ -63,7 +62,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Before
 	public void init() {
-	    superAdmin = userPersistence.reload("super_admin");
+	    superAdmin = userAdminPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
 	}
 

@@ -1,55 +1,61 @@
 package com.emmisolutions.emmimanager.service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.client.*;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
+import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
+import com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration;
+import com.emmisolutions.emmimanager.service.configuration.MailConfiguration;
+import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+import com.emmisolutions.emmimanager.service.configuration.ThymeleafConfiguration;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.service.spring.configuration.IntegrationTestConfiguration;
+import com.icegreen.greenmail.spring.GreenMailBean;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.State;
-import com.emmisolutions.emmimanager.model.Tag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamSalesForce;
-import com.emmisolutions.emmimanager.model.TeamTag;
-import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
-import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
-import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+import javax.annotation.Resource;
+import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Root integration test harness
  */
-@ContextConfiguration(classes = ServiceConfiguration.class)
+@ContextConfiguration(classes = {
+        IntegrationTestConfiguration.class,
+        ServiceConfiguration.class,
+        AsyncConfiguration.class,
+        MailConfiguration.class,
+        ThymeleafConfiguration.class
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @ActiveProfiles("test")
 // @Transactional - do not enable this.. the service implementation should be
 // annotated correctly!
 public abstract class BaseIntegrationTest {
+
+    @Resource
+    GreenMailBean greenMailBean;
 
     @Resource
     ClientService clientService;
@@ -82,29 +88,37 @@ public abstract class BaseIntegrationTest {
     UserClientTeamRoleService userClientTeamRoleService;
 
     @Resource
-    UserService userService;
+    UserAdminService userAdminService;
+
+    @Resource
+    UserAdminRoleRepository userAdminRoleRepository;
+
+    @Resource
+    UserClientUserClientRoleService userClientUserClientRoleService;
+
+    @Resource
+    UserClientUserClientTeamRoleService userClientUserClientTeamRoleService;
+
+    @Resource
+    AuthenticationProvider authenticationProvider;
+
+    @Resource
+    UserDetailsService userDetailsService;
 
     /**
-     * Login as a user
+     * Really logs in the user
      *
-     * @param login
-     *            to login as
+     * @param login    the user's login
+     * @param password the users password
+     * @return the User
+     * @throws org.springframework.security.core.AuthenticationException if the login fails
      */
-    protected void login(String login) {
+    protected User login(String login, String password) {
         SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(login, "******"));
-    }
+                authenticationProvider.authenticate(
+                        new UsernamePasswordAuthenticationToken(login, password)));
 
-    /**
-     * Makes a UserDetails object with authorities
-     *
-     * @param login
-     *            to use
-     */
-    protected void login(String login, List<GrantedAuthority> authorityList) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(new User(login, "****",
-                        authorityList), "******"));
+        return userDetailsService.getLoggedInUser();
     }
 
     /**
@@ -136,7 +150,7 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Creates a brand new group
-     * 
+     *
      * @return random group
      */
     protected Group makeNewRandomGroup(Client client) {
@@ -176,15 +190,13 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Make a list of random Tags
-     * 
-     * @param group
-     *            to use
-     * @param count
-     *            to use
+     *
+     * @param group to use
+     * @param count to use
      * @return a list of tags
      */
     protected List<Tag> makeNewRandomTags(Group group, int count) {
-        List<Tag> tags = new ArrayList<Tag>();
+        List<Tag> tags = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Tag tag = new Tag();
             tag.setName(RandomStringUtils.randomAlphabetic(10));
@@ -196,11 +208,9 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Make a list of TeamTags
-     * 
-     * @param team
-     *            to use
-     * @param tags
-     *            to use
+     *
+     * @param team to use
+     * @param tags to use
      * @return list of teamTags
      */
     protected List<TeamTag> makeNewTeamTags(Team team, Set<Tag> tags) {
@@ -225,49 +235,78 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Create a brand new UserClientRole with given client
-     * 
-     * @param client
-     *            to use
+     * that has all permissions
+     *
+     * @param client to use
      * @return random UserClientRole
      */
     protected UserClientRole makeNewRandomUserClientRole(Client client) {
         if (client == null) {
             client = makeNewRandomClient();
         }
+        Set<UserClientPermission> userClientPermissions = new HashSet<>();
+        for (UserClientPermissionName userClientPermissionName : UserClientPermissionName.values()) {
+            userClientPermissions.add(new UserClientPermission(userClientPermissionName));
+        }
         UserClientRole userClientRole = new UserClientRole(
-                RandomStringUtils.randomAlphabetic(10), client, null);
+                RandomStringUtils.randomAlphabetic(10), client, userClientPermissions);
         return userClientRoleService.create(userClientRole);
     }
 
     /**
      * Create a brand new UserClientTeamRole with given client
-     * 
-     * @param client
-     *            to use
+     * with all possible permissions
+     *
+     * @param client to use
      * @return random UserClientTeamRole
      */
     protected UserClientTeamRole makeNewRandomUserClientTeamRole(Client client) {
         if (client == null) {
             client = makeNewRandomClient();
         }
+        Set<UserClientTeamPermission> userClientTeamPermissions = new HashSet<>();
+        for (UserClientTeamPermissionName userClientTeamPermissionName : UserClientTeamPermissionName.values()) {
+            userClientTeamPermissions.add(new UserClientTeamPermission(userClientTeamPermissionName));
+        }
         UserClientTeamRole userClientTeamRole = new UserClientTeamRole(
-                RandomStringUtils.randomAlphabetic(10), client, null);
+                RandomStringUtils.randomAlphabetic(10), client, userClientTeamPermissions);
         return userClientTeamRoleService.create(userClientTeamRole);
     }
 
     /**
-     * Creates a new UserClient
+     * Creates a new UserClient, user client role, team and user client team role.
+     * Then puts the user client in the new client and team roles.
      *
      * @return a UserClient
      */
     protected UserClient makeNewRandomUserClient(Client client) {
+        // create the user
         UserClient userClient = new UserClient();
         userClient.setClient(client != null ? client : makeNewRandomClient());
         userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
         userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
         userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
-        userClient.setPassword(RandomStringUtils.randomAlphanumeric(100));
-        return userClientService.create(userClient);
+        userClient.setEmail(RandomStringUtils.randomAlphabetic(8) + "@" + RandomStringUtils.randomAlphabetic(10) + ".com");
+        userClient.setPassword(RandomStringUtils.randomAlphanumeric(40));
+        userClient.setCredentialsNonExpired(true);
+        UserClient savedUserClient = userClientService.create(userClient);
+
+        // put the user client in a new client role with all permissions
+        UserClientUserClientRole userClientUserClientRole = new UserClientUserClientRole();
+        userClientUserClientRole.setUserClientRole(makeNewRandomUserClientRole(client));
+        userClientUserClientRole.setUserClient(savedUserClient);
+        userClientUserClientRoleService.create(userClientUserClientRole);
+
+        // put the user client in a new team role with all permission for a random team in the client
+        final UserClientUserClientTeamRole userClientUserClientTeamRole = new UserClientUserClientTeamRole();
+        userClientUserClientTeamRole.setUserClient(userClient);
+        userClientUserClientTeamRole.setUserClientTeamRole(makeNewRandomUserClientTeamRole(client));
+        userClientUserClientTeamRole.setTeam(makeNewRandomTeam(client));
+        userClientUserClientTeamRoleService.associate(new ArrayList<UserClientUserClientTeamRole>() {{
+            add(userClientUserClientTeamRole);
+        }});
+
+        return savedUserClient;
     }
 
     /**
@@ -278,12 +317,49 @@ public abstract class BaseIntegrationTest {
     protected UserAdmin makeNewRandomUserAdmin() {
         UserAdmin userAdmin = new UserAdmin(
                 RandomStringUtils.randomAlphabetic(255),
-                RandomStringUtils.randomAlphanumeric(100));
+                RandomStringUtils.randomAlphanumeric(40));
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(10));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(10));
+        userAdmin.setCredentialsNonExpired(true);
         UserAdminSaveRequest req = new UserAdminSaveRequest();
         req.setUserAdmin(userAdmin);
-        req.setRoles(new HashSet<UserAdminRole>());
-        return userService.save(req);
+        req.getRoles().add(makeNewRandomUserAdminRole());
+        return userAdminService.save(req);
     }
+
+    /**
+     * Creates a brand new user admin role to be used
+     *
+     * @return the persistent user admin role with the PERM_ADMIN_USER permission
+     */
+    protected UserAdminRole makeNewRandomUserAdminRole() {
+        UserAdminRole userAdminRole = new UserAdminRole();
+        userAdminRole.setName(RandomStringUtils.randomAlphanumeric(255));
+        Set<UserAdminPermission> userAdminPermissions = new HashSet<>();
+        for (UserAdminPermissionName userAdminPermissionName : UserAdminPermissionName.values()) {
+            userAdminPermissions.add(new UserAdminPermission(userAdminPermissionName));
+        }
+        userAdminRole.setPermissions(userAdminPermissions);
+        return userAdminRoleRepository.save(userAdminRole);
+    }
+
+    /**
+     * Configures the email server to have an account for emails
+     * to go
+     *
+     * @param email account used to accept messages
+     */
+    protected void setEmailMailServerUser(String email) {
+        greenMailBean.getGreenMail().setUser(email, "****");
+    }
+
+    /**
+     * Get all of the messages on the email server
+     *
+     * @return array of MimeMessage objects
+     */
+    protected MimeMessage[] getEmailsFromServer() {
+        return greenMailBean.getReceivedMessages();
+    }
+
 }

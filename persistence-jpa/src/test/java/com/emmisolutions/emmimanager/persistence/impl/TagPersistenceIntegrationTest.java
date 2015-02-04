@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -36,7 +35,7 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
     GroupPersistence groupPersistence;
 
 	@Resource
-	UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
 	UserAdmin superAdmin;
 
@@ -47,7 +46,7 @@ public class TagPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Before
     public void init() {
-        superAdmin = userPersistence.reload("super_admin");
+        superAdmin = userAdminPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
     }
 

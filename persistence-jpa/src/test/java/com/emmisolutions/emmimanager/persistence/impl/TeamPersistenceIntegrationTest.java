@@ -28,7 +28,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
     ClientPersistence clientPersistence;
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Resource
     TeamPersistence teamPersistence;
@@ -54,7 +54,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Before
     public void init() {
-        superAdmin = userPersistence.reload("super_admin");
+        superAdmin = userAdminPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
     }
 
@@ -130,6 +130,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
         }
         TeamSearchFilter filter = new TeamSearchFilter();
         filter.setTag(tags.get(0));
+        filter.setTeamTagType(TeamSearchFilter.TeamTagType.TAGGED_ONLY);
         Page<Team> teamPageA = teamPersistence.list(null, filter);
         assertThat("should return some teams", teamPageA.hasContent(), is(true));
     }
@@ -241,7 +242,7 @@ public class TeamPersistenceIntegrationTest extends BaseIntegrationTest {
 
     private Team createTeam(Client client, int i) {
         Team team = new Team();
-        team.setName("Test Team" + i + RandomStringUtils.randomAlphanumeric(18));
+        team.setName("Test Team" + i + RandomStringUtils.randomAlphabetic(18));
         team.setDescription("Test Team description");
         team.setActive(i % 2 == 0);
         team.setClient(client);

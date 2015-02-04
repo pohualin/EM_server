@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-import com.emmisolutions.emmimanager.persistence.UserPersistence;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +23,7 @@ public class ClientServiceImpl implements ClientService {
     ClientPersistence clientPersistence;
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Override
     @Transactional(readOnly = true)
@@ -68,7 +68,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(readOnly = true)
     public Page<UserAdmin> listPotentialContractOwners(Pageable pageable) {
-        return userPersistence.listPotentialContractOwners(pageable);
+        return userAdminPersistence.listPotentialContractOwners(pageable);
     }
 
 	@Override

@@ -26,11 +26,11 @@ import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
 import com.emmisolutions.emmimanager.service.ReferenceTagService;
 import com.emmisolutions.emmimanager.service.TagService;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupResource;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceGroupResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagPage;
-import com.emmisolutions.emmimanager.web.rest.model.groups.ReferenceTagResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupResource;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagResourceAssembler;
 
 /**
  * Reference Groups REST API.

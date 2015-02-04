@@ -116,6 +116,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         Client clientA = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
+        userClient.setActive(false);
 
         UserClientSearchFilter filter = new UserClientSearchFilter(client, "");
         Page<UserClient> userClients = userClientPersistence.list(null, filter);
@@ -170,7 +171,7 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("return null", userClientNull, is(nullValue()));
 
         assertThat("reload same UserClient object",
-                userClientPersistence.reload(userClient.getId()),
+                userClientPersistence.reload(userClient),
                 is(userClient));
     }
 
@@ -252,6 +253,58 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
                 userClientPersistence.findConflictingUsers(matt).isEmpty(),
                 is(true));
 
+    }
+
+    /**
+     * Happy path for activation key setup
+     */
+    @Test
+    public void findByActivationKey() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setActivationKey("whatever");
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("find by activation key should work",
+                userClientPersistence.findByActivationKey(userClient.getActivationKey()),
+                is(userClient)
+        );
+    }
+
+    /**
+     * Null activation code searching
+     */
+    @Test
+    public void findByNullActivationKey() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("no activation key on user should return null value",
+                userClientPersistence.findByActivationKey(userClient.getActivationKey()),
+                is(nullValue())
+        );
+    }
+
+    /**
+     * Happy path for reset token setup
+     */
+    @Test
+    public void findByResetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPasswordResetToken("whatever");
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("find by activation key should work",
+                userClientPersistence.findByResetToken(userClient.getPasswordResetToken()),
+                is(userClient)
+        );
+    }
+
+    /**
+     * Null reset code searching
+     */
+    @Test
+    public void findByNullResetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("no activation key on user should return null value",
+                userClientPersistence.findByActivationKey(userClient.getPasswordResetToken()),
+                is(nullValue())
+        );
     }
 
 }

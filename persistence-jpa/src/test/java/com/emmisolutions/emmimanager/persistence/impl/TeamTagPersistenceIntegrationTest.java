@@ -27,7 +27,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
     TeamTagPersistence teamTagPersistence;
 
     @Resource
-    UserPersistence userPersistence;
+    UserAdminPersistence userAdminPersistence;
 
     @Resource
     ClientPersistence clientPersistence;
@@ -53,7 +53,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Before
     public void init() {
-        superAdmin = userPersistence.reload("super_admin");
+        superAdmin = userAdminPersistence.reload("super_admin");
         clientType = clientTypeRepository.getOne(1l);
     }
 
@@ -124,7 +124,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet = new HashSet<>();
         searchFilter.setTagSet(tagSet);
-        searchFilter.setClientId(client.getId());
+        searchFilter.setClient(client);
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("no teams were returned", teamsWithTag.getContent().size(), is(2));
     }
@@ -134,8 +134,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void returnNull() {
-        TeamTagSearchFilter searchFilter = null;
-        Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
+        Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, null);
         assertThat("no teams were returned", teamsWithTag.getContent().size(), is(0));
     }
 
@@ -151,7 +150,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
         Tag tag = createTag(group);
 
-        Team team = createTeam(client, 1);
+        Team team = createTeam(client, 2);
 
         teamTag.setTag(tag);
         teamTag.setTeam(team);
@@ -168,6 +167,7 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
         HashSet<Tag> tagSet = new HashSet<>();
         tagSet.add(tag);
         searchFilter.setTagSet(tagSet);
+        searchFilter.setStatus(TeamTagSearchFilter.StatusFilter.ACTIVE_ONLY);
         Page<TeamTag> teamsWithTag = teamTagPersistence.findTeamsWithTag(null, searchFilter);
         assertThat("we can find the team tag by the team tag id",
                 teamsWithTag,
