@@ -52,6 +52,9 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
         group.setName(RandomStringUtils.randomAlphanumeric(8));
         group.setType(groupType);
         ReferenceGroup savedGroup = referenceGroupPersistence.save(group);
+        
+        ReferenceGroup reloadGroup = referenceGroupPersistence.reload(savedGroup.getId());
+        assertThat("reloaded group is not null: ", reloadGroup.getId(), is(notNullValue()));
 
         final ReferenceTag tagOne = new ReferenceTag();
         tagOne.setName(RandomStringUtils.randomAlphanumeric(8));

@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
 import java.util.List;
 import java.util.Set;
 

@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.groups;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import org.springframework.hateoas.ResourceAssembler;
