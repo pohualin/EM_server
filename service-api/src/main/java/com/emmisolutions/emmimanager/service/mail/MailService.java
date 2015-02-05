@@ -24,4 +24,11 @@ public interface MailService {
      */
     void sendPasswordResetEmail(UserClient user, String passwordResetUrl);
 
+    /**
+     * Sends a password reset to an email that is not yet validated
+     * in our system.
+     *
+     * @param userClient to send to
+     */
+    void sendInvalidAccountPasswordResetEmail(UserClient userClient);
 }

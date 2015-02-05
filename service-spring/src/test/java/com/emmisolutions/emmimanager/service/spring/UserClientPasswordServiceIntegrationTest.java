@@ -154,15 +154,21 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     public void passwordReset() {
         String password = "password";
 
-        UserClient userClient = userClientPasswordService.resetPassword(
-                new ResetPasswordRequest(userClientService.addResetTokenTo(makeNewRandomUserClient(null))
-                        .getPasswordResetToken(), password));
+        UserClient userClient = userClientPasswordService.addResetTokenTo(makeNewRandomUserClient(null));
+
+        assertThat("user does not have a validated email", userClient.isEmailValidated(), is(false));
+
+        UserClient afterReset = userClientPasswordService.resetPassword(
+                new ResetPasswordRequest(userClient.getPasswordResetToken(), password));
 
         assertThat("user has reset password",
-                userClient.getPasswordResetToken(),
+                afterReset.getPasswordResetToken(),
                 is(nullValue())
         );
-        assertThat("user can now login", login(userClient.getLogin(), password),
+
+        assertThat("user now has an validated email", afterReset.isEmailValidated(), is(true));
+
+        assertThat("user can now login", login(afterReset.getLogin(), password),
                 is((User) userClient));
         logout();
     }
@@ -182,5 +188,40 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
                 userClientPasswordService.resetPassword(new ResetPasswordRequest()),
                 is(nullValue())
         );
+    }
+
+    /**
+     * Make sure a new password reset key is created
+     */
+    @Test
+    public void resetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("reset token is created",
+                userClientPasswordService.addResetTokenTo(userClient).getPasswordResetToken(),
+                is(notNullValue()));
+    }
+
+    /**
+     * Add reset token to nothing should be an exception
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badResetToken() {
+        userClientPasswordService.addResetTokenTo(null);
+    }
+
+    /**
+     * Make sure a forgot password adds a reset key when
+     * the email corresponds to a user client
+     */
+    @Test
+    public void forgotPassword() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("reset token is created",
+                userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
+                is(notNullValue()));
+
+        assertThat("reset token is created",
+                userClientPasswordService.forgotPassword(null),
+                is(nullValue()));
     }
 }

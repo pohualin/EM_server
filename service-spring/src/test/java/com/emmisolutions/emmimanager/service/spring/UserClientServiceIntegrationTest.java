@@ -94,6 +94,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClient.setFirstName("new first name");
         userClient.setClient(makeNewRandomClient());
         userClient.setPassword("new password");
+        userClient.setEmailValidated(true);
         UserClient updatedUserClient = userClientService.update(userClient);
         assertThat("version increment occurred",
                 updatedUserClient.getVersion(), is(userClient.getVersion() + 1));
@@ -103,6 +104,8 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
                 is(userClient.getPassword()));
         assertThat("client id not change", updatedUserClient.getClient(),
                 is(userClient.getClient()));
+        assertThat("email valid did not change", updatedUserClient.isEmailValidated(),
+                is(userClient.isEmailValidated()));
     }
 
     /**
@@ -200,6 +203,9 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
                 userClient.isActivated(),
                 is(true)
         );
+
+        assertThat("email is validated", userClient.isEmailValidated(), is(true));
+
         assertThat("user activation key is gone",
                 userClient.getActivationKey(),
                 is(nullValue())
@@ -207,6 +213,11 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("user can now login", login(userClient.getLogin(), password),
                 is((User) userClient));
         logout();
+
+        userClient = userClientService.reload(userClient); // login modifies the user on first login
+        userClient.setEmail("anewemail@newone.com");
+        UserClient newEmail = userClientService.update(userClient);
+        assertThat("email is not valid due to update", newEmail.isEmailValidated(), is(false));
     }
 
     /**
@@ -252,23 +263,5 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
 
-    /**
-     * Make sure a new password reset key is created
-     */
-    @Test
-    public void resetToken() {
-        UserClient userClient = makeNewRandomUserClient(null);
-        assertThat("reset token is created",
-                userClientService.addResetTokenTo(userClient).getPasswordResetToken(),
-                is(notNullValue()));
-    }
-
-    /**
-     * Add reset token to nothing should be an exception
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void badResetToken() {
-        userClientService.addResetTokenTo(null);
-    }
 
 }

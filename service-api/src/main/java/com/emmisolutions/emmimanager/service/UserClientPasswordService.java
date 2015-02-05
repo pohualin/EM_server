@@ -32,11 +32,28 @@ public interface UserClientPasswordService {
     public UserClient encodePassword(UserClient userClient);
 
     /**
-     * Reset a user's password
+     * Update a user's password with a reset password request
      *
      * @param resetPasswordRequest request to reset the password
      * @return the UserClient with a reset password
      */
     UserClient resetPassword(ResetPasswordRequest resetPasswordRequest);
 
+    /**
+     * Add a reset token to the UserClient
+     *
+     * @param userClient on which to add the reset token
+     * @return the saved UserClient
+     */
+    UserClient addResetTokenTo(UserClient userClient);
+
+    /**
+     * A user has forgotten their password. This method creates
+     * a reset password token if the UserClient has a validated
+     * email.
+     *
+     * @param email to look up the user
+     * @return the updated UserClient with a reset token or null
+     */
+    UserClient forgotPassword(String email);
 }

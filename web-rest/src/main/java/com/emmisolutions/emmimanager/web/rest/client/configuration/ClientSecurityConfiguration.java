@@ -1,10 +1,10 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
 import com.emmisolutions.emmimanager.web.rest.admin.configuration.SecurityConfiguration;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationFailureHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxLogoutSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,13 +39,13 @@ import javax.inject.Inject;
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Resource
+    @Resource(name = "clientAjaxAuthenticationSuccessHandler")
     private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
 
-    @Resource
+    @Resource(name = "clientAjaxAuthenticationFailureHandler")
     private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
 
-    @Resource
+    @Resource(name = "clientAjaxLogoutSuccessHandler")
     private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
 
     @Resource
@@ -93,30 +93,30 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .requestMatchers()
                     .antMatchers("/webapi-client/**")
-                    .and()
+                .and()
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
                             new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
-                    .and()
+                .and()
                 .rememberMe()
-                    .key(SecurityConfiguration.REMEMBER_ME_KEY)
+                .key(SecurityConfiguration.REMEMBER_ME_KEY)
                     .userDetailsService(userDetailsService)
-                    .and()
+                .and()
                 .formLogin()
                 .loginPage("/login-client.jsp")
                     .loginProcessingUrl("/webapi-client/authenticate")
-                    .successHandler(ajaxAuthenticationSuccessHandler)
-                    .failureHandler(ajaxAuthenticationFailureHandler)
+                .successHandler(ajaxAuthenticationSuccessHandler)
+                .failureHandler(ajaxAuthenticationFailureHandler)
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
-                    .permitAll()
-                    .and()
+                .permitAll()
+                .and()
                 .logout()
                 .logoutUrl("/webapi-client/logout")
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                    .deleteCookies("JSESSIONID")
-                    .permitAll()
-                    .and()
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+                .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
@@ -127,6 +127,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi-client/messages").permitAll()
                     .antMatchers("/webapi-client/password/expired").permitAll()
                     .antMatchers("/webapi-client/password/reset").permitAll()
+                    .antMatchers("/webapi-client/password/forgot").permitAll()
                     .antMatchers("/webapi-client/activate").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()

@@ -68,4 +68,12 @@ public interface UserClientPersistence {
      * @return a UserClient or null
      */
     UserClient findByResetToken(String resetToken);
+
+    /**
+     * Finds a user by email
+     *
+     * @param email to lookup
+     * @return the UserClient or null
+     */
+    UserClient findByEmail(String email);
 }
