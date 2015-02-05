@@ -207,6 +207,7 @@ public abstract class BaseIntegrationTest {
         userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
         userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
         userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
+        userClient.setEmail(RandomStringUtils.randomAlphabetic(25) + "@" + RandomStringUtils.randomAlphabetic(25) + ".com");
         return userClientPersistence.saveOrUpdate(userClient);
     }
 

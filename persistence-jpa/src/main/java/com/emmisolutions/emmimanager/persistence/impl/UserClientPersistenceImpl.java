@@ -107,4 +107,12 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         return null;
     }
 
+    @Override
+    public UserClient findByEmail(String email) {
+        if (StringUtils.isNotBlank(email)) {
+            return userClientRepository.findByEmailIgnoreCase(email);
+        }
+        return null;
+    }
+
 }

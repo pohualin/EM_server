@@ -33,4 +33,12 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
      * @return UserClient or null
      */
     UserClient findByPasswordResetToken(String resetToken);
+
+    /**
+     * Find a user by email address
+     *
+     * @param email to search for
+     * @return UserClient or null
+     */
+    UserClient findByEmailIgnoreCase(String email);
 }

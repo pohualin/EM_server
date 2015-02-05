@@ -54,6 +54,7 @@ public class UserClientServiceImpl implements UserClientService {
 
         // user is not activated
         userClient.setActivated(false);
+        userClient.setEmailValidated(false);
 
         return userClientPersistence.saveOrUpdate(userClient);
     }
@@ -81,6 +82,9 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setCredentialsNonExpired(inDb.isCredentialsNonExpired());
         userClient.setAccountNonExpired(inDb.isAccountNonExpired());
         userClient.setAccountNonLocked(inDb.isAccountNonLocked());
+        // validation should be false if the email address has changed, otherwise set it to whatever it was previously
+        userClient.setEmailValidated(
+                StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
         return userClientPersistence.saveOrUpdate(userClient);
     }
 
@@ -116,6 +120,7 @@ public class UserClientServiceImpl implements UserClientService {
             if (userClient != null) {
                 userClient.setActivated(true);
                 userClient.setActivationKey(null);
+                userClient.setEmailValidated(true);
                 userClient.setPassword(activationRequest.getNewPassword());
                 userClient.setCredentialsNonExpired(true);
                 return userClientPersistence.saveOrUpdate(
@@ -139,21 +144,6 @@ public class UserClientServiceImpl implements UserClientService {
                     passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
                             .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         }
-        return userClientPersistence.saveOrUpdate(fromDb);
-    }
-
-    @Override
-    @Transactional
-    public UserClient addResetTokenTo(UserClient userClient) {
-        UserClient fromDb = userClientPersistence.reload(userClient);
-        if (fromDb == null) {
-            throw new InvalidDataAccessApiUsageException(
-                    "This method is only to be used with existing UserClient objects");
-        }
-        // update the activation key, only for not yet activated users
-        fromDb.setPasswordResetToken(
-                passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
-                        .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
         return userClientPersistence.saveOrUpdate(fromDb);
     }
 

@@ -56,9 +56,14 @@ public class MailServiceImpl implements MailService {
         sendTemplateBasedEmail(passwordResetFrom, user, passwordResetUrl, EmailTemplateType.PASSWORD_RESET);
     }
 
+    @Async
+    @Override
+    public void sendInvalidAccountPasswordResetEmail(UserClient userClient) {
+        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_INVALID_ACCOUNT);
+    }
+
     private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type) {
-        if (user == null || StringUtils.isBlank(url) ||
-                StringUtils.isBlank(user.getEmail()) || type == null) {
+        if (user == null || StringUtils.isBlank(user.getEmail()) || type == null) {
             return;
         }
         Context context = new Context();

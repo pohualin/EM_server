@@ -1,0 +1,28 @@
+package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * Returns a 401 error code (Unauthorized) to the client, specialized for Ajax requests.
+ */
+@Component("clientAjaxAuthenticationFailureHandler")
+public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException, ServletException {
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getClass().getSimpleName());
+        } else {
+            super.onAuthenticationFailure(request, response, exception);
+        }
+
+    }
+}
