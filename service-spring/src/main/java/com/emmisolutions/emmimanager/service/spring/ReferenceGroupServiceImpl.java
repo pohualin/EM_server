@@ -1,8 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
@@ -70,10 +67,10 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
     @Override
     @Transactional
     public ReferenceGroup saveReferenceGroupAndReferenceTags(RefGroupSaveRequest groupSaveRequest) {
-        ensureGroupsAndTagsAreValid(groupSaveRequest);
         ReferenceGroup savedGroup = referenceGroupPersistence.reload(groupSaveRequest.getReferenceGroup().getId());
 
         if (savedGroup == null) {
+            validateGroupNameForNoDuplicate(groupSaveRequest);
             groupSaveRequest.getReferenceGroup().setType(getReferenceGroupType(groupSaveRequest.getReferenceGroup().getName()));
             savedGroup = save(groupSaveRequest.getReferenceGroup());
         }
@@ -124,31 +121,11 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
         return referenceTagPersistence.save(t);
     }
     
-    private void ensureGroupsAndTagsAreValid(RefGroupSaveRequest saveRequest) {
-        Set<String> groupNames = new HashSet<>();
-        Set<String> tagsInAGroup = new HashSet<>();
-        if (saveRequest.getReferenceGroup() != null) {
-            String normalizedName = normalizeName(saveRequest.getReferenceGroup().getName());
-            if (StringUtils.isBlank(normalizedName) || !groupNames.add(normalizedName)) {
-                throw new IllegalArgumentException("Group name: '" + saveRequest.getReferenceGroup().getName() + "' is null, only contains special characters or is a duplicate");
-            }
-            if (saveRequest.getReferenceTags() != null) {
-                for (ReferenceTag tag : saveRequest.getReferenceTags()) {
-                    String normalizedTagName = normalizeName(tag.getName());
-                    if (StringUtils.isBlank(normalizedTagName) || !tagsInAGroup.add(normalizedTagName)) {
-                        throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' is null, only contains special characters or is a duplicate within group: " + saveRequest.getReferenceGroup().getName());
-                    }
-                }
-            }
-        }
-    }
     
-    private String normalizeName(String name) {
-        String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
-        if (StringUtils.isNotBlank(normalizedName)) {
-            // do regex
-            normalizedName = normalizedName.replaceAll("[^a-z0-9]*", "");
-        }
-        return normalizedName;
+    private void validateGroupNameForNoDuplicate(RefGroupSaveRequest saveRequest){
+        ReferenceGroupType type = referenceGroupTypePersistence.findByName(saveRequest.getReferenceGroup().getName().replace(" ", "_").toUpperCase());
+        if (type != null) {
+            throw new IllegalArgumentException("Group name: '" + saveRequest.getReferenceGroup().getName() + "' is null, only contains special characters or is a duplicate");
+        }  
     }
 }

@@ -74,5 +74,14 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
 
         Page<ReferenceGroupType> types = referenceGroupTypePersistence.findAll(null);
         assertThat("types are present: ", types.getContent().size(), is(3));
+        
+        ReferenceGroup groupTwo = new ReferenceGroup();
+        groupTwo.setName(RandomStringUtils.randomAlphanumeric(8));
+        groupTwo.setType(findByName);
+        ReferenceGroup savedGroupTwo = referenceGroupPersistence.save(groupTwo);
+        assertThat("reloaded savedGroupTwo is not null: ", savedGroupTwo.getId(), is(notNullValue()));
+
+        Page<ReferenceGroupType> typesTwo = referenceGroupTypePersistence.findAll(null);
+        assertThat("types are present: ", typesTwo.getContent().size(), is(3));
     }
 }
