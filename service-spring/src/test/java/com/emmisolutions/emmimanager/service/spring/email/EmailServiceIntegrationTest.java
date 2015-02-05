@@ -77,9 +77,6 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
         mailService.sendActivationEmail(null, null);
         assertThat("no client shouldn't change messages", getEmailsFromServer().length, is(countOfMessages));
 
-        mailService.sendActivationEmail(userClient, null);
-        assertThat("no url", getEmailsFromServer().length, is(countOfMessages));
-
         mailService.sendActivationEmail(userClient, "http://aUrl");
         assertThat("no email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
 
@@ -140,14 +137,28 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
         mailService.sendPasswordResetEmail(null, null);
         assertThat("no client shouldn't change messages", getEmailsFromServer().length, is(countOfMessages));
 
-        mailService.sendPasswordResetEmail(userClient, null);
-        assertThat("no base url", getEmailsFromServer().length, is(countOfMessages));
-
         mailService.sendPasswordResetEmail(userClient, "http://aUrl");
         assertThat("no email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
 
         userClient.setEmail("steve@steve.com");
         mailService.sendPasswordResetEmail(userClient, "http://aUrl");
+        assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
+    }
+
+    /**
+     * Ensure we can send invalid account password reset emails
+     */
+    @Test
+    public void invalidAccountPasswordReset(){
+        String email = "invalid@account.org";
+        setEmailMailServerUser(email);
+        int countOfMessages = getEmailsFromServer().length;
+        mailService.sendInvalidAccountPasswordResetEmail(null);
+        assertThat("no email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
+
+        UserClient userClient = new UserClient();
+        userClient.setEmail(email);
+        mailService.sendInvalidAccountPasswordResetEmail(userClient);
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
 

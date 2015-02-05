@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientConflictResourceAssembler;
@@ -52,6 +53,9 @@ public class UserClientsResource {
     UserClientService userClientService;
 
     @Resource
+    UserClientPasswordService userClientPasswordService;
+
+    @Resource
     UserClientResourceAssembler userClientResourceAssembler;
 
     @Resource
@@ -65,7 +69,7 @@ public class UserClientsResource {
 
     private static final String ACTIVATION_CLIENT_APPLICATION_URI = "#/activate/%s";
 
-    private static final String RESET_PASSWORD_CLIENT_APPLICATION_URI = "#/reset_password/%s";
+    public static final String RESET_PASSWORD_CLIENT_APPLICATION_URI = "#/reset_password/%s";
 
     /**
      * Get a page of UserClient that satisfy the search criteria
@@ -157,8 +161,8 @@ public class UserClientsResource {
 
     /**
      * Send an activation email
-     * @param id
-     * @return
+     * @param id of the user
+     * @return OK
      */
     @RequestMapping(value = "/user_client/{id}/activate", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
@@ -183,17 +187,17 @@ public class UserClientsResource {
     }
 
     /**
-     * Creates a new reset password token and sends it to the user if it can
+     * Creates a new reset password token and sends it to the user if the user is found
      *
      * @param id of the user
-     * @return void
+     * @return OK
      */
     @RequestMapping(value = "/user_client/{id}/resetPassword", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> resetPassword(@PathVariable Long id) {
 
         // update the reset token, invalidating others
-        UserClient savedUserClient = userClientService.addResetTokenTo(new UserClient(id));
+        UserClient savedUserClient = userClientPasswordService.addResetTokenTo(new UserClient(id));
 
         // get the proper url (the way we make hateoas links), then replace the path with the client entry point
         String resetRef =
