@@ -34,7 +34,8 @@ public class PublicApi extends ResourceSupport {
         add(new Link(self.getHref() + "/logout", "logout"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).changeExpiredPassword(null)).withRel("expiredPassword"));
         add(linkTo(methodOn(UserClientsActivationResource.class).activate(null)).withRel("activate"));
-        add(linkTo(methodOn(UserClientsPasswordResource.class).resetPassword(null)).withRel("reset_password"));
+        add(linkTo(methodOn(UserClientsPasswordResource.class).resetPassword(null)).withRel("resetPassword"));
+        add(linkTo(methodOn(UserClientsPasswordResource.class).forgotPassword(null)).withRel("forgotPassword"));
         add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
     }
 

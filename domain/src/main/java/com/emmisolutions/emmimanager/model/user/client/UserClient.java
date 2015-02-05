@@ -80,10 +80,18 @@ public class UserClient extends User {
     @Column(name = "never_logged_in")
     private boolean neverLoggedIn = true;
 
+    @Column(name = "email_validated")
+    private boolean emailValidated;
+
     public UserClient() {
 
     }
 
+    /**
+     * Creates a client by id
+     *
+     * @param id the id
+     */
     public UserClient(Long id) {
         super.setId(id);
     }
@@ -214,5 +222,13 @@ public class UserClient extends User {
 
     public void setPasswordResetToken(String passwordResetToken) {
         this.passwordResetToken = passwordResetToken;
+    }
+
+    public boolean isEmailValidated() {
+        return emailValidated;
+    }
+
+    public void setEmailValidated(boolean emailValidated) {
+        this.emailValidated = emailValidated;
     }
 }

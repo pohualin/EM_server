@@ -307,4 +307,20 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         );
     }
 
+    /**
+     * Find by email test
+     */
+    @Test
+    public void findByEmail() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("find by email should work",
+                userClientPersistence.findByEmail(userClient.getEmail()),
+                is(userClient)
+        );
+        assertThat("find by null email should return null",
+                userClientPersistence.findByEmail(null),
+                is(nullValue())
+        );
+    }
+
 }
