@@ -14,8 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
+import com.emmisolutions.emmimanager.persistence.ReferenceGroupTypePersistence;
 import com.emmisolutions.emmimanager.persistence.ReferenceTagPersistence;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
 
@@ -31,6 +33,9 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 	
 	@Resource
 	ReferenceTagPersistence referenceTagPersistence;
+	
+	@Resource
+	ReferenceGroupTypePersistence referenceGroupTypePersistence;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -67,7 +72,12 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
     public ReferenceGroup saveReferenceGroupAndReferenceTags(RefGroupSaveRequest groupSaveRequest) {
         ensureGroupsAndTagsAreValid(groupSaveRequest);
         ReferenceGroup savedGroup = referenceGroupPersistence.reload(groupSaveRequest.getReferenceGroup().getId());
+
         if (savedGroup == null) {
+            ReferenceGroupType groupType = new ReferenceGroupType();
+            groupType.setName(groupSaveRequest.getReferenceGroup().getName());
+            ReferenceGroupType savedGroupType = referenceGroupTypePersistence.save(groupType);
+            groupSaveRequest.getReferenceGroup().setType(savedGroupType);
             savedGroup = save(groupSaveRequest.getReferenceGroup());
         }
 
