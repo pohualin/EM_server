@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordReq
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,7 +80,35 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 userClient.setPasswordResetToken(null);
                 userClient.setPassword(resetPasswordRequest.getNewPassword());
                 userClient.setCredentialsNonExpired(true);
+                userClient.setEmailValidated(true);
                 return userClientPersistence.saveOrUpdate(encodePassword(userClient));
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public UserClient addResetTokenTo(UserClient userClient) {
+        UserClient fromDb = userClientPersistence.reload(userClient);
+        if (fromDb == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
+        }
+        // update the activation key, only for not yet activated users
+        fromDb.setPasswordResetToken(
+                passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
+                        .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
+        return userClientPersistence.saveOrUpdate(fromDb);
+    }
+
+    @Override
+    @Transactional
+    public UserClient forgotPassword(String email) {
+        if (email != null) {
+            UserClient userClient = userClientPersistence.findByEmail(email);
+            if (userClient != null){
+                return addResetTokenTo(userClient);
             }
         }
         return null;

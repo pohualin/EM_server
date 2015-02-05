@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create reset email template" author="Matt">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_12/data/em-299/reset-email-invalid-account.data"
+                  tableName="email_template"
+                  separator="~"/>
+
+    </changeSet>
+
+    <changeSet id="add email validation toggle" author="Matt">
+        <addColumn tableName="user_client">
+            <column name="email_validated" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="email_validated" type="boolean"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
