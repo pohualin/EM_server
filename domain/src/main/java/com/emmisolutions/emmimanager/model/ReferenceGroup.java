@@ -2,12 +2,14 @@ package com.emmisolutions.emmimanager.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.*;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -97,4 +99,12 @@ public class ReferenceGroup extends AbstractAuditingEntity implements Serializab
 		return "Reference Group{" + "id=" + getId() + ", name='" + getName() + '\'' + '}';
 	}
 
+    public ReferenceGroup(Long id) {
+        super();
+        this.id = id;
+    }
+
+    public ReferenceGroup() {
+        super();
+    }
 }
