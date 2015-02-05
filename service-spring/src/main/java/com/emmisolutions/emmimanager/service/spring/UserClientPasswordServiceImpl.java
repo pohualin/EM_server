@@ -103,6 +103,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
     }
 
     @Override
+    @Transactional
     public UserClient forgotPassword(String email) {
         if (email != null) {
             UserClient userClient = userClientPersistence.findByEmail(email);
