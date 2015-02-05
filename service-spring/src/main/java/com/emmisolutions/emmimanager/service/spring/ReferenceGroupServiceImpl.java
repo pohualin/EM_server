@@ -74,10 +74,7 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
         ReferenceGroup savedGroup = referenceGroupPersistence.reload(groupSaveRequest.getReferenceGroup().getId());
 
         if (savedGroup == null) {
-            ReferenceGroupType groupType = new ReferenceGroupType();
-            groupType.setName(groupSaveRequest.getReferenceGroup().getName());
-            ReferenceGroupType savedGroupType = referenceGroupTypePersistence.save(groupType);
-            groupSaveRequest.getReferenceGroup().setType(savedGroupType);
+            groupSaveRequest.getReferenceGroup().setType(getReferenceGroupType(groupSaveRequest.getReferenceGroup().getName()));
             savedGroup = save(groupSaveRequest.getReferenceGroup());
         }
 
@@ -100,6 +97,18 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
         }
 
         return savedGroup;
+    }
+    
+    private ReferenceGroupType getReferenceGroupType(String groupTypeName) {
+        String typeName = groupTypeName.replace(" ", "_").toUpperCase();
+        ReferenceGroupType type = referenceGroupTypePersistence.findByName(typeName);
+        if (type == null) {
+            ReferenceGroupType groupType = new ReferenceGroupType();
+            groupType.setName(typeName);
+            return referenceGroupTypePersistence.save(groupType);
+        } else {
+            return type;
+        }
     }
     
     private ReferenceTag saveTagForGroup(ReferenceTag tag, ReferenceGroup group) {

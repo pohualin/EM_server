@@ -22,13 +22,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
+import com.emmisolutions.emmimanager.service.ReferenceGroupTypeService;
 import com.emmisolutions.emmimanager.service.ReferenceTagService;
 import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupTypePage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupTypeResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagResourceAssembler;
 
@@ -54,7 +58,13 @@ public class ReferenceGroupsResource {
     ReferenceTagResourceAssembler referenceTagResourceAssembler;
     
     @Resource
+    ReferenceGroupTypeResourceAssembler referenceGroupTypeResourceAssembler;
+    
+    @Resource
     TagService tagService;
+    
+    @Resource
+    ReferenceGroupTypeService referenceGroupTypeService;
     
     @RequestMapping(value="/referenceGroups/{id}", method = RequestMethod.PUT)
     @RolesAllowed({"PERM_GOD"})
@@ -115,6 +125,21 @@ public class ReferenceGroupsResource {
 
         if (tagPage.hasContent()) {
             return new ResponseEntity<>(new ReferenceTagPage(assembler.toResource(tagPage, referenceTagResourceAssembler), tagPage), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
+    @RequestMapping(value = "/referenceGroupTypes", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_GROUP_VIEW"})
+    public ResponseEntity<ReferenceGroupTypePage> getAllReferenceGroupTypes(@PageableDefault(size = 50) Pageable pageable,
+                                                           @SortDefault(sort = "id") Sort sort,
+                                                           PagedResourcesAssembler<ReferenceGroupType> assembler) {
+
+        Page<ReferenceGroupType> groupTypesPage = referenceGroupTypeService.findAll(pageable);
+
+        if (groupTypesPage.hasContent()) {
+            return new ResponseEntity<>(new ReferenceGroupTypePage(assembler.toResource(groupTypesPage, referenceGroupTypeResourceAssembler), groupTypesPage), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

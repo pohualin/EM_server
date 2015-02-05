@@ -10,11 +10,10 @@ import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ReferenceGroupsResource;
 
 /**
- * Responsible for creating a GroupResource (which has links) from a Group
+ * Responsible for creating a ReferenceGroupResource (which has links) from a ReferenceGroup
  */
 @Component
-public class ReferenceGroupResourceAssembler implements
-		ResourceAssembler<ReferenceGroup, ReferenceGroupResource> {
+public class ReferenceGroupResourceAssembler implements ResourceAssembler<ReferenceGroup, ReferenceGroupResource> {
 
 	@Override
 	public ReferenceGroupResource toResource(ReferenceGroup entity) {
