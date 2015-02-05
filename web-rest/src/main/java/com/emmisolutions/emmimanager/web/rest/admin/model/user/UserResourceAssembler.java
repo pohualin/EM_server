@@ -3,10 +3,12 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.user;
 import com.emmisolutions.emmimanager.model.user.admin.*;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupTypePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
+
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
 import org.springframework.hateoas.core.DummyInvocationUtils;
@@ -59,6 +61,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
+        ret.add(ReferenceGroupTypePage.createRefGroupTypesLink());
         ret.add(TeamPage.createFullSearchLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());
