@@ -1,5 +1,17 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.client;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
+
 import com.emmisolutions.emmimanager.model.ClientRegion;
 import com.emmisolutions.emmimanager.model.ClientSearchFilter;
 import com.emmisolutions.emmimanager.model.ClientTier;
@@ -8,16 +20,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupP
 import com.emmisolutions.emmimanager.web.rest.admin.model.salesforce.SalesForceSearchResponseResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.UserPage;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Reference data for client editing
