@@ -73,6 +73,10 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
             groupSaveRequest.getReferenceGroup().setType(getReferenceGroupType(groupSaveRequest.getReferenceGroup().getName()));
             savedGroup = save(groupSaveRequest.getReferenceGroup());
         }
+        
+        if (!savedGroup.getName().equalsIgnoreCase(groupSaveRequest.getReferenceGroup().getName())){
+            savedGroup.setName(groupSaveRequest.getReferenceGroup().getName());
+        }
 
         if (groupSaveRequest.getReferenceTags() != null) {
             ReferenceTag reftag;
