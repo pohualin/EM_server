@@ -97,17 +97,11 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
     }
     
     private ReferenceGroupType getReferenceGroupType(String groupTypeName) {
-        String typeName = groupTypeName.replace(" ", "_").toUpperCase();
-        ReferenceGroupType type = referenceGroupTypePersistence.findByName(typeName);
-        if (type == null) {
-            ReferenceGroupType groupType = new ReferenceGroupType();
-            groupType.setName(typeName);
-            return referenceGroupTypePersistence.save(groupType);
-        } else {
-            return type;
-        }
+        ReferenceGroupType groupType = new ReferenceGroupType();
+        groupType.setName(groupTypeName.replace(" ", "_").toUpperCase());
+        return referenceGroupTypePersistence.save(groupType);
     }
-    
+
     private ReferenceTag saveTagForGroup(ReferenceTag tag, ReferenceGroup group) {
         ReferenceTag t = new ReferenceTag();
         if (tag != null) {
