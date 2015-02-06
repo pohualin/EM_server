@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -105,6 +109,12 @@ public class UserAdminServiceImpl implements UserAdminService {
 	@Override
 	public Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable) {
 		return userAdminPersistence.listRolesWithoutSystem(pageable) ;
-	}     
+	}
+
+    @Override
+    @Transactional
+    public List<UserAdmin> findConflictingUsers(UserAdmin userAdmin) {
+        return new ArrayList<UserAdmin>(userAdminPersistence.findConflictingUsers(userAdmin));
+    }     
     
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.*;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClient_;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -80,4 +82,41 @@ public class UserSpecifications {
 			}
 		};
 	}
+	
+    /**
+     * Add where clause to find UserAdmin with passed in email address
+     * 
+     * @param userAdmin
+     *            to use
+     * @return the specification as a filter predicate
+     */
+    public Specification<UserAdmin> hasEmail(final UserAdmin userAdmin) {
+        return new Specification<UserAdmin>() {
+            @Override
+            public Predicate toPredicate(Root<UserAdmin> root,
+                    CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (userAdmin != null
+                        && StringUtils.isNotBlank(userAdmin.getEmail())) {
+                    return cb.equal(root.get(UserAdmin_.email), userAdmin
+                            .getEmail().toLowerCase());
+                }
+                return null;
+            }
+        };
+    }
+    
+    public Specification<UserAdmin> isNotSelf(final UserAdmin userAdmin) {
+        return new Specification<UserAdmin>() {
+            @Override
+            public Predicate toPredicate(Root<UserAdmin> root,
+                    CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (userAdmin != null
+                        && userAdmin.getId() != null) {
+                    return cb.notEqual(root.get(UserAdmin_.id), userAdmin
+                            .getId());
+                }
+                return null;
+            }
+        };
+    }
 }
