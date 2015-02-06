@@ -27,8 +27,7 @@ public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence 
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        Page<ReferenceGroup> groups = referenceGroupRepository.findAll(page);
-        return groups;
+        return referenceGroupRepository.findAll(page);
     }
 	
 	@Override

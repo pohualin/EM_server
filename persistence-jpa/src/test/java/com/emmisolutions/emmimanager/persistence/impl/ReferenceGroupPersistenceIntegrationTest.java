@@ -19,6 +19,7 @@ import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
+import com.emmisolutions.emmimanager.persistence.ReferenceGroupTypePersistence;
 import com.emmisolutions.emmimanager.persistence.ReferenceTagPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 
@@ -34,7 +35,7 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
     ReferenceTagPersistence referenceTagPersistence;
     
     @Resource
-    ReferenceGroupTypeRepository referenceGroupTypeRepository;
+    ReferenceGroupTypePersistence referenceGroupTypePersistence;
 
     @Test
     public void load(){
@@ -46,11 +47,13 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
     @Test
     public void testGetAllTagsForGroup(){
         ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName(RandomStringUtils.randomAlphanumeric(8));
-        groupType= referenceGroupTypeRepository.save(groupType);
+        groupType.setName("reference data testing 3 2 1");
+        groupType= referenceGroupTypePersistence.save(groupType);
+        
+        ReferenceGroupType findByName = referenceGroupTypePersistence.findByName("reference data testing 3 2 1");
         ReferenceGroup group = new ReferenceGroup();
         group.setName(RandomStringUtils.randomAlphanumeric(8));
-        group.setType(groupType);
+        group.setType(findByName);
         ReferenceGroup savedGroup = referenceGroupPersistence.save(group);
         
         ReferenceGroup reloadGroup = referenceGroupPersistence.reload(savedGroup.getId());
@@ -69,5 +72,16 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
         Page<ReferenceTag> tagsWithNoPageLimit = referenceTagPersistence.findAllByGroup(savedGroup, null);
         assertThat("Page of tags returned:", tagsWithNoPageLimit.getTotalElements(), is(1l));
 
+        Page<ReferenceGroupType> types = referenceGroupTypePersistence.findAll(null);
+        assertThat("types are present: ", types.getContent().size(), is(3));
+        
+        ReferenceGroup groupTwo = new ReferenceGroup();
+        groupTwo.setName(RandomStringUtils.randomAlphanumeric(8));
+        groupTwo.setType(findByName);
+        ReferenceGroup savedGroupTwo = referenceGroupPersistence.save(groupTwo);
+        assertThat("reloaded savedGroupTwo is not null: ", savedGroupTwo.getId(), is(notNullValue()));
+
+        Page<ReferenceGroupType> typesTwo = referenceGroupTypePersistence.findAll(null);
+        assertThat("types are present: ", typesTwo.getContent().size(), is(3));
     }
 }
