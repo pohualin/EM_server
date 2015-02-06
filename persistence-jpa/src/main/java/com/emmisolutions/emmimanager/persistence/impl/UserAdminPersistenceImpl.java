@@ -10,6 +10,7 @@ import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecific
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminUserAdminRoleRepository;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -110,5 +113,16 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
             pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
         return userAdminroleRepository.findAllWithoutSystem(pageable);
+    }
+
+    @Override
+    public Set<UserAdmin> findConflictingUsers(UserAdmin userAdmin) {
+        if (userAdmin == null || StringUtils.isBlank(userAdmin.getEmail())) {
+            // nothing to search on
+            return Collections.emptySet();
+        }
+        return new HashSet<>(userAdminRepository.findAll(where(
+                userSpecifications.hasEmail(userAdmin)).and(
+                userSpecifications.isNotSelf(userAdmin))));
     }
 }

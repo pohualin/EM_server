@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
@@ -10,6 +12,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.user.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -109,17 +112,22 @@ public class UsersResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
     public ResponseEntity<UserResource> createUser(@RequestBody UserAdminSaveRequest req) {
-
-    	UserAdmin savedUser = userAdminService.save(req);
-        if (savedUser != null) {
-            // created a user client successfully
-            return new ResponseEntity<>(
-            		userAdminResourceAssembler.toResource(savedUser),
-                    HttpStatus.CREATED);
+        List<UserAdmin> conflicts = userAdminService.findConflictingUsers(req.getUserAdmin());
+        
+        if(conflicts.size() == 0){
+            UserAdmin savedUser = userAdminService.save(req);
+            if (savedUser != null) {
+                // created a user client successfully
+                return new ResponseEntity<>(
+                        userAdminResourceAssembler.toResource(savedUser),
+                        HttpStatus.CREATED);
+            } else {
+                // error creating user client
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            // error creating user client
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }  	
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
     /**
@@ -133,18 +141,25 @@ public class UsersResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
     public ResponseEntity<UserResource> updateUser(@RequestBody UserAdminSaveRequest req) {
+        List<UserAdmin> conflicts = userAdminService.findConflictingUsers(req
+                .getUserAdmin());
 
-    	UserAdmin savedUser = userAdminService.save(req);
-    	savedUser = userAdminService.fetchUserWillFullPermissions(savedUser);
-        if (savedUser != null) {
-            // created a user client successfully
-            return new ResponseEntity<>(
-                    userResourceAssembler.toResource(savedUser),
-                    HttpStatus.CREATED);
+        if (conflicts.size() == 0) {
+            UserAdmin savedUser = userAdminService.save(req);
+            savedUser = userAdminService
+                    .fetchUserWillFullPermissions(savedUser);
+            if (savedUser != null) {
+                // created a user client successfully
+                return new ResponseEntity<>(
+                        userResourceAssembler.toResource(savedUser),
+                        HttpStatus.CREATED);
+            } else {
+                // error creating user client
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            // error creating user client
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }  	
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
     }
     
     /**
