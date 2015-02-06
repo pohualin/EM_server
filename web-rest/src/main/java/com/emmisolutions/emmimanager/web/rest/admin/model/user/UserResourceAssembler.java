@@ -1,20 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.user;
 
-import com.emmisolutions.emmimanager.model.user.admin.*;
-import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupTypePage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.location.LocationPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
-
-import org.springframework.hateoas.*;
-import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
-import org.springframework.hateoas.core.DummyInvocationUtils;
-import org.springframework.hateoas.core.MappingDiscoverer;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -22,8 +9,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.TemplateVariable;
+import org.springframework.hateoas.TemplateVariables;
+import org.springframework.hateoas.UriTemplate;
+import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
+import org.springframework.hateoas.core.DummyInvocationUtils;
+import org.springframework.hateoas.core.MappingDiscoverer;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
+import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.location.LocationPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.AdminFunctionsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.LocationsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ProvidersResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.UsersResource;
 
 
 /**
@@ -61,7 +74,6 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
-        ret.add(ReferenceGroupTypePage.createRefGroupTypesLink());
         ret.add(TeamPage.createFullSearchLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());

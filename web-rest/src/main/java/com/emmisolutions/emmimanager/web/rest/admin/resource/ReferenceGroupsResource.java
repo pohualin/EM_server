@@ -63,9 +63,6 @@ public class ReferenceGroupsResource {
     @Resource
     TagService tagService;
     
-    @Resource
-    ReferenceGroupTypeService referenceGroupTypeService;
-    
     @RequestMapping(value="/referenceGroups/{id}", method = RequestMethod.PUT)
     @RolesAllowed({"PERM_GOD"})
     public ResponseEntity<ReferenceGroupResource> updateReferenceGroup(@RequestBody ReferenceGroup refGroup){
@@ -125,21 +122,6 @@ public class ReferenceGroupsResource {
 
         if (tagPage.hasContent()) {
             return new ResponseEntity<>(new ReferenceTagPage(assembler.toResource(tagPage, referenceTagResourceAssembler), tagPage), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
-    
-    @RequestMapping(value = "/referenceGroupTypes", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_GROUP_VIEW"})
-    public ResponseEntity<ReferenceGroupTypePage> getAllReferenceGroupTypes(@PageableDefault(size = 50) Pageable pageable,
-                                                           @SortDefault(sort = "id") Sort sort,
-                                                           PagedResourcesAssembler<ReferenceGroupType> assembler) {
-
-        Page<ReferenceGroupType> groupTypesPage = referenceGroupTypeService.findAll(pageable);
-
-        if (groupTypesPage.hasContent()) {
-            return new ResponseEntity<>(new ReferenceGroupTypePage(assembler.toResource(groupTypesPage, referenceGroupTypeResourceAssembler), groupTypesPage), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

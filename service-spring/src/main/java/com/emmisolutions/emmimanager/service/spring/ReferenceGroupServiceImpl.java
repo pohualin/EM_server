@@ -70,7 +70,7 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
         ReferenceGroup savedGroup = referenceGroupPersistence.reload(groupSaveRequest.getReferenceGroup().getId());
 
         if (savedGroup == null) {
-            validateGroupNameForNoDuplicate(groupSaveRequest);
+//            validateGroupNameForNoDuplicate(groupSaveRequest);
             groupSaveRequest.getReferenceGroup().setType(getReferenceGroupType(groupSaveRequest.getReferenceGroup().getName()));
             savedGroup = save(groupSaveRequest.getReferenceGroup());
         }
@@ -98,7 +98,7 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
     
     private ReferenceGroupType getReferenceGroupType(String groupTypeName) {
         ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName(groupTypeName.replace(" ", "_").toUpperCase());
+        groupType.setName(groupTypeName.replaceAll(" ", "_").toUpperCase());
         return referenceGroupTypePersistence.save(groupType);
     }
 
@@ -117,7 +117,7 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
     
     
     private void validateGroupNameForNoDuplicate(RefGroupSaveRequest saveRequest){
-        ReferenceGroupType type = referenceGroupTypePersistence.findByName(saveRequest.getReferenceGroup().getName().replace(" ", "_").toUpperCase());
+        ReferenceGroupType type = referenceGroupTypePersistence.findByName(saveRequest.getReferenceGroup().getName().replaceAll(" ", "_").toUpperCase());
         if (type != null) {
             throw new IllegalArgumentException("Group name: '" + saveRequest.getReferenceGroup().getName() + "' is null, only contains special characters or is a duplicate");
         }  

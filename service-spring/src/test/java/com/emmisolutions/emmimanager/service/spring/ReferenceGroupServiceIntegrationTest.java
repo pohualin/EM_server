@@ -49,15 +49,6 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Reference Groups are loaded",
             referenceGroupService.loadReferenceGroups(null).getTotalElements(), is(not(0l)));
     }
-    
-    /**
-     * Make sure we can load a page of reference group types
-     */
-    @Test
-    public void loadRefGroupTypes() {
-        assertThat("Reference Group Types are loaded",
-                referenceGroupTypeService.findAll(null).getTotalElements(), is(not(0l)));
-    }
 
     /**
      * Saving a reference group with no tags should throw an error
@@ -141,40 +132,6 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
             groups.add(savedGroup);
         }
         assertThat("One Reference Group is saved: ", groups.size(), is(1));
-    }
-    
-    /**
-     * test create of a two new groups with duplicate names
-     */
-    @Test (expected = IllegalArgumentException.class)
-    public void createNewReferenceGroupsWithDupeNames(){
-        RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
-        ReferenceGroup group = new ReferenceGroup();
-        group.setName("dupe check group name amrita");
-        final ReferenceTag tagOne = new ReferenceTag();
-        tagOne.setName(RandomStringUtils.randomAlphanumeric(8));
-        groupSaveReqOne.setReferenceGroup(group);
-        groupSaveReqOne.setReferenceTags(new ArrayList<ReferenceTag>() {{
-            add(tagOne);
-        }}
-        );
-        ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
-        
-        assertThat("One Reference Group is saved: ", savedGroup.getId(), is(notNullValue()));
-        
-        RefGroupSaveRequest groupSaveReqTwo = new RefGroupSaveRequest();        
-        ReferenceGroup groupTwo = new ReferenceGroup();
-        groupTwo.setName("dupe check group name amrita");
-        final ReferenceTag tagTwo = new ReferenceTag();
-        tagTwo.setName(RandomStringUtils.randomAlphanumeric(8));
-        groupSaveReqTwo.setReferenceGroup(groupTwo);
-        groupSaveReqTwo.setReferenceTags(new ArrayList<ReferenceTag>() {{
-            add(tagTwo);
-        }}
-        );
-        ReferenceGroup secondGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqTwo);
-        assertThat("One Reference Group is saved: ", secondGroup.getId(), is(notNullValue()));
-
     }
     
     /**
