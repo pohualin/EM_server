@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="update user client permission enum" author="Paul">
+    	<delete tableName="user_client_permission">
+    		<where>name in (
+	    		'PERM_CLIENT_CREATE_NEW_USER',
+				'PERM_CLIENT_ACTIVATE_USER',
+				'PERM_CLIENT_DEACTIVATE_USER',
+				'PERM_CLIENT_ADMINISTER_USER_ROLES',
+				'PERM_CLIENT_ADMINISTER_USER_INFORMATION'
+    		)</where>
+    	</delete>
+    	
+    	<delete tableName="user_client_reference_role_permission">
+    		<where>name in (
+	    		'PERM_CLIENT_CREATE_NEW_USER',
+				'PERM_CLIENT_ACTIVATE_USER',
+				'PERM_CLIENT_DEACTIVATE_USER',
+				'PERM_CLIENT_ADMINISTER_USER_ROLES',
+				'PERM_CLIENT_ADMINISTER_USER_INFORMATION'
+    		)</where>
+    	</delete>
+    	
+    	<insert tableName="user_client_permission">
+    		<column name="name">PERM_CLIENT_MANAGE_ROLES</column>
+    		<column name="rank">2</column>
+    	</insert>
+    	<insert tableName="user_client_permission">
+    		<column name="name">PERM_CLIENT_MANAGE_USERS</column>
+    		<column name="rank">3</column>
+    	</insert>
+    	<insert tableName="user_client_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
+    		<column name="rank">4</column>
+    	</insert>
+    	<insert tableName="user_client_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
+    		<column name="rank">5</column>
+    	</insert>
+    	
+    	<insert tableName="user_client_reference_role_permission">
+    		<column name="name">PERM_CLIENT_MANAGE_ROLES</column>
+    		<column name="created_by">system</column>
+    		<column name="reference_role_id">2</column>
+    	</insert>
+    	<insert tableName="user_client_reference_role_permission">
+    		<column name="name">PERM_CLIENT_MANAGE_USERS</column>
+    		<column name="created_by">system</column>
+    		<column name="reference_role_id">2</column>
+    	</insert>
+    	<insert tableName="user_client_reference_role_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
+    		<column name="created_by">system</column>
+    		<column name="reference_role_id">2</column>
+    	</insert>
+    	<insert tableName="user_client_reference_role_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
+    		<column name="created_by">system</column>
+    		<column name="reference_role_id">2</column>
+    	</insert>
+    </changeSet>
+
+</databaseChangeLog>
