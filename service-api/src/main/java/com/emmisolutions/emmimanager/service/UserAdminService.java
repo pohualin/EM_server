@@ -1,9 +1,14 @@
 package com.emmisolutions.emmimanager.service;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflict;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -51,4 +56,13 @@ public interface UserAdminService {
      * @return the reloaded user
      */
 	UserAdmin fetchUserWillFullPermissions(UserAdmin user);
+	
+    /**
+     * Find a list of conflicting UserAdmin
+     * 
+     * @param userAdmin
+     *            to find
+     * @return a list of conflicting UserAdmin
+     */
+    List<UserAdmin> findConflictingUsers(UserAdmin userAdmin);
 }
