@@ -22,17 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
-import com.emmisolutions.emmimanager.service.ReferenceGroupTypeService;
 import com.emmisolutions.emmimanager.service.ReferenceTagService;
 import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupTypePage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupTypeResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagResourceAssembler;
 
@@ -56,9 +52,6 @@ public class ReferenceGroupsResource {
     
     @Resource
     ReferenceTagResourceAssembler referenceTagResourceAssembler;
-    
-    @Resource
-    ReferenceGroupTypeResourceAssembler referenceGroupTypeResourceAssembler;
     
     @Resource
     TagService tagService;

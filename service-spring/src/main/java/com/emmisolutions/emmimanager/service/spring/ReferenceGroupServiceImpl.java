@@ -70,7 +70,6 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
         ReferenceGroup savedGroup = referenceGroupPersistence.reload(groupSaveRequest.getReferenceGroup().getId());
 
         if (savedGroup == null) {
-//            validateGroupNameForNoDuplicate(groupSaveRequest);
             groupSaveRequest.getReferenceGroup().setType(getReferenceGroupType(groupSaveRequest.getReferenceGroup().getName()));
             savedGroup = save(groupSaveRequest.getReferenceGroup());
         }
@@ -113,13 +112,5 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
                 }
         }
         return referenceTagPersistence.save(t);
-    }
-    
-    
-    private void validateGroupNameForNoDuplicate(RefGroupSaveRequest saveRequest){
-        ReferenceGroupType type = referenceGroupTypePersistence.findByName(saveRequest.getReferenceGroup().getName().replaceAll(" ", "_").toUpperCase());
-        if (type != null) {
-            throw new IllegalArgumentException("Group name: '" + saveRequest.getReferenceGroup().getName() + "' is null, only contains special characters or is a duplicate");
-        }  
     }
 }

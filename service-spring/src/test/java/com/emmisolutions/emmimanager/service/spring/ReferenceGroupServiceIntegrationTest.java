@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
-import com.emmisolutions.emmimanager.service.ReferenceGroupTypeService;
 import com.emmisolutions.emmimanager.service.ReferenceTagService;
 
 /**
@@ -37,9 +35,6 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     
     @Resource
     ReferenceTagService referenceTagService;
-    
-    @Resource
-    ReferenceGroupTypeService referenceGroupTypeService;
     
     /**
      * Make sure we can load a page of reference groups
