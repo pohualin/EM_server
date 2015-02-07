@@ -1,15 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ReferenceGroupService;
+import com.emmisolutions.emmimanager.service.ReferenceTagService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -18,12 +13,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ReferenceGroupService;
-import com.emmisolutions.emmimanager.service.ReferenceTagService;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests for ReferenceGroupService
@@ -134,7 +132,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void updateGroups(){
-        Set<ReferenceGroup> groups = new HashSet();
+        Set<ReferenceGroup> groups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupWithTags()){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             groups.add(savedGroup);
@@ -159,11 +157,11 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         
         RefGroupSaveRequest groupSaveReqTwo = new RefGroupSaveRequest();        
         groupSaveReqTwo.setReferenceGroup(groups.iterator().next());
-        groupSaveReqTwo.setReferenceTags(new ArrayList (groups.iterator().next().getTags()));
+        groupSaveReqTwo.setReferenceTags(new ArrayList<>(groups.iterator().next().getTags()));
         
         refGroupSaveRequests.add(groupSaveReqOne);
         refGroupSaveRequests.add(groupSaveReqTwo);
-        Set<ReferenceGroup> refreshedGroups = new HashSet();
+        Set<ReferenceGroup> refreshedGroups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupSaveRequests){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             refreshedGroups.add(savedGroup);
@@ -182,7 +180,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void updateGroupsWithDelete(){
-        Set<ReferenceGroup> groups = new HashSet();
+        Set<ReferenceGroup> groups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupWithTags()){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             groups.add(savedGroup);
@@ -216,7 +214,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         
         refGroupSaveRequests.add(groupSaveReqOne);
         refGroupSaveRequests.add(groupSaveReqTwo);
-        Set<ReferenceGroup> refreshedGroups = new HashSet <ReferenceGroup>();
+        Set<ReferenceGroup> refreshedGroups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupSaveRequests){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             refreshedGroups.add(savedGroup);
