@@ -1,16 +1,15 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.ReferenceGroupType;
+import com.emmisolutions.emmimanager.persistence.ReferenceGroupTypePersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
-import com.emmisolutions.emmimanager.persistence.ReferenceGroupTypePersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
+import javax.annotation.Resource;
 
 /**
  * ReferenceGroupTypePersistenceImpl implementation

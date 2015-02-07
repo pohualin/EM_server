@@ -1,19 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
@@ -21,7 +7,17 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupTypePersistence;
 import com.emmisolutions.emmimanager.persistence.ReferenceTagPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Reference Group integration tests
@@ -30,12 +26,12 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
 
     @Resource
     ReferenceGroupPersistence referenceGroupPersistence;
-    @Resource
-    
-    ReferenceTagPersistence referenceTagPersistence;
     
     @Resource
     ReferenceGroupTypePersistence referenceGroupTypePersistence;
+
+    @Resource
+    ReferenceTagPersistence referenceTagPersistence;
 
     @Test
     public void load(){
@@ -48,7 +44,7 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
     public void testGetAllTagsForGroup(){
         ReferenceGroupType groupType = new ReferenceGroupType();
         groupType.setName("reference data testing 3 2 1");
-        groupType= referenceGroupTypePersistence.save(groupType);
+        referenceGroupTypePersistence.save(groupType);
         
         ReferenceGroupType findByName = referenceGroupTypePersistence.findByName("reference data testing 3 2 1");
         ReferenceGroup group = new ReferenceGroup();
@@ -61,7 +57,8 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
 
         final ReferenceTag tagOne = new ReferenceTag();
         tagOne.setName(RandomStringUtils.randomAlphanumeric(8));
-        tagOne.setGroup(group);
+        tagOne.setGroup(reloadGroup);
+        reloadGroup.getTags().add(tagOne);
         ReferenceTag t = referenceTagPersistence.save(tagOne);
         ReferenceTag reloadedTag = referenceTagPersistence.reload(t);
         assertThat("reloaded tag is not null: ", reloadedTag.getId(), is(notNullValue()));

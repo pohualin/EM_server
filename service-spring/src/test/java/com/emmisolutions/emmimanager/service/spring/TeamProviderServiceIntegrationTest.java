@@ -133,13 +133,12 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		ReferenceGroup group = new ReferenceGroup();
 		ReferenceGroupType type = new ReferenceGroupType();
 		type.setName(RandomStringUtils.randomAlphanumeric(12));
-		type= referenceGroupTypeRepository.save(type);
 		group.setName(RandomStringUtils.randomAlphanumeric(13));
 		group.setType(type);
-		group = referenceGroupRepository.save(group);
 		specialty.setName(RandomStringUtils.randomAlphanumeric(14));
 		specialty.setGroup(group);
-		specialty = referenceTagRepository.save(specialty);
+        group.getTags().add(specialty);
+        referenceGroupRepository.save(group);
 		return specialty;
 	}
 
