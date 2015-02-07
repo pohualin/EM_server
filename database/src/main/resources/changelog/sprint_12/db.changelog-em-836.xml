@@ -13,4 +13,51 @@
                 tableName="email_template"/>
     </changeSet>
 
+    <changeSet id="drop foreign key to reference tags" author="Matt">
+        <dropForeignKeyConstraint baseTableName="provider" constraintName="fk_provider_reference_tag"/>
+    </changeSet>
+
+    <changeSet id="add foreign key that sets null" author="Matt">
+        <addForeignKeyConstraint baseTableName="provider"
+                                 baseColumnNames="reference_tag_specialty"
+                                 constraintName="fk_provider_reference_tag"
+                                 referencedTableName="reference_tag"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="group type drop" author="Matt">
+        <dropForeignKeyConstraint baseTableName="client_group" constraintName="fk_client_group_reference_group_type"/>
+    </changeSet>
+
+    <changeSet id="group type add" author="Matt">
+        <addForeignKeyConstraint baseTableName="client_group"
+                                 baseColumnNames="reference_group_type_id"
+                                 constraintName="fk_client_group_reference_group_type"
+                                 referencedTableName="reference_group_type"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="add audit table" author="Matt">
+        <createTable tableName="referencegroup_referencetag_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="group_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="referencegroup_referencetag_audit"
+                       columnNames="id, revision"
+                       constraintName="pk_referencegroup_referencetag_audit"/>
+        <addForeignKeyConstraint baseTableName="referencegroup_referencetag_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_referencegroup_referencetag_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
 </databaseChangeLog>

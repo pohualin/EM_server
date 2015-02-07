@@ -55,10 +55,11 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		type= referenceGroupTypeRepository.save(type);
 		group.setName(RandomStringUtils.randomAlphanumeric(12));
 		group.setType(type);
-		group = referenceGroupRepository.save(group);
+
 		specialty.setName(RandomStringUtils.randomAlphanumeric(13));
 		specialty.setGroup(group);
-		specialty = referenceTagRepository.save(specialty);
+        group.getTags().add(specialty);
+        referenceGroupRepository.save(group);
 		return specialty;
 	}
 
