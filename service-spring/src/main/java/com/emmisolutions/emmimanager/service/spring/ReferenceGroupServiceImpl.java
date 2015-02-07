@@ -1,22 +1,22 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupTypePersistence;
-import com.emmisolutions.emmimanager.persistence.ReferenceTagPersistence;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
+import java.util.HashSet;
 
 /**
  * Reference Group Service Impl
@@ -27,9 +27,6 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 
 	@Resource
 	ReferenceGroupPersistence referenceGroupPersistence;
-	
-	@Resource
-	ReferenceTagPersistence referenceTagPersistence;
 	
 	@Resource
 	ReferenceGroupTypePersistence referenceGroupTypePersistence;
@@ -67,54 +64,40 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
     @Override
     @Transactional
     public ReferenceGroup saveReferenceGroupAndReferenceTags(RefGroupSaveRequest groupSaveRequest) {
-        ReferenceGroup savedGroup = referenceGroupPersistence.reload(groupSaveRequest.getReferenceGroup().getId());
-
-        if (savedGroup == null) {
-            groupSaveRequest.getReferenceGroup().setType(getReferenceGroupType(groupSaveRequest.getReferenceGroup().getName()));
-            savedGroup = save(groupSaveRequest.getReferenceGroup());
-        }
-        
-        if (!savedGroup.getName().equalsIgnoreCase(groupSaveRequest.getReferenceGroup().getName())){
-            savedGroup.setName(groupSaveRequest.getReferenceGroup().getName());
-        }
-
-        if (groupSaveRequest.getReferenceTags() != null) {
-            ReferenceTag reftag;
-            savedGroup.getTags().clear();
-            for (ReferenceTag t : groupSaveRequest.getReferenceTags()) {
-                ReferenceTag fromDb = referenceTagPersistence.reload(t);
-                if (fromDb == null) {
-                    reftag = saveTagForGroup(t, savedGroup);
-                } else {
-                    reftag = fromDb;
-                }
-                savedGroup.getTags().add(reftag);
-            }
-        }
-
-        if (savedGroup.getTags() == null || savedGroup.getTags().isEmpty()) {
+        if (groupSaveRequest == null || groupSaveRequest.getReferenceGroup() == null ||
+                CollectionUtils.isEmpty(groupSaveRequest.getReferenceTags())){
             throw new InvalidDataAccessApiUsageException("Tags cannot be null");
         }
 
-        return savedGroup;
-    }
-    
-    private ReferenceGroupType getReferenceGroupType(String groupTypeName) {
-        ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName(groupTypeName.replaceAll(" ", "_").toUpperCase());
-        return referenceGroupTypePersistence.save(groupType);
-    }
+        ReferenceGroup referenceGroup = groupSaveRequest.getReferenceGroup();
 
-    private ReferenceTag saveTagForGroup(ReferenceTag tag, ReferenceGroup group) {
-        ReferenceTag t = new ReferenceTag();
-        if (tag != null) {
-                String trimmedName = StringUtils.trimToEmpty(tag.getName());
-                if (StringUtils.isNotBlank(trimmedName)) {
-                    t.setId(tag.getId());
-                    t.setName(trimmedName);
-                    t.setGroup(group);
-                }
+        // create the type
+        ReferenceGroupType referenceGroupType = groupSaveRequest.getReferenceGroup().getType();
+        if (referenceGroupType == null){
+            referenceGroupType = new ReferenceGroupType();
+            groupSaveRequest.getReferenceGroup().setType(referenceGroupType);
         }
-        return referenceTagPersistence.save(t);
+        referenceGroupType.setName(groupSaveRequest.getReferenceGroup().getName().replaceAll(" ", "_").toUpperCase());
+
+        // find if the type is already saved
+        ReferenceGroupType savedType = referenceGroupTypePersistence.findByName(referenceGroupType.getName());
+        if (savedType != null){
+            referenceGroup.setType(savedType);
+        }
+
+        // add the tags to the group
+        referenceGroup.setTags(new HashSet<ReferenceTag>());
+        for (ReferenceTag referenceTag : groupSaveRequest.getReferenceTags()) {
+            String trimmedName = StringUtils.trimToEmpty(referenceTag.getName());
+            if (StringUtils.isNotBlank(trimmedName)) {
+                referenceTag.setName(trimmedName);
+                referenceTag.setGroup(referenceGroup);
+                referenceGroup.getTags().add(referenceTag);
+                if (referenceGroup.getId() == null) {
+                    referenceGroup = referenceGroupPersistence.save(referenceGroup);
+                }
+            }
+        }
+        return referenceGroupPersistence.save(referenceGroup);
     }
 }

@@ -20,22 +20,22 @@ import java.io.Serializable;
 @Entity
 @Table(name = "reference_tag")
 public class ReferenceTag extends AbstractAuditingEntity implements
-		Serializable {
+        Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotNull
-	@Size(max = 255)
-	@Column(length = 255, nullable = false)
-	private String name;
+    @NotNull
+    @Size(max = 255)
+    @Column(length = 255, nullable = false)
+    private String name;
 
-	@ManyToOne
-	@JoinColumn(name = "group_id")
-	@JsonBackReference
-	@NotNull
-	private ReferenceGroup group;
+    @ManyToOne
+    @JoinColumn(name = "group_id", insertable = false, updatable = false)
+    @JsonBackReference
+    @NotNull
+    private ReferenceGroup group;
 
     /**
      * No arg constructor
@@ -52,27 +52,27 @@ public class ReferenceTag extends AbstractAuditingEntity implements
         this.id = id;
     }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public ReferenceGroup getGroup() {
-		return group;
-	}
+    public ReferenceGroup getGroup() {
+        return group;
+    }
 
-	public void setGroup(ReferenceGroup group) {
-		this.group = group;
-	}
+    public void setGroup(ReferenceGroup group) {
+        this.group = group;
+    }
 }
