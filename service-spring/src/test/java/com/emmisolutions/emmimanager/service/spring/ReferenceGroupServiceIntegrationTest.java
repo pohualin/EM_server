@@ -1,15 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ReferenceGroupService;
+import com.emmisolutions.emmimanager.service.ReferenceTagService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -18,14 +13,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ReferenceGroupService;
-import com.emmisolutions.emmimanager.service.ReferenceTagService;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests for ReferenceGroupService
@@ -37,9 +33,6 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     
     @Resource
     ReferenceTagService referenceTagService;
-    
-    @Resource 
-    ReferenceGroupTypeRepository referenceGroupTypeRepository;
     
     /**
      * Make sure we can load a page of reference groups
@@ -55,13 +48,9 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test (expected = InvalidDataAccessApiUsageException.class)
     public void createNewReferenceGroupWithNoTags(){
-        ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName("Film");
-        groupType= referenceGroupTypeRepository.save(groupType);
         RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
         ReferenceGroup group = new ReferenceGroup();
-        group.setName("New Wave");
-        group.setType(groupType);
+        group.setName(RandomStringUtils.randomAlphanumeric(18));
         groupSaveReqOne.setReferenceGroup(group);
         ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
     }
@@ -74,14 +63,10 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
         List<ReferenceTag> tagList = new ArrayList<>();
 
-        ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName("REFERENCEDATA");
-        groupType= referenceGroupTypeRepository.save(groupType);
 
         RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
         ReferenceGroup group = new ReferenceGroup();
         group.setName("Godard Retrospective");
-        group.setType(groupType);
         ReferenceTag tagOne = new ReferenceTag();
         tagOne.setName("Breathless");
         ReferenceTag tagTwo = new ReferenceTag();
@@ -111,20 +96,15 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
         List<ReferenceTag> tagList = new ArrayList<>();
 
-        ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName("REFERENCE DATA");
-        groupType= referenceGroupTypeRepository.save(groupType);
-
         RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
         ReferenceGroup group = new ReferenceGroup();
-        group.setName("Godard");
-        group.setType(groupType);
+        group.setName(RandomStringUtils.randomAlphanumeric(11));
         ReferenceTag tagOne = new ReferenceTag();
-        tagOne.setName("Made In Usa");
+        tagOne.setName(RandomStringUtils.randomAlphanumeric(12));
         ReferenceTag tagTwo = new ReferenceTag();
-        tagTwo.setName("Alphaville");
+        tagTwo.setName(RandomStringUtils.randomAlphanumeric(13));
         ReferenceTag tagThree = new ReferenceTag();
-        tagThree.setName("Band Of Outsiders");
+        tagThree.setName(RandomStringUtils.randomAlphanumeric(14));
         tagList.add(tagOne);
         tagList.add(tagTwo);
         tagList.add(tagThree);
@@ -152,7 +132,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void updateGroups(){
-        Set<ReferenceGroup> groups = new HashSet();
+        Set<ReferenceGroup> groups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupWithTags()){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             groups.add(savedGroup);
@@ -163,19 +143,13 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
 
         List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
         List<ReferenceTag> tagList = new ArrayList<>();
-
-        ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName("REFERENCE DATA");
-        groupType= referenceGroupTypeRepository.save(groupType);
-
         RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
         ReferenceGroup group = new ReferenceGroup();
-        group.setName("Francois Truffaut");
-        group.setType(groupType);
+        group.setName(RandomStringUtils.randomAlphanumeric(14));
         ReferenceTag tagOne = new ReferenceTag();
-        tagOne.setName("Jules And Jim");
+        tagOne.setName(RandomStringUtils.randomAlphanumeric(15));
         ReferenceTag tagTwo = new ReferenceTag();
-        tagTwo.setName("The 400 Blows");
+        tagTwo.setName(RandomStringUtils.randomAlphanumeric(13));
         tagList.add(tagOne);
         tagList.add(tagTwo);
         groupSaveReqOne.setReferenceGroup(group);
@@ -183,11 +157,11 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         
         RefGroupSaveRequest groupSaveReqTwo = new RefGroupSaveRequest();        
         groupSaveReqTwo.setReferenceGroup(groups.iterator().next());
-        groupSaveReqTwo.setReferenceTags(new ArrayList (groups.iterator().next().getTags()));
+        groupSaveReqTwo.setReferenceTags(new ArrayList<>(groups.iterator().next().getTags()));
         
         refGroupSaveRequests.add(groupSaveReqOne);
         refGroupSaveRequests.add(groupSaveReqTwo);
-        Set<ReferenceGroup> refreshedGroups = new HashSet();
+        Set<ReferenceGroup> refreshedGroups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupSaveRequests){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             refreshedGroups.add(savedGroup);
@@ -206,7 +180,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void updateGroupsWithDelete(){
-        Set<ReferenceGroup> groups = new HashSet();
+        Set<ReferenceGroup> groups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupWithTags()){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             groups.add(savedGroup);
@@ -216,23 +190,17 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         ReferenceGroup one = groups.iterator().next();
         
         final ReferenceTag newTag = new ReferenceTag();
-        newTag.setName("Weekend");
+        newTag.setName(RandomStringUtils.randomAlphanumeric(18));
 
         List<RefGroupSaveRequest> refGroupSaveRequests = new ArrayList<>();
         List<ReferenceTag> tagList = new ArrayList<>();
-
-        ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName("REFERENCE DATA");
-        groupType= referenceGroupTypeRepository.save(groupType);
-
         RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
         ReferenceGroup group = new ReferenceGroup();
-        group.setName("Francois Truffaut");
-        group.setType(groupType);
+        group.setName(RandomStringUtils.randomAlphanumeric(16));
         ReferenceTag tagOne = new ReferenceTag();
-        tagOne.setName("Jules And Jim");
+        tagOne.setName(RandomStringUtils.randomAlphanumeric(17));
         ReferenceTag tagTwo = new ReferenceTag();
-        tagTwo.setName("The 400 Blows");
+        tagTwo.setName(RandomStringUtils.randomAlphanumeric(18));
         tagList.add(tagOne);
         tagList.add(tagTwo);
         groupSaveReqOne.setReferenceGroup(group);
@@ -246,7 +214,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         
         refGroupSaveRequests.add(groupSaveReqOne);
         refGroupSaveRequests.add(groupSaveReqTwo);
-        Set<ReferenceGroup> refreshedGroups = new HashSet <ReferenceGroup>();
+        Set<ReferenceGroup> refreshedGroups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupSaveRequests){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             refreshedGroups.add(savedGroup);
@@ -262,13 +230,9 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     
     @Test
     public void testGetAllTagsForGroup(){
-        ReferenceGroupType groupType = new ReferenceGroupType();
-        groupType.setName(RandomStringUtils.randomAlphanumeric(8));
-        groupType= referenceGroupTypeRepository.save(groupType);
         RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
         ReferenceGroup group = new ReferenceGroup();
         group.setName(RandomStringUtils.randomAlphanumeric(8));
-        group.setType(groupType);
         final ReferenceTag tagOne = new ReferenceTag();
         tagOne.setName(RandomStringUtils.randomAlphanumeric(8));
         groupSaveReqOne.setReferenceGroup(group);

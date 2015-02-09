@@ -6,12 +6,15 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserAdminService;
+
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
+
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -57,6 +60,7 @@ public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
         UserAdmin user = new UserAdmin("login", "pw");
         user.setFirstName("firstName1");
         user.setLastName("lastName");
+        user.setEmail("boss@emmi.com");
         
         Page<UserAdminRole> roles = userAdminService.listRolesWithoutSystem(null);
         UserAdminRole role = roles.getContent().iterator().next();
@@ -84,6 +88,11 @@ public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
         
         UserAdmin findUser = users.getContent().iterator().next();
         assertThat("the users returned is the same user saved", findUser, is(user1));
-    }
+        
+        UserAdmin newComing = new UserAdmin();
+        newComing.setEmail("boss@emmi.com");
+        List<UserAdmin> conflicts = userAdminService.findConflictingUsers(newComing);
+        assertThat("conflicts contain user", conflicts, hasItem(user));
+    } 
 
 }

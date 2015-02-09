@@ -136,5 +136,32 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("Users should be returned", ret.hasContent(), is(true));
         assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
     }
+    
+    @Test
+    public void findConflicting() {
+        UserAdmin userAdminBoss = makeNewRandomUserAdmin();
+        userAdminBoss.setEmail("boss@emmi.com");
+        userAdminPersistence.saveOrUpdate(userAdminBoss);
+
+        UserAdmin userAdminEmployee = new UserAdmin("login", "password");
+        userAdminEmployee.setFirstName("New");
+        userAdminEmployee.setLastName("Guy");
+        userAdminEmployee.setEmail("boss@emmi.com");
+        Set<UserAdmin> conflicts = userAdminPersistence
+                .findConflictingUsers(userAdminEmployee);
+        assertThat("conflicts include boss", conflicts, hasItem(userAdminBoss));
+
+        Set<UserAdmin> self = userAdminPersistence
+                .findConflictingUsers(userAdminBoss);
+        assertThat("no conflict", self.size(), is(0));
+        
+        Set<UserAdmin> noConflict = userAdminPersistence
+                .findConflictingUsers(new UserAdmin());
+        assertThat("no conflict", noConflict.size(), is(0));
+        
+        Set<UserAdmin> noConflictA = userAdminPersistence
+                .findConflictingUsers(null);
+        assertThat("no conflict", noConflictA.size(), is(0));
+    }
 
 }
