@@ -162,4 +162,21 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
 
+
+    /**
+     * Ensure we can send password change confirmation emails
+     */
+    @Test
+    public void changePasswordConfirmation(){
+        String email = "changed.password@account.org";
+        setEmailMailServerUser(email);
+        int countOfMessages = getEmailsFromServer().length;
+        mailService.sendPasswordChangeConfirmationEmail(null);
+        assertThat("email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
+
+        UserClient userClient = new UserClient();
+        userClient.setEmail(email);
+        mailService.sendPasswordChangeConfirmationEmail(userClient);
+        assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
+    }
 }

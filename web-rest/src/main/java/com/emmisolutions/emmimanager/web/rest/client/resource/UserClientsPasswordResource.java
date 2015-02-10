@@ -67,6 +67,7 @@ public class UserClientsPasswordResource {
     public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
         UserClient userClient = userClientPasswordService.resetPassword(resetPasswordRequest);
         if (userClient != null) {
+            mailService.sendPasswordChangeConfirmationEmail(userClient);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.GONE);
