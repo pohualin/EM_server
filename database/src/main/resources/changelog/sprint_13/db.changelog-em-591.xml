@@ -20,8 +20,13 @@
         <loadData encoding="UTF-8"
                   file="changelog/sprint_13/data/em-591/client-permission-groups.csv"
                   separator=";"
-                  tableName="user_client_group_permission"/>
-        
+                  tableName="user_client_permission_group"/>
+                  
+		<loadData encoding="UTF-8"
+                  file="changelog/sprint_13/data/em-591/strings.csv"
+                  separator=";"
+                  tableName="strings"/>
+                  
         <addColumn tableName="user_client_permission">
     		<column name="group_name" type="nvarchar(100)">
     		</column>
@@ -30,13 +35,64 @@
     </changeSet>
     
     <changeSet id="update user client permission enum" author="Paul">
+    	<insert tableName="user_client_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
+    		<column name="group_name">PERM_CLIENT_MODIFY_CONFIG</column>
+    		<column name="rank">4</column>
+    	</insert>
+    	
+    	<insert tableName="user_client_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
+    		<column name="group_name">PERM_CLIENT_MODIFY_CONFIG</column>
+    		<column name="rank">5</column>
+    	</insert>
+    	
+    	<update tableName="user_client_permission">
+    		<column name="group_name">PERM_CLIENT_MANAGE_USERS</column>
+    		<column name="rank">2</column>
+    		<where>name = 'PERM_CLIENT_ADMINISTER_USER_ROLES'</where>
+    	</update>
+    	
+    	<update tableName="user_client_permission">
+    		<column name="group_name">PERM_CLIENT_MANAGE_USERS</column>
+    		<column name="rank">3</column>
+    		<where>name = 'PERM_CLIENT_ADMINISTER_USER_INFORMATION'</where>
+    	</update>
+    	
+    	<update tableName="user_client_permission">
+    		<column name="group_name">PERM_CLIENT_SUPER_USER</column>
+    		<where>name = 'PERM_CLIENT_SUPER_USER'</where>
+    	</update>
+    
+    	<update tableName="user_client_role_user_client_permission">
+    		<column name="permission_name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
+    		<where>permission_name = 'PERM_CLIENT_ACTIVATE_USER'</where>
+    	</update>
+    	
+    	<update tableName="user_client_role_user_client_permission">
+    		<column name="permission_name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
+    		<where>permission_name = 'PERM_CLIENT_DEACTIVATE_USER'</where>
+    	</update>
+    	
+    	<update tableName="user_client_reference_role_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
+    		<where>name = 'PERM_CLIENT_ACTIVATE_USER'</where>
+    	</update>
+    	
+    	<update tableName="user_client_reference_role_permission">
+    		<column name="name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
+    		<where>name = 'PERM_CLIENT_DEACTIVATE_USER'</where>
+    	</update>
+    
     	<delete tableName="user_client_role_user_client_permission">
     		<where>permission_name in (
-	    		'PERM_CLIENT_CREATE_NEW_USER',
-				'PERM_CLIENT_ACTIVATE_USER',
-				'PERM_CLIENT_DEACTIVATE_USER',
-				'PERM_CLIENT_ADMINISTER_USER_ROLES',
-				'PERM_CLIENT_ADMINISTER_USER_INFORMATION'
+	    		'PERM_CLIENT_CREATE_NEW_USER'
+    		)</where>
+    	</delete>
+    	
+    	<delete tableName="user_client_reference_role_permission">
+    		<where>name in (
+	    		'PERM_CLIENT_CREATE_NEW_USER'
     		)</where>
     	</delete>
 
@@ -44,64 +100,20 @@
     		<where>name in (
 	    		'PERM_CLIENT_CREATE_NEW_USER',
 				'PERM_CLIENT_ACTIVATE_USER',
-				'PERM_CLIENT_DEACTIVATE_USER',
-				'PERM_CLIENT_ADMINISTER_USER_ROLES',
-				'PERM_CLIENT_ADMINISTER_USER_INFORMATION'
+				'PERM_CLIENT_DEACTIVATE_USER'
     		)</where>
     	</delete>
-    	
-    	<delete tableName="user_client_reference_role_permission">
-    		<where>name in (
-	    		'PERM_CLIENT_CREATE_NEW_USER',
-				'PERM_CLIENT_ACTIVATE_USER',
-				'PERM_CLIENT_DEACTIVATE_USER',
-				'PERM_CLIENT_ADMINISTER_USER_ROLES',
-				'PERM_CLIENT_ADMINISTER_USER_INFORMATION'
-    		)</where>
-    	</delete>
-    	
-    	<insert tableName="user_client_permission">
-    		<column name="name">PERM_CLIENT_MANAGE_ROLES</column>
-    		<column name="rank">2</column>
-    	</insert>
-    	<insert tableName="user_client_permission">
-    		<column name="name">PERM_CLIENT_MANAGE_USERS</column>
-    		<column name="rank">3</column>
-    	</insert>
-    	<insert tableName="user_client_permission">
-    		<column name="name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
-    		<column name="rank">4</column>
-    	</insert>
-    	<insert tableName="user_client_permission">
-    		<column name="name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
-    		<column name="rank">5</column>
-    	</insert>
-    	
-    	<insert tableName="user_client_reference_role_permission">
-    		<column name="name">PERM_CLIENT_MANAGE_ROLES</column>
-    		<column name="group_name">PERM_CLIENT_MANAGE_USERS</column>
-    		<column name="created_by">system</column>
-    		<column name="reference_role_id">2</column>
-    	</insert>
-    	<insert tableName="user_client_reference_role_permission">
-    		<column name="name">PERM_CLIENT_MANAGE_USERS</column>
-    		<column name="group_name">PERM_CLIENT_MANAGE_USERS</column>
-    		<column name="created_by">system</column>
-    		<column name="reference_role_id">2</column>
-    	</insert>
-    	<insert tableName="user_client_reference_role_permission">
-    		<column name="name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
-    		<column name="group_name">PERM_CLIENT_MODIFY_CONFIG</column>
-    		<column name="created_by">system</column>
-    		<column name="reference_role_id">2</column>
-    	</insert>
-    	<insert tableName="user_client_reference_role_permission">
-    		<column name="name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
-    		<column name="group_name">PERM_CLIENT_MODIFY_CONFIG</column>
-    		<column name="created_by">system</column>
-    		<column name="reference_role_id">2</column>
-    	</insert>
-    	
+    </changeSet>
+    
+    <changeSet id="update existing translation" author="Paul">
+    	<update tableName="strings">
+    		<column name="message">Manage Client Roles</column>
+    		<where>key_path = 'PERM_CLIENT_ADMINISTER_USER_ROLES'</where>
+    	</update>
+    	<update tableName="strings">
+    		<column name="message">Manage Users</column>
+    		<where>key_path = 'PERM_CLIENT_ADMINISTER_USER_INFORMATION'</where>
+    	</update>
     </changeSet>
 
 </databaseChangeLog>
