@@ -171,18 +171,33 @@ public class UserClientsResource {
         // update the activation token, invalidating others
         UserClient savedUserClient = userClientService.addActivationKey(new UserClient(id));
 
-        // get the proper url (the way we make hateoas links), then replace the path with the client entry point
-        String activationHref =
-                UriComponentsBuilder.fromHttpUrl(
-                        linkTo(methodOn(UserClientsActivationResource.class)
-                                .activate(null)).withSelfRel().getHref())
-                        .replacePath(clientEntryPoint + String.format(ACTIVATION_CLIENT_APPLICATION_URI, savedUserClient.getActivationKey()))
-                        .build(false)
-                        .toUriString();
+        if (savedUserClient != null) {
+            // get the proper url (the way we make hateoas links), then replace the path with the client entry point
+            String activationHref =
+                    UriComponentsBuilder.fromHttpUrl(
+                            linkTo(methodOn(UserClientsActivationResource.class)
+                                    .activate(null)).withSelfRel().getHref())
+                            .replacePath(clientEntryPoint + String.format(ACTIVATION_CLIENT_APPLICATION_URI, savedUserClient.getActivationKey()))
+                            .build(false)
+                            .toUriString();
 
-        // send the email (asynchronously)
-        mailService.sendActivationEmail(savedUserClient, activationHref);
+            // send the email (asynchronously)
+            mailService.sendActivationEmail(savedUserClient, activationHref);
+        }
 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Expire an activation email
+     *
+     * @param id of the user
+     * @return OK
+     */
+    @RequestMapping(value = "/user_client/{id}/activate", method = RequestMethod.DELETE)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    public ResponseEntity<Void> expireActivation(@PathVariable Long id) {
+        userClientService.expireActivationToken(new UserClient(id));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -211,6 +226,19 @@ public class UserClientsResource {
         // send the reset email (asynchronously)
         mailService.sendPasswordResetEmail(savedUserClient, resetRef);
 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Expire a reset password (either by
+     *
+     * @param id of the user
+     * @return OK
+     */
+    @RequestMapping(value = "/user_client/{id}/resetPassword", method = RequestMethod.DELETE)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    public ResponseEntity<Void> expireReset(@PathVariable Long id) {
+        userClientPasswordService.expireResetToken(new UserClient(id));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

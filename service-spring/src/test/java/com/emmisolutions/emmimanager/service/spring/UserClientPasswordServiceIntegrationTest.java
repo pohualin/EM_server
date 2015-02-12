@@ -7,6 +7,8 @@ import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordReq
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -220,8 +222,48 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
                 userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(notNullValue()));
 
-        assertThat("reset token is created",
+        assertThat("reset token is not created",
                 userClientPasswordService.forgotPassword(null),
                 is(nullValue()));
+    }
+
+    /**
+     * Push the expiration time to the past and validate that reset password returns null
+     */
+    @Test
+    public void expiredPasswordChange() {
+        UserClient userClient = userClientPasswordService.forgotPassword(makeNewRandomUserClient(null).getEmail());
+
+        UserClient expiredClient = userClientPasswordService.expireResetToken(userClient);
+
+        assertThat("should be expired",
+                userClientPasswordService.resetPassword(new ResetPasswordRequest(expiredClient.getPasswordResetToken(), "***")),
+                is(nullValue()));
+    }
+
+    /**
+     * Make sure the reset token can be expired properly
+     */
+    @Test
+    public void expireResetToken() {
+        UserClient userClient = userClientPasswordService.forgotPassword(makeNewRandomUserClient(null).getEmail());
+        LocalDateTime now = LocalDateTime.now(DateTimeZone.UTC);
+        assertThat("reset token is created", userClient.getPasswordResetToken(), is(notNullValue()));
+        assertThat("reset timestamp is created", userClient.getPasswordResetExpirationDateTime(),
+                is(notNullValue()));
+
+        UserClient expiredClient = userClientPasswordService.expireResetToken(userClient);
+        assertThat("reset token is the same",
+                expiredClient.getPasswordResetToken(),
+                is(userClient.getPasswordResetToken()));
+        assertThat("reset timestamp should still exist but should be behind the current time",
+                expiredClient.getPasswordResetExpirationDateTime()
+                        .isBefore(now.minusHours(UserClientPasswordService.RESET_TOKEN_HOURS_VALID)),
+                is(true));
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badExpireReset() {
+        userClientPasswordService.expireResetToken(new UserClient());
     }
 }
