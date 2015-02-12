@@ -72,6 +72,19 @@ public interface UserClientService {
     UserClient addActivationKey(UserClient userClient);
 
     /**
+     * Expires the activation token but does not remove it
+     *
+     * @param userClient on which to expire the token
+     * @return the updated UserClient
+     */
+    UserClient expireActivationToken(UserClient userClient);
+
+    /**
+     * Number of hours activation tokens are valid after creation
+     */
+    int ACTIVATION_TOKEN_HOURS_VALID = 72;
+
+    /**
      * A conflicting UserClient
      */
     public class UserClientConflict {

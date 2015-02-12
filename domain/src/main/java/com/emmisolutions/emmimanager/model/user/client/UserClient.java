@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermis
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
+import org.joda.time.LocalDateTime;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -82,6 +83,12 @@ public class UserClient extends User {
 
     @Column(name = "email_validated")
     private boolean emailValidated;
+
+    @Column(name = "password_reset_expiration_time_utc")
+    private LocalDateTime passwordResetExpirationDateTime;
+
+    @Column(name = "activation_expiration_time_utc")
+    private LocalDateTime activationExpirationDateTime;
 
     public UserClient() {
 
@@ -230,5 +237,21 @@ public class UserClient extends User {
 
     public void setEmailValidated(boolean emailValidated) {
         this.emailValidated = emailValidated;
+    }
+
+    public LocalDateTime getPasswordResetExpirationDateTime() {
+        return passwordResetExpirationDateTime;
+    }
+
+    public void setPasswordResetExpirationDateTime(LocalDateTime passwordResetExpirationDateTime) {
+        this.passwordResetExpirationDateTime = passwordResetExpirationDateTime;
+    }
+
+    public LocalDateTime getActivationExpirationDateTime() {
+        return activationExpirationDateTime;
+    }
+
+    public void setActivationExpirationDateTime(LocalDateTime activationExpirationDateTime) {
+        this.activationExpirationDateTime = activationExpirationDateTime;
     }
 }
