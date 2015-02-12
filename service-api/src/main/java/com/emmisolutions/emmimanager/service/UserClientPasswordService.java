@@ -20,6 +20,7 @@ public interface UserClientPasswordService {
      * Updates a UserClient password from an expired password change request
      *
      * @param expiredPasswordChangeRequest specifies the update
+     * @return the updated user client
      */
     UserClient changeExpiredPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
 
