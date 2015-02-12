@@ -18,7 +18,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Entity
 @Table(name = "user_client_reference_role_permission")
 public class UserClientReferenceRolePermission extends AbstractAuditingEntity implements
-        Serializable {
+		Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,11 +31,11 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
     @Audited(targetAuditMode = NOT_AUDITED)
     private UserClientPermission permission;
 
-    @ManyToOne
-    @JoinColumn(name = "reference_role_id")
-    @JsonBackReference
-    @NotNull
-    private UserClientReferenceRole userClientReferenceRole;
+	@ManyToOne
+	@JoinColumn(name = "reference_role_id")
+	@JsonBackReference
+	@NotNull
+	private UserClientReferenceRole userClientReferenceRole;
 
     /**
      * No arg constructor
@@ -51,13 +51,13 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
         this.setPermission(permission);
     }
 
-    public UserClientReferenceRole getUserClientReferenceRole() {
-        return userClientReferenceRole;
-    }
+	public UserClientReferenceRole getUserClientReferenceRole() {
+		return userClientReferenceRole;
+	}
 
-    public void setUserClientReferenceRole(UserClientReferenceRole userClientReferenceRole) {
-        this.userClientReferenceRole = userClientReferenceRole;
-    }
+	public void setUserClientReferenceRole(UserClientReferenceRole userClientReferenceRole) {
+		this.userClientReferenceRole = userClientReferenceRole;
+	}
 
     public UserClientPermission getPermission() {
         return permission;
