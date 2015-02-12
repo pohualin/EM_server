@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
@@ -265,5 +266,47 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void badExpireReset() {
         userClientPasswordService.expireResetToken(new UserClient());
+    }
+
+
+    /**
+     * Happy path for finding password policy from a reset token
+     */
+    @Test
+    public void passwordPolicyFromResetToken() {
+        ClientPasswordConfiguration existingPolicy = makeNewRandomClientPasswordConfiguration(null);
+        // reset a user
+        UserClient userClient = userClientPasswordService
+                .forgotPassword(makeNewRandomUserClient(existingPolicy.getClient()).getEmail());
+
+        ClientPasswordConfiguration policy =
+                userClientPasswordService.findPasswordPolicyUsingResetToken(userClient.getPasswordResetToken());
+        assertThat("existing policy was found", policy, is(existingPolicy));
+    }
+
+    /**
+     * This one should 'find' a password policy even though there
+     * is no user associated to the reset token
+     */
+    @Test
+    public void passwordPolicyFromNullResetToken() {
+        ClientPasswordConfiguration policy =
+                userClientPasswordService.findPasswordPolicyUsingResetToken(null);
+        assertThat("a policy was found", policy, is(notNullValue()));
+        assertThat("the policy was created and not persistent", policy.getId(), is(nullValue()));
+    }
+
+    /**
+     * Happy path for finding password policy from an activation token
+     */
+    @Test
+    public void passwordPolicyFromActivationToken() {
+        ClientPasswordConfiguration existingPolicy = makeNewRandomClientPasswordConfiguration(null);
+        // activate a user
+        UserClient userClient = userClientService.addActivationKey(makeNewRandomUserClient(existingPolicy.getClient()));
+
+        ClientPasswordConfiguration policy =
+                userClientPasswordService.findPasswordPolicyUsingActivationToken(userClient.getActivationKey());
+        assertThat("existing policy was found", policy, is(existingPolicy));
     }
 }
