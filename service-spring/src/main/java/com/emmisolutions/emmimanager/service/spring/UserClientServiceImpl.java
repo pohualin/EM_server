@@ -10,6 +10,8 @@ import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,6 +84,8 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setCredentialsNonExpired(inDb.isCredentialsNonExpired());
         userClient.setAccountNonExpired(inDb.isAccountNonExpired());
         userClient.setAccountNonLocked(inDb.isAccountNonLocked());
+        userClient.setPasswordResetToken(inDb.getPasswordResetToken());
+        userClient.setPasswordResetExpirationDateTime(inDb.getPasswordResetExpirationDateTime());
         // validation should be false if the email address has changed, otherwise set it to whatever it was previously
         userClient.setEmailValidated(
                 StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
@@ -114,20 +118,31 @@ public class UserClientServiceImpl implements UserClientService {
     @Override
     @Transactional
     public UserClient activate(ActivationRequest activationRequest) {
+        UserClient ret = null;
         if (activationRequest != null) {
             UserClient userClient =
                     userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
             if (userClient != null) {
-                userClient.setActivated(true);
+                LocalDateTime expiration = userClient.getActivationExpirationDateTime();
                 userClient.setActivationKey(null);
-                userClient.setEmailValidated(true);
-                userClient.setPassword(activationRequest.getNewPassword());
-                userClient.setCredentialsNonExpired(true);
-                return userClientPersistence.saveOrUpdate(
-                        userClientPasswordService.encodePassword(userClient));
+                userClient.setActivationExpirationDateTime(null);
+                if (isValid(expiration)) {
+                    // activation key (and timestamp) is valid
+                    userClient.setActivated(true);
+                    userClient.setEmailValidated(true);
+                    userClient.setPassword(activationRequest.getNewPassword());
+                    userClient.setCredentialsNonExpired(true);
+                    ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
+                } else {
+                    userClientPersistence.saveOrUpdate(userClient);
+                }
             }
         }
-        return null;
+        return ret;
+    }
+
+    private boolean isValid(LocalDateTime expiration) {
+        return expiration == null || LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
     }
 
     @Override
@@ -139,11 +154,28 @@ public class UserClientServiceImpl implements UserClientService {
                     "This method is only to be used with existing UserClient objects");
         }
         // update the activation key, only for not yet activated users
+        UserClient ret = null;
         if (!fromDb.isActivated()) {
+            fromDb.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
+                    .plusHours(ACTIVATION_TOKEN_HOURS_VALID));
             fromDb.setActivationKey(
                     passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
                             .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
+            ret = userClientPersistence.saveOrUpdate(fromDb);
         }
+        return ret;
+    }
+
+    @Override
+    public UserClient expireActivationToken(UserClient userClient) {
+        UserClient fromDb = reload(userClient);
+        if (fromDb == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
+        }
+        // set the timestamp back a year or so
+        fromDb.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
+                .minusHours(ACTIVATION_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
     }
 

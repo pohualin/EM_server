@@ -41,6 +41,9 @@ public class MailServiceImpl implements MailService {
     @Value("${mail.password_reset.from:EmmiManager Password Reset <no_reply_pw@emmisolutions.com>}")
     private String passwordResetFrom;
 
+    @Value("${mail.password_changed.from:EmmiManager Password Manager <no_reply_pw_manager@emmisolutions.com>}")
+    private String passwordChangedFrom;
+
     @Value("${mail.server.use:true}")
     private boolean useMailServer;
 
@@ -60,6 +63,12 @@ public class MailServiceImpl implements MailService {
     @Override
     public void sendInvalidAccountPasswordResetEmail(UserClient userClient) {
         sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_INVALID_ACCOUNT);
+    }
+
+    @Async
+    @Override
+    public void sendPasswordChangeConfirmationEmail(UserClient userClient) {
+        sendTemplateBasedEmail(passwordChangedFrom, userClient, null, EmailTemplateType.PASSWORD_CHANGED);
     }
 
     private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type) {
