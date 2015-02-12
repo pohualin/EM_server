@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
@@ -104,6 +105,10 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     UserDetailsService userDetailsService;
+
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
+
 
     /**
      * Really logs in the user
@@ -360,6 +365,21 @@ public abstract class BaseIntegrationTest {
      */
     protected MimeMessage[] getEmailsFromServer() {
         return greenMailBean.getReceivedMessages();
+    }
+
+    /**
+     * Make a new ClientPasswordConfiguration for a passed existing client or random client
+     * if null
+     *
+     * @param existingClient to use or null to create random new client
+     * @return the persistent configuration
+     */
+    protected ClientPasswordConfiguration makeNewRandomClientPasswordConfiguration(Client existingClient) {
+        Client client = existingClient == null ? makeNewRandomClient() : existingClient;
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(client);
+        configuration.setName(RandomStringUtils.randomAlphanumeric(255));
+        return clientPasswordConfigurationService.save(configuration);
     }
 
 }

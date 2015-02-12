@@ -6,8 +6,7 @@ import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivat
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -36,7 +35,18 @@ public class PublicApi extends ResourceSupport {
         add(linkTo(methodOn(UserClientsActivationResource.class).activate(null)).withRel("activate"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).resetPassword(null)).withRel("resetPassword"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).forgotPassword(null)).withRel("forgotPassword"));
+        Link resetPasswordPolicy = linkTo(methodOn(UserClientsPasswordResource.class).resetPasswordPolicy(null)).withRel("resetPasswordPolicy");
+        add(new Link(urlWithTokenParameter(resetPasswordPolicy), resetPasswordPolicy.getRel()));
+        Link activationPasswordPolicy = linkTo(methodOn(UserClientsPasswordResource.class).activatePasswordPolicy(null)).withRel("activationPasswordPolicy");
+        add(new Link(urlWithTokenParameter(activationPasswordPolicy), activationPasswordPolicy.getRel()));
         add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
+    }
+
+    private String urlWithTokenParameter(Link link){
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("token", TemplateVariable.VariableType.REQUEST_PARAM)));
+        return uriTemplate.toString();
     }
 
     /**
