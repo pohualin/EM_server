@@ -52,8 +52,12 @@ public class UserClientsPasswordResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PermitAll
     public ResponseEntity<Void> changeExpiredPassword(@RequestBody ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
-        userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+        UserClient modifiedUser = userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
+        if (modifiedUser != null) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.GONE);
+        }
     }
 
     /**
@@ -76,7 +80,7 @@ public class UserClientsPasswordResource {
     /**
      * PUT to create a forgot password email
      *
-     * @param email the forget request
+     * @param forgotPassword the forget request
      * @return OK
      */
     @RequestMapping(value = "/password/forgot", method = RequestMethod.PUT)

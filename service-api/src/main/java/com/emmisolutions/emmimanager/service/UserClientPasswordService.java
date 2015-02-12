@@ -20,8 +20,9 @@ public interface UserClientPasswordService {
      * Updates a UserClient password from an expired password change request
      *
      * @param expiredPasswordChangeRequest specifies the update
+     * @return the updated user client
      */
-    void changeExpiredPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
+    UserClient changeExpiredPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
 
     /**
      * Encodes whatever password is currently on the UserClient
@@ -56,4 +57,19 @@ public interface UserClientPasswordService {
      * @return the updated UserClient with a reset token or null
      */
     UserClient forgotPassword(String email);
+
+    /**
+     * Expires the reset token but does not remove it.
+     *
+     * @param userClient on which to expire token
+     * @return the updated UserClient
+     */
+    UserClient expireResetToken(UserClient userClient);
+
+    /**
+     * Amount of hours that reset tokens are valid for after creation
+     */
+    int RESET_TOKEN_HOURS_VALID = 24;
+
+
 }

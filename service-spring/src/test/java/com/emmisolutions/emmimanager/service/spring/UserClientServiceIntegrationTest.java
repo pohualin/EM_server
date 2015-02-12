@@ -250,8 +250,30 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClient = userClientService.activate(new ActivationRequest(userClient.getActivationKey(), "whatever"));
 
         assertThat("activation key is not created for already activated users",
-                userClientService.addActivationKey(userClient).getActivationKey(),
+                userClientService.addActivationKey(userClient),
                 is(nullValue()));
+    }
+
+    /**
+     * Push the expiration time to the past and validate that reset password returns null
+     */
+    @Test
+    public void expiredActivation() {
+        UserClient userClient = userClientService.addActivationKey(makeNewRandomUserClient(null));
+
+        UserClient expiredUserClient = userClientService.expireActivationToken(userClient);
+
+        assertThat("should be expired activation request",
+                userClientService.activate(new ActivationRequest(expiredUserClient.getActivationKey(), "***")),
+                is(nullValue()));
+    }
+
+    /**
+     * Shouldn't be able to expire an activation for a user that isn't found
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badExpireActivation() {
+        userClientService.expireActivationToken(new UserClient());
     }
 
     /**
