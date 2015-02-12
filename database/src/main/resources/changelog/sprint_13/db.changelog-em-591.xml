@@ -7,7 +7,39 @@
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
     
+    <changeSet id="add user client permission group" author="Paul">
+    	<createTable tableName="user_client_permission_group">
+            <column name="group_name" type="varchar(100)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_permission_group"/>
+            </column>
+            <column name="rank" type="int">
+            	<constraints nullable="false" />
+            </column>
+        </createTable>
+        
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_13/data/em-591/client-permission-groups.csv"
+                  separator=";"
+                  tableName="user_client_group_permission"/>
+        
+        <addColumn tableName="user_client_permission">
+    		<column name="group_name" type="nvarchar(100)">
+    		</column>
+    	</addColumn>
+    	
+    </changeSet>
+    
     <changeSet id="update user client permission enum" author="Paul">
+    	<delete tableName="user_client_role_user_client_permission">
+    		<where>permission_name in (
+	    		'PERM_CLIENT_CREATE_NEW_USER',
+				'PERM_CLIENT_ACTIVATE_USER',
+				'PERM_CLIENT_DEACTIVATE_USER',
+				'PERM_CLIENT_ADMINISTER_USER_ROLES',
+				'PERM_CLIENT_ADMINISTER_USER_INFORMATION'
+    		)</where>
+    	</delete>
+
     	<delete tableName="user_client_permission">
     		<where>name in (
 	    		'PERM_CLIENT_CREATE_NEW_USER',
@@ -47,24 +79,29 @@
     	
     	<insert tableName="user_client_reference_role_permission">
     		<column name="name">PERM_CLIENT_MANAGE_ROLES</column>
+    		<column name="group_name">PERM_CLIENT_MANAGE_USERS</column>
     		<column name="created_by">system</column>
     		<column name="reference_role_id">2</column>
     	</insert>
     	<insert tableName="user_client_reference_role_permission">
     		<column name="name">PERM_CLIENT_MANAGE_USERS</column>
+    		<column name="group_name">PERM_CLIENT_MANAGE_USERS</column>
     		<column name="created_by">system</column>
     		<column name="reference_role_id">2</column>
     	</insert>
     	<insert tableName="user_client_reference_role_permission">
     		<column name="name">PERM_CLIENT_MODIFY_PASSWORD_CONFIG</column>
+    		<column name="group_name">PERM_CLIENT_MODIFY_CONFIG</column>
     		<column name="created_by">system</column>
     		<column name="reference_role_id">2</column>
     	</insert>
     	<insert tableName="user_client_reference_role_permission">
     		<column name="name">PERM_CLIENT_MODIFY_SECURITY_CONFIG</column>
+    		<column name="group_name">PERM_CLIENT_MODIFY_CONFIG</column>
     		<column name="created_by">system</column>
     		<column name="reference_role_id">2</column>
     	</insert>
+    	
     </changeSet>
 
 </databaseChangeLog>

@@ -1,12 +1,15 @@
 package com.emmisolutions.emmimanager.model.user.client.reference;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionGroup;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
@@ -30,7 +33,7 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
     @NotNull
     @Audited(targetAuditMode = NOT_AUDITED)
     private UserClientPermission permission;
-
+    
 	@ManyToOne
 	@JoinColumn(name = "reference_role_id")
 	@JsonBackReference
@@ -51,7 +54,7 @@ public class UserClientReferenceRolePermission extends AbstractAuditingEntity im
         this.setPermission(permission);
     }
 
-	public UserClientReferenceRole getUserClientReferenceRole() {
+    public UserClientReferenceRole getUserClientReferenceRole() {
 		return userClientReferenceRole;
 	}
 
