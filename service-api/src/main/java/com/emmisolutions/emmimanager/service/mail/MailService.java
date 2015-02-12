@@ -31,4 +31,12 @@ public interface MailService {
      * @param userClient to send to
      */
     void sendInvalidAccountPasswordResetEmail(UserClient userClient);
+
+    /**
+     * Sends an email to the user if the user has an email that
+     * informs them that their password has been changed.
+     *
+     * @param userClient to send to
+     */
+    void sendPasswordChangeConfirmationEmail(UserClient userClient);
 }
