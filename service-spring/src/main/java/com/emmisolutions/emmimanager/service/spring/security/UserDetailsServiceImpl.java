@@ -30,9 +30,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public User loadUserByUsername(final String login) {
-        User ret = userPersistence.fetchUserWillFullPermissions(login);
+        User ret = userClientPersistence.fetchUserWillFullPermissions(login);
         if (ret == null) {
-            ret = userClientPersistence.fetchUserWillFullPermissions(login);
+            ret = userPersistence.fetchUserWillFullPermissions(login);
         }
         if (ret == null || CollectionUtils.isEmpty(ret.getAuthorities())){
             throw new UsernameNotFoundException("User " + login + " was not found.");
