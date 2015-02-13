@@ -58,8 +58,13 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
      */
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(new JsonJacksonConverter());
+        converters.add(jsonJacksonConverter());
         converters.add(new XmlJacksonConverter());
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter jsonJacksonConverter(){
+        return new JsonJacksonConverter();
     }
 
     @Override

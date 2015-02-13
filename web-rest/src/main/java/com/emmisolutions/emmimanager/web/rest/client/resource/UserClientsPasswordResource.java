@@ -1,11 +1,14 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientPasswordConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -39,6 +43,9 @@ public class UserClientsPasswordResource {
 
     @Resource
     MailService mailService;
+
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
 
     /**
      * Updates the password to the password on the user
@@ -107,6 +114,25 @@ public class UserClientsPasswordResource {
             return new ResponseEntity<>(clientPasswordConfiguration, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.GONE);
+    }
+
+    /**
+     * Load the password policy for an expired user client by id
+     *
+     * @param clientId to load the policy
+     * @return the policy
+     */
+    @RequestMapping(value = "/password/policy/expired/{clientId}", method = RequestMethod.GET)
+    @PermitAll
+    public ResponseEntity<ClientPasswordConfiguration> passwordPolicy(
+            @PathVariable("clientId") Long clientId) {
+        ClientPasswordConfiguration clientPasswordConfiguration =
+                clientPasswordConfigurationService.get(new Client(clientId));
+        if (clientPasswordConfiguration != null) {
+            return new ResponseEntity<>(clientPasswordConfiguration, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     /**
