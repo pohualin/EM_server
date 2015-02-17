@@ -137,10 +137,6 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         UserClient loggedInUser = (UserClient) login(userClient.getLogin(), plainTextPassword);
 
         // check to see that the permissions and granted authorities are present for the client and team
-        assertThat("client user has been granted client user permission",
-                Collections.unmodifiableCollection(loggedInUser.getAuthorities()),
-                hasItem(new SimpleGrantedAuthority(UserClientPermissionName.PERM_CLIENT_ACTIVATE_USER.toString() +
-                        "_" + loggedInUser.getClient().getId())));
         assertThat("client user has been granted team level user permission",
                 Collections.unmodifiableCollection(loggedInUser.getAuthorities()),
                 hasItem(new SimpleGrantedAuthority(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI.toString()

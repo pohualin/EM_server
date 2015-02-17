@@ -1,72 +1,52 @@
 package com.emmisolutions.emmimanager.model.user.client;
 
-import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-
 import java.util.Collection;
 
 /**
- * A client level permission
+ * A client level permission group
  */
 @Entity
-@Table(name = "user_client_permission")
-@XmlRootElement(name = "permission")
+@Table(name = "user_client_permission_group")
+@XmlRootElement(name = "permission_group")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserClientPermission {
+public class UserClientPermissionGroup {
 
     @Id
-    @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
+    @Column(name="group_name", length = 100, columnDefinition = "varchar(100)", nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserClientPermissionName name;
-    
-    @ManyToOne
-    @JoinColumn(name="group_name", columnDefinition = "varchar(100)", nullable = false)
-    @NotNull
-    @Audited(targetAuditMode = NOT_AUDITED)
-    private UserClientPermissionGroup group;
+    private UserClientPermissionGroupName name;
     
     @Column(name ="rank", columnDefinition = "int", nullable = false)
     private int rank;
 
-    public UserClientPermission() {
+    public UserClientPermissionGroup() {
     }
 
     /**
      * Make a permission by name
      * @param name to use
      */
-    public UserClientPermission(UserClientPermissionName name) {
+    public UserClientPermissionGroup(UserClientPermissionGroupName name) {
         this.name = name;
     }
 
-    public UserClientPermissionName getName() {
+    public UserClientPermissionGroupName getName() {
         return name;
     }
 
-    public void setName(UserClientPermissionName name) {
+    public void setName(UserClientPermissionGroupName name) {
         this.name = name;
-    }
-
-    public UserClientPermissionGroup getGroup() {
-        return group;
-    }
-
-    public void setGroup(UserClientPermissionGroup group) {
-        this.group = group;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserClientPermission that = (UserClientPermission) o;
+        UserClientPermissionGroup that = (UserClientPermissionGroup) o;
         return name == that.name;
     }
 
@@ -77,9 +57,8 @@ public class UserClientPermission {
 
     @Override
     public String toString() {
-        return "UserClientPermission{" +
+        return "UserClientPermissionGroup{" +
             "name=" + name +
-            ", group=" + group +
             ", rank=" + rank +
             '}';
     }
