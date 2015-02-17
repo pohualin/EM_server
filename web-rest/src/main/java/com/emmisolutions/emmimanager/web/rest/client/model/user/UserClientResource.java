@@ -91,4 +91,11 @@ public class UserClientResource extends ResourceSupport {
         return super.getLinks();
     }
 
+    public ClientResource getClientResource() {
+        return clientResource;
+    }
+
+    public void setClientResource(ClientResource clientResource) {
+        this.clientResource = clientResource;
+    }
 }

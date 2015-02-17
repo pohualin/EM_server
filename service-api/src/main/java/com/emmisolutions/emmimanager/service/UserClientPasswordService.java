@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
@@ -8,6 +9,11 @@ import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordReq
  * Administrative Service API for UserClient password management
  */
 public interface UserClientPasswordService {
+
+    /**
+     * Amount of hours that reset tokens are valid for after creation
+     */
+    int RESET_TOKEN_HOURS_VALID = 24;
 
     /**
      * Update the UserClient password and expire it at the same time.
@@ -67,9 +73,20 @@ public interface UserClientPasswordService {
     UserClient expireResetToken(UserClient userClient);
 
     /**
-     * Amount of hours that reset tokens are valid for after creation
+     * Finds a password configuration for a particular reset token
+     * or returns the default password configuration
+     *
+     * @param resetToken use to find a client
+     * @return a password configuration for the token, never null
      */
-    int RESET_TOKEN_HOURS_VALID = 24;
+    ClientPasswordConfiguration findPasswordPolicyUsingResetToken(String resetToken);
 
-
+    /**
+     * Finds a password configuration for a particular activation token
+     * or returns the default password configuration
+     *
+     * @param resetToken use to find a client
+     * @return a password configuration for the token, never null
+     */
+    ClientPasswordConfiguration findPasswordPolicyUsingActivationToken(String resetToken);
 }

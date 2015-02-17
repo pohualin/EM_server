@@ -1,9 +1,12 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
@@ -29,6 +32,9 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     @Resource
     PasswordEncoder passwordEncoder;
+
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
 
     @Override
     @Transactional
@@ -104,10 +110,6 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         return ret;
     }
 
-    private boolean isValid(LocalDateTime expiration) {
-        return expiration == null || LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
-    }
-
     @Override
     @Transactional
     public UserClient addResetTokenTo(UserClient userClient) {
@@ -148,6 +150,32 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         fromDb.setPasswordResetExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .minusHours(RESET_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ClientPasswordConfiguration findPasswordPolicyUsingResetToken(String resetToken) {
+        return findClientPasswordConfiguration(
+                userClientPersistence.findByResetToken(resetToken));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ClientPasswordConfiguration findPasswordPolicyUsingActivationToken(String activationToken) {
+        return findClientPasswordConfiguration(
+                userClientPersistence.findByActivationKey(activationToken));
+    }
+
+    private ClientPasswordConfiguration findClientPasswordConfiguration(UserClient userClient) {
+        Client client = null;
+        if (userClient != null) {
+            client = userClient.getClient();
+        }
+        return clientPasswordConfigurationService.get(client);
+    }
+
+    private boolean isValid(LocalDateTime expiration) {
+        return expiration == null || LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
     }
 
 }
