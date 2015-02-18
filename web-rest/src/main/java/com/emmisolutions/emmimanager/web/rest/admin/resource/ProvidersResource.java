@@ -222,4 +222,24 @@ public class ProvidersResource {
             return new ResponseEntity<>(providerResourceAssembler.toResource(updatedProvider), HttpStatus.OK);
         }
     }
+    
+    /**
+     * POST to create the provider
+     *
+     * @param provider to update
+     * @return ProviderResource or INTERNAL_SERVER_ERROR if update were unsuccessful
+     */
+    @RequestMapping(value = "/providers",
+            method = RequestMethod.POST,
+            consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
+    )
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    public ResponseEntity<ProviderResource> create(@RequestBody Provider provider) {
+        provider = providerService.create(provider);
+        if (provider == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(providerResourceAssembler.toResource(provider), HttpStatus.OK);
+        }
+    }
 }
