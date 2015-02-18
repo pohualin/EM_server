@@ -8,14 +8,17 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.UserClientService.UserClientRestrictedEmail;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientRestrictedEmailResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivationResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,6 +63,9 @@ public class UserClientsResource {
 
     @Resource
     UserClientConflictResourceAssembler userClientConflictResourceAssembler;
+    
+    @Resource
+    UserClientRestrictedEmailResourceAssembler userClientRestrictedEmailResourceAssembler;
 
     @Resource
     MailService mailService;
@@ -134,27 +140,36 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> createUser(
             @PathVariable Long clientId, @RequestBody UserClient userClient) {
 
-        // look for conflicts before attempting to save
-        UserClientResource conflictingUserClient = userClientConflictResourceAssembler
-                .toResource(userClientService.findConflictingUsers(userClient));
-
-        if (conflictingUserClient == null) {
-            UserClient savedUserClient = userClientService.create(userClient);
-            if (savedUserClient != null) {
-
-                // created a user client successfully
-                return new ResponseEntity<>(
-                        userClientResourceAssembler.toResource(userClient),
-                        HttpStatus.CREATED);
-
-            } else {
-                // error creating user client
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            // found some conflicting users
-            return new ResponseEntity<>(conflictingUserClient,
+        // Check email pattern
+        UserClientResource restrictedEmail = userClientRestrictedEmailResourceAssembler
+                .toResource(userClientService.validateEmailAddress(userClient));
+        
+        if (restrictedEmail != null) {
+            return new ResponseEntity<>(restrictedEmail,
                     HttpStatus.NOT_ACCEPTABLE);
+        } else {
+         // look for conflicts before attempting to save
+            UserClientResource conflictingUserClient = userClientConflictResourceAssembler
+                    .toResource(userClientService.findConflictingUsers(userClient));
+
+            if (conflictingUserClient == null) {
+                UserClient savedUserClient = userClientService.create(userClient);
+                if (savedUserClient != null) {
+
+                    // created a user client successfully
+                    return new ResponseEntity<>(
+                            userClientResourceAssembler.toResource(userClient),
+                            HttpStatus.CREATED);
+
+                } else {
+                    // error creating user client
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                // found some conflicting users
+                return new ResponseEntity<>(conflictingUserClient,
+                        HttpStatus.NOT_ACCEPTABLE);
+            }
         }
     }
 
@@ -276,24 +291,33 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> update(
             @PathVariable("id") Long id, @RequestBody UserClient userClient) {
 
-        // look for conflicts before attempting to save
-        UserClientResource conflictingUserClient = userClientConflictResourceAssembler
-                .toResource(userClientService.findConflictingUsers(userClient));
-
-        if (conflictingUserClient == null) {
-            UserClient updatedUserClient = userClientService.update(userClient);
-            if (updatedUserClient != null) {
-                return new ResponseEntity<>(
-                        userClientResourceAssembler
-                                .toResource(updatedUserClient),
-                        HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            // found some conflicting users
-            return new ResponseEntity<>(conflictingUserClient,
+        // Check email pattern
+        UserClientResource restrictedEmail = userClientRestrictedEmailResourceAssembler
+                .toResource(userClientService.validateEmailAddress(userClient));
+        
+        if (restrictedEmail != null) {
+            return new ResponseEntity<>(restrictedEmail,
                     HttpStatus.NOT_ACCEPTABLE);
+        } else {
+            // look for conflicts before attempting to save
+            UserClientResource conflictingUserClient = userClientConflictResourceAssembler
+                    .toResource(userClientService.findConflictingUsers(userClient));
+    
+            if (conflictingUserClient == null) {
+                UserClient updatedUserClient = userClientService.update(userClient);
+                if (updatedUserClient != null) {
+                    return new ResponseEntity<>(
+                            userClientResourceAssembler
+                                    .toResource(updatedUserClient),
+                            HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                // found some conflicting users
+                return new ResponseEntity<>(conflictingUserClient,
+                        HttpStatus.NOT_ACCEPTABLE);
+            }
         }
     }
 

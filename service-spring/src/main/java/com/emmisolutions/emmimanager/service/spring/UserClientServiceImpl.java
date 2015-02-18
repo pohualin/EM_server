@@ -1,13 +1,18 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -20,8 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * It can only contact the persistence layer and is responsible for Transaction
@@ -39,6 +47,12 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
+    
+    @Resource
+    ClientRestrictConfigurationService clientRestrictConfigurationService;
+    
+    @Resource
+    EmailRestrictConfigurationService emailRestrictConfigurationService;
 
     @Resource
     PasswordEncoder passwordEncoder;
@@ -177,6 +191,61 @@ public class UserClientServiceImpl implements UserClientService {
         fromDb.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .minusHours(ACTIVATION_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
+    }
+
+    @Override
+    @Transactional
+    public UserClientRestrictedEmail validateEmailAddress(UserClient userClient) {
+        ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService
+                .getByClient(userClient.getClient());
+
+        if (restrictConfig == null) {
+            // return null if client does not setup restriction
+            return null;
+        } else if (restrictConfig.isEmailConfigRestrict() == false) {
+            // return null if isEmailConfigRestrict returns false
+            return null;
+        } else {
+            Page<EmailRestrictConfiguration> validEmailEndingPage = emailRestrictConfigurationService
+                    .getByClient(null, userClient.getClient());
+
+            if (validEmailEndingPage.hasContent() == false) {
+                // return null if no valid email ending is set
+                return null;
+            } else {
+                List<String> validEmailEndings = new ArrayList<String>();
+                for (EmailRestrictConfiguration validEmailEnding : validEmailEndingPage
+                        .getContent()) {
+                    validEmailEndings.add(validEmailEnding.getEmailEnding());
+                }
+
+                // parse email to get domain
+                String domain = StringUtils.substringAfter(
+                        userClient.getEmail(), "@");
+
+                // Get the last two parts of domain separated by "."
+                int count = StringUtils.countMatches(domain, ".");
+                String trimmedDomain = "";
+                if (count == 1) {
+                    trimmedDomain = domain;
+                } else if (count > 1) {
+                    trimmedDomain = domain.substring(StringUtils
+                            .lastOrdinalIndexOf(domain, ".", 2) + 1);
+                }
+
+                if (validEmailEndings.contains(trimmedDomain)) {
+                    // return null if validEmailEndings contain the trimmed
+                    // domain
+                    return null;
+                } else {
+                    // build the UserClientRestrictedEmail with a list of valid
+                    // email endings
+                    UserClientRestrictedEmail restrictedEmail = new UserClientRestrictedEmail();
+                    restrictedEmail.setValidEmailEndings(validEmailEndings);
+                    return restrictedEmail;
+                }
+            }
+        }
     }
 
 }

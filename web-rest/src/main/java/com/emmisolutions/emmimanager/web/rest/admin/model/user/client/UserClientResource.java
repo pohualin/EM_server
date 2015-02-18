@@ -20,6 +20,8 @@ public class UserClientResource extends ResourceSupport {
 
     private List<UserClientService.UserClientConflict> conflicts;
 
+    private UserClientService.UserClientRestrictedEmail restrictedEmail;
+    
     /**
      * Override to change the link property name for serialization
      *
@@ -47,5 +49,14 @@ public class UserClientResource extends ResourceSupport {
     public void setConflicts(
             List<UserClientService.UserClientConflict> conflicts) {
         this.conflicts = conflicts;
+    }
+
+    public UserClientService.UserClientRestrictedEmail getRestrictedEmail() {
+        return restrictedEmail;
+    }
+
+    public void setRestrictedEmail(
+            UserClientService.UserClientRestrictedEmail restrictedEmail) {
+        this.restrictedEmail = restrictedEmail;
     }
 }

@@ -3,10 +3,12 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.xml.bind.annotation.XmlEnum;
+
 import java.util.List;
 
 /**
@@ -78,6 +80,16 @@ public interface UserClientService {
      * @return the updated UserClient
      */
     UserClient expireActivationToken(UserClient userClient);
+    
+    /**
+     * Return an UserClientRestrictEmail with a list of valid email endings if
+     * the passed in email does not pass restriction
+     * 
+     * @param userClient
+     *            to validate
+     * @return an UserClientRestrictEmail with a list of valid email endings
+     */
+    UserClientRestrictedEmail validateEmailAddress(UserClient userClient);
 
     /**
      * Number of hours activation tokens are valid after creation
@@ -134,6 +146,23 @@ public interface UserClientService {
                     + (userClient != null ? userClient.hashCode() : 0);
             return result;
         }
+    }
+    
+    /**
+     * Contains a list of valid email endings
+     */
+    public class UserClientRestrictedEmail {
+
+        private List<String> validEmailEndings;
+
+        public List<String> getValidEmailEndings() {
+            return validEmailEndings;
+        }
+
+        public void setValidEmailEndings(List<String> validEmailEndings) {
+            this.validEmailEndings = validEmailEndings;
+        }
+
     }
 
     @XmlEnum
