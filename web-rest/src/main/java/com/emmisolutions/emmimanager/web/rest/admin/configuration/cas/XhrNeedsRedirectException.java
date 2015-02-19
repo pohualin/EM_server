@@ -8,6 +8,11 @@ public class XhrNeedsRedirectException extends RuntimeException {
 
     private String url;
 
+    /**
+     * Constructor that takes a URL
+     *
+     * @param url to push into the exception
+     */
     public XhrNeedsRedirectException(String url) {
         super(url);
         this.url = url;
