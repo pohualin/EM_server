@@ -89,4 +89,12 @@ public interface UserClientPasswordService {
      * @return a password configuration for the token, never null
      */
     ClientPasswordConfiguration findPasswordPolicyUsingActivationToken(String resetToken);
+    
+    /**
+     * Service to check whether new password meets password policy guidelines for a client
+     * 
+     * @param expiredPasswordChangeRequest to check
+     * @return true/false for valid/invalid password
+     */
+    boolean validateNewPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
 }
