@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticati
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.util.CommonUtils;
-import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -148,9 +147,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public Cas20ServiceTicketValidator cas20ServiceTicketValidator() {
-        Cas20ProxyTicketValidator ret = new Cas20ProxyTicketValidator(casServerUrl);
-        ret.setAcceptAnyProxy(true);
-        return ret;
+        return new Cas20ServiceTicketValidator(casServerUrl);
     }
 
     /**
