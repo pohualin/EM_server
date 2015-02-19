@@ -32,7 +32,7 @@ import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PROD
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.web.rest.admin.security"
 })
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 @Order(210)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
