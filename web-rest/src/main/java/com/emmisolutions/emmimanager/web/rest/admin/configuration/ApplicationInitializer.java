@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
+import com.emmisolutions.emmimanager.web.rest.admin.configuration.cas.CasSecurityConfiguration;
 import com.emmisolutions.emmimanager.web.rest.admin.configuration.gzip.GZipServletFilter;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration;
 import org.springframework.web.WebApplicationInitializer;
@@ -35,6 +36,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         rootContext.register(
                 RestConfiguration.class,
                 SecurityConfiguration.class,
+                CasSecurityConfiguration.class,
                 HateoasConfiguration.class,
                 SwaggerConfiguration.class,
                 ClientSecurityConfiguration.class);

@@ -7,5 +7,10 @@
         <error-code>401</error-code>
         <location>/login-expired.jsp</location>
     </error-page>
+
+    <error-page>
+        <exception-type>com.emmisolutions.emmimanager.web.rest.admin.configuration.cas.XhrNeedsRedirectException</exception-type>
+        <location>/xhr-redirect.jsp</location>
+    </error-page>
     
 </web-app>
