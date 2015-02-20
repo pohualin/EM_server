@@ -3,8 +3,10 @@ package com.emmisolutions.emmimanager.web.rest.client.resource;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,13 @@ public class UserClientsActivationResource {
 
     @Resource
     UserClientService userClientService;
+    
+    @Resource
+    UserClientPasswordService userClientPasswordService;
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<User, UserClientResource> userResourceAssembler;
-
+    
     /**
      * POST to activate a user
      *
@@ -43,10 +48,16 @@ public class UserClientsActivationResource {
     @RequestMapping(value = "/activate", method = RequestMethod.POST)
     @PermitAll
     public ResponseEntity<Void> activate(@RequestBody ActivationRequest activationRequest) {
-        UserClient userClient = userClientService.activate(activationRequest);
-        if (userClient != null) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        
+        if(userClientPasswordService.validateNewPassword(activationRequest)){
+            UserClient userClient = userClientService.activate(activationRequest);
+            if (userClient != null) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.GONE);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(HttpStatus.GONE);
+        
     }
 }
