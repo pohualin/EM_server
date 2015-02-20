@@ -62,7 +62,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource
     private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
 
-    @Resource
+    @Resource(name = "adminUserDetailsService")
     private UserDetailsService userDetailsService;
 
     @Value("${cas.server.url:https://devcas1.emmisolutions.com/cas}")
@@ -288,8 +288,11 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                                     new NegatedRequestMatcher(
                                             new AntPathRequestMatcher(SecurityConfiguration.loginProcessingUrl)),
                                     new NegatedRequestMatcher(
-                                            new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)))
-
+                                            new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)),
+                                    new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher("/webapi/messages")),
+                                    new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher("/webapi-client/**")))
                     )
                     .and()
                 .exceptionHandling()

@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
+import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxLogoutSuccessHandler;
@@ -8,17 +10,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
@@ -49,11 +50,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource
     private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
 
-    @Resource
+    @Resource(name = "adminUserDetailsService")
     private UserDetailsService userDetailsService;
 
     @Resource(name = "legacyAuthenticationProvider")
-    private AuthenticationProvider authenticationProvider;
+    private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource
     Environment env;
@@ -62,6 +63,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     PasswordEncoder passwordEncoder;
 
     public static final String REMEMBER_ME_KEY = "emSrm";
+
+
+    @PostConstruct
+    private void init(){
+        authenticationProvider.setUserDetailsService(userDetailsService);
+    }
 
     /**
      * Setup the global authentication settings
