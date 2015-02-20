@@ -9,7 +9,7 @@
     </error-page>
 
     <error-page>
-        <exception-type>com.emmisolutions.emmimanager.web.rest.admin.configuration.cas.XhrNeedsRedirectException</exception-type>
+        <exception-type>com.emmisolutions.emmimanager.web.rest.admin.security.cas.XhrNeedsRedirectException</exception-type>
         <location>/xhr-redirect.jsp</location>
     </error-page>
     

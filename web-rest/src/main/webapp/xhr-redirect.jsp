@@ -1,4 +1,4 @@
-<%@ page import="com.emmisolutions.emmimanager.web.rest.admin.configuration.cas.XhrNeedsRedirectException" %>
+<%@ page import="com.emmisolutions.emmimanager.web.rest.admin.security.cas.XhrNeedsRedirectException" %>
 <%@ page isErrorPage="true" %>
 <%
 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

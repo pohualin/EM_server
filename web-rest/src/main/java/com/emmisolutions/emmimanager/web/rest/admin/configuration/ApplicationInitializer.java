@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
-import com.emmisolutions.emmimanager.web.rest.admin.configuration.cas.CasSecurityConfiguration;
 import com.emmisolutions.emmimanager.web.rest.admin.configuration.gzip.GZipServletFilter;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration;
 import org.springframework.web.WebApplicationInitializer;

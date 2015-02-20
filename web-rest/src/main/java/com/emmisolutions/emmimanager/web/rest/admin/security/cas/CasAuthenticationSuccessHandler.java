@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security.cas;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -21,13 +20,12 @@ public class CasAuthenticationSuccessHandler extends SavedRequestAwareAuthentica
                                         Authentication authentication)
             throws IOException, ServletException {
 
-            if (request.getSession() != null) {
-                String requestedUrl = (String) request.getSession().getAttribute("X-Requested-Url");
-                if (StringUtils.isNotBlank(requestedUrl)) {
-                    response.sendRedirect(requestedUrl);
-                    return;
-                }
-            }
-            super.onAuthenticationSuccess(request, response, authentication);
+        if (authentication.getDetails() instanceof SavedUrlServiceAuthenticationDetails){
+            SavedUrlServiceAuthenticationDetails rememberWebAuthenticationDetails = (SavedUrlServiceAuthenticationDetails) authentication.getDetails();
+            response.sendRedirect(rememberWebAuthenticationDetails.getRedirectUrl());
+            return;
+        }
+
+        super.onAuthenticationSuccess(request, response, authentication);
     }
 }

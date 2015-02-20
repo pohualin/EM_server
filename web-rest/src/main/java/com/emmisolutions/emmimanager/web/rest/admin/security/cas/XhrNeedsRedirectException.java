@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.admin.configuration.cas;
+package com.emmisolutions.emmimanager.web.rest.admin.security.cas;
 
 /**
  * Thrown when XHR requests need to redirect. We can't use a
