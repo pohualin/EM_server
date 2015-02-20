@@ -22,7 +22,6 @@ public class SavedUrlServiceAuthenticationDetails implements ServiceAuthenticati
     private String redirectUrl;
     private String serviceUrl;
     private String encodedRedirectUrl;
-    private Base64 urlSafeBase64 = new Base64(true);
 
     /**
      * Create a SavedUrlServiceAuthenticationDetails.
@@ -31,6 +30,7 @@ public class SavedUrlServiceAuthenticationDetails implements ServiceAuthenticati
      * @param serviceUrl which gets appended the SERVICE_REQUEST_URL_PARAMETER if it is present
      */
     public SavedUrlServiceAuthenticationDetails(HttpServletRequest request, String serviceUrl) {
+        Base64 urlSafeBase64 = new Base64(-1, null, true);
         this.encodedRedirectUrl = StringUtils.trimToNull(
                 splitQuery(request).get(SERVICE_REQUEST_URL_PARAMETER));
 
