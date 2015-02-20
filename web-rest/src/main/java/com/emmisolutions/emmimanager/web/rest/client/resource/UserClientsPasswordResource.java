@@ -74,17 +74,23 @@ public class UserClientsPasswordResource {
      * PUT to reset a user's password
      *
      * @param resetPasswordRequest the activation request
-     * @return OK or GONE
+     * @return OK or GONE or NOT_ACCEPTABLE
      */
     @RequestMapping(value = "/password/reset", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
-        UserClient userClient = userClientPasswordService.resetPassword(resetPasswordRequest);
-        if (userClient != null) {
-            mailService.sendPasswordChangeConfirmationEmail(userClient);
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Void> resetPassword(
+            @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        if (userClientPasswordService.validateNewPassword(resetPasswordRequest)) {
+            UserClient userClient = userClientPasswordService
+                    .resetPassword(resetPasswordRequest);
+            if (userClient != null) {
+                mailService.sendPasswordChangeConfirmationEmail(userClient);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.GONE);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(HttpStatus.GONE);
     }
 
     /**
