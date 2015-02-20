@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
@@ -386,6 +387,45 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
         
         req.setNewPassword("!!!!!!!!![]!");
+        assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
+    }
+    
+    @Test
+    public void testValidateNewResetPassword(){
+        Client client = makeNewRandomClient();
+        UserClient userClient = makeNewRandomUserClient(client);
+        userClient.setEmail("apple@abc.com");
+        userClientService.update(userClient);
+        
+        ResetPasswordRequest req = new ResetPasswordRequest();
+        req.setResetToken(userClientPasswordService.forgotPassword("apple@abc.com").getPasswordResetToken());
+        
+        req.setNewPassword("abcABC");
+        assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
+
+        req.setNewPassword("abcABC123");
+        assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
+        
+        req.setNewPassword("abcABC123[]!");
+        assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
+    }
+    
+    @Test
+    public void testValidateNewActivatePassword(){
+        Client client = makeNewRandomClient();
+        UserClient userClient = makeNewRandomUserClient(client);
+        userClient = userClientService.addActivationKey(new UserClient(userClient.getId()));
+        
+        ActivationRequest req = new ActivationRequest();
+        req.setActivationToken(userClient.getActivationKey());
+        
+        req.setNewPassword("abcABC");
+        assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
+
+        req.setNewPassword("abcABC123");
+        assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
+        
+        req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
     }
 }
