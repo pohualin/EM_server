@@ -1,9 +1,8 @@
-package com.emmisolutions.emmimanager.web.rest.admin.configuration.cas;
+package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
-import com.emmisolutions.emmimanager.web.rest.admin.configuration.SecurityConfiguration;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationSuccessHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.*;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.util.CommonUtils;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
@@ -35,6 +34,7 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +53,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Order(100)
 @Profile(value = {"cas", "prod"})
 public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    public static final String SERVICE_REQUEST_URL_PARAMETER = "redirect-url";
 
     @Resource
     private CasAuthenticationSuccessHandler casAuthenticationSuccessHandler;
@@ -77,6 +79,8 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${cas.username.suffix:@emmisolutions.com}")
     private String userNameSuffix;
+
+    private Base64 urlSafeBase64;
 
     private List<String> validCasServerHostEndings;
 
@@ -160,7 +164,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
-        CasAuthenticationFilter casAuthenticationFilter = new CasAuthenticationFilter();
+        CasAuthenticationFilter casAuthenticationFilter = new AllowSuccessHandlerCasAuthenticationFilter();
         casAuthenticationFilter.setAuthenticationManager(authenticationManager());
         casAuthenticationFilter.setAuthenticationSuccessHandler(casAuthenticationSuccessHandler);
         casAuthenticationFilter.setServiceProperties(serviceProperties());
@@ -178,41 +182,28 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     AuthenticationDetailsSource<HttpServletRequest,
             ServiceAuthenticationDetails> dynamicServiceResolver() {
+
         return new AuthenticationDetailsSource<HttpServletRequest, ServiceAuthenticationDetails>() {
             @Override
             public ServiceAuthenticationDetails buildDetails(HttpServletRequest context) {
                 final String url = makeDynamicUrlFromRequest(serviceProperties());
-                return new ServiceAuthenticationDetails() {
-                    @Override
-                    public String getServiceUrl() {
-                        boolean valid = false;
-                        // ensure URL is from a known service
-                        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
-                                .build(false);
-                        for (String validCasServerHostEnding : validCasServerHostEndings) {
-                            if (uriComponents.getHost()
-                                    .endsWith(validCasServerHostEnding)) {
-                                valid = true;
-                                break;
-                            }
-                        }
-                        if (!valid) {
-                            throw new AccessDeniedException("The server is unable to authenticate the requested url.");
-                        }
-                        return url;
+                boolean valid = false;
+                // ensure URL is from a known service
+                UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
+                        .build(false);
+                for (String validCasServerHostEnding : validCasServerHostEndings) {
+                    if (uriComponents.getHost()
+                            .endsWith(validCasServerHostEnding)) {
+                        valid = true;
+                        break;
                     }
-                };
+                }
+                if (!valid) {
+                    throw new AccessDeniedException("The server is unable to authenticate the requested url.");
+                }
+                return new SavedUrlServiceAuthenticationDetails(context, url);
             }
         };
-    }
-
-    private String makeDynamicUrlFromRequest(ServiceProperties serviceProperties) {
-        return UriComponentsBuilder.fromHttpUrl(
-                linkTo(methodOn(UserClientsPasswordResource.class)
-                        .forgotPassword(null)).withSelfRel().getHref())
-                .replacePath(serviceProperties.getService())
-                .build(false)
-                .toString();
     }
 
     /**
@@ -224,22 +215,52 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public CasAuthenticationEntryPoint casAuthenticationEntryPoint() {
         CasAuthenticationEntryPoint casAuthenticationEntryPoint = new CasAuthenticationEntryPoint() {
+
+            /**
+             * We need to append the original URL requested by the client side application
+             * to the service request. We are going to Base64 encode this url in a way that
+             * makes it safe to use in a query string and use SERVICE_REQUEST_URL_PARAMETER
+             * as the name of the query parameter
+             *
+             * @param request the request
+             * @param response the response
+             * @return the service url with our SERVICE_REQUEST_URL_PARAMETER appended
+             */
             @Override
             protected String createServiceUrl(final HttpServletRequest request, final HttpServletResponse response) {
-                return CommonUtils.constructServiceUrl(null, response, makeDynamicUrlFromRequest(serviceProperties())
-                        , null, serviceProperties().getArtifactParameter(), false);
-            }
-
-            @Override
-            protected void preCommence(HttpServletRequest request, HttpServletResponse response) {
+                String service = makeDynamicUrlFromRequest(serviceProperties());
                 String requestedUrl = request.getHeader("X-Requested-Url");
                 if (StringUtils.isNotBlank(requestedUrl)) {
-                    request.getSession(true).setAttribute("X-Requested-Url", requestedUrl);
+                    // add requested URL as a query parameter
+                    service = UriComponentsBuilder.fromHttpUrl(service)
+                            .queryParam(SERVICE_REQUEST_URL_PARAMETER,
+                                    StringUtils.trim(urlSafeBase64.encodeToString(requestedUrl.getBytes())))
+                            .build(false)
+                            .toString();
                 }
+                return CommonUtils.constructServiceUrl(null, response, service,
+                        null, serviceProperties().getArtifactParameter(), false);
+            }
+
+            /**
+             * Normally CAS issues a redirect when authentication is needed. When
+             * XHR requests are happening this will either a) not work due to cross domain
+             * issues or b) will result in the XHR response having the CAS login page as the
+             * response. Neither of these are really desirable so instead we will throw a
+             * special exception that has the redirect URL embedded in it as an object. Then
+             * the client side will use the embedded object to do a full redirect. The
+             * xhr-redirect.jsp is the file that creates the embedded object.
+             *
+             * @param request the request
+             * @param response the response
+             */
+            @Override
+            protected void preCommence(HttpServletRequest request, HttpServletResponse response) {
+
                 if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
                     // don't redirect when XHR, throw exception instead
                     final String urlEncodedService = createServiceUrl(request, response);
-                    final String redirectUrl = createRedirectUrl(urlEncodedService);
+                    String redirectUrl = createRedirectUrl(urlEncodedService);
                     throw new XhrNeedsRedirectException(redirectUrl);
                 }
 
@@ -270,11 +291,11 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                                             new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)))
 
                     )
-                .and()
+                    .and()
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
                             new AntPathRequestMatcher("/webapi/**"))
-                .and()
+                    .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
@@ -290,6 +311,21 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(casAuthenticationProvider());
+    }
+
+    @PostConstruct
+    private void init(){
+        // make sure the Base64 encoding doesn't chunk the output
+        urlSafeBase64 = new Base64(-1, null, true);
+    }
+
+    private String makeDynamicUrlFromRequest(ServiceProperties serviceProperties) {
+        return UriComponentsBuilder.fromHttpUrl(
+                linkTo(methodOn(UserClientsPasswordResource.class)
+                        .forgotPassword(null)).withSelfRel().getHref())
+                .replacePath(serviceProperties.getService())
+                .build(false)
+                .toString();
     }
 }
 
