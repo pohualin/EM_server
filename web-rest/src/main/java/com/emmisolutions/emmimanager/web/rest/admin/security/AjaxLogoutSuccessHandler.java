@@ -27,10 +27,19 @@ public class AjaxLogoutSuccessHandler extends AbstractAuthenticationTargetUrlReq
                                 Authentication authentication)
             throws IOException, ServletException {
 
-        if (authentication.getDetails() instanceof SavedUrlServiceAuthenticationDetails){
-            response.sendRedirect(casServerLogoutUrl);
-        } else {
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            // ajax should always return OK
             response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            // non-ajax
+            if (authentication.getDetails() instanceof SavedUrlServiceAuthenticationDetails){
+                // cas authenticated, redirect to cas logout url
+                response.sendRedirect(casServerLogoutUrl);
+            } else {
+                // not cas authenticated, send OK
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
         }
+
     }
 }
