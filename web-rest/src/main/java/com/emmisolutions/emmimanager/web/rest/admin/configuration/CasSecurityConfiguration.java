@@ -290,6 +290,8 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                                     new NegatedRequestMatcher(
                                             new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)),
                                     new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher("*.jsp")),
+                                    new NegatedRequestMatcher(
                                             new AntPathRequestMatcher("/webapi/messages")),
                                     new NegatedRequestMatcher(
                                             new AntPathRequestMatcher("/webapi-client/**")))

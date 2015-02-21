@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security.cas;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -22,8 +23,10 @@ public class CasAuthenticationSuccessHandler extends SavedRequestAwareAuthentica
 
         if (authentication.getDetails() instanceof SavedUrlServiceAuthenticationDetails){
             SavedUrlServiceAuthenticationDetails rememberWebAuthenticationDetails = (SavedUrlServiceAuthenticationDetails) authentication.getDetails();
-            response.sendRedirect(rememberWebAuthenticationDetails.getRedirectUrl());
-            return;
+            if (StringUtils.isNotBlank(rememberWebAuthenticationDetails.getRedirectUrl())) {
+                response.sendRedirect(rememberWebAuthenticationDetails.getRedirectUrl());
+                return;
+            }
         }
 
         super.onAuthenticationSuccess(request, response, authentication);
