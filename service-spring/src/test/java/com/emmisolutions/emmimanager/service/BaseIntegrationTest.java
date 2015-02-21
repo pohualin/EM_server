@@ -17,13 +17,13 @@ import com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration;
 import com.emmisolutions.emmimanager.service.configuration.MailConfiguration;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
 import com.emmisolutions.emmimanager.service.configuration.ThymeleafConfiguration;
+import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.configuration.IntegrationTestConfiguration;
 import com.icegreen.greenmail.spring.GreenMailBean;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,6 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
@@ -101,14 +102,18 @@ public abstract class BaseIntegrationTest {
     UserClientUserClientTeamRoleService userClientUserClientTeamRoleService;
 
     @Resource
-    AuthenticationProvider authenticationProvider;
+    UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
-    @Resource
+    @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
 
+    @PostConstruct
+    private void init(){
+        authenticationProvider.setUserDetailsService(userDetailsService);
+    }
 
     /**
      * Really logs in the user

@@ -35,6 +35,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         rootContext.register(
                 RestConfiguration.class,
                 SecurityConfiguration.class,
+                CasSecurityConfiguration.class,
                 HateoasConfiguration.class,
                 SwaggerConfiguration.class,
                 ClientSecurityConfiguration.class);
