@@ -169,6 +169,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
         casAuthenticationFilter.setAuthenticationSuccessHandler(casAuthenticationSuccessHandler);
         casAuthenticationFilter.setServiceProperties(serviceProperties());
         casAuthenticationFilter.setAuthenticationDetailsSource(dynamicServiceResolver());
+        casAuthenticationFilter.setProxyAuthenticationFailureHandler(casAuthenticationFailureHandler);
         casAuthenticationFilter.setAuthenticationFailureHandler(casAuthenticationFailureHandler);
         return casAuthenticationFilter;
     }
