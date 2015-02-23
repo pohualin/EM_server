@@ -1,24 +1,19 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientRestrictConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientRestrictConfigurationResourceAssembler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * ClientRestrictConfiguration REST API
@@ -43,21 +38,21 @@ public class ClientRestrictConfigurationsResource {
      *         exists
      */
     @RequestMapping(value = "/clients/{clientId}/client_restrict_configuration", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientRestrictConfigurationResource> getByClient(
             @PathVariable Long clientId) {
         ClientRestrictConfiguration found = clientRestrictConfigurationService
                 .getByClient(new Client(clientId));
         if (found != null) {
             // found a clientRestrictConfiguration successfully
-            return new ResponseEntity<ClientRestrictConfigurationResource>(
+            return new ResponseEntity<>(
                     clientRestrictConfigurationAssembler.toResource(found),
                     HttpStatus.OK);
         } else {
             // nothing found, create a new one but don't save
             ClientRestrictConfiguration created = new ClientRestrictConfiguration();
             created.setClient(new Client(clientId));
-            return new ResponseEntity<ClientRestrictConfigurationResource>(
+            return new ResponseEntity<>(
                     clientRestrictConfigurationAssembler.toResource(created),
                     HttpStatus.OK);
         }
@@ -71,13 +66,13 @@ public class ClientRestrictConfigurationsResource {
      * @return an existing ClientRestrictConfiguration
      */
     @RequestMapping(value = "/client_restrict_configuration/{id}", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientRestrictConfigurationResource> get(
             @PathVariable("id") Long id) {
         ClientRestrictConfiguration clientRestrictConfiguration = clientRestrictConfigurationService
                 .reload(new ClientRestrictConfiguration(id));
         if (clientRestrictConfiguration != null) {
-            return new ResponseEntity<ClientRestrictConfigurationResource>(
+            return new ResponseEntity<>(
                     clientRestrictConfigurationAssembler
                             .toResource(clientRestrictConfiguration),
                     HttpStatus.OK);
@@ -98,7 +93,7 @@ public class ClientRestrictConfigurationsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/client_restrict_configuration", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientRestrictConfigurationResource> save(
             @PathVariable("clientId") Long clientId,
             @RequestBody ClientRestrictConfiguration clientRestrictConfiguration) {
@@ -125,7 +120,7 @@ public class ClientRestrictConfigurationsResource {
      */
     @RequestMapping(value = "/client_restrict_configuration/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientRestrictConfigurationResource> update(
             @PathVariable("id") Long id,
             @RequestBody ClientRestrictConfiguration clientRestrictConfiguration) {

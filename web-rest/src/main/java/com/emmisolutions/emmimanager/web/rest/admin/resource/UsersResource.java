@@ -58,7 +58,7 @@ public class UsersResource {
      * @return UserResource or 401 if the user is not logged in (via the PERM_ADMIN_USER annotation)
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<UserResource> authenticated() {
         return new ResponseEntity<>(userResourceAssembler.toResource(
                 (UserAdmin) userDetailsService.getLoggedInUser()), HttpStatus.OK);
@@ -74,7 +74,7 @@ public class UsersResource {
      * @return UserPage
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_SUPER_USER",
     "PERM_CREATE_NEW_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -107,7 +107,7 @@ public class UsersResource {
      */
     @RequestMapping(value = "/users", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
     public ResponseEntity<UserResource> createUser(@RequestBody UserAdminSaveRequest req) {
         List<UserAdmin> conflicts = userAdminService.findConflictingUsers(req.getUserAdmin());
@@ -136,7 +136,7 @@ public class UsersResource {
      */
     @RequestMapping(value = "/users", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_SUPER_USER",
             "PERM_CREATE_NEW_USER"})
     public ResponseEntity<UserResource> updateUser(@RequestBody UserAdminSaveRequest req) {
         List<UserAdmin> conflicts = userAdminService.findConflictingUsers(req
@@ -167,7 +167,7 @@ public class UsersResource {
      * @return ClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_SUPER_USER",
     "PERM_CREATE_NEW_USER"})
     public ResponseEntity<UserResource> get(@PathVariable("id") Long id) {
         UserAdmin toFind = new UserAdmin();
@@ -188,7 +188,7 @@ public class UsersResource {
      * @return a page of UserClientRoleResource objects
      */
     @RequestMapping(value = "/admin/roles", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "finds all existing user admin roles ")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
