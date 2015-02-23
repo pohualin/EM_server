@@ -59,7 +59,7 @@ public class TeamsResource {
      * @return ClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamResource> getTeam(@PathVariable Long clientId, @PathVariable("id") Long id) {
         Team toFind = new Team();
         toFind.setId(id);
@@ -81,7 +81,7 @@ public class TeamsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}", method = RequestMethod.PUT,
         consumes = {APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamResource> updateTeam(@PathVariable Long clientId, @PathVariable Long teamId, @RequestBody Team team) {
         Team updated = teamService.update(team);
         if (updated != null) {
@@ -103,7 +103,7 @@ public class TeamsResource {
      */
     @RequestMapping(value = "/teams",
         method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -131,7 +131,7 @@ public class TeamsResource {
      * @return LocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/teams", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -159,7 +159,7 @@ public class TeamsResource {
         method = RequestMethod.POST,
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamResource> createTeam(@PathVariable Long clientId, @RequestBody Team team) {
         Client client = new Client();
         client.setId(clientId);
@@ -180,7 +180,7 @@ public class TeamsResource {
      * @return ReferenceData
      */
     @RequestMapping(value = "/teams/ref", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ReferenceData getReferenceData() {
         return new ReferenceData();
     }
@@ -218,7 +218,7 @@ public class TeamsResource {
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamResource> findByNormalizedNameForClient(
         @RequestParam(value = "normalizedName", required = false) String normalizedName,
         @PageableDefault(size = 1) Pageable pageable,

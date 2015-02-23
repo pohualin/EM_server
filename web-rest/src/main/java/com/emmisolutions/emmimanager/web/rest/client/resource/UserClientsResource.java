@@ -42,7 +42,7 @@ public class UserClientsResource {
      * @return AUTHORIZED if the logged in user is authorized
      */
     @RequestMapping(value = "/auth-test/{clientId}/{teamId}", method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_USER') or " +
+    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or " +
             "hasPermission(@client.id(#clientId), 'PERM_CLIENT_USER') or " +
             "hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA')"
@@ -57,7 +57,7 @@ public class UserClientsResource {
      * @return UserClientResource when authorized or 401 if the user is not authorized.
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
+    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
         return new ResponseEntity<>(userResourceAssembler.toResource(userDetailsService.getLoggedInUser()),
                 HttpStatus.OK);

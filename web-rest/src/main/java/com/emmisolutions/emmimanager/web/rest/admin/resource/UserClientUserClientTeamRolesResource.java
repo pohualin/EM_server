@@ -63,7 +63,7 @@ public class UserClientUserClientTeamRolesResource {
      * @return a page of UserClientUserClientTeamRole
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientUserClientTeamRoles", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -101,7 +101,7 @@ public class UserClientUserClientTeamRolesResource {
      *            to lookup and delete
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientUserClientTeamRoles", method = RequestMethod.DELETE)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER" })
     public void delete(@PathVariable Long userClientId,
             @RequestParam Long userClientTeamRoleId) {
@@ -120,7 +120,7 @@ public class UserClientUserClientTeamRolesResource {
      *         userClientUserClientTeamRoleId
      */
     @RequestMapping(value = "/user_client_user_client_team_role/{userClientUserClientTeamRoleId}", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER" })
     public ResponseEntity<UserClientUserClientTeamRoleResource> getUserClientUserClientTeamRole(
             @PathVariable(value = "userClientUserClientTeamRoleId") Long userClientUserClientTeamRoleId) {
@@ -144,7 +144,7 @@ public class UserClientUserClientTeamRolesResource {
      *            to delete
      */
     @RequestMapping(value = "/user_client_user_client_team_role/{userClientUserClientTeamRoleId}", method = RequestMethod.DELETE)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER" })
     public void delete(@PathVariable Long userClientUserClientTeamRoleId) {
         userClientUserClientTeamRoleService
@@ -172,7 +172,7 @@ public class UserClientUserClientTeamRolesResource {
      */
     @RequestMapping(value = "/user_clients/{userClientId}/user_client_team_roles/associate", method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible user client team roles that can be associated to a user client")
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -217,7 +217,7 @@ public class UserClientUserClientTeamRolesResource {
     @RequestMapping(value = "/user_clients/{userClientId}/user_client_team_roles/associate", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiOperation("create a new UserClientUserClientTeamRole on a UserClient for each existing UserClientTeamRole in a Set")
-    @RolesAllowed({ "PERM_GOD", "PERM_CLIENT_LOCATION_CREATE" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<UserClientUserClientTeamRoleResource>> associate(
             @PathVariable Long userClientId,
             @RequestBody List<UserClientUserClientTeamRole> userClientUserClientTeamRoles) {
