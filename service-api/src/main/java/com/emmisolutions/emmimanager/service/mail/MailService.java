@@ -39,4 +39,6 @@ public interface MailService {
      * @param userClient to send to
      */
     void sendPasswordChangeConfirmationEmail(UserClient userClient);
+    
+    void sendPasswordResetNotEnabled(UserClient userClient);
 }

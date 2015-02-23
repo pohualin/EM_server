@@ -1,13 +1,16 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -26,6 +29,9 @@ import static org.junit.Assert.fail;
  */
 public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTest {
 
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
+    
     @Resource
     UserClientPasswordService userClientPasswordService;
 
@@ -218,13 +224,25 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
      */
     @Test
     public void forgotPassword() {
-        UserClient userClient = makeNewRandomUserClient(null);
+        Client client = makeNewRandomClient();
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(client);
+        assertThat("allowed user self reset password is true", configuration.isPasswordReset(), is(true));
+        
+        UserClient userClient = makeNewRandomUserClient(client);
         assertThat("reset token is created",
                 userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(notNullValue()));
 
         assertThat("reset token is not created",
                 userClientPasswordService.forgotPassword(null),
+                is(nullValue()));
+        
+        configuration.setPasswordReset(false);
+        configuration = clientPasswordConfigurationService.save(configuration);
+        assertThat("allowed user self reset password is false", configuration.isPasswordReset(), is(false));
+        
+        assertThat("reset token is not created",
+                userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(nullValue()));
     }
 
