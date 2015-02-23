@@ -137,7 +137,13 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         if (email != null) {
             UserClient userClient = userClientPersistence.findByEmail(email);
             if (userClient != null) {
-                return addResetTokenTo(userClient);
+                ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+                if (configuration.isPasswordReset()) {
+                    return addResetTokenTo(userClient);
+                } else {
+                    userClient.setPasswordResetToken(null);
+                    return userClient;
+                }
             }
         }
         return null;
