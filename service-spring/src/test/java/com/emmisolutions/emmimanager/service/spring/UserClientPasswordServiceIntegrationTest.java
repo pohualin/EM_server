@@ -245,6 +245,11 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         assertThat("reset token is not created",
                 userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(nullValue()));
+        
+        assertThat("reset token is not created",
+                userClientPasswordService
+                        .forgotPassword("notfound@notfound.com"),
+                is(nullValue()));
     }
 
     /**
