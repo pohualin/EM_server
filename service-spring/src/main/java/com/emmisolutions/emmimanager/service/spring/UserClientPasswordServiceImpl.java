@@ -1,8 +1,12 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
@@ -10,6 +14,7 @@ import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -182,6 +187,84 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     private boolean isValid(LocalDateTime expiration) {
         return expiration == null || LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
+    }
+
+    @Override
+    @Transactional
+    public boolean validateNewPassword(
+            ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
+        UserClient userClient = userClientPersistence
+                .fetchUserWillFullPermissions(expiredPasswordChangeRequest
+                        .getLogin());
+        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+        boolean valid = false;
+
+        if (configuration.getPasswordLength() > expiredPasswordChangeRequest
+                .getNewPassword().length()) {
+            valid = false;
+        } else {
+            valid = validatePassword(configuration,
+                    expiredPasswordChangeRequest.getNewPassword());
+        }
+        return valid;
+    }
+
+    @Override
+    @Transactional
+    public boolean validateNewPassword(ActivationRequest activationRequest) {
+        UserClient userClient = userClientPersistence
+                .findByActivationKey(activationRequest.getActivationToken());
+        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+        boolean valid = false;
+
+        if (configuration.getPasswordLength() > activationRequest
+                .getNewPassword().length()) {
+            valid = false;
+        } else {
+            valid = validatePassword(configuration,
+                    activationRequest.getNewPassword());
+        }
+        return valid;
+    }
+    
+    @Override
+    @Transactional
+    public boolean validateNewPassword(ResetPasswordRequest resetPasswordRequest) {
+        UserClient userClient = userClientPersistence
+                .findByResetToken(resetPasswordRequest.getResetToken());
+        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+        boolean valid = false;
+
+        if (configuration.getPasswordLength() > resetPasswordRequest
+                .getNewPassword().length()) {
+            valid = false;
+        } else {
+            valid = validatePassword(configuration,
+                    resetPasswordRequest.getNewPassword());
+        }
+        return valid;
+    }
+
+    private boolean validatePassword(ClientPasswordConfiguration configuration,
+            String newPassword) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("^");
+        if (configuration.hasLowercaseLetters()) {
+            sb.append("(?=.*[a-z])");
+        }
+        if (configuration.hasUppercaseLetters()) {
+            sb.append("(?=.*[A-Z])");
+        }
+        if (configuration.hasNumbers()) {
+            sb.append("(?=.*[0-9])");
+        }
+        if (configuration.hasSpecialChars()) {
+            sb.append("(?=.*(_|[^\\w]))");
+        }
+        sb.append(".+$");
+        Pattern p = Pattern.compile(sb.toString());
+        Matcher m = p.matcher(newPassword);
+        return m.matches();
     }
 
 }

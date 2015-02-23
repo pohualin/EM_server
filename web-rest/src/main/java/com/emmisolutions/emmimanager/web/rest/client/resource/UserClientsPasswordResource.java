@@ -59,11 +59,16 @@ public class UserClientsPasswordResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PermitAll
     public ResponseEntity<Void> changeExpiredPassword(@RequestBody ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
-        UserClient modifiedUser = userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
-        if (modifiedUser != null) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        
+        if(userClientPasswordService.validateNewPassword(expiredPasswordChangeRequest)){
+            UserClient modifiedUser = userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
+            if (modifiedUser != null) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.GONE);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.GONE);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -71,17 +76,23 @@ public class UserClientsPasswordResource {
      * PUT to reset a user's password
      *
      * @param resetPasswordRequest the activation request
-     * @return OK or GONE
+     * @return OK or GONE or NOT_ACCEPTABLE
      */
     @RequestMapping(value = "/password/reset", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
-        UserClient userClient = userClientPasswordService.resetPassword(resetPasswordRequest);
-        if (userClient != null) {
-            mailService.sendPasswordChangeConfirmationEmail(userClient);
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Void> resetPassword(
+            @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        if (userClientPasswordService.validateNewPassword(resetPasswordRequest)) {
+            UserClient userClient = userClientPasswordService
+                    .resetPassword(resetPasswordRequest);
+            if (userClient != null) {
+                mailService.sendPasswordChangeConfirmationEmail(userClient);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.GONE);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(HttpStatus.GONE);
     }
 
     /**

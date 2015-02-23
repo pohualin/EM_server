@@ -1,6 +1,5 @@
 Emmi Manager Server 
 =================================
-
 This is a multi-module project maven application that uses:
 
 * [Liquibase] (http://www.liquibase.org/documentation/changes/index.html) - to maintain the database (on application startup)
@@ -19,6 +18,7 @@ JavaVM
 =================================
 This runs under a Java 1.7+ virtual machine.
 
+
 Spring Profiles
 =================================
 This project uses Spring profiles in runtime to wire up resources.
@@ -28,6 +28,7 @@ To specify a runtime profile use -Dspring.profiles.active=xxx where xxx is:
   web-rest/src/main/webapp/META-INF/context.xml will setup a local PostgreSQL data source.
 * test - to specify that the data source and hibernate properties will use an in memory H2 database.
 * h2 - to use the H2 database
+* cas - to use CAS for the admin application sign-in
 * prod - the production profile, uses jndi data source
 
 __Note:__ If you do not specify a profile (for runtime) at all, the: dev,h2 will be used
