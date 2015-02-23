@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 /**
  * The UserDetailsService implementation used by Spring Security.
  */
-@Service
+@Service("clientUserDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Resource
@@ -32,6 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public User loadUserByUsername(final String login) {
         User ret = userClientPersistence.fetchUserWillFullPermissions(login);
         if (ret == null) {
+            // see if this is an admin level user
             ret = userPersistence.fetchUserWillFullPermissions(login);
         }
         if (ret == null || CollectionUtils.isEmpty(ret.getAuthorities())){

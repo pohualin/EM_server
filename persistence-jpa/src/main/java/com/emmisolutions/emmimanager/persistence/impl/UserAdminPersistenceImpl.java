@@ -10,7 +10,6 @@ import com.emmisolutions.emmimanager.persistence.impl.specification.UserSpecific
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminUserAdminRoleRepository;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -78,6 +76,9 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
 
     @Override
     public UserAdmin reload(UserAdmin user) {
+        if (user == null || user.getId() == null){
+            return null;
+        }
         return userAdminRepository.findOne(user.getId());
     }
 
