@@ -136,4 +136,6 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-591.xml"/>
 
+    <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-admin.super.user.xml"/>
+
 </databaseChangeLog>
