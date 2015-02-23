@@ -59,7 +59,7 @@ public class ProvidersResource {
      * @return ProviderResource
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/provider", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ProviderResource> create(
             @RequestBody Provider provider,
             @PathVariable("teamId") Long teamId,
@@ -89,7 +89,7 @@ public class ProvidersResource {
      * @return ReferenceTagPage matching the search request
      */
     @RequestMapping(value = "/referenceDataSpecialties", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ReferenceTagPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
                                                        @SortDefault(sort = "id") Sort sort,
                                                        PagedResourcesAssembler<ReferenceTag> assembler) {
@@ -110,7 +110,7 @@ public class ProvidersResource {
      * @return ProviderResource or NO_CONTENT on fail
      */
     @RequestMapping(value = "/providers/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ProviderResource> getById(@PathVariable("id") Long id) {
         Provider provider = new Provider();
         provider.setId(id);
@@ -135,7 +135,7 @@ public class ProvidersResource {
      * @return ProviderResource
      */
     @RequestMapping(value = "/providers", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -165,7 +165,7 @@ public class ProvidersResource {
      * @return reference data for providers (status)
      */
     @RequestMapping(value = "/providersReferenceData", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ReferenceData getReferenceData() {
         return new ReferenceData();
     }
@@ -181,7 +181,7 @@ public class ProvidersResource {
      */
     @RequestMapping(value = "/providers/{providerId}/clients",
         method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     @ApiOperation("finds existing ClientProviders by providerId")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -213,7 +213,7 @@ public class ProvidersResource {
             method = RequestMethod.PUT,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ProviderResource> update(@RequestBody Provider provider) {
         Provider updatedProvider = providerService.update(provider);
         if (updatedProvider == null) {
@@ -233,7 +233,7 @@ public class ProvidersResource {
             method = RequestMethod.POST,
             consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
     public ResponseEntity<ProviderResource> create(@RequestBody Provider provider) {
         provider = providerService.create(provider);
         if (provider == null) {

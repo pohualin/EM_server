@@ -225,13 +225,30 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
      */
     @Test
     public void forgotPassword() {
-        UserClient userClient = makeNewRandomUserClient(null);
+        Client client = makeNewRandomClient();
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(client);
+        assertThat("allowed user self reset password is true", configuration.isPasswordReset(), is(true));
+        
+        UserClient userClient = makeNewRandomUserClient(client);
         assertThat("reset token is created",
                 userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(notNullValue()));
 
         assertThat("reset token is not created",
                 userClientPasswordService.forgotPassword(null),
+                is(nullValue()));
+        
+        configuration.setPasswordReset(false);
+        configuration = clientPasswordConfigurationService.save(configuration);
+        assertThat("allowed user self reset password is false", configuration.isPasswordReset(), is(false));
+        
+        assertThat("reset token is not created",
+                userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
+                is(nullValue()));
+        
+        assertThat("reset token is not created",
+                userClientPasswordService
+                        .forgotPassword("notfound@notfound.com"),
                 is(nullValue()));
     }
 
