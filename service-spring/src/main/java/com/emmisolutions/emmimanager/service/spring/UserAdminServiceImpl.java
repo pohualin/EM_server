@@ -8,15 +8,12 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,48 +28,49 @@ import java.util.Set;
 public class UserAdminServiceImpl implements UserAdminService {
 
     @Resource
-    PasswordEncoder passwordEncoder;
-
-    @Resource
     UserAdminPersistence userAdminPersistence;
 
-    @Resource
+    @Resource(name = "adminUserDetailsService")
     UserDetailsService userDetailsService;
 
     @Override
     @Transactional
     public UserAdmin save(UserAdminSaveRequest req) {
-    	Set<UserAdminUserAdminRole> roles = new HashSet<>();
-    	for (UserAdminRole userAdminRole : req.getRoles()) {
-    		UserAdminUserAdminRole userAdminUserAdminRole = new UserAdminUserAdminRole();
-    		userAdminUserAdminRole.setUserAdmin(req.getUserAdmin());
-    		userAdminUserAdminRole.setUserAdminRole(userAdminRole);
-    		roles.add(userAdminUserAdminRole);
-    	}	
+        Set<UserAdminUserAdminRole> roles = new HashSet<>();
+        for (UserAdminRole userAdminRole : req.getRoles()) {
+            UserAdminUserAdminRole userAdminUserAdminRole = new UserAdminUserAdminRole();
+            userAdminUserAdminRole.setUserAdmin(req.getUserAdmin());
+            userAdminUserAdminRole.setUserAdminRole(userAdminRole);
+            roles.add(userAdminUserAdminRole);
+        }
 
-    	UserAdmin user = req.getUserAdmin();
+        UserAdmin user = req.getUserAdmin();
 
         boolean modificationOfLoggedInUser = false;
-        if (user.getId() != null) {
-            UserAdmin userFromDb = userAdminPersistence.reload(user);
-            if (userFromDb != null) {
-                modificationOfLoggedInUser = userFromDb.equals(userDetailsService.getLoggedInUser());
-                // don't allow password change on update
-                user.setPassword(userFromDb.getPassword());
-                user.setSalt(userFromDb.getSalt());
-                user.setCredentialsNonExpired(true);
-            }
+
+        UserAdmin userFromDb = userAdminPersistence.reload(user);
+        if (userFromDb != null) {
+            modificationOfLoggedInUser = userFromDb.equals(userDetailsService.getLoggedInUser());
+            // don't allow password change on update
+            user.setPassword(userFromDb.getPassword());
+            user.setSalt(userFromDb.getSalt());
+            user.setCredentialsNonExpired(true);
+        } else {
+            // new user, don't allow passwords to be set here
+            user.setPassword(null);
+            user.setSalt(null);
+            user.setCredentialsNonExpired(true);
         }
 
         // save the updates
-    	user = userAdminPersistence.saveOrUpdate(user);
+        user = userAdminPersistence.saveOrUpdate(user);
 
         // don't allow a user to escalate or change their own role
-        if (!modificationOfLoggedInUser && roles.size() > 0){
-    		userAdminPersistence.removeAllAdminRoleByUserAdmin(user);
-    		userAdminPersistence.saveAll(roles);
-    		user.setRoles(roles);
-    	}
+        if (!modificationOfLoggedInUser && roles.size() > 0) {
+            userAdminPersistence.removeAllAdminRoleByUserAdmin(user);
+            userAdminPersistence.saveAll(roles);
+            user.setRoles(roles);
+        }
         return user;
     }
 
@@ -84,7 +82,7 @@ public class UserAdminServiceImpl implements UserAdminService {
         }
         return userAdminPersistence.reload(user);
     }
- 
+
     @Override
     @Transactional
     public UserAdmin fetchUserWillFullPermissions(UserAdmin user) {
@@ -94,7 +92,7 @@ public class UserAdminServiceImpl implements UserAdminService {
         user = userAdminPersistence.reload(user);
         return userAdminPersistence.fetchUserWillFullPermissions(user.getLogin());
     }
-    
+
     /**
      * @param page             Page number of users needed
      * @param userSearchFilter search filter for teams
@@ -106,15 +104,15 @@ public class UserAdminServiceImpl implements UserAdminService {
         return userAdminPersistence.list(page, userSearchFilter);
     }
 
-	@Override
-	public Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable) {
-		return userAdminPersistence.listRolesWithoutSystem(pageable) ;
-	}
+    @Override
+    public Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable) {
+        return userAdminPersistence.listRolesWithoutSystem(pageable);
+    }
 
     @Override
     @Transactional
     public List<UserAdmin> findConflictingUsers(UserAdmin userAdmin) {
-        return new ArrayList<UserAdmin>(userAdminPersistence.findConflictingUsers(userAdmin));
-    }     
-    
+        return new ArrayList<>(userAdminPersistence.findConflictingUsers(userAdmin));
+    }
+
 }

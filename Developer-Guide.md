@@ -38,6 +38,28 @@ The server uses Spring profiles to determine which mode to run in. Here is how w
 * Here is the argument to run the server pointing to an in memory database: -Dspring.profiles.active=dev,H2,test
 * Here is the argument to run the server pointing to a local postgres installation: -Dspring.profiles.active=prod
 
+Single-Sign-On (SSO)
+=================================
+If you want to run like we do in production and use the SSO server (CAS), you'll probably
+need to do a couple of things.
+
+1. You'll need to activate the 'cas' spring profile. See below if you don't know how to do it.
+2. If you are running on a different server than localhost you'll need to add it to the list of
+acceptable CAS service prefixes via:
+
+        -Dcas.valid.server.suffixes=your_local_hostname,localhost
+
+3. You may need to import the wildcard emmisolutions.com SSL certificate into your java VM truststore.
+
+    - Go to https://devcas1.emmisolutions.com and download the certificate.
+    - Open up the command line and:
+
+        cd %JAVA_JDK_HOME%/jre/lib/security (e.g. cd /Library/Java/JavaVirtualMachines/jdk1.8.0_31.jdk/Contents/Home/jre/lib/security)
+        sudo keytool -importcert -alias emmidevcas -keystore cacerts -storepass changeit -file /where/you/put/the/ssl/cert
+
+__Note:__ You'll know if you need to import the certificate if you get a SSL PKIX kind of exception
+after you authenticate successfully to CAS
+
 Postgres setup
 ==============
 * Download a latest version of Postgres database (I have Version 1.18.1)

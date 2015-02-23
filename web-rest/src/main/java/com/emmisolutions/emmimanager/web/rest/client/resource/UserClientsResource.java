@@ -27,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 )
 public class UserClientsResource {
 
-    @Resource
+    @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
 
     @Resource(name = "userClientAuthenticationResourceAssembler")

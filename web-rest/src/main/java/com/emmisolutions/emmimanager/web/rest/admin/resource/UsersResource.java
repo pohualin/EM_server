@@ -1,7 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import java.util.List;
-
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
@@ -12,7 +10,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.user.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -51,7 +49,7 @@ public class UsersResource {
     @Resource 
     UserResourceForAssociationsAssembler userAdminResourceAssembler;
 
-    @Resource
+    @Resource(name = "adminUserDetailsService")
     UserDetailsService userDetailsService;
     
     /**
