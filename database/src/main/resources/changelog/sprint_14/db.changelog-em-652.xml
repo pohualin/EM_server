@@ -12,5 +12,17 @@
                   separator="~"/>
 
     </changeSet>
+    
+    <changeSet id="update password reset not enabled template" author="Paul">
+		<delete tableName="email_template">
+			<where>type='PASSWORD_RESET_NOT_ENABLED'</where>
+		</delete>
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_14/data/em-652/password-reset-not-enabled.data"
+                  tableName="email_template"
+                  separator="~"/>
+
+    </changeSet>
 
 </databaseChangeLog>
