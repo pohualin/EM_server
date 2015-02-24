@@ -58,7 +58,7 @@ public class ClientTeamRolesAdminResource {
      * @return a page of UserClientTeamRoleResource objects
      */
     @RequestMapping(value = "/clients/{clientId}/admin/team-roles", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "finds all existing team roles for a client")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -90,7 +90,7 @@ public class ClientTeamRolesAdminResource {
      * @return the saved UserClientTeamRoleResource or 500 if there's a problem saving
      */
     @RequestMapping(value = "/clients/{clientId}/admin/team-roles", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "create a role on a client")
     public ResponseEntity<UserClientTeamRoleResource> createRoleOn(@PathVariable Long clientId, @RequestBody UserClientTeamRole userClientTeamRole) {
         userClientTeamRole.setClient(new Client(clientId));
@@ -109,7 +109,7 @@ public class ClientTeamRolesAdminResource {
      * @return a UserClientTeamRoleResource or NO_CONTENT
      */
     @RequestMapping(value = "/admin/team-roles/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load one client role by id")
     public ResponseEntity<UserClientTeamRoleResource> get(@PathVariable Long id) {
         UserClientTeamRole ret = userClientTeamRoleService.reload(new UserClientTeamRole(id));
@@ -129,7 +129,7 @@ public class ClientTeamRolesAdminResource {
      * @return the saved UserClientTeamRoleResource after update
      */
     @RequestMapping(value = "/admin/team-roles/{id}", method = RequestMethod.PUT)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientTeamRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientTeamRole userClientTeamRole) {
         UserClientTeamRole ret = userClientTeamRoleService.update(userClientTeamRole);
@@ -147,7 +147,7 @@ public class ClientTeamRolesAdminResource {
      * @param id to remove
      */
     @RequestMapping(value = "/admin/team-roles/{id}", method = RequestMethod.DELETE)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "removes one client role by id")
     public void remove(@PathVariable Long id) {
         userClientTeamRoleService.remove(new UserClientTeamRole(id));
@@ -160,7 +160,7 @@ public class ClientTeamRolesAdminResource {
      * @return Set of UserClientPermission objects
      */
     @RequestMapping(value = "/admin/team-roles/{id}/permissions", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load permissions for a role")
     public ResponseEntity<Set<UserClientTeamPermission>> rolePermissions(@PathVariable Long id) {
         Set<UserClientTeamPermission> ret = userClientTeamRoleService.loadAll(new UserClientTeamRole(id));
@@ -177,7 +177,7 @@ public class ClientTeamRolesAdminResource {
      * @return the reference data
      */
     @RequestMapping(value = "/admin/team-roles/reference", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "load reference data for client role administration")
     public UserClientTeamRoleReferenceData referenceData() {
         return new UserClientTeamRoleReferenceData(userClientTeamRoleService.loadPossiblePermissions());
@@ -192,7 +192,7 @@ public class ClientTeamRolesAdminResource {
      * @return a page of template roles matching the search request
      */
     @RequestMapping(value = "/admin/team-roles/reference/roles", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "finds all existing roles for a client")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
