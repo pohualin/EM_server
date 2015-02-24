@@ -255,4 +255,72 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
 
     }
 
+    /**
+     * Happy path for activation key setup
+     */
+    @Test
+    public void findByActivationKey() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setActivationKey("whatever");
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("find by activation key should work",
+                userClientPersistence.findByActivationKey(userClient.getActivationKey()),
+                is(userClient)
+        );
+    }
+
+    /**
+     * Null activation code searching
+     */
+    @Test
+    public void findByNullActivationKey() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("no activation key on user should return null value",
+                userClientPersistence.findByActivationKey(userClient.getActivationKey()),
+                is(nullValue())
+        );
+    }
+
+    /**
+     * Happy path for reset token setup
+     */
+    @Test
+    public void findByResetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPasswordResetToken("whatever");
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("find by activation key should work",
+                userClientPersistence.findByResetToken(userClient.getPasswordResetToken()),
+                is(userClient)
+        );
+    }
+
+    /**
+     * Null reset code searching
+     */
+    @Test
+    public void findByNullResetToken() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("no activation key on user should return null value",
+                userClientPersistence.findByActivationKey(userClient.getPasswordResetToken()),
+                is(nullValue())
+        );
+    }
+
+    /**
+     * Find by email test
+     */
+    @Test
+    public void findByEmail() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("find by email should work",
+                userClientPersistence.findByEmail(userClient.getEmail()),
+                is(userClient)
+        );
+        assertThat("find by null email should return null",
+                userClientPersistence.findByEmail(null),
+                is(nullValue())
+        );
+    }
+
 }

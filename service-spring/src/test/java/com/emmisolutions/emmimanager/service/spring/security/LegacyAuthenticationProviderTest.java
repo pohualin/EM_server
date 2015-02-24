@@ -3,23 +3,23 @@ package com.emmisolutions.emmimanager.service.spring.security;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Collections;
 
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
 
     @Resource
-    AuthenticationProvider authenticationProvider;
+    UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource
     UserClientPersistence userClientPersistence;
@@ -47,11 +47,16 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     @Resource
     PasswordEncoder passwordEncoder;
 
-    @Resource
+    @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
 
     @Resource
     UserClientService userClientService;
+
+    @PostConstruct
+    private void init(){
+        authenticationProvider.setUserDetailsService(userDetailsService);
+    }
 
     /**
      * Make sure the password is correct
@@ -137,10 +142,6 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         UserClient loggedInUser = (UserClient) login(userClient.getLogin(), plainTextPassword);
 
         // check to see that the permissions and granted authorities are present for the client and team
-        assertThat("client user has been granted client user permission",
-                Collections.unmodifiableCollection(loggedInUser.getAuthorities()),
-                hasItem(new SimpleGrantedAuthority(UserClientPermissionName.PERM_CLIENT_USER.toString() +
-                        "_" + loggedInUser.getClient().getId())));
         assertThat("client user has been granted team level user permission",
                 Collections.unmodifiableCollection(loggedInUser.getAuthorities()),
                 hasItem(new SimpleGrantedAuthority(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI.toString()

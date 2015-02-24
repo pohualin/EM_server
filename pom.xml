@@ -29,13 +29,13 @@
         <sonar.language>java</sonar.language>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>4.0.5.RELEASE</spring.version>
+        <spring.version>4.1.4.RELEASE</spring.version>
         <logback.version>1.1.2</logback.version>
         <h2.version>1.4.178</h2.version>
         <hibernate.version>4.3.6.Final</hibernate.version>
         <hibernate.validator.version>5.1.1.Final</hibernate.validator.version>
-        <spring.data.version>1.6.0.RELEASE</spring.data.version>
-        <spring.security.version>3.2.4.RELEASE</spring.security.version>
+        <spring.data.version>1.7.1.RELEASE</spring.data.version>
+        <spring.security.version>3.2.5.RELEASE</spring.security.version>
         <liquibase.version>3.2.0</liquibase.version>
         <liquibase.hibernate.version>3.4</liquibase.hibernate.version>
         <aspectj.version>1.8.0</aspectj.version>
@@ -45,13 +45,18 @@
         <jadira.version>3.2.0.GA</jadira.version>
         <commons.lang.version>3.3.2</commons.lang.version>
         <jackson.version>2.4.1</jackson.version>
-        <spring.hateoas>0.15.0.RELEASE</spring.hateoas>
+        <spring.hateoas>0.16.0.RELEASE</spring.hateoas>
         <javax.annotation.version>1.2</javax.annotation.version>
         <querydsl.version>3.4.1</querydsl.version>
         <woodstox.version>4.4.0</woodstox.version>
         <salesforce.version>31.1.0</salesforce.version>
         <json.simple.version>1.1.1</json.simple.version>
         <spring.rest.exception.handler.version>1.0.1</spring.rest.exception.handler.version>
+        <thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
+        <greenmail.version>1.4.0</greenmail.version>
+        <javax-mail.version>1.5.2</javax-mail.version>
+        <sun-mail.version>${javax-mail.version}</sun-mail.version>
+        <commons.codec.version>1.10</commons.codec.version>
     </properties>
 
     <build>
@@ -90,6 +95,10 @@
                                     <excludes>
                                         <exclude>*.logging.*</exclude>
                                         <exclude>com.emmisolutions.emmimanager.web.rest.*</exclude>
+                                        <exclude>
+                                            com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration
+                                        </exclude>
+                                        <exclude>com.emmisolutions.emmimanager.service.configuration.async.*</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>
@@ -182,8 +191,45 @@
             </dependency>
 
             <dependency>
+                <groupId>com.icegreen</groupId>
+                <artifactId>greenmail-spring</artifactId>
+                <version>${greenmail.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${sun-mail.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>javax.mail-api</artifactId>
+                <version>${javax-mail.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.thymeleaf</groupId>
+                <artifactId>thymeleaf-spring4</artifactId>
+                <version>${thymeleaf.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
                 <version>${spring.version}</version>
                 <exclusions>
                     <exclusion>
@@ -363,6 +409,12 @@
 
             <dependency>
                 <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${spring.version}</version>
                 <exclusions>
@@ -492,6 +544,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.lang.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
             </dependency>
 
             <dependency>

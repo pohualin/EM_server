@@ -13,6 +13,7 @@ import javax.persistence.MappedSuperclass;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 
 /**
  * Base abstract class for entities which will hold definitions for id, version, created, last modified by and created,
@@ -21,7 +22,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractAuditingEntity {
+public abstract class AbstractAuditingEntity implements Serializable {
 
     @CreatedBy
     @XmlTransient

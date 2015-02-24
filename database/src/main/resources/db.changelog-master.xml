@@ -105,13 +105,41 @@
 	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-add-indexes.xml"/>
 	
 	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-em-665.xml"/>
-	
-	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-581.xml"/>
-	
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-581.xml"/>
+    
 	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-295.xml"/>
 
-    <include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-admin-passwords.xml"/>
-    
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-297.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-294.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-joined-strategy.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-admin-passwords.xml"/>
 	
+	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-570.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-655.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-305.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-299.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-729.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-836.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-761.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-730.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-765.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-591.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-em-652.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-admin.super.user.xml"/>
+
 </databaseChangeLog>

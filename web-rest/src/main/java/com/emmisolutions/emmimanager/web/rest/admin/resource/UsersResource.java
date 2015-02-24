@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -48,7 +49,7 @@ public class UsersResource {
     @Resource 
     UserResourceForAssociationsAssembler userAdminResourceAssembler;
 
-    @Resource
+    @Resource(name = "adminUserDetailsService")
     UserDetailsService userDetailsService;
     
     /**
@@ -57,7 +58,7 @@ public class UsersResource {
      * @return UserResource or 401 if the user is not logged in (via the PERM_ADMIN_USER annotation)
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<UserResource> authenticated() {
         return new ResponseEntity<>(userResourceAssembler.toResource(
                 (UserAdmin) userDetailsService.getLoggedInUser()), HttpStatus.OK);
@@ -73,8 +74,7 @@ public class UsersResource {
      * @return UserPage
      */
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
-    "PERM_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -106,20 +106,24 @@ public class UsersResource {
      */
     @RequestMapping(value = "/users", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
-            "PERM_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
     public ResponseEntity<UserResource> createUser(@RequestBody UserAdminSaveRequest req) {
-
-    	UserAdmin savedUser = userAdminService.save(req);
-        if (savedUser != null) {
-            // created a user client successfully
-            return new ResponseEntity<>(
-            		userAdminResourceAssembler.toResource(savedUser),
-                    HttpStatus.CREATED);
+        List<UserAdmin> conflicts = userAdminService.findConflictingUsers(req.getUserAdmin());
+        
+        if(conflicts.size() == 0){
+            UserAdmin savedUser = userAdminService.save(req);
+            if (savedUser != null) {
+                // created a user client successfully
+                return new ResponseEntity<>(
+                        userAdminResourceAssembler.toResource(savedUser),
+                        HttpStatus.CREATED);
+            } else {
+                // error creating user client
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            // error creating user client
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }  	
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
     /**
@@ -130,21 +134,27 @@ public class UsersResource {
      */
     @RequestMapping(value = "/users", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
-            "PERM_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
     public ResponseEntity<UserResource> updateUser(@RequestBody UserAdminSaveRequest req) {
+        List<UserAdmin> conflicts = userAdminService.findConflictingUsers(req
+                .getUserAdmin());
 
-    	UserAdmin savedUser = userAdminService.save(req);
-    	savedUser = userAdminService.fetchUserWillFullPermissions(savedUser);
-        if (savedUser != null) {
-            // created a user client successfully
-            return new ResponseEntity<>(
-                    userResourceAssembler.toResource(savedUser),
-                    HttpStatus.CREATED);
+        if (conflicts.size() == 0) {
+            UserAdmin savedUser = userAdminService.save(req);
+            savedUser = userAdminService
+                    .fetchUserWillFullPermissions(savedUser);
+            if (savedUser != null) {
+                // created a user client successfully
+                return new ResponseEntity<>(
+                        userResourceAssembler.toResource(savedUser),
+                        HttpStatus.CREATED);
+            } else {
+                // error creating user client
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            // error creating user client
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }  	
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
     }
     
     /**
@@ -154,8 +164,7 @@ public class UsersResource {
      * @return ClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_SUPER_USER",
-    "PERM_CREATE_NEW_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
     public ResponseEntity<UserResource> get(@PathVariable("id") Long id) {
         UserAdmin toFind = new UserAdmin();
         toFind.setId(id);
@@ -175,7 +184,7 @@ public class UsersResource {
      * @return a page of UserClientRoleResource objects
      */
     @RequestMapping(value = "/admin/roles", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
     @ApiOperation(value = "finds all existing user admin roles ")
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),

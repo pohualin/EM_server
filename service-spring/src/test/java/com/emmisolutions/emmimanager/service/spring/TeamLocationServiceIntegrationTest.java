@@ -245,13 +245,13 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
 		ReferenceGroup group = new ReferenceGroup();
 		ReferenceGroupType type = new ReferenceGroupType();
 		type.setName("refGroupType");
-		type= referenceGroupTypeRepository.save(type);
 		group.setName("ref group");
 		group.setType(type);
-		group = referenceGroupRepository.save(group);
+
 		specialty.setName("ENT");
 		specialty.setGroup(group);
-		specialty = referenceTagRepository.save(specialty);
+        group.getTags().add(specialty);
+        referenceGroupRepository.save(group);
 		return specialty;
 	}
 }

@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
@@ -12,12 +13,17 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermis
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
+import com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration;
+import com.emmisolutions.emmimanager.service.configuration.MailConfiguration;
 import com.emmisolutions.emmimanager.service.configuration.ServiceConfiguration;
+import com.emmisolutions.emmimanager.service.configuration.ThymeleafConfiguration;
+import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.service.spring.configuration.IntegrationTestConfiguration;
+import com.icegreen.greenmail.spring.GreenMailBean;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,7 +31,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,13 +42,22 @@ import java.util.Set;
 /**
  * Root integration test harness
  */
-@ContextConfiguration(classes = ServiceConfiguration.class)
+@ContextConfiguration(classes = {
+        IntegrationTestConfiguration.class,
+        ServiceConfiguration.class,
+        AsyncConfiguration.class,
+        MailConfiguration.class,
+        ThymeleafConfiguration.class
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @ActiveProfiles("test")
 // @Transactional - do not enable this.. the service implementation should be
 // annotated correctly!
 public abstract class BaseIntegrationTest {
+
+    @Resource
+    GreenMailBean greenMailBean;
 
     @Resource
     ClientService clientService;
@@ -85,10 +102,18 @@ public abstract class BaseIntegrationTest {
     UserClientUserClientTeamRoleService userClientUserClientTeamRoleService;
 
     @Resource
-    AuthenticationProvider authenticationProvider;
+    UserDetailsConfigurableAuthenticationProvider authenticationProvider;
+
+    @Resource(name = "clientUserDetailsService")
+    UserDetailsService userDetailsService;
 
     @Resource
-    UserDetailsService userDetailsService;
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
+
+    @PostConstruct
+    private void init(){
+        authenticationProvider.setUserDetailsService(userDetailsService);
+    }
 
     /**
      * Really logs in the user
@@ -271,6 +296,7 @@ public abstract class BaseIntegrationTest {
         userClient.setFirstName("a" + RandomStringUtils.randomAlphabetic(49));
         userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
         userClient.setLogin(RandomStringUtils.randomAlphabetic(255));
+        userClient.setEmail(RandomStringUtils.randomAlphabetic(8) + "@" + RandomStringUtils.randomAlphabetic(10) + ".com");
         userClient.setPassword(RandomStringUtils.randomAlphanumeric(40));
         userClient.setCredentialsNonExpired(true);
         UserClient savedUserClient = userClientService.create(userClient);
@@ -325,6 +351,40 @@ public abstract class BaseIntegrationTest {
         }
         userAdminRole.setPermissions(userAdminPermissions);
         return userAdminRoleRepository.save(userAdminRole);
+    }
+
+    /**
+     * Configures the email server to have an account for emails
+     * to go
+     *
+     * @param email account used to accept messages
+     */
+    protected void setEmailMailServerUser(String email) {
+        greenMailBean.getGreenMail().setUser(email, "****");
+    }
+
+    /**
+     * Get all of the messages on the email server
+     *
+     * @return array of MimeMessage objects
+     */
+    protected MimeMessage[] getEmailsFromServer() {
+        return greenMailBean.getReceivedMessages();
+    }
+
+    /**
+     * Make a new ClientPasswordConfiguration for a passed existing client or random client
+     * if null
+     *
+     * @param existingClient to use or null to create random new client
+     * @return the persistent configuration
+     */
+    protected ClientPasswordConfiguration makeNewRandomClientPasswordConfiguration(Client existingClient) {
+        Client client = existingClient == null ? makeNewRandomClient() : existingClient;
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(client);
+        configuration.setName(RandomStringUtils.randomAlphanumeric(255));
+        return clientPasswordConfigurationService.save(configuration);
     }
 
 }

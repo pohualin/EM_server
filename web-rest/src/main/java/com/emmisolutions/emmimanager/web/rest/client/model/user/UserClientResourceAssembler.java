@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
@@ -37,13 +38,14 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
         }
         ClientResource clientResource = user instanceof UserClient ?
                 clientResourceAssembler.toResource(((UserClient) user).getClient()) : null;
+
         UserClientResource ret = new UserClientResource(
                 user.getId(),
                 user.getVersion(),
-                user.getLogin(),
+                user instanceof UserClient ? ((UserClient) user).getLogin() : ((UserAdmin) user).getLogin(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getEmail(),
+                user instanceof UserClient ? ((UserClient) user).getEmail() : ((UserAdmin) user).getEmail(),
                 user.isActive(),
                 user.isAccountNonExpired(),
                 user.isAccountNonLocked(),

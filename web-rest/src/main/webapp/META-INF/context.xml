@@ -1,4 +1,4 @@
-<Context>
+<Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2ID">
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
@@ -16,6 +16,42 @@
     <Environment name="salesforce.username" value="sfdcapi@emmisolutions.com.test" type="java.lang.String"/>
     <Environment name="salesforce.password" value="emmiapi12GG4e8wkXEik4FWXgNUkRLEVLV" type="java.lang.String"/>
     <Environment name="salesforce.url" value="https://cs13.salesforce.com/services/Soap/c/31.0" type="java.lang.String"/>
+
+    <!--
+        client application entry point. This is the path for end users to see the client facing application.
+        E.g. if https://dev6.emmisolutions.com/emmimanager/app.html goes into the url bar when a user wants
+        to get to the application, the entry here would be:
+            /emmimanager/app.html
+
+        In our development environments the client facing application is present at /client.html which is
+        the default in the application
+    -->
+    <!--<Environment name="client.application.entry.point" value="/client.html" type="java.lang.String"/>-->
+
+
+    <!-- CAS settings... these are enabled by the spring profiles 'cas' or 'prod' -->
+    <!--<Environment name="cas.server.url" value="https://devcas1.emmisolutions.com/cas" type="java.lang.String"/>-->
+    <!--<Environment name="cas.server.login.url" value="https://devcas1.emmisolutions.com/cas/login" type="java.lang.String"/>-->
+    <!--<Environment name="cas.server.logout.url" value="https://devcas1.emmisolutions.com/cas/logout" type="java.lang.String"/>-->
+    <!--<Environment name="cas.service.validation.uri" value="/webapi/j_spring_cas_security_check" type="java.lang.String"/>-->
+    <!--<Environment name="cas.provider.key" value="12234245632699" type="java.lang.String"/>-->
+    <!--<Environment name="cas.username.suffix" value="@emmisolutions.com" type="java.lang.String"/>-->
+    <!--<Environment name="cas.valid.server.suffixes" value="emmisolutions.com" type="java.lang.String"/>-->
+
+
+    <!-- email server settings -->
+    <Environment name="mail.server.use" value="false" type="java.lang.String" override="false"/>
+    <!--<Environment name="mail.activation.from" value="EmmiManager Activation <no_reply@emmisolutions.com>" type="java.lang.String"/>-->
+    <!--<Environment name="mail.password_reset.from"  value="EmmiManager Password Reset <no_reply_pw@emmisolutions.com>"/>-->
+    <!--<Environment name="mail.password_changed.from" value="EmmiManager Password Manager <no_reply_pw_manager@emmisolutions.com>"/>-->
+
+    <!--<Environment name="mail.host" value="127.0.0.1" type="java.lang.String"/>-->
+    <!--<Environment name="mail.port" value="25" type="java.lang.String"/>-->
+    <!--<Environment name="mail.user" value="mail user name" type="java.lang.String"/>-->
+    <!--<Environment name="mail.password" value="the password" type="java.lang.String"/>-->
+    <!--<Environment name="mail.protocol" value="smtp" type="java.lang.String"/>-->
+    <!--<Environment name="mail.tls" value="false" type="java.lang.String"/>-->
+    <!--<Environment name="mail.auth" value="false" type="java.lang.String"/>-->
 
 
     <!-- For application logging but data source definition using the above resource/environment variables -->

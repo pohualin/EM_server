@@ -1,28 +1,29 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
+import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.configuration.SecurityConfiguration;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationFailureHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxLogoutSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
@@ -39,29 +40,34 @@ import javax.inject.Inject;
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Resource
+    @Resource(name = "clientAjaxAuthenticationSuccessHandler")
     private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
 
-    @Resource
+    @Resource(name = "clientAjaxAuthenticationFailureHandler")
     private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
 
-    @Resource
+    @Resource(name = "clientAjaxLogoutSuccessHandler")
     private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
 
     @Resource
     private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
 
-    @Resource
+    @Resource(name = "clientUserDetailsService")
     private UserDetailsService userDetailsService;
 
     @Resource(name = "legacyAuthenticationProvider")
-    private AuthenticationProvider authenticationProvider;
+    private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource
     PasswordEncoder passwordEncoder;
 
     @Resource
     PermissionEvaluator permissionEvaluator;
+
+    @PostConstruct
+    private void init(){
+        authenticationProvider.setUserDetailsService(userDetailsService);
+    }
 
     /**
      * Setup the global authentication settings
@@ -85,6 +91,16 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return ret;
     }
 
+    /**
+     * This is the processing URL for login
+     */
+    private static final String loginProcessingUrl = "/webapi-client/authenticate";
+
+    /**
+     * This is the processing URL for logout
+     */
+    private static final String logoutProcessingUrl = "/webapi-client/logout";
+
     @Override
     @SuppressWarnings("unchecked")
     protected void configure(HttpSecurity http) throws Exception {
@@ -93,30 +109,30 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .requestMatchers()
                     .antMatchers("/webapi-client/**")
-                    .and()
+                .and()
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
                             new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
-                    .and()
+                .and()
                 .rememberMe()
-                    .key(SecurityConfiguration.REMEMBER_ME_KEY)
+                .key(SecurityConfiguration.REMEMBER_ME_KEY)
                     .userDetailsService(userDetailsService)
-                    .and()
+                .and()
                 .formLogin()
                 .loginPage("/login-client.jsp")
-                    .loginProcessingUrl("/webapi-client/authenticate")
-                    .successHandler(ajaxAuthenticationSuccessHandler)
-                    .failureHandler(ajaxAuthenticationFailureHandler)
+                    .loginProcessingUrl(loginProcessingUrl)
+                .successHandler(ajaxAuthenticationSuccessHandler)
+                .failureHandler(ajaxAuthenticationFailureHandler)
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
-                    .permitAll()
-                    .and()
+                .permitAll()
+                .and()
                 .logout()
-                .logoutUrl("/webapi-client/logout")
+                .logoutUrl(logoutProcessingUrl)
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                    .deleteCookies("JSESSIONID")
-                    .permitAll()
-                    .and()
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+                .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
@@ -125,7 +141,13 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi-client.*").permitAll()
                     .antMatchers("/webapi-client/").permitAll()
                     .antMatchers("/webapi-client/messages").permitAll()
-                    .antMatchers("/webapi-client//password/expired").permitAll()
+                    .antMatchers("/webapi-client/password/expired").permitAll()
+                    .antMatchers("/webapi-client/password/reset").permitAll()
+                    .antMatchers("/webapi-client/password/forgot").permitAll()
+                    .antMatchers("/webapi-client/password/policy/reset").permitAll()
+                    .antMatchers("/webapi-client/password/policy/activation").permitAll()
+                    .antMatchers("/webapi-client/password/policy/expired/*").permitAll()
+                    .antMatchers("/webapi-client/activate").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()
                     .antMatchers("/webapi-client/**").authenticated();

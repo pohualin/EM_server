@@ -1,15 +1,18 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
-import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +24,9 @@ import javax.annotation.Resource;
  * This class supports Emmi User Admins as well as Client Users.
  */
 @Component
-public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+@Scope(value = "prototype")
+public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider
+        implements UserDetailsConfigurableAuthenticationProvider {
 
     @Resource
     UserAdminPersistence userAdminPersistence;
@@ -30,10 +35,9 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
     UserClientPersistence userClientPersistence;
 
     @Resource
-    UserDetailsService userDetailsService;
-
-    @Resource
     PasswordEncoder passwordEncoder;
+
+    private UserDetailsService userDetailsService;
 
     @Override
     @Transactional
@@ -50,12 +54,27 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
         // make sure password matches the hashed password
         String presentedPassword = authentication.getCredentials().toString();
         String password = userDetails.getPassword();
-        if (userDetails instanceof User){
-            password += ((User) userDetails).getSalt();
+        if (userDetails instanceof UserClient) {
+            password += ((UserClient) userDetails).getSalt();
+        }
+        if (userDetails instanceof UserAdmin) {
+            password += ((UserAdmin) userDetails).getSalt();
         }
         if (!passwordEncoder.matches(presentedPassword, password)) {
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+        }
+        if (userDetails instanceof UserClient) {
+            // mark that the user has logged in successfully
+            UserClient userClient = ((UserClient) userDetails);
+            userClient.setPasswordResetExpirationDateTime(null);
+            userClient.setPasswordResetToken(null);
+            if (userClient.isNeverLoggedIn()) {
+                userClient.setNeverLoggedIn(false);
+                userClient.setActivationKey(null);
+                userClient.setActivationExpirationDateTime(null);
+                userClientPersistence.saveOrUpdate(userClient);
+            }
         }
     }
 
@@ -70,6 +89,11 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         return userDetailsService.loadUserByUsername(username);
+    }
+
+    @Override
+    public void setUserDetailsService(UserDetailsService userDetailsService){
+        this.userDetailsService = userDetailsService;
     }
 
 }

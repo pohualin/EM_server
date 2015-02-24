@@ -54,7 +54,7 @@ public class ClientsResource {
      * @return ClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientResource> get(@PathVariable("id") Long id) {
         Client toFind = new Client();
         toFind.setId(id);
@@ -79,7 +79,7 @@ public class ClientsResource {
      */
     @RequestMapping(value = "/clients",
         method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -115,7 +115,7 @@ public class ClientsResource {
      * @return ReferenceData
      */
     @RequestMapping(value = "/clients/ref", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ReferenceData getReferenceData() {
         return new ReferenceData(clientService.getAllClientTypes(),
             clientService.getAllClientRegions(),
@@ -131,7 +131,7 @@ public class ClientsResource {
      * @return UserPage matching the search request
      */
     @RequestMapping(value = "/clients/ref/potentialOwners", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -160,7 +160,7 @@ public class ClientsResource {
         method = RequestMethod.POST,
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientResource> create(@RequestBody Client client) {
         client = clientService.create(client);
         if (client == null) {
@@ -180,7 +180,7 @@ public class ClientsResource {
         method = RequestMethod.PUT,
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientResource> update(@RequestBody Client client) {
         client = clientService.update(client);
         if (client == null) {
@@ -198,7 +198,7 @@ public class ClientsResource {
      */
     @RequestMapping(value = "/clients/ref/findByNormalizedName",
         method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientResource> findByNormalizedName(@RequestParam(value = "normalizedName", required = false) String normalizedName) {
 
         Client toFind = clientService.findByNormalizedName(normalizedName);

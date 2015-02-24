@@ -320,5 +320,10 @@
                   separator=";"
                   tableName="default_password_configuration"/>
     </changeSet>
+    
+    <changeSet id="update created_by to nvarchar(255)" author="Paul">
+    	<modifyDataType tableName="default_password_configuration" columnName="created_by" newDataType="nvarchar(255)"/>
+    	<modifyDataType tableName="client_password_configuration" columnName="created_by" newDataType="nvarchar(255)"/>
+    </changeSet>
 
 </databaseChangeLog>

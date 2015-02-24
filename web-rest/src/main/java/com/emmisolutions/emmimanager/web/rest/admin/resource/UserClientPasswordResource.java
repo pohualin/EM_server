@@ -34,7 +34,7 @@ public class UserClientPasswordResource {
      */
     @RequestMapping(value = "/user_client/{userId}/password/set", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> set(@PathVariable Long userId, @RequestBody UserClientPassword password) {
         UserClient toUpdate = new UserClient(userId);
         toUpdate.setPassword(password.getPassword());
