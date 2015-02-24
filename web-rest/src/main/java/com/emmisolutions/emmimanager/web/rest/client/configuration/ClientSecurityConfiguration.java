@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.configuration.SecurityConfiguration;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
@@ -13,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,7 +23,6 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
@@ -53,9 +52,8 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
 
     @Resource(name = "clientUserDetailsService")
-    private UserDetailsService userDetailsService;
+    private UserDetailsService clientUserDetailsService;
 
-    @Resource(name = "legacyAuthenticationProvider")
     private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource
@@ -64,20 +62,16 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource
     PermissionEvaluator permissionEvaluator;
 
-    @PostConstruct
-    private void init(){
-        authenticationProvider.setUserDetailsService(userDetailsService);
+    @Resource(name = "legacyAuthenticationProvider")
+    private void setAuthenticationProvider(UserDetailsConfigurableAuthenticationProvider authenticationProvider){
+        authenticationProvider.setUserDetailsService(clientUserDetailsService);
+        this.authenticationProvider =  authenticationProvider;
     }
 
-    /**
-     * Setup the global authentication settings
-     *
-     * @param auth to setup
-     * @throws Exception if there's a problem with the user details service
-     */
-    @Inject
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider);
+    @Bean(name="clientAuthenticationManager")
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     /**
@@ -92,6 +86,17 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     /**
+     * Setup the global authentication settings
+     *
+     * @param auth to setup
+     * @throws Exception if there's a problem with the user details service
+     */
+    @Inject
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider);
+    }
+
+    /**
      * This is the processing URL for login
      */
     private static final String loginProcessingUrl = "/webapi-client/authenticate";
@@ -101,12 +106,15 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     private static final String logoutProcessingUrl = "/webapi-client/logout";
 
+    private static final String REMEMBER_ME_KEY = "EM2_CLIENT_RMT";
+
     @Override
     @SuppressWarnings("unchecked")
     protected void configure(HttpSecurity http) throws Exception {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi-client/authenticated");
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-client.jsp?error");
         http
+//                .authenticationProvider(authenticationProvider)
                 .requestMatchers()
                     .antMatchers("/webapi-client/**")
                 .and()
@@ -115,14 +123,14 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
                 .and()
                 .rememberMe()
-                .key(SecurityConfiguration.REMEMBER_ME_KEY)
-                    .userDetailsService(userDetailsService)
+                .key(REMEMBER_ME_KEY)
+                    .userDetailsService(clientUserDetailsService)
                 .and()
                 .formLogin()
                 .loginPage("/login-client.jsp")
                     .loginProcessingUrl(loginProcessingUrl)
-                .successHandler(ajaxAuthenticationSuccessHandler)
-                .failureHandler(ajaxAuthenticationFailureHandler)
+                    .successHandler(ajaxAuthenticationSuccessHandler)
+                    .failureHandler(ajaxAuthenticationFailureHandler)
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
                 .permitAll()
@@ -130,7 +138,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutUrl(logoutProcessingUrl)
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                .deleteCookies("JSESSIONID")
+                .deleteCookies("EM2ID")
                 .permitAll()
                 .and()
                 .csrf().disable()

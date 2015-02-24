@@ -61,7 +61,7 @@ public class TeamLocationsResource {
      * @return TeamLocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/locations", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -100,7 +100,7 @@ public class TeamLocationsResource {
      * @return a TeamProviderTeamLocationPage object
      */
     @RequestMapping(value = "/teams/{teamLocationId}/tptl", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -134,7 +134,7 @@ public class TeamLocationsResource {
      */
     @RequestMapping(value = "/teams/{teamLocationId}/tptl", method = RequestMethod.POST,
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public void updateTeamProviderTeamLocation(
         @PathVariable("teamLocationId") Long teamLocationId, @RequestBody TeamLocationTeamProviderSaveRequest req) {
 
@@ -153,7 +153,7 @@ public class TeamLocationsResource {
     @RequestMapping(value = "/teams/{teamId}/locations", method = RequestMethod.POST,
         consumes = {APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE}
     )
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<TeamProviderTeamLocationResource>> create(
         @PathVariable("teamId") Long teamId, @RequestBody Set<TeamLocationTeamProviderSaveRequest> reqs) {
         Team toFind = new Team();
@@ -176,7 +176,7 @@ public class TeamLocationsResource {
      * @return TeamLocationResource or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/locations/{teamLocationId}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamLocationResource> getTeamLocation(@PathVariable("teamId") Long teamId, @PathVariable("teamLocationId") Long teamLocationId) {
         TeamLocation toFind = new TeamLocation();
         toFind.setId(teamId);
@@ -196,7 +196,7 @@ public class TeamLocationsResource {
      * @return OK
      */
     @RequestMapping(value = "/teams/{teamId}/locations/{teamLocationId}", method = RequestMethod.DELETE)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamLocationResource> deleteTeamLocation(@PathVariable("teamId") Long teamId, @PathVariable("teamLocationId") Long teamLocationId) {
         TeamLocation toFind = new TeamLocation();
         toFind.setId(teamLocationId);

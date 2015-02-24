@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,9 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.inject.Inject;
 
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
@@ -51,9 +48,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
 
     @Resource(name = "adminUserDetailsService")
-    private UserDetailsService userDetailsService;
+    private UserDetailsService adminUserDetailsService;
 
-    @Resource(name = "legacyAuthenticationProvider")
     private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource
@@ -62,23 +58,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource
     PasswordEncoder passwordEncoder;
 
-    public static final String REMEMBER_ME_KEY = "emSrm";
+    private static final String REMEMBER_ME_KEY = "EM2_ADMIN_RMT";
 
-
-    @PostConstruct
-    private void init(){
-        authenticationProvider.setUserDetailsService(userDetailsService);
-    }
-
-    /**
-     * Setup the global authentication settings
-     *
-     * @param auth to setup
-     * @throws Exception if there's a problem with the user details service
-     */
-    @Inject
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider);
+    @Resource(name = "legacyAuthenticationProvider")
+    private void setAuthenticationProvider(UserDetailsConfigurableAuthenticationProvider authenticationProvider){
+        authenticationProvider.setUserDetailsService(adminUserDetailsService);
+        this.authenticationProvider =  authenticationProvider;
     }
 
     /**
@@ -115,10 +100,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
         }
         http
+                .authenticationProvider(authenticationProvider)
                 .rememberMe()
-                    .key(REMEMBER_ME_KEY)
-                    .userDetailsService(userDetailsService)
-                    .and()
+                .key(REMEMBER_ME_KEY)
+                    .userDetailsService(adminUserDetailsService)
+                .and()
                 .formLogin()
                     .loginPage("/login-admin.jsp")
                     .loginProcessingUrl(loginProcessingUrl)
@@ -131,9 +117,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logout()
                     .logoutUrl(logoutProcessingUrl)
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                    .deleteCookies("JSESSIONID")
-                    .permitAll()
-                    .and()
+                    .deleteCookies("EM2ID")
+                .permitAll()
+                .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
