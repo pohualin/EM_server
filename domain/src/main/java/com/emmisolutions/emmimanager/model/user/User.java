@@ -184,4 +184,12 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
     }
+
+    public int getLoginFailureCount() {
+        return loginFailureCount;
+    }
+
+    public void setLoginFailureCount(int loginFailureCount) {
+        this.loginFailureCount = loginFailureCount;
+    }
 }
