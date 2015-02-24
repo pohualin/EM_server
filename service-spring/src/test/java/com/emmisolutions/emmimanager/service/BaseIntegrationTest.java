@@ -104,8 +104,14 @@ public abstract class BaseIntegrationTest {
     @Resource
     UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
+    @Resource
+    UserDetailsConfigurableAuthenticationProvider adminAuthenticationProvider;
+
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
+
+    @Resource(name = "adminUserDetailsService")
+    UserDetailsService adminUserDetailsService;
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
@@ -113,6 +119,7 @@ public abstract class BaseIntegrationTest {
     @PostConstruct
     private void init(){
         authenticationProvider.setUserDetailsService(userDetailsService);
+        adminAuthenticationProvider.setUserDetailsService(adminUserDetailsService);
     }
 
     /**
@@ -126,6 +133,22 @@ public abstract class BaseIntegrationTest {
     protected User login(String login, String password) {
         SecurityContextHolder.getContext().setAuthentication(
                 authenticationProvider.authenticate(
+                        new UsernamePasswordAuthenticationToken(login, password)));
+
+        return userDetailsService.getLoggedInUser();
+    }
+
+    /**
+     * Really logs in the user
+     *
+     * @param login    the user's login
+     * @param password the users password
+     * @return the User
+     * @throws org.springframework.security.core.AuthenticationException if the login fails
+     */
+    protected User adminLogin(String login, String password) {
+        SecurityContextHolder.getContext().setAuthentication(
+                adminAuthenticationProvider.authenticate(
                         new UsernamePasswordAuthenticationToken(login, password)));
 
         return userDetailsService.getLoggedInUser();
