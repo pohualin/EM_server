@@ -1,11 +1,13 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
+import com.emmisolutions.emmimanager.service.IpRestrictConfigurationService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationResourceAssembler;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,20 +17,13 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
-import com.emmisolutions.emmimanager.service.IpRestrictConfigurationService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationResource;
-import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationResourceAssembler;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * IpRestrictConfiguration REST API
@@ -58,7 +53,7 @@ public class IpRestrictConfigurationsResource {
      * @return an IpRestrictConfigurationPage
      */
     @RequestMapping(value = "/client/{id}/ip_restrict_configurations", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -94,7 +89,7 @@ public class IpRestrictConfigurationsResource {
      */
     @RequestMapping(value = "/client/{id}/ip_restrict_configurations", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<IpRestrictConfigurationResource> create(
             @PathVariable("id") Long clientId,
             @RequestBody IpRestrictConfiguration ipRestrictConfiguration) {
@@ -118,13 +113,13 @@ public class IpRestrictConfigurationsResource {
      * @return an existing IpRestrictConfiguartion
      */
     @RequestMapping(value = "/ip_restrict_configuration/{id}", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<IpRestrictConfigurationResource> get(
             @PathVariable("id") Long id) {
         IpRestrictConfiguration ipRestrictConfiguration = ipRestrictConfigurationService
                 .reload(new IpRestrictConfiguration(id));
         if (ipRestrictConfiguration != null) {
-            return new ResponseEntity<IpRestrictConfigurationResource>(
+            return new ResponseEntity<>(
                     ipRestrictConfigurationAssembler
                             .toResource(ipRestrictConfiguration),
                     HttpStatus.OK);
@@ -145,7 +140,7 @@ public class IpRestrictConfigurationsResource {
      */
     @RequestMapping(value = "/ip_restrict_configuration/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<IpRestrictConfigurationResource> update(
             @PathVariable("id") Long id,
             @RequestBody IpRestrictConfiguration ipRestrictConfiguration) {
@@ -167,7 +162,7 @@ public class IpRestrictConfigurationsResource {
      *            to delete
      */
     @RequestMapping(value = "/ip_restrict_configuration/{id}", method = RequestMethod.DELETE)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_USER" })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public void delete(@PathVariable Long id) {
         ipRestrictConfigurationService.delete(new IpRestrictConfiguration(id));
     }
