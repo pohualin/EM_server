@@ -64,6 +64,9 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     @NotAudited
     @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters and digits")
     private String normalizedName;
+    
+    @Column(name = "login_failure_count")
+    private int loginFailureCount;
 
     public Long getId() {
         return id;
