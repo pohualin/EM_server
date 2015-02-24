@@ -19,7 +19,7 @@
 		</delete>
 
         <loadData encoding="UTF-8"
-                  file="changelog/sprint_14/data/em-652/password-reset-not-enabled.data"
+                  file="changelog/sprint_14/data/em-652/password-reset-not-enabled-revised.data"
                   tableName="email_template"
                   separator="~"/>
 
