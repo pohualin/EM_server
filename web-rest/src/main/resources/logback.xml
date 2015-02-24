@@ -15,6 +15,8 @@
 
     <logger name="com.emmisolutions.emmimanager" level="DEBUG"/>
 
+    <logger name="com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter" level="ERROR"/>
+
     <!--<logger name="org.jasig.cas" level="DEBUG"/>-->
 
     <root level="ERROR">
