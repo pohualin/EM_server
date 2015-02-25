@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.service.spring.security;
 
 
 import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.springframework.security.core.Authentication;
@@ -16,13 +15,10 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 
 /**
- * The UserDetailsService implementation used by Spring Security.
+ * The UserDetailsService implementation used by client facing applications.
  */
 @Service("clientUserDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
-
-    @Resource
-    private UserAdminPersistence userPersistence;
 
     @Resource
     private UserClientPersistence userClientPersistence;
@@ -31,10 +27,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public User loadUserByUsername(final String login) {
         User ret = userClientPersistence.fetchUserWillFullPermissions(login);
-        if (ret == null) {
-            // see if this is an admin level user
-            ret = userPersistence.fetchUserWillFullPermissions(login);
-        }
         if (ret == null || CollectionUtils.isEmpty(ret.getAuthorities())){
             throw new UsernameNotFoundException("User " + login + " was not found.");
         }

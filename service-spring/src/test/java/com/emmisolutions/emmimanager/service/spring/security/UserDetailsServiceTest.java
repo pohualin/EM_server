@@ -17,6 +17,7 @@ import java.util.HashSet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Test authentication/user details fetching
@@ -74,8 +75,12 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
     @Test
     public void success() {
         UserAdmin aUser = makeNewRandomUserAdmin();
-        UserDetails details = userDetailsService.loadUserByUsername(aUser.getUsername());
-        assertThat("A UserDetails object should be returned", details, is(notNullValue()));
+        try {
+            userDetailsService.loadUserByUsername(aUser.getUsername());
+            fail("admin users should not be loaded via the client facing user details");
+        } catch (UsernameNotFoundException e){
+            // no - op
+        }
 
         UserDetails adminDetails = adminUserDetailsService.loadUserByUsername(aUser.getUsername());
         assertThat("A UserDetails object should be returned using the admin interface as well", adminDetails,

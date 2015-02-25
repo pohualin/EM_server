@@ -36,6 +36,9 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource
+    UserDetailsConfigurableAuthenticationProvider adminAuthenticationProvider;
+
+    @Resource
     UserClientPersistence userClientPersistence;
 
     @Resource
@@ -50,12 +53,16 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
 
+    @Resource(name = "adminUserDetailsService")
+    UserDetailsService adminUserDetailsService;
+
     @Resource
     UserClientService userClientService;
 
     @PostConstruct
     private void init(){
         authenticationProvider.setUserDetailsService(userDetailsService);
+        adminAuthenticationProvider.setUserDetailsService(adminUserDetailsService);
     }
 
     /**
@@ -116,7 +123,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         // authenticate the super user
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(savedUserAdmin.getLogin(), plainTextPassword);
-        Authentication auth = authenticationProvider.authenticate(token);
+        Authentication auth = adminAuthenticationProvider.authenticate(token);
         assertThat("authentication is successful",
                 auth.isAuthenticated(), is(true));
         assertThat("admin user has been granted admin user permission", Collections.unmodifiableCollection(auth.getAuthorities()),
