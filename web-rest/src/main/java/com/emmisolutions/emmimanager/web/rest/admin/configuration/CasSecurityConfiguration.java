@@ -28,6 +28,8 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
@@ -79,6 +81,12 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${cas.username.suffix:@emmisolutions.com}")
     private String userNameSuffix;
+
+    @Resource(name = "adminSecurityContextRepository")
+    SecurityContextRepository adminSecurityContextRepository;
+
+    @Resource(name = "adminTokenBasedRememberMeServices")
+    TokenBasedRememberMeServices  adminTokenBasedRememberMeServices;
 
     private Base64 urlSafeBase64;
 
@@ -282,6 +290,9 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .addFilter(casAuthenticationFilter())
+                    .securityContext()
+                    .securityContextRepository(adminSecurityContextRepository)
+                    .and()
                 .requestMatchers()
                         // ignore the form login and logout pages
                     .requestMatchers(
@@ -302,6 +313,10 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
                             new AntPathRequestMatcher("/webapi/**"))
                     .and()
+                .rememberMe()
+                    .key(adminTokenBasedRememberMeServices.getKey())
+                    .rememberMeServices(adminTokenBasedRememberMeServices)
+                    .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
@@ -311,7 +326,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi/messages").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()
-                    .antMatchers("/webapi/**").authenticated();
+                .antMatchers("/webapi/**").authenticated();
     }
 
     @Override

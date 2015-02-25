@@ -136,7 +136,7 @@ public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
             user.setSalt(salt);
             userAdminPersistence.saveOrUpdate(user);
         }
-        login(user.getLogin(), "pw");
+        adminLogin(user.getLogin(), "pw");
         logout();
     }
 
