@@ -2,10 +2,8 @@ package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationFailureHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxAuthenticationSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.AjaxLogoutSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
+import com.emmisolutions.emmimanager.web.rest.admin.security.*;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -15,6 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
@@ -66,6 +67,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.authenticationProvider =  authenticationProvider;
     }
 
+    @Bean(name = "adminSecurityContextRepository")
+    public SecurityContextRepository securityContextRepository(){
+        HttpSessionSecurityContextRepository ret = new HttpSessionSecurityContextRepository();
+        ret.setSpringSecurityContextKey("SPRING_SECURITY_CONTEXT_ADMIN");
+        return ret;
+    }
+
+    /**
+     * Sets remember me at the context root
+     *
+     * @return the TokenBasedRememberMeServices
+     */
+    @Bean(name = "adminTokenBasedRememberMeServices")
+    public TokenBasedRememberMeServices tokenBasedRememberMeServices(){
+        RootTokenBasedRememberMeServices rootTokenBasedRememberMeServices =
+                new RootTokenBasedRememberMeServices("EM2_ADMIN_RMC_KEY_1223452!", adminUserDetailsService);
+        rootTokenBasedRememberMeServices.setUseSecureCookie(false);
+        rootTokenBasedRememberMeServices.setParameter("remember-me");
+        rootTokenBasedRememberMeServices.setCookieName("EM2_ADMIN_RMC");
+        return rootTokenBasedRememberMeServices;
+    }
+
     /**
      * This is the processing URL for login
      */
@@ -100,11 +123,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
         }
         http
+                .securityContext()
+                    .securityContextRepository(securityContextRepository())
+                        .and()
                 .authenticationProvider(authenticationProvider)
-                .rememberMe()
-                .key(REMEMBER_ME_KEY)
-                    .userDetailsService(adminUserDetailsService)
-                .and()
                 .formLogin()
                     .loginPage("/login-admin.jsp")
                     .loginProcessingUrl(loginProcessingUrl)
@@ -114,12 +136,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .passwordParameter("j_password")
                     .permitAll()
                     .and()
+                .rememberMe()
+                    .key(tokenBasedRememberMeServices().getKey())
+                    .rememberMeServices(tokenBasedRememberMeServices())
+                    .and()
                 .logout()
                     .logoutUrl(logoutProcessingUrl)
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                    .deleteCookies("EM2ID")
-                .permitAll()
-                .and()
+                    .permitAll()
+                    .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
