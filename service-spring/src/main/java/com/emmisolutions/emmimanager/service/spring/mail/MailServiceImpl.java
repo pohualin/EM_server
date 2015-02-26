@@ -38,6 +38,9 @@ public class MailServiceImpl implements MailService {
     @Value("${mail.activation.from:EmmiManager Activation <no_reply_act@emmisolutions.com>}")
     private String activationFrom;
 
+    @Value("${mail.validation.from:EmmiManager Email Validation <no_reply_act@emmisolutions.com>}")
+    private String emailValidationFrom;
+
     @Value("${mail.password_reset.from:EmmiManager Password Reset <no_reply_pw@emmisolutions.com>}")
     private String passwordResetFrom;
 
@@ -51,6 +54,12 @@ public class MailServiceImpl implements MailService {
     @Override
     public void sendActivationEmail(UserClient user, String activationUrl) {
         sendTemplateBasedEmail(activationFrom, user, activationUrl, EmailTemplateType.ACTIVATION);
+    }
+
+    @Async
+    @Override
+    public void sendValidationEmail(UserClient user, String validationUrl) {
+        sendTemplateBasedEmail(emailValidationFrom, user, validationUrl, EmailTemplateType.VALIDATION);
     }
 
     @Async

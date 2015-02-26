@@ -49,9 +49,11 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
                 user.isAccountNonExpired(),
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
+                user.isEmailValidated(),
                 clientResource,
                 perms);
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
         return ret;
     }
 
