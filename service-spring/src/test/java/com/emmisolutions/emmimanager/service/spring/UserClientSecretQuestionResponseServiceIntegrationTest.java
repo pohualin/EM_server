@@ -80,10 +80,11 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
     public void invalidSecretQuestion(){
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
-        SecretQuestion secretQuestion = null;
+        List<SecretQuestion> list = createSecretQuestions();
+        secretQuestionRepository.save(list);
         UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
         questionResponse.setUserClient(userClient);
-        questionResponse.setSecretQuestion(secretQuestion);
+        questionResponse.setSecretQuestion(list.get(1));
         questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponseService.saveOrUpdate(questionResponse);
         
      }
@@ -120,7 +121,12 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         
         Client client = makeNewRandomClient();
         
-        UserClient user = makeNewRandomUserClient(client);
+        UserClient user = new UserClient();
+        user.setClient(client);
+        user.setFirstName("SecondName");
+        user.setLastName("AnotherName");
+        user.setLogin("wee@mail.com");
+        user.setEmail("wee@gmail.com");
         user = userClientService.create(user);
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));

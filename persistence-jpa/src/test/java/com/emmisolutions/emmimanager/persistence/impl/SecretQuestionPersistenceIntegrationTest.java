@@ -36,7 +36,7 @@ public class SecretQuestionPersistenceIntegrationTest extends
 	SecretQuestionPersistence secretQuestionPersistence;
 	
 
-    @Test
+	@Test
     public void loadAllSecretQuestions(){
         SecretQuestion secretQuestion = new SecretQuestion();
         secretQuestion.setSecretQuestion("What was the make and model of your first car?");
@@ -45,10 +45,9 @@ public class SecretQuestionPersistenceIntegrationTest extends
         
     	Page<SecretQuestion> set = secretQuestionPersistence.findAll(new PageRequest(0, 10));
     	secretQuestionPersistence.reload(secretQuestion);
-    	assertThat("SecretQuestion has been created", set, (hasItem(secretQuestion)) );
+    	assertThat("SecretQuestion has been created", set.hasContent(), is(true));
     	
     }
-    
     
 
 }
