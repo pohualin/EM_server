@@ -411,7 +411,46 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     public void testTeamProviderTeamLocationRelationship(){
 
     }
+    
+    /**
+     * Associate a team and provider with just their ids
+     */
+    @Test
+    public void testAssociateProviderToTeamWithId(){
+      //create a provider
+        Client client = makeClient(RandomStringUtils.randomAlphabetic(255));
+        clientService.create(client);
 
+        Provider provider = new Provider();
+        provider.setFirstName("Amos");
+        provider.setMiddleName("Invisible");
+        provider.setLastName("Hart");
+        provider.setEmail("amosHart@fourtysecondstreet.com");
+        provider.setActive(true);
+        provider.setSpecialty(getSpecialty());
+        provider = providerService.create(provider);
+        assertThat("Provider was saved", provider.getId(), is(notNullValue()));
+
+        Team team = new Team();
+        team.setName("The musical team");
+        team.setDescription("We sing");
+        team.setActive(false);
+        team.setClient(client);
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
+        Team savedTeam = teamService.create(team);
+        assertThat("Team was saved", savedTeam.getId(), is(notNullValue()));
+        
+        TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
+        List<TeamProviderTeamLocationSaveRequest> requestList = new ArrayList<TeamProviderTeamLocationSaveRequest>();
+        
+        request.setProvider(new Provider(provider.getId()));
+        requestList.add(request);
+        
+        Set<TeamProvider> providers = teamProviderService.associateProvidersToTeam(requestList, new Team(savedTeam.getId()));
+        TeamProvider teamProvider = providers.iterator().next();
+        assertThat("TeamProvider was created", teamProvider.getId(), is(notNullValue()));
+    }
+    
     private Location makeLocation(String name, String i) {
         Location location = new Location();
         location.setName(name + i);
