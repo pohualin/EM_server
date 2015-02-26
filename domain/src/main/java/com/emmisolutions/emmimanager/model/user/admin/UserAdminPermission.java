@@ -1,13 +1,14 @@
 package com.emmisolutions.emmimanager.model.user.admin;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * This is an application permission.
  */
 @Entity
 @Table(name = "user_admin_permission")
-public class UserAdminPermission {
+public class UserAdminPermission implements Serializable {
 
     @Id
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
