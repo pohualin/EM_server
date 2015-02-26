@@ -49,7 +49,7 @@ public class UserClientUserClientRolesResource {
      * @return UserClientUserClientRolePage
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientRoles", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -81,7 +81,7 @@ public class UserClientUserClientRolesResource {
      */
     @RequestMapping(value = "/user_client/{userClientId}/userClientRoles", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER"})
     public ResponseEntity<UserClientUserClientRoleResource> associateUserClientRole(
             @PathVariable("userClientId") Long userClientId,
@@ -105,7 +105,7 @@ public class UserClientUserClientRolesResource {
      * UserClientUserClientRole found by userClientUserClientRoleId
      */
     @RequestMapping(value = "/user_client_user_client_role/{userClientUserClientRoleId}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER"})
     public ResponseEntity<UserClientUserClientRoleResource> getUserClientUserClientRole(
             @PathVariable(value = "userClientUserClientRoleId") Long userClientUserClientRoleId) {
@@ -126,7 +126,7 @@ public class UserClientUserClientRolesResource {
      * @param userClientUserClientRoleId to remove
      */
     @RequestMapping(value = "/user_client_user_client_role/{userClientUserClientRoleId}", method = RequestMethod.DELETE)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER", "PERM_CLIENT_SUPER_USER",
             "PERM_CLIENT_CREATE_NEW_USER"})
     public void delete(@PathVariable Long userClientUserClientRoleId) {
         userClientUserClientRoleService.delete(new UserClientUserClientRole(

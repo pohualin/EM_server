@@ -27,7 +27,7 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, emailValidated;
+    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated;
 
     private ClientResource clientResource;
 
@@ -66,7 +66,8 @@ public class UserClientResource extends ResourceSupport {
                               boolean credentialsNonExpired,
                               boolean emailValidated,
                               ClientResource clientResource,
-                              List<String> permissions) {
+                              List<String> permissions,
+                              boolean impersonated) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -80,6 +81,7 @@ public class UserClientResource extends ResourceSupport {
         this.emailValidated = emailValidated;
         this.clientResource = clientResource;
         this.permissions = permissions;
+        this.impersonated = impersonated;
     }
 
     /**

@@ -42,7 +42,7 @@ public class AdminFunctionsResource {
      * @return ReferenceTagPage matching the search request
      */
     @RequestMapping(value = "/referenceTags", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD"})
+    @RolesAllowed({"PERM_GOD", "PERM_SUPER_ADMIN"})
     public ResponseEntity<ReferenceTagPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
                                                        @SortDefault(sort = "id") Sort sort,
                                                        PagedResourcesAssembler<ReferenceTag> assembler) {

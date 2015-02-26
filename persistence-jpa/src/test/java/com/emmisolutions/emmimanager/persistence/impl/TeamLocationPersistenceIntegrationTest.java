@@ -182,5 +182,16 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         clientPersistence.save(client);
         return client;
     }
-
+    
+    @Test
+    public void saveTeamLocationWithOnlyTeamAndLocationId() {       
+       Client client = createClient("1");
+       Location location = createLocation(client, "1");
+       Team team = createTeam(client, 1);
+       
+       TeamLocation teamLocation = new TeamLocation(new Location(location.getId()), new Team(team.getId()));
+       TeamLocation afterSaveTeamLocation = teamLocationPersistence.saveTeamLocation(teamLocation);
+       assertThat("TeamLocation was given an id", afterSaveTeamLocation.getId(), is(notNullValue()));
+       assertThat("system is the created by", afterSaveTeamLocation.getCreatedBy(), is("system"));
+    }    
 }

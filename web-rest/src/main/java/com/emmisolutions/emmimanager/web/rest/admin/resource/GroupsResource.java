@@ -71,7 +71,7 @@ public class GroupsResource {
      * @return GroupPage or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -102,7 +102,7 @@ public class GroupsResource {
      * @return List of Group objects or INTERNAL_SERVER_ERROR if update were unsuccessful
      */
     @RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<Group>> create(@RequestBody List<GroupSaveRequest> groupSaveRequests,
                                               @PathVariable("clientId") Long clientId) {
         Set<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
@@ -121,7 +121,7 @@ public class GroupsResource {
      * @return List of Group objects or INTERNAL_SERVER_ERROR if update were unsuccessful
      */
     @RequestMapping(value = "/clients/{clientId}/invalidTeam", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<TeamTag>> invalidTeams(@RequestBody List<GroupSaveRequest> groupSaveRequests,
                                                          @PathVariable("clientId") Long clientId) {
         Set<TeamTag> teamTags = groupService.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
@@ -140,7 +140,7 @@ public class GroupsResource {
      * @return GroupResource or NO_CONTENT on fail
      */
     @RequestMapping(value = "/groups/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<GroupResource> getGroupById(@PathVariable("id") Long id) {
         Group group = groupService.reload(id);
         if (group == null) {

@@ -68,7 +68,7 @@ public class TeamProvidersResource {
      * @return ProviderResource
      */
     @RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamProviderPage> list(
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = {"provider.lastName"}, direction = Sort.Direction.ASC) Pageable page,
@@ -95,7 +95,7 @@ public class TeamProvidersResource {
      * @return a set of team providers
      */
     @RequestMapping(value = "/teams/{teamId}/teamProviders", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<TeamProvider>> associateProvidersToTeam(
             @PathVariable("teamId") Long teamId,
             @RequestBody List<TeamProviderTeamLocationSaveRequest> providers) {
@@ -118,7 +118,7 @@ public class TeamProvidersResource {
      * @return ProviderResource
      */
     @RequestMapping(value = "/teamProvider", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamProvider> updateTeamProvider(
             @RequestBody TeamProviderTeamLocationSaveRequest request) {
         teamProviderService.updateTeamProvider(request);
@@ -137,7 +137,7 @@ public class TeamProvidersResource {
      * @return TeamLocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/teamProvider/{teamProviderId}/teamLocations", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -171,7 +171,7 @@ public class TeamProvidersResource {
      * @return TeamProviderResource or NO_CONTENT on fail
      */
     @RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamProviderResource> getById(
             @PathVariable("teamProviderId") Long teamProviderId) {
         TeamProvider teamProvider = new TeamProvider();
@@ -200,7 +200,7 @@ public class TeamProvidersResource {
     @RequestMapping(value = "/team/{teamId}/providers/associate",
             method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible providers that can be associated to a team", notes = "The object will come back with a link, if it is currently associated to the passed team. If it is not currently in use at the passed team, the link will be null.")
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -234,7 +234,7 @@ public class TeamProvidersResource {
      * @param teamProviderId to delete
      */
     @RequestMapping(value = "/teamProviders/{teamProviderId}", method = RequestMethod.DELETE)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public void deleteProviderFromTeamProvider(@PathVariable Long teamProviderId) {
         TeamProvider teamProvider = new TeamProvider();
         teamProvider.setId(teamProviderId);
@@ -247,7 +247,7 @@ public class TeamProvidersResource {
      * @return the newly created team provider team location objects
      */
     @RequestMapping(value = "/teamProviders/{teamProviderId}/teamProviderTeamLocation", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public Set<TeamProviderTeamLocation> createTeamProviderTeamLocation(
             @RequestBody Set<TeamLocation> teamLocations,
             @PathVariable("teamProviderId") Long teamProviderId) {
@@ -265,7 +265,7 @@ public class TeamProvidersResource {
      * @return TeamProviderResource or NO_CONTENT on fail
      */
     @RequestMapping(value = "/teamProviders/{teamId}/teamProviderByProvider", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<TeamProviderResource> getByProviderAndTeam(
             @PathVariable("teamId") Long teamId,
             @RequestParam(value = "providerId", required = false) Long providerId) {
