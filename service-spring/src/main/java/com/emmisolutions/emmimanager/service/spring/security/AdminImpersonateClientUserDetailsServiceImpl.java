@@ -27,10 +27,10 @@ import static com.emmisolutions.emmimanager.model.user.client.UserClientPermissi
 public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsServiceImpl {
 
     @Resource
-    private UserAdminPersistence userPersistence;
+    private transient UserAdminPersistence userPersistence;
 
     @Resource
-    private ClientPersistence clientPersistence;
+    private transient ClientPersistence clientPersistence;
 
     @Override
     @Transactional(readOnly = true)
