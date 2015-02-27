@@ -18,12 +18,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface SecretQuestionRepository extends JpaRepository<SecretQuestion, Long>{
 
-
-	/**
-     * 
-     * @param pageable
-     * @return page of secret question
-     */
-   Page<SecretQuestion> findAll (Pageable pageable);
-    
+  
 }
