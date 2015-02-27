@@ -40,10 +40,10 @@ public interface UserClientSecretQuestionResponsePersistence {
     UserClientSecretQuestionResponse reload(Long id);
     
     /**
-     * Retrieve one question response
-     * @param User client id and question id
-     * @return one secret questions if exist 
+     * Retrieve question response
+     * @param User Client Secret Question Response
+     * @return Secret Question Response if exist 
      */
-    UserClientSecretQuestionResponse findByUserClientIdAndSecretQuestionId(Long userClientId, Long questionId);
-    
-}
+    UserClientSecretQuestionResponse reload(UserClientSecretQuestionResponse userClientSecretQuestion);
+}    
+

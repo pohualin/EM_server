@@ -58,7 +58,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         
         // reload UserClientSecretQuestionResponse
         UserClientSecretQuestionResponse inDb = userClientSecretQuestionResponsePersistence.
-                findByUserClientIdAndSecretQuestionId(questionResponse.getUserClient().getId(), questionResponse.getSecretQuestion().getId());
+                reload(questionResponse);
         
         // which is user_client_id, secret_question_id
         UserClientSecretQuestionResponse toSave = null;

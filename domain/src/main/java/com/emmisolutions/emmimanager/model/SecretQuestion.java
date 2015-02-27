@@ -111,5 +111,11 @@ public class SecretQuestion extends AbstractAuditingEntity implements Serializab
         }
         return true;
     }
+    
+    @Override
+	public String toString() {
+		return "Question [id=" + id + ", secret qustion =" + secretQuestion
+				+ "]";
+	}
 
 }

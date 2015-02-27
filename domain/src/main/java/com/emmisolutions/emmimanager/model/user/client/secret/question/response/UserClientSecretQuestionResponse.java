@@ -42,20 +42,19 @@ public class UserClientSecretQuestionResponse extends AbstractAuditingEntity imp
 
 	@ManyToOne(optional = false)
 	@NotNull
-	@JoinColumn(name = "user_id", referencedColumnName="id")
+	@JoinColumn(name = "user_client_id", referencedColumnName="id")
 	private UserClient userClient;
 	
 	@ManyToOne(optional = false)
 	@NotAudited
 	@NotNull
-	@JoinColumn(name = "question_id", referencedColumnName="id")
+	@JoinColumn(name = "secret_question_id", referencedColumnName="id")
 	private SecretQuestion secretQuestion;
 	
 	@Column(length = 200, columnDefinition = "nvarchar(200)")
 	@Pattern(regexp = "[0-9A-Za-z-'=_\\-+;:@#$%&?,.!() <>^~*`|{}\\[\\]\"\\/]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ - + ; : @ # $ % & ? , . ! |(){}[]: <>")
 	@Size(max = 200)
 	private String response;
-
 	    
     public String getResponse() {
 		return response;
@@ -139,6 +138,12 @@ public class UserClientSecretQuestionResponse extends AbstractAuditingEntity imp
         }
         return true;
     }
+    
+    @Override
+	public String toString() {
+		return "Response [id=" + id + ", secret question =" + secretQuestion + ", response=" + response
+				+ "]";
+	}
 
 	
 	

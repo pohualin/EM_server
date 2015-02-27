@@ -16,7 +16,7 @@
             <column name="version" type="INT"/>
             <column name="rank" type="INT"/>
             <column name="secret_question" type="nvarchar(1000)"><constraints nullable="false"/></column>
-            <column name="created_by" type="nvarchar(255)" defaultValue="system"><constraints nullable="false"/></column>
+            <column name="created_by" type="nvarchar(255)"><constraints nullable="false"/></column>
             <column name="created_date" type="timestamp" defaultValueDate="${now}"><constraints nullable="false"/></column>
             <column name="last_modified_by" type="nvarchar(255)"/>
             <column name="last_modified_date" type="timestamp"/>     
@@ -29,23 +29,23 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_secret_question_response"/>
             </column>
             <column name="version" type="INT"/>
-            <column name="user_id" type="BIGINT"><constraints nullable="false"/></column>
-            <column name="question_id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="user_client_id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="secret_question_id" type="BIGINT"><constraints nullable="false"/></column>
             <column name="response" type="nvarchar(200)"><constraints nullable="false"/></column>
-            <column name="created_by" type="nvarchar(255)" defaultValue="system"><constraints nullable="false"/></column>
+            <column name="created_by" type="nvarchar(255)"><constraints nullable="false"/></column>
             <column name="created_date" type="timestamp" defaultValueDate="${now}"><constraints nullable="false"/></column>
             <column name="last_modified_by" type="nvarchar(255)"/>
             <column name="last_modified_date" type="timestamp"/>   
         </createTable>
 	            		
 		<addForeignKeyConstraint baseTableName="user_client_secret_question_response"
-                                 baseColumnNames="user_id"
-                                 constraintName="fk_user_client_secret_question_response_users"
-                                 referencedTableName="users"
+                                 baseColumnNames="user_client_id"
+                                 constraintName="fk_user_client_secret_question_response_user_client"
+                                 referencedTableName="user_client"
                                  referencedColumnNames="id"/>
                                  
         <addForeignKeyConstraint baseTableName="user_client_secret_question_response"
-                                 baseColumnNames="question_id"
+                                 baseColumnNames="secret_question_id"
                                  constraintName="fk_user_client_secret_question_response_secret_question"
                                  referencedTableName="secret_question"
                                  referencedColumnNames="id"/>
@@ -60,9 +60,8 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="tinyint"/>
-            <column name="name" type="nvarchar(255)"/>
-            <column name="user_id" type="BIGINT"/>
-            <column name="question_id" type="BIGINT"/>
+            <column name="user_client_id" type="BIGINT"/>
+            <column name="secret_question_id" type="BIGINT"/>
             <column name="response" type="nvarchar(200)"/>
         </createTable>
         

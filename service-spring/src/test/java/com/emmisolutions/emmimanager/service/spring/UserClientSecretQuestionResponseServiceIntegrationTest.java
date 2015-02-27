@@ -65,7 +65,6 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
                 .findByUserClient(user, new PageRequest(0, 10));
         assertThat("SecretQuestion has been created", page2.hasContent(), is(false));
         
-       
     }
     
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -100,7 +99,6 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         List<SecretQuestion> list = createSecretQuestions();
         SecretQuestion secretQuestion = secretQuestionRepository.save(list.get(0));
         UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
-        questionResponse.setCreatedBy("system");
         questionResponse.setSecretQuestion(secretQuestion);
         questionResponse.setResponse("Response");
         questionResponse.setUserClient(userClient);
@@ -137,13 +135,11 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         
         UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
         UserClientSecretQuestionResponse  questionResponseToo= new UserClientSecretQuestionResponse();
-        questionResponse.setCreatedBy("system");
         questionResponse.setSecretQuestion(secretQuestion);
         questionResponse.setResponse("Toyota");
         questionResponse.setUserClient(user);
         questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponseService.saveOrUpdate(questionResponse);
         
-        questionResponseToo.setCreatedBy("system");
         questionResponseToo.setSecretQuestion(secretQuestionToo);
         questionResponseToo.setResponse("Sushi");
         questionResponseToo.setUserClient(user);

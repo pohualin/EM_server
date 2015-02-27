@@ -5,6 +5,7 @@ import java.util.List;
 import com.emmisolutions.emmimanager.model.SecretQuestion;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.UserClientSecretQuestionResponsePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientSecretQuestionResponseRepository;
 import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
@@ -57,9 +58,16 @@ public class UserClientSecretQuestionResponsePersistenceImpl implements
 
    
     @Override
-    public UserClientSecretQuestionResponse findByUserClientIdAndSecretQuestionId(
-            Long userClientId, Long questionId) {
-        return userClientSecretQuestionResponseRepository.findByUserClientIdAndSecretQuestionId(userClientId, questionId);
+    public UserClientSecretQuestionResponse reload(
+    	UserClientSecretQuestionResponse userClientSecretQuestion){
+        if (userClientSecretQuestion == null || 
+    	     userClientSecretQuestion.getUserClient().getId() == null ||
+    	     userClientSecretQuestion.getSecretQuestion().getId() == null) {
+             return null;
+        }
+        return userClientSecretQuestionResponseRepository.
+        		findByUserClientIdAndSecretQuestionId(userClientSecretQuestion.getUserClient().getId(),
+        				userClientSecretQuestion.getSecretQuestion().getId());
     }
 
    

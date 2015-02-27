@@ -51,9 +51,7 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
         UserClient user1 = userClientRepository.findOne(user.getId());
         assertThat("the users saved should be the same as the user fetched",
                 user, is(user1));
-               
-        
-        Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence
+         Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence
                 .findByUserClient(user1, null);
         assertThat("Find pageable question response with client Id", findByUser.hasContent(), is(false));
         
@@ -66,25 +64,28 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
     */
     @Test
     public void save() {
-        
-        UserClient user = createUserClient();         
+    	Client client = makeNewRandomClient();
+        UserClient user = createUserClient();      
+        user.setClient(client);
+        user.setFirstName("Test");
+        user.setLastName("lastName");
+        user.setLogin("tete@mail.com");
+        user.setEmail("tete@gmail.com");
+        user = userClientPersistence.saveOrUpdate(user);
         SecretQuestion secretQuestion = new SecretQuestion();
-        
         secretQuestion.setSecretQuestion("What was the make and model of your first car?");
-       
         SecretQuestion secretQuestionId  = secretQuestionPersistence.save(secretQuestion);
 
     	UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
-    	questionResponse.setCreatedBy("system");
     	questionResponse.setSecretQuestion(secretQuestionId);
     	questionResponse.setResponse("Response");
     	questionResponse.setUserClient(user);
     	questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponsePersistence.saveOrUpdate(questionResponse);
     	userClientSecretQuestionResponsePersistence.reload(questionResponse.getId());    	
         assertThat("Client was given an id", questionResponse.getId(), is(notNullValue()));
-        assertThat("system is the created by", questionResponse.getCreatedBy(), is("system"));
-  
-        UserClientSecretQuestionResponse findByClientIdAndQuestionId = userClientSecretQuestionResponsePersistence.findByUserClientIdAndSecretQuestionId(user.getId(), questionResponse.getSecretQuestion().getId());
+          
+        UserClientSecretQuestionResponse findByClientIdAndQuestionId = userClientSecretQuestionResponsePersistence.reload(questionResponse);
+        
         assertThat("Find list question response with client Id", findByClientIdAndQuestionId, is(notNullValue()));
         
         Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence
