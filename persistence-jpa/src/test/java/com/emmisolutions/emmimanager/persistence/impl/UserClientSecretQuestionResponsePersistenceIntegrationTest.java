@@ -38,40 +38,31 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
 	@Resource
     SecretQuestionRepository secretQuestionPersistence;
 	
-	 @Resource
-	 UserClientRepository userClientRepository;
-	 
-	
-    @Test
+	/**
+	 * Test to find
+	 */
+	@Test
     public void testFind() {
-        UserClient user = createUserClient();
+		Client client = makeNewRandomClient();
+        UserClient user = makeNewRandomUserClient(client); 
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
-
-        UserClient user1 = userClientRepository.findOne(user.getId());
+        UserClient user1 = userClientPersistence.reload(user);
         assertThat("the users saved should be the same as the user fetched",
                 user, is(user1));
-         Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence
+        Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence
                 .findByUserClient(user1, null);
         assertThat("Find pageable question response with client Id", findByUser.hasContent(), is(false));
-        
-              
+    
     }
     
 	/**
-     * 
-     * Save success
-    */
+	 * Test save
+	 */
     @Test
     public void save() {
     	Client client = makeNewRandomClient();
-        UserClient user = createUserClient();      
-        user.setClient(client);
-        user.setFirstName("Test");
-        user.setLastName("lastName");
-        user.setLogin("tete@mail.com");
-        user.setEmail("tete@gmail.com");
-        user = userClientPersistence.saveOrUpdate(user);
+        UserClient user = makeNewRandomUserClient(client);   
         SecretQuestion secretQuestion = new SecretQuestion();
         secretQuestion.setSecretQuestion("What was the make and model of your first car?");
         SecretQuestion secretQuestionId  = secretQuestionPersistence.save(secretQuestion);
@@ -92,27 +83,6 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
                 .findByUserClient(user, new PageRequest(0, 10));
         assertThat("Find pageable question response with client Id", findByUser.hasContent(), is(true));
     } 
-    
-       
-    private UserClient createUserClient()
-    {
-        Client client = makeNewRandomClient();
-        
-        UserClient user = new UserClient();
-        user.setClient(client);
-        user.setFirstName("firstName");
-        user.setLastName("lastName");
-        user.setLogin("flast@mail.com");
-        user.setEmail("flast@gmail.com");
-        user = userClientPersistence.saveOrUpdate(user);
-        assertThat(user.getId(), is(notNullValue()));
-        assertThat(user.getVersion(), is(notNullValue()));
-
-        UserClient user1 = userClientRepository.findOne(user.getId());
-        assertThat("the users saved should be the same as the user fetched",
-                user, is(user1));
-        
-        return user;
-    }
+  
     
 }

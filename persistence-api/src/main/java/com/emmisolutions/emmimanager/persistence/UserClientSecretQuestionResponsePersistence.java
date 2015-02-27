@@ -15,29 +15,29 @@ public interface UserClientSecretQuestionResponsePersistence {
    
     /**
      * 
-     * @param userClient
-     * @param pageable
+     * @param userClient the user client
+     * @param pageable the pagination specification
      * @return page user client secret question response
      */
     Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
     
     /**
-     * 
-     * @param questionResponse
+     * Save or update the secret question response
+     * @param questionResponse the user client secret question response
      * @return user client secret question response
      */
     UserClientSecretQuestionResponse saveOrUpdate (UserClientSecretQuestionResponse questionResponse);
   
     /**
-     * 
-     * @param id
-     * @return user client sercet question response
+     * Reload the user client secret question response
+     * @param id the user client secret question response
+     * @return user client secret question response
      */
     UserClientSecretQuestionResponse reload(Long id);
     
     /**
-     * 
-     * @param userClientSecretQuestion
+     * Reload the user client secret question response 
+     * @param userClientSecretQuestion the user client secret question 
      * @return user client secret question response
      */
     UserClientSecretQuestionResponse reload(UserClientSecretQuestionResponse userClientSecretQuestion);

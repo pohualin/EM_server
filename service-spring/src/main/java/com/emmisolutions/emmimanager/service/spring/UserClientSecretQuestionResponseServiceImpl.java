@@ -87,13 +87,24 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         toSave.setUserClient(userClientPersistence.reload(toSave.getUserClient()));
         return userClientSecretQuestionResponsePersistence.saveOrUpdate(toSave);
     }
-
+    
+    
+    /**
+     * List all secret questions
+     * @param pageable the pagination specification
+     * @return page SecretQuestion
+     */
     @Override
     @Transactional
     public Page<SecretQuestion> list(Pageable pageable) {
         return secretQuestionPersistence.findAll(pageable);
     }
 
+    /**
+     * Reloads the question response 
+     * @param questionResponse the question response
+     * @return  UserClientSecretQuestionResponse
+     */
     @Override
     @Transactional
     public UserClientSecretQuestionResponse reload(

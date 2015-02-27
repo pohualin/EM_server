@@ -51,7 +51,7 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
     @Test
     public void testFindEmpty() {
         Client client = makeNewRandomClient();
-        UserClient user = new UserClient();
+        UserClient user = makeNewRandomUserClient(client);
         user.setClient(client);
         user.setFirstName("firstName");
         user.setLastName("lastName");

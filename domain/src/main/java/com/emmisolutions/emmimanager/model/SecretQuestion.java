@@ -57,10 +57,10 @@ public class SecretQuestion extends AbstractAuditingEntity implements Serializab
 	}
 	
 	/**
-     * ID constructor
-     *
-     * @param id      to use
-     */
+	 * 
+	 * @param id secret question id
+	 * @param secretQuestion
+	 */
     public SecretQuestion(Long id, String secretQuestion) {
         this.id = id;
         this.secretQuestion = secretQuestion;

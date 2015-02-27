@@ -77,10 +77,9 @@ public class UserClientSecretQuestionResponse extends AbstractAuditingEntity imp
 	}
 	
 	/**
-     * ID constructor
-     *
-     * @param id      to use
-     */
+	 * 
+	 * @param id user client secret question response id
+	 */
     public UserClientSecretQuestionResponse(Long id) {
         this.id = id;
     }

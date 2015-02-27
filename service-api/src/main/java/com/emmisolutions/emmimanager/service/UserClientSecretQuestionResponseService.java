@@ -16,32 +16,32 @@ public interface UserClientSecretQuestionResponseService {
     
 
     /**
-     * 
-     * @param pageable
-     * @return page of secret question
+     * List all secret questions
+     * @param pageable the pagination specification
+     * @return page SecretQuestion
      */
    Page<SecretQuestion> list(Pageable pageable);
     
    /**
-    * 
-    * @param questionResponse
-    * @return User client secret question response
+    * Reloads the question response 
+    * @param questionResponse the question response
+    * @return  UserClientSecretQuestionResponse
     */
    UserClientSecretQuestionResponse reload(UserClientSecretQuestionResponse questionResponse);
     
     
     /**
-     * 
-     * @param userClient
-     * @param pageable
-     * @return page of user client secret question response
+     * find question response by user client 
+     * @param userClient the user client
+     * @param pageable  the pagination specification
+     * @return page of UserClientSecretQuestionResponse
      */
    Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
     
      
     /**
-     * 
-     * @param questionResponse
+     * Save or update the secret question response
+     * @param questionResponse the secret question response
      * @return User client secret question response
      */
    UserClientSecretQuestionResponse saveOrUpdate(UserClientSecretQuestionResponse questionResponse);
