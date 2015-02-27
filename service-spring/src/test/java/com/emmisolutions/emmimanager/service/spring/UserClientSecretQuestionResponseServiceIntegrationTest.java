@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * An integration test that goes across a wired persistence layer as well
+ * Integration tests for user client secret question reponse service
  */
 public class UserClientSecretQuestionResponseServiceIntegrationTest extends BaseIntegrationTest {
 

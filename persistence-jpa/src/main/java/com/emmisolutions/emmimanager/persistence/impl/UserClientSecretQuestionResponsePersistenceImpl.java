@@ -2,10 +2,8 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import java.util.List;
 
-import com.emmisolutions.emmimanager.model.SecretQuestion;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
-import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.UserClientSecretQuestionResponsePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientSecretQuestionResponseRepository;
 import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
@@ -19,7 +17,9 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.Resource;
 
 /**
- * Repo to deal with User Client Secret Question Response persistence.
+ * 
+ * user client secret question response persistence
+ *
  */
 @Repository
 public class UserClientSecretQuestionResponsePersistenceImpl implements

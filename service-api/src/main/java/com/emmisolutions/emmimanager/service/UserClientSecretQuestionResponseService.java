@@ -7,46 +7,42 @@ import com.emmisolutions.emmimanager.model.user.client.secret.question.response.
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Set;
-
 /**
- * Client Service API.
+ * 
+ * User client secret question response service
+ *
  */
 public interface UserClientSecretQuestionResponseService {
     
 
     /**
-     * Get the list of secret questions
      * 
      * @param pageable
-     *           
-     * @return all secret questions
+     * @return page of secret question
      */
-    public Page<SecretQuestion> list(Pageable pageable);
+   Page<SecretQuestion> list(Pageable pageable);
+    
+   /**
+    * 
+    * @param questionResponse
+    * @return User client secret question response
+    */
+   UserClientSecretQuestionResponse reload(UserClientSecretQuestionResponse questionResponse);
+    
     
     /**
-     * Reloads a specific response
      * 
-     * @param userClient to reload
-     * @return the persistent UserClientSecretQuestionResponse or null
+     * @param userClient
+     * @param pageable
+     * @return page of user client secret question response
      */
-    public UserClientSecretQuestionResponse reload(UserClientSecretQuestionResponse questionResponse);
-    
-    
-    /**
-     * Find all responses for a particular UserClient
-     * @param userClient and pageable
-     * @return Set of UserClientSecretQuestionResponse
-     */
-    public Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
+   Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
     
      
     /**
-     * Save or update question and response
-     *
-     * @param UserClientSecretQuestionResponse Oject to save or update
-     * @return the list of UserClientSecretQuestionResponse with newly created ID 
+     * 
+     * @param questionResponse
+     * @return User client secret question response
      */
-    public UserClientSecretQuestionResponse saveOrUpdate(UserClientSecretQuestionResponse questionResponse);
+   UserClientSecretQuestionResponse saveOrUpdate(UserClientSecretQuestionResponse questionResponse);
 }

@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Implementation of the UserClientSecretQuestionResponseService
+ * 
+ * User client secret question response service Impl
+ *
  */
 @Service
 public class UserClientSecretQuestionResponseServiceImpl implements UserClientSecretQuestionResponseService {

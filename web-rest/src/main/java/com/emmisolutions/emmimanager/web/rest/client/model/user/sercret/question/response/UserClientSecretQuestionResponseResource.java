@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
- * HATEOAS wrapper for UserClientSecretQuestion, essentially a DTO instead of a wrapper.
+ * HATEOAS wrapper for UserClientSecretQuestion
  */
 @XmlRootElement(name = "secret-question")
 @XmlAccessorType(XmlAccessType.FIELD)

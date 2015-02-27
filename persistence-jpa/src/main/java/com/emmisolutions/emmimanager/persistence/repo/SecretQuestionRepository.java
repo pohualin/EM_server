@@ -12,17 +12,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Spring Data Repo for SecretQuestion Support
+ * 
+ * secret question repo
+ *
  */
 public interface SecretQuestionRepository extends JpaRepository<SecretQuestion, Long>{
 
 
-    /**
-    * Retrieve all secret questions
-    *
-    * @param pageable
-    * @return List of Questions or null
-    */
+	/**
+     * 
+     * @param pageable
+     * @return page of secret question
+     */
    Page<SecretQuestion> findAll (Pageable pageable);
     
 }

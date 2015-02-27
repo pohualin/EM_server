@@ -40,10 +40,7 @@ public class SecretQuestionPersistenceImpl implements SecretQuestionPersistence 
 
     @Override
     public SecretQuestion reload(SecretQuestion secretQuestion) {
-        if (secretQuestion == null || secretQuestion.getId() == null) {
-            return null;
-        }
-        return secretQuestionRepository.findOne(secretQuestion.getId());
+       return secretQuestionRepository.findOne(secretQuestion.getId());
 
     }
 

@@ -47,11 +47,13 @@ public class UserClientSecretQuestionResponsesResource {
     @Resource
     SecretQuestionResourceAssembler questionAssembler;
 
-    /**
-     * Get all possible SecretQuestions
-     * 
-     * @return a page of SecretQuestion objects
-     */
+   /**
+    * 
+    * @param pageable
+    * @param sort
+    * @param assembler
+    * @return secret question response entity
+    */
     @RequestMapping(value = "/secret_questions/questions", method = RequestMethod.GET)
     public ResponseEntity<SecretQuestionPage> secretQuestions(
             @PageableDefault(size = 10, sort = "rank") Pageable pageable,
@@ -78,11 +80,10 @@ public class UserClientSecretQuestionResponsesResource {
 
 
     /**
-     * Get a single UserClientSecretQuestionResponse object
      * 
+     * @param userClientId
      * @param id
-     *            of the object
-     * @return the persistent object or NO_CONTENT
+     * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses/{id}", method = RequestMethod.GET)
     public ResponseEntity<UserClientSecretQuestionResponseResource> get(
@@ -106,11 +107,10 @@ public class UserClientSecretQuestionResponsesResource {
 
 
     /**
-     * Save or update a secret question response
      * 
+     * @param userClientId
      * @param userClientSecretQuestionResponse
-     *            to save
-     * @return the saved response
+     * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses", method = RequestMethod.POST)
     public ResponseEntity<UserClientSecretQuestionResponseResource> saveOrUpdate(
@@ -132,13 +132,11 @@ public class UserClientSecretQuestionResponsesResource {
     }
 
     /**
-     * List all current secret question responses for a user
      * 
+     * @param userClientId
      * @param pageable
-     *            the page specification
      * @param assembler
-     *            to make page links
-     * @return a page of UserClientSecretQuestionResponse objects
+     * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses", method = RequestMethod.GET)
     public ResponseEntity<UserClientSecretQuestionResponsePage> secretQuestionResponses(

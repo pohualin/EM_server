@@ -27,7 +27,7 @@ public class UserClientSecretQuestionResponsePage extends PagedResource<UserClie
      * Wrapper for user client secret question resource objects
      *
      * @param secretQuestionResource to be wrapped
-     * @param secretQuestionPage             true page
+     * @param secretQuestionPage true page
      */
     public UserClientSecretQuestionResponsePage(
         PagedResources<UserClientSecretQuestionResponseResource> secretQuestionResource, 

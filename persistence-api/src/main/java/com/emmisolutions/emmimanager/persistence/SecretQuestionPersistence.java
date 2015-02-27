@@ -12,33 +12,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 /**
- * Provider persistence class
+ * Secret question persistence
+ *
  */
 public interface SecretQuestionPersistence {
 
        
     /**
-     * Query the original list of secret question objects
+     * 
      * @param pageable
-     * @return a list of secret question objects
+     * @return page of secret question
      */
     Page<SecretQuestion> findAll(Pageable pageable);
     
     
-    /**
-     * Saves the secret question
-     *
-     * @param secret question to be saved
-     * @return the saved secret question
+    /** 
+     * 
+     * @param secretQuestion 
+     * @return secret question
      */
     SecretQuestion save(SecretQuestion secretQuestion);
 
 
-    /**
-     * Query the secret question object by id
-     *
-     * @return a secret question object
-     */
+   /**
+    * 
+    * @param secretQuestion
+    * @return secret question
+    */
     SecretQuestion reload(SecretQuestion secretQuestion);
     
    
