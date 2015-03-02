@@ -208,7 +208,29 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
     public void invalidDeleteByClientAndLocation(){
         teamLocationService.delete(null, null);
     }
+    
+    @Test
+    public void saveTeamLocationWithOnlyLocationId() {
+        Client client = makeClient(RandomStringUtils.randomAlphabetic(255));
+        clientService.create(client);
 
+        Team team = makeTeamForClient(client, RandomStringUtils.randomNumeric(15));
+        Team savedTeam = teamService.create(team);
+        Location savedLocation = locationService.create( makeLocation("Location ",  RandomStringUtils.randomNumeric(15)));
+        
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<>();
+        TeamLocationTeamProviderSaveRequest saveRequest = new TeamLocationTeamProviderSaveRequest();
+        Location newLocationWithOnlyId = new Location(savedLocation.getId());
+        saveRequest.setLocation(newLocationWithOnlyId);
+        reqs.add(saveRequest);
+        
+        teamLocationService.save(savedTeam, reqs);
+        
+        Page<TeamLocation> locationPage = teamLocationService.findAllTeamLocationsWithTeam(null, savedTeam);
+        TeamLocation teamLocation = locationPage.getContent().iterator().next();
+        assertThat("TeamLocation was created", teamLocation.getId(), is(notNullValue()));
+    }
+    
     private Team makeTeamForClient(Client client, String id){
 		 Team team = new Team();
 		 team.setName("Test Team " + id);
