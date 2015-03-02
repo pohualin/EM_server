@@ -78,7 +78,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
 		assertThat("system is the created by", provider.getCreatedBy(), is("system"));
 
-        assertThat("can reload it", providerPersistence.reload(provider), is(provider));
+        assertThat("can reload it", providerPersistence.reload(provider.getId()), is(provider));
 	}
 
     /**
