@@ -1,15 +1,16 @@
 package com.emmisolutions.emmimanager.model.user.client;
 
-import org.hibernate.envers.Audited;
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
 
-import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+import org.hibernate.envers.Audited;
+
+import java.util.Collection;
 
 /**
  * A client level permission
