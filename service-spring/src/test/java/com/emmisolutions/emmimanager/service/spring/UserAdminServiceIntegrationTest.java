@@ -4,15 +4,18 @@ import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
+import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserAdminService;
-
+import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +30,12 @@ public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserAdminService userAdminService;
+
+    @Resource
+    UserAdminPersistence userAdminPersistence;
+
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     /**
      * Create without login
@@ -57,11 +66,11 @@ public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testUserCreate() {
-        UserAdmin user = new UserAdmin("login", "pw");
-        user.setFirstName("firstName1");
-        user.setLastName("lastName");
-        user.setEmail("boss@emmi.com");
-        
+        UserAdmin user = new UserAdmin(RandomStringUtils.randomAlphabetic(10), "*****");
+        user.setFirstName(RandomStringUtils.randomAlphabetic(5));
+        user.setLastName(RandomStringUtils.randomAlphabetic(5));
+        user.setEmail(RandomStringUtils.randomAlphabetic(10) + "@" + RandomStringUtils.randomAlphabetic(10) + ".com" );
+
         Page<UserAdminRole> roles = userAdminService.listRolesWithoutSystem(null);
         UserAdminRole role = roles.getContent().iterator().next();
         Set<UserAdminRole> adminRoles = new HashSet<>();
@@ -80,7 +89,7 @@ public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
 
         user = userAdminService.save(req); //execute again just to verify that is deleting the previous roles
         
-        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.ALL , "firstName1");
+        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.ALL , user.getFirstName());
         Page<UserAdmin> users = userAdminService.list(null, filter);
         
         assertThat("the search user return values", users.getContent(), is(notNullValue()));
@@ -90,9 +99,45 @@ public class UserAdminServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("the users returned is the same user saved", findUser, is(user1));
         
         UserAdmin newComing = new UserAdmin();
-        newComing.setEmail("boss@emmi.com");
+        newComing.setEmail(user.getEmail());
         List<UserAdmin> conflicts = userAdminService.findConflictingUsers(newComing);
         assertThat("conflicts contain user", conflicts, hasItem(user));
-    } 
+    }
+
+    /**
+     * Make sure the password mechanism works for admin users
+     */
+    @Test
+    public void adminCanLogin() {
+        UserAdmin user = new UserAdmin(RandomStringUtils.randomAlphabetic(10), "pw");
+        user.setFirstName(RandomStringUtils.randomAlphabetic(5));
+        user.setLastName(RandomStringUtils.randomAlphabetic(5));
+        user.setEmail(RandomStringUtils.randomAlphabetic(10) + "@" + RandomStringUtils.randomAlphabetic(10) + ".com" );
+
+        Page<UserAdminRole> roles = userAdminService.listRolesWithoutSystem(null);
+        UserAdminRole role = roles.getContent().iterator().next();
+        Set<UserAdminRole> adminRoles = new HashSet<>();
+        adminRoles.add(role);
+
+        UserAdminSaveRequest req = new UserAdminSaveRequest();
+        req.setUserAdmin(user);
+        req.setRoles(adminRoles);
+        user = userAdminService.save(req);
+        assertThat(user.getId(), is(notNullValue()));
+        assertThat(user.getVersion(), is(notNullValue()));
+
+        try {
+            login(user.getLogin(), "pw");
+        } catch (BadCredentialsException bce){
+            String encoded = passwordEncoder.encode("pw");
+            String hash = encoded.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE);
+            String salt = encoded.substring(LegacyPasswordEncoder.PASSWORD_SIZE);
+            user.setPassword(hash);
+            user.setSalt(salt);
+            userAdminPersistence.saveOrUpdate(user);
+        }
+        adminLogin(user.getLogin(), "pw");
+        logout();
+    }
 
 }

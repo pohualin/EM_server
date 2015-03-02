@@ -70,6 +70,12 @@ public class MailServiceImpl implements MailService {
     public void sendPasswordChangeConfirmationEmail(UserClient userClient) {
         sendTemplateBasedEmail(passwordChangedFrom, userClient, null, EmailTemplateType.PASSWORD_CHANGED);
     }
+    
+    @Async
+    @Override
+    public void sendPasswordResetNotEnabled(UserClient userClient) {
+        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_NOT_ENABLED);
+    }
 
     private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type) {
         if (user == null || StringUtils.isBlank(user.getEmail()) || type == null) {

@@ -115,5 +115,12 @@
     		<where>key_path = 'PERM_CLIENT_ADMINISTER_USER_INFORMATION'</where>
     	</update>
     </changeSet>
+    
+    <changeSet id="update super user translation" author="Paul">
+    	<update tableName="strings">
+    		<column name="message">Super User (all permissions)</column>
+    		<where>key_path = 'PERM_CLIENT_SUPER_USER'</where>
+    	</update>
+    </changeSet>
 
 </databaseChangeLog>

@@ -11,6 +11,8 @@ import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientPasswordConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,11 +59,16 @@ public class UserClientsPasswordResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PermitAll
     public ResponseEntity<Void> changeExpiredPassword(@RequestBody ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
-        UserClient modifiedUser = userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
-        if (modifiedUser != null) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        
+        if(userClientPasswordService.validateNewPassword(expiredPasswordChangeRequest)){
+            UserClient modifiedUser = userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
+            if (modifiedUser != null) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.GONE);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.GONE);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -69,17 +76,23 @@ public class UserClientsPasswordResource {
      * PUT to reset a user's password
      *
      * @param resetPasswordRequest the activation request
-     * @return OK or GONE
+     * @return OK or GONE or NOT_ACCEPTABLE
      */
     @RequestMapping(value = "/password/reset", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
-        UserClient userClient = userClientPasswordService.resetPassword(resetPasswordRequest);
-        if (userClient != null) {
-            mailService.sendPasswordChangeConfirmationEmail(userClient);
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Void> resetPassword(
+            @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        if (userClientPasswordService.validateNewPassword(resetPasswordRequest)) {
+            UserClient userClient = userClientPasswordService
+                    .resetPassword(resetPasswordRequest);
+            if (userClient != null) {
+                mailService.sendPasswordChangeConfirmationEmail(userClient);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.GONE);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(HttpStatus.GONE);
     }
 
     /**
@@ -152,18 +165,23 @@ public class UserClientsPasswordResource {
             userClient.setEmail(forgotPassword.getEmail());
         }
         if (userClient.isEmailValidated()) {
-            // has a validated email
-            String resetRef =
-                    UriComponentsBuilder.fromHttpUrl(
-                            linkTo(methodOn(UserClientsPasswordResource.class)
-                                    .forgotPassword(null)).withSelfRel().getHref())
-                            .replacePath(clientEntryPoint +
-                                    String.format(UserClientsResource.RESET_PASSWORD_CLIENT_APPLICATION_URI,
-                                            userClient.getPasswordResetToken()))
-                            .build(false)
-                            .toUriString();
-            // send account reset email
-            mailService.sendPasswordResetEmail(userClient, resetRef);
+            if (StringUtils.isNotBlank(userClient.getPasswordResetToken())) {
+                // has a validated email
+                String resetRef =
+                        UriComponentsBuilder.fromHttpUrl(
+                                linkTo(methodOn(UserClientsPasswordResource.class)
+                                        .forgotPassword(null)).withSelfRel().getHref())
+                                .replacePath(clientEntryPoint +
+                                        String.format(UserClientsResource.RESET_PASSWORD_CLIENT_APPLICATION_URI,
+                                                userClient.getPasswordResetToken()))
+                                .build(false)
+                                .toUriString();
+                // send account reset email
+                mailService.sendPasswordResetEmail(userClient, resetRef);
+            } else {
+                mailService.sendPasswordResetNotEnabled(userClient);
+            }
+            
         } else {
             // send invalid account reset email
             mailService.sendInvalidAccountPasswordResetEmail(userClient);

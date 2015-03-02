@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
 import com.emmisolutions.emmimanager.web.rest.admin.configuration.gzip.GZipServletFilter;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.ImpersonationConfiguration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
@@ -35,9 +36,11 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         rootContext.register(
                 RestConfiguration.class,
                 SecurityConfiguration.class,
+                CasSecurityConfiguration.class,
                 HateoasConfiguration.class,
                 SwaggerConfiguration.class,
-                ClientSecurityConfiguration.class);
+                ClientSecurityConfiguration.class,
+                ImpersonationConfiguration.class);
 
         // Manage the lifecycle of the root application context
         servletContext.addListener(new ContextLoaderListener(rootContext));

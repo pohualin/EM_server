@@ -3,23 +3,23 @@ package com.emmisolutions.emmimanager.service.spring.security;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Collections;
 
@@ -33,7 +33,10 @@ import static org.junit.Assert.assertThat;
 public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
 
     @Resource
-    AuthenticationProvider authenticationProvider;
+    UserDetailsConfigurableAuthenticationProvider authenticationProvider;
+
+    @Resource
+    UserDetailsConfigurableAuthenticationProvider adminAuthenticationProvider;
 
     @Resource
     UserClientPersistence userClientPersistence;
@@ -47,11 +50,20 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     @Resource
     PasswordEncoder passwordEncoder;
 
-    @Resource
+    @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
+
+    @Resource(name = "adminUserDetailsService")
+    UserDetailsService adminUserDetailsService;
 
     @Resource
     UserClientService userClientService;
+
+    @PostConstruct
+    private void init(){
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        adminAuthenticationProvider.setUserDetailsService(adminUserDetailsService);
+    }
 
     /**
      * Make sure the password is correct
@@ -111,7 +123,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         // authenticate the super user
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(savedUserAdmin.getLogin(), plainTextPassword);
-        Authentication auth = authenticationProvider.authenticate(token);
+        Authentication auth = adminAuthenticationProvider.authenticate(token);
         assertThat("authentication is successful",
                 auth.isAuthenticated(), is(true));
         assertThat("admin user has been granted admin user permission", Collections.unmodifiableCollection(auth.getAuthorities()),

@@ -1,4 +1,4 @@
-<Context>
+<Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2_ID">
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
@@ -27,6 +27,16 @@
         the default in the application
     -->
     <!--<Environment name="client.application.entry.point" value="/client.html" type="java.lang.String"/>-->
+
+
+    <!-- CAS settings... these are enabled by the spring profiles 'cas' or 'prod' -->
+    <!--<Environment name="cas.server.url" value="https://devcas1.emmisolutions.com/cas" type="java.lang.String"/>-->
+    <!--<Environment name="cas.server.login.url" value="https://devcas1.emmisolutions.com/cas/login" type="java.lang.String"/>-->
+    <!--<Environment name="cas.server.logout.url" value="https://devcas1.emmisolutions.com/cas/logout" type="java.lang.String"/>-->
+    <!--<Environment name="cas.service.validation.uri" value="/webapi/j_spring_cas_security_check" type="java.lang.String"/>-->
+    <!--<Environment name="cas.provider.key" value="12234245632699" type="java.lang.String"/>-->
+    <!--<Environment name="cas.username.suffix" value="@emmisolutions.com" type="java.lang.String"/>-->
+    <!--<Environment name="cas.valid.server.suffixes" value="emmisolutions.com, localhost" type="java.lang.String"/>-->
 
 
     <!-- email server settings -->
