@@ -61,7 +61,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
                 user.isCredentialsNonExpired(),
                 clientResource,
                 perms,
-                user instanceof UserClient && ((UserClient) user).isImpersonated());
+                user instanceof UserClient && ((UserClient) user).isImpersonated(),
+                user instanceof UserClient ? ((UserClient)user).getPasswordLastUpdateDateTime() : null);
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
         return ret;
     }

@@ -1,8 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,9 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 )
 public class UserClientsResource {
 
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
+    
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
 
@@ -59,7 +66,13 @@ public class UserClientsResource {
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
     @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
-        return new ResponseEntity<>(userResourceAssembler.toResource(userDetailsService.getLoggedInUser()),
+        User user = userDetailsService.getLoggedInUser();
+        ClientPasswordConfiguration configuration = null;
+        if(user instanceof UserClient){
+            configuration = clientPasswordConfigurationService.get(((UserClient)user).getClient());
+        }
+        
+        return new ResponseEntity<>(userResourceAssembler.toResource(user),
                 HttpStatus.OK);
     }
 

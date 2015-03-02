@@ -76,6 +76,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 userClient.setCredentialsNonExpired(true);
                 userClient.setPasswordResetExpirationDateTime(null);
                 userClient.setPasswordResetToken(null);
+                userClient.setPasswordLastUpdateDateTime(LocalDateTime.now(DateTimeZone.UTC));
                 return userClientPersistence.saveOrUpdate(encodePassword(userClient));
             }
         }
@@ -101,6 +102,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 LocalDateTime expiration = userClient.getPasswordResetExpirationDateTime();
                 userClient.setPasswordResetToken(null);
                 userClient.setPasswordResetExpirationDateTime(null);
+                userClient.setPasswordLastUpdateDateTime(LocalDateTime.now(DateTimeZone.UTC));
                 if (isValid(expiration)) {
                     // the token on the user is valid, set the password and validate the email
                     userClient.setPassword(resetPasswordRequest.getNewPassword());

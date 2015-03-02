@@ -2,10 +2,13 @@ package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.joda.time.LocalDateTime;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.xml.bind.annotation.*;
+
 import java.util.List;
 
 /**
@@ -28,6 +31,8 @@ public class UserClientResource extends ResourceSupport {
     private String email;
 
     private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated;
+    
+    private LocalDateTime passwordLastUpdateTime;
 
     private ClientResource clientResource;
 
@@ -65,7 +70,8 @@ public class UserClientResource extends ResourceSupport {
                               boolean credentialsNonExpired,
                               ClientResource clientResource,
                               List<String> permissions,
-                              boolean impersonated) {
+                              boolean impersonated,
+                              LocalDateTime passwordLastUpdateTime) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -79,6 +85,7 @@ public class UserClientResource extends ResourceSupport {
         this.clientResource = clientResource;
         this.permissions = permissions;
         this.impersonated = impersonated;
+        this.passwordLastUpdateTime = passwordLastUpdateTime;
     }
 
     /**
