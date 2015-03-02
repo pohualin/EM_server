@@ -3,13 +3,14 @@ package com.emmisolutions.emmimanager.model;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import java.io.Serializable;
 
 /**
  * Base abstract class for entities which will hold definitions for type objects.
  */
 @MappedSuperclass
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractTypeEntity {
+public abstract class AbstractTypeEntity implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

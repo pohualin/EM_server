@@ -22,10 +22,10 @@ public interface ProviderPersistence {
     /**
      * Reloads a provider
      *
-     * @param id - of the provider to load
+     * @param provider - provider to load
      * @return Provider provider
      */
-    Provider reload(Long id);
+    Provider reload(Provider provider);
 
     /**
      * Fetches a page of Provider objects

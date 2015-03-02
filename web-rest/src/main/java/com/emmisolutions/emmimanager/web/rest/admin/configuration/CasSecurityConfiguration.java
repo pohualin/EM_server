@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.*;
-import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.util.CommonUtils;
@@ -10,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
@@ -33,18 +32,14 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenticationDetailsSource.makeDynamicUrlFromRequest;
 
 /**
  * CAS Setup
@@ -82,25 +77,17 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${cas.username.suffix:@emmisolutions.com}")
     private String userNameSuffix;
 
+    @Resource
+    DynamicAuthenticationDetailsSource dynamicAuthenticationDetailsSource;
+
     @Resource(name = "adminSecurityContextRepository")
     SecurityContextRepository adminSecurityContextRepository;
 
     @Resource(name = "adminTokenBasedRememberMeServices")
-    TokenBasedRememberMeServices  adminTokenBasedRememberMeServices;
+    TokenBasedRememberMeServices adminTokenBasedRememberMeServices;
 
     private Base64 urlSafeBase64;
 
-    private List<String> validCasServerHostEndings;
-
-    @Value("${cas.valid.server.suffixes:emmisolutions.com}")
-    private void setValidCasServerHostEndings(String endings) {
-        validCasServerHostEndings = new ArrayList<>();
-        for (String ending : StringUtils.split(endings, ",")) {
-            if (StringUtils.isNotBlank(ending)) {
-                validCasServerHostEndings.add(StringUtils.trim(ending));
-            }
-        }
-    }
 
     /**
      * This defines the service that is going to be validated. In
@@ -174,6 +161,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
         CasAuthenticationFilter casAuthenticationFilter = new AllowSuccessHandlerCasAuthenticationFilter();
         casAuthenticationFilter.setAuthenticationManager(authenticationManager());
+        casAuthenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/webapi/j_spring_cas_security_check"));
         casAuthenticationFilter.setAuthenticationSuccessHandler(casAuthenticationSuccessHandler);
         casAuthenticationFilter.setServiceProperties(serviceProperties());
         casAuthenticationFilter.setAuthenticationDetailsSource(dynamicServiceResolver());
@@ -191,28 +179,8 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     AuthenticationDetailsSource<HttpServletRequest,
             ServiceAuthenticationDetails> dynamicServiceResolver() {
-
-        return new AuthenticationDetailsSource<HttpServletRequest, ServiceAuthenticationDetails>() {
-            @Override
-            public ServiceAuthenticationDetails buildDetails(HttpServletRequest context) {
-                final String url = makeDynamicUrlFromRequest(serviceProperties());
-                boolean valid = false;
-                // ensure URL is from a known service
-                UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
-                        .build(false);
-                for (String validCasServerHostEnding : validCasServerHostEndings) {
-                    if (uriComponents.getHost()
-                            .endsWith(validCasServerHostEnding)) {
-                        valid = true;
-                        break;
-                    }
-                }
-                if (!valid) {
-                    throw new AccessDeniedException("The server is unable to authenticate the requested url.");
-                }
-                return new SavedUrlServiceAuthenticationDetails(context, url);
-            }
-        };
+        dynamicAuthenticationDetailsSource.setServiceProperties(serviceProperties());
+        return dynamicAuthenticationDetailsSource;
     }
 
     /**
@@ -222,6 +190,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the entry point
      */
     @Bean
+    @Scope(value = "prototype")
     public CasAuthenticationEntryPoint casAuthenticationEntryPoint() {
         CasAuthenticationEntryPoint casAuthenticationEntryPoint = new CasAuthenticationEntryPoint() {
 
@@ -237,7 +206,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
              */
             @Override
             protected String createServiceUrl(final HttpServletRequest request, final HttpServletResponse response) {
-                String service = makeDynamicUrlFromRequest(serviceProperties());
+                String service = makeDynamicUrlFromRequest(request, getServiceProperties());
                 String requestedUrl = request.getHeader("X-Requested-Url");
                 if (StringUtils.isNotBlank(requestedUrl)) {
                     // add requested URL as a query parameter
@@ -290,33 +259,32 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .addFilter(casAuthenticationFilter())
-                    .securityContext()
-                    .securityContextRepository(adminSecurityContextRepository)
-                    .and()
+                .securityContext()
+                .securityContextRepository(adminSecurityContextRepository)
+                .and()
                 .requestMatchers()
                         // ignore the form login and logout pages
-                    .requestMatchers(
-                            new AndRequestMatcher(
-                                    new NegatedRequestMatcher(
-                                            new AntPathRequestMatcher(SecurityConfiguration.loginProcessingUrl)),
-                                    new NegatedRequestMatcher(
-                                            new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)),
-                                    new NegatedRequestMatcher(
-                                            new AntPathRequestMatcher("*.jsp")),
-                                    new NegatedRequestMatcher(
-                                            new AntPathRequestMatcher("/webapi/messages")),
-                                    new NegatedRequestMatcher(
-                                            new AntPathRequestMatcher("/webapi-client/**")))
-                    )
-                    .and()
+                .requestMatchers(
+                        new AndRequestMatcher(
+                                new NegatedRequestMatcher(
+                                        new AntPathRequestMatcher(SecurityConfiguration.loginProcessingUrl)),
+                                new NegatedRequestMatcher(
+                                        new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)),
+                                new NegatedRequestMatcher(
+                                        new AntPathRequestMatcher("*.jsp")),
+                                new NegatedRequestMatcher(
+                                        new AntPathRequestMatcher("/webapi/messages")),
+                                new AntPathRequestMatcher("/webapi/**"))
+                )
+                .and()
                 .exceptionHandling()
-                    .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
-                            new AntPathRequestMatcher("/webapi/**"))
-                    .and()
+                .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
+                        new AntPathRequestMatcher("/webapi/**"))
+                .and()
                 .rememberMe()
-                    .key(adminTokenBasedRememberMeServices.getKey())
-                    .rememberMeServices(adminTokenBasedRememberMeServices)
-                    .and()
+                .key(adminTokenBasedRememberMeServices.getKey())
+                .rememberMeServices(adminTokenBasedRememberMeServices)
+                .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
@@ -326,7 +294,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi/messages").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()
-                .antMatchers("/webapi/**").authenticated();
+                    .antMatchers("/webapi/**").authenticated();
     }
 
     @Override
@@ -335,18 +303,10 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         // make sure the Base64 encoding doesn't chunk the output
         urlSafeBase64 = new Base64(-1, null, true);
     }
 
-    private String makeDynamicUrlFromRequest(ServiceProperties serviceProperties) {
-        return UriComponentsBuilder.fromHttpUrl(
-                linkTo(methodOn(UserClientsPasswordResource.class)
-                        .forgotPassword(null)).withSelfRel().getHref())
-                .replacePath(serviceProperties.getService())
-                .build(false)
-                .toString();
-    }
 }
 
