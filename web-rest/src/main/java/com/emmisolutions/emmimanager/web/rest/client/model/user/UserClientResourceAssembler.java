@@ -53,7 +53,6 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
                 clientResource,
                 perms);
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
-        ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null, null, null)).withRel("secretQuestions"));
         ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
         return ret;
     }
