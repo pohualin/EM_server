@@ -24,6 +24,8 @@ import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProvider_;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 

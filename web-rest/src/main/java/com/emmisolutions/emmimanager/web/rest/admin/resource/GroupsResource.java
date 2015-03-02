@@ -1,5 +1,28 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.GroupSaveRequest;
 import com.emmisolutions.emmimanager.model.GroupSearchFilter;
@@ -13,23 +36,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.groups.GroupResourceAs
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import java.util.List;
-import java.util.Set;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * Groups REST API.
@@ -65,7 +71,7 @@ public class GroupsResource {
      * @return GroupPage or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "50", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -96,7 +102,7 @@ public class GroupsResource {
      * @return List of Group objects or INTERNAL_SERVER_ERROR if update were unsuccessful
      */
     @RequestMapping(value = "/clients/{clientId}/groups", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<Group>> create(@RequestBody List<GroupSaveRequest> groupSaveRequests,
                                               @PathVariable("clientId") Long clientId) {
         Set<Group> groups = groupService.saveGroupsAndTags(groupSaveRequests, clientId);
@@ -115,7 +121,7 @@ public class GroupsResource {
      * @return List of Group objects or INTERNAL_SERVER_ERROR if update were unsuccessful
      */
     @RequestMapping(value = "/clients/{clientId}/invalidTeam", method = RequestMethod.POST)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Set<TeamTag>> invalidTeams(@RequestBody List<GroupSaveRequest> groupSaveRequests,
                                                          @PathVariable("clientId") Long clientId) {
         Set<TeamTag> teamTags = groupService.findTeamsPreventingSaveOf(groupSaveRequests, clientId);
@@ -134,7 +140,7 @@ public class GroupsResource {
      * @return GroupResource or NO_CONTENT on fail
      */
     @RequestMapping(value = "/groups/{id}", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_USER"})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<GroupResource> getGroupById(@PathVariable("id") Long id) {
         Group group = groupService.reload(id);
         if (group == null) {
