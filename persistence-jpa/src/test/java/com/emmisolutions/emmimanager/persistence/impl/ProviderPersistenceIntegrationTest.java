@@ -10,6 +10,7 @@ import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -78,7 +79,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
 		assertThat("system is the created by", provider.getCreatedBy(), is("system"));
 
-        assertThat("can reload it", providerPersistence.reload(provider.getId()), is(provider));
+        assertThat("can reload it", providerPersistence.reload(provider), is(provider));
 	}
 
     /**

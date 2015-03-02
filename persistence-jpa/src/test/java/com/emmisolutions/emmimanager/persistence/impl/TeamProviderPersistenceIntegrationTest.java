@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.model.Team;
@@ -8,10 +9,10 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -29,7 +30,7 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
     /**
      * Testing a provider save without a persistent team.
      */
-    @Test(expected = ConstraintViolationException.class)
+    @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidSave() {
         TeamProvider tp = new TeamProvider();
         teamProviderPersistence.save(tp);
@@ -97,6 +98,21 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
         assertThat("delete happens for only one provider for the client",
             teamProviderPersistence.delete(team.getClient(), two.getProvider()),
             is(1l));
+    }
+
+    /**
+     * This test is so that when a client passes just the id of the provider, the association between the team and the provider is still made.
+     *
+     */
+    @Test
+    public void saveTeamProviderWithOnlyProviderIdSet() {
+        Team team = makeNewRandomTeam(null);
+        Provider provider = makeNewRandomProvider();
+
+        TeamProvider tp = new TeamProvider(new Team(team.getId()), new Provider(provider.getId()));
+        TeamProvider saved = teamProviderPersistence.save(tp);
+        assertThat("save was successful",
+            saved, is(notNullValue()));
     }
 
 }
