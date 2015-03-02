@@ -43,10 +43,10 @@ public class UserClientSecretQuestionResponsesResource {
     UserClientSecretQuestionResponseResourceAssembler questionResponseAssembler;
     
    /**
-    * 
-    * @param pageable
-    * @param sort
-    * @param assembler
+    * Get the list of secret question response 
+    * @param pageable the pagination
+    * @param sort sort by rank
+    * @param assembler the assembler
     * @return secret question response entity
     */
     @RequestMapping(value = "/secret_questions/questions", method = RequestMethod.GET)
@@ -68,9 +68,9 @@ public class UserClientSecretQuestionResponsesResource {
 
 
     /**
-     * 
-     * @param userClientId
-     * @param id
+     * Get the user client secret question response with the secret question response id
+     * @param userClientId the user client id
+     * @param id the secret question response id
      * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses/{id}", method = RequestMethod.GET)
@@ -94,9 +94,9 @@ public class UserClientSecretQuestionResponsesResource {
 
 
     /**
-     * 
-     * @param userClientId
-     * @param userClientSecretQuestionResponse
+     * Save or update the user client secret question response
+     * @param userClientId the user client id
+     * @param userClientSecretQuestionResponse the user client secret question response
      * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses", method = RequestMethod.POST)
@@ -119,10 +119,10 @@ public class UserClientSecretQuestionResponsesResource {
     }
 
     /**
-     * 
-     * @param userClientId
-     * @param pageable
-     * @param assembler
+     * Get the user client secret question response 
+     * @param userClientId the user client id
+     * @param pageable the pagination
+     * @param assembler the assembler
      * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses", method = RequestMethod.GET)

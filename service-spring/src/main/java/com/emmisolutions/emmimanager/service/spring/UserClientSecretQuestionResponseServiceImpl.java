@@ -78,8 +78,6 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
                 toSave = questionResponse;
             }
         }
-        toSave.setSecretQuestion(secretQuestionPersistence.reload(toSave.getSecretQuestion()));
-        toSave.setUserClient(userClientPersistence.reload(toSave.getUserClient()));
         return userClientSecretQuestionResponsePersistence.saveOrUpdate(toSave);
     }
     

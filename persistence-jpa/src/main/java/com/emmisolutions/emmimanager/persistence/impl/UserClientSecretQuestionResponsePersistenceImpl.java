@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
+import com.emmisolutions.emmimanager.persistence.SecretQuestionPersistence;
+import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientSecretQuestionResponsePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientSecretQuestionResponseRepository;
 import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
@@ -30,6 +32,12 @@ public class UserClientSecretQuestionResponsePersistenceImpl implements
     
     @Resource
     SecretQuestionRepository SecretQuestionRepository;
+    
+    @Resource
+    SecretQuestionPersistence secretQuestionPersistence;
+    
+    @Resource
+    UserClientPersistence userClientPersistence;
 
     @Override
     public Page<UserClientSecretQuestionResponse> findByUserClient(UserClient userClient, Pageable pageable) {
@@ -46,6 +54,9 @@ public class UserClientSecretQuestionResponsePersistenceImpl implements
     @Override
     public UserClientSecretQuestionResponse saveOrUpdate(
             UserClientSecretQuestionResponse questionResponse) {
+    	// reload the secret question and user client because the version may have changed
+        questionResponse.setSecretQuestion(secretQuestionPersistence.reload(questionResponse.getSecretQuestion()));
+        questionResponse.setUserClient(userClientPersistence.reload(questionResponse.getUserClient()));
         return userClientSecretQuestionResponseRepository.save(questionResponse);
           
     }
