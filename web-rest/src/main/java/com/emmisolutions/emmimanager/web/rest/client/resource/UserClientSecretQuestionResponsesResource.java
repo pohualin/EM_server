@@ -78,7 +78,6 @@ public class UserClientSecretQuestionResponsesResource {
             @PathVariable("userClientId") Long userClientId,
             @PathVariable("id") Long id) {
         
-        userClientService.reload(new UserClient(userClientId));
         UserClientSecretQuestionResponse ucsqr = userClientSecretQuestionResponseService
                 .reload(new UserClientSecretQuestionResponse(id));
                

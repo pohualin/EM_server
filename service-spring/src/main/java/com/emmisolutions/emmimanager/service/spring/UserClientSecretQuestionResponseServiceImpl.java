@@ -90,7 +90,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
      * @return page SecretQuestion
      */
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<SecretQuestion> list(Pageable pageable) {
         return secretQuestionPersistence.findAll(pageable);
     }
@@ -101,7 +101,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
      * @return  UserClientSecretQuestionResponse
      */
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserClientSecretQuestionResponse reload(
             UserClientSecretQuestionResponse questionResponse) {
         if (questionResponse == null || questionResponse.getId() == null) {
