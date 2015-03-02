@@ -78,6 +78,15 @@ public interface UserClientService {
      * @return the updated UserClient
      */
     UserClient expireActivationToken(UserClient userClient);
+    
+    /**
+     * Handle login failed userCLient
+     * 
+     * @param userClient
+     *            to deal with
+     * @return handled userClient
+     */
+    UserClient handleLoginFailure(UserClient userClient);
 
     /**
      * Number of hours activation tokens are valid after creation

@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -7,31 +9,44 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermis
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests the authentication provider
  */
 public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
 
+    @Resource
+    UserAdminService userAdminService;
+    
     @Resource
     UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
@@ -155,5 +170,76 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
                         + "_" + loggedInUser.getTeamRoles().iterator().next().getTeam().getId())));
 
         logout();
+    }
+    
+    @Test
+    public void customizedPreAuthenticationChecks() {
+        Client client = makeNewRandomClient();
+        String plainTextPassword = "aPassword";
+        String encodedPassword = passwordEncoder.encode(plainTextPassword);
+        
+        UserClient userClient = makeNewRandomUserClient(client);
+        userClient.setPassword(encodedPassword.substring(0,
+                LegacyPasswordEncoder.PASSWORD_SIZE));
+        userClient.setSalt(encodedPassword
+                .substring(LegacyPasswordEncoder.PASSWORD_SIZE));
+        
+        userClient.setAccountNonExpired(false);
+        userClient = userClientPersistence.saveOrUpdate(userClient);
+        try {
+            authenticationProvider
+                    .authenticate(new UsernamePasswordAuthenticationToken(
+                            userClient.getLogin(), plainTextPassword));
+            fail("You should not pass!");
+        } catch (AuthenticationException e) {
+        }
+        
+        userClient.setAccountNonExpired(true);
+        userClient.setActive(false);
+        userClient = userClientPersistence.saveOrUpdate(userClient);
+        try {
+            authenticationProvider
+                    .authenticate(new UsernamePasswordAuthenticationToken(
+                            userClient.getLogin(), plainTextPassword));
+            fail("You should not pass!");
+        } catch (DisabledException e) {
+        }
+
+        userClient.setActive(true);
+        userClient.setAccountNonLocked(false);
+        userClient = userClientPersistence.saveOrUpdate(userClient);
+
+        try {
+            authenticationProvider
+                    .authenticate(new UsernamePasswordAuthenticationToken(
+                            userClient.getLogin(), plainTextPassword));
+            fail("You should not pass!");
+        } catch (LockedException e) {
+        }
+
+        LocalDateTime now = LocalDateTime.now(DateTimeZone.UTC);
+        LocalDateTime future = now.plusMinutes(5);
+        userClient.setLockExpirationDateTime(future);
+        userClient = userClientPersistence.saveOrUpdate(userClient);
+
+        try {
+            authenticationProvider
+                    .authenticate(new UsernamePasswordAuthenticationToken(
+                            userClient.getLogin(), plainTextPassword));
+            fail("You should not pass!");
+        } catch (LockedException e) {
+        }
+        
+        LocalDateTime pass = now.minusMinutes(5);
+        userClient.setLockExpirationDateTime(pass);
+        userClient.setLoginFailureCount(3);
+        userClient = userClientPersistence.saveOrUpdate(userClient);
+
+        Authentication auth = authenticationProvider
+                .authenticate(new UsernamePasswordAuthenticationToken(
+                        userClient.getLogin(), plainTextPassword));
+        assertThat("authentication is successful", auth.isAuthenticated(),
+                is(true));
+
     }
 }

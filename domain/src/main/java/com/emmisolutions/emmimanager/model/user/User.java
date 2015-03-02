@@ -1,10 +1,12 @@
 package com.emmisolutions.emmimanager.model.user;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.joda.time.LocalDateTime;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -67,6 +70,9 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     
     @Column(name = "login_failure_count")
     private int loginFailureCount;
+    
+    @Column(name = "lock_expiration_time_utc")
+    private LocalDateTime lockExpirationDateTime;
 
     public Long getId() {
         return id;
@@ -191,5 +197,13 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
 
     public void setLoginFailureCount(int loginFailureCount) {
         this.loginFailureCount = loginFailureCount;
+    }
+
+    public LocalDateTime getLockExpirationDateTime() {
+        return lockExpirationDateTime;
+    }
+
+    public void setLockExpirationDateTime(LocalDateTime lockExpirationDateTime) {
+        this.lockExpirationDateTime = lockExpirationDateTime;
     }
 }

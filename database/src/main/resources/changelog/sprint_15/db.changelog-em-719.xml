@@ -6,14 +6,26 @@
 
     <changeSet id="add login_failure_count to users" author="Paul">
         <addColumn tableName="users">
-        	<column name="login_failure_count" type="int" />
+        	<column name="login_failure_count" type="int" defaultValue="0" >
+        		<constraints nullable="false"/>
+        	</column>
         </addColumn>
         
-        <update tableName="users">
-        	<column name="login_failure_count">0</column>
-       	</update>
-        
-        <addNotNullConstraint tableName="users" columnName="login_failure_count" columnDataType="int"/>
+        <addColumn tableName="users_audit">
+            <column name="login_failure_count" type="int"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="add account lock expiration timestamps" author="Paul">
+
+        <addColumn tableName="users">
+            <column name="lock_expiration_time_utc" type="timestamp"/>
+        </addColumn>
+
+        <addColumn tableName="users_audit">
+            <column name="lock_expiration_time_utc" type="timestamp"/>
+        </addColumn>
+
     </changeSet>
 
 </databaseChangeLog>

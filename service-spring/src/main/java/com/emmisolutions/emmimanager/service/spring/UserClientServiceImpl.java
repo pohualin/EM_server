@@ -1,13 +1,17 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
+import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -20,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -33,6 +39,9 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     ClientService clientService;
+    
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
 
     @Resource
     UserClientPersistence userClientPersistence;
@@ -132,6 +141,9 @@ public class UserClientServiceImpl implements UserClientService {
                     userClient.setEmailValidated(true);
                     userClient.setPassword(activationRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
+                    userClient.setAccountNonLocked(true);
+                    userClient.setLoginFailureCount(0);
+                    userClient.setLockExpirationDateTime(null);
                     ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
@@ -179,4 +191,42 @@ public class UserClientServiceImpl implements UserClientService {
         return userClientPersistence.saveOrUpdate(fromDb);
     }
 
+    @Override
+    @Transactional
+    public UserClient handleLoginFailure(UserClient userClient) {
+        UserClient toBeHandled = userClient;
+
+        if (toBeHandled.isAccountNonLocked()) {
+            // Authenticate failed add 1 to failure count
+            toBeHandled
+                    .setLoginFailureCount(userClient.getLoginFailureCount() + 1);
+
+            ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                    .get(toBeHandled.getClient());
+            if (configuration.getLockoutAttemps() <= toBeHandled
+                    .getLoginFailureCount()) {
+                // Lock the user after few attempts depending on how client setup
+                toBeHandled.setAccountNonLocked(false);
+                // Do not set a lock expiration when client do not use this feature
+                if (configuration.getLockoutReset() != 0) {
+                    toBeHandled.setLockExpirationDateTime(LocalDateTime.now(
+                            DateTimeZone.UTC).plusMinutes(
+                            configuration.getLockoutReset()));
+                }
+            }
+        } else {
+            LocalDateTime now = LocalDateTime.now(DateTimeZone.UTC);
+            // if lock expired
+            if (toBeHandled.getLockExpirationDateTime() != null
+                    && now.isAfter(toBeHandled.getLockExpirationDateTime())) {
+                // Unlock and give the user few more attempts
+                toBeHandled.setAccountNonLocked(true);
+                toBeHandled.setLoginFailureCount(1);
+                toBeHandled.setLockExpirationDateTime(null);
+            }
+        }
+
+        return userClientPersistence.saveOrUpdate(toBeHandled);
+    }
+    
 }
