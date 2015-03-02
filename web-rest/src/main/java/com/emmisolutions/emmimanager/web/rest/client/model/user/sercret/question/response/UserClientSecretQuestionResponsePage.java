@@ -17,7 +17,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * A HATEOAS wrapper for a page of UserClientSecretQuestionResource objects.
  */
-@XmlRootElement(name = "secret-question-response-page")
+@XmlRootElement(name = "secretQuestionResponsePage")
 public class UserClientSecretQuestionResponsePage extends PagedResource<UserClientSecretQuestionResponseResource> {
 
     public UserClientSecretQuestionResponsePage() {

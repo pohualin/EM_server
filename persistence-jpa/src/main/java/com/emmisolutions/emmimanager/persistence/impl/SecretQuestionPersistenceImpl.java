@@ -33,12 +33,7 @@ public class SecretQuestionPersistenceImpl implements SecretQuestionPersistence 
 		return  secretQuestionRepository.findAll(pageable);
 	}
 
-    @Override
-    public SecretQuestion save(SecretQuestion secretQuestion) {
-        return secretQuestionRepository.save(secretQuestion);
-    }
-
-    @Override
+   @Override
     public SecretQuestion reload(SecretQuestion secretQuestion) {
        return secretQuestionRepository.findOne(secretQuestion.getId());
 

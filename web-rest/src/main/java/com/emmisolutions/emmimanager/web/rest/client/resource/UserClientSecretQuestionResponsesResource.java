@@ -24,8 +24,6 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
-import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.SecretQuestionPage;
-import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.SecretQuestionResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponsePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponseResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponseResourceAssembler;
@@ -44,9 +42,6 @@ public class UserClientSecretQuestionResponsesResource {
     @Resource
     UserClientSecretQuestionResponseResourceAssembler questionResponseAssembler;
     
-    @Resource
-    SecretQuestionResourceAssembler questionAssembler;
-
    /**
     * 
     * @param pageable
@@ -55,7 +50,7 @@ public class UserClientSecretQuestionResponsesResource {
     * @return secret question response entity
     */
     @RequestMapping(value = "/secret_questions/questions", method = RequestMethod.GET)
-    public ResponseEntity<SecretQuestionPage> secretQuestions(
+    public ResponseEntity<Page<SecretQuestion>> secretQuestions(
             @PageableDefault(size = 10, sort = "rank") Pageable pageable,
             @SortDefault(sort = "rank") Sort sort,
             PagedResourcesAssembler<SecretQuestion> assembler) {
@@ -64,19 +59,12 @@ public class UserClientSecretQuestionResponsesResource {
                 .list(pageable);
         
         if(page != null) {
-            return new ResponseEntity<>(
-            		new SecretQuestionPage(
-            				assembler
-            				 .toResource(page,
-                                     questionAssembler),
-                                     page), HttpStatus.OK);
+        	return new ResponseEntity<>(page, HttpStatus.OK);
           
         }else{
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        
-    
-    }
+   }
 
 
     /**

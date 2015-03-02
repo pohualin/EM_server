@@ -29,13 +29,6 @@ public interface UserClientSecretQuestionResponsePersistence {
     UserClientSecretQuestionResponse saveOrUpdate (UserClientSecretQuestionResponse questionResponse);
   
     /**
-     * Reload the user client secret question response
-     * @param id the user client secret question response
-     * @return user client secret question response
-     */
-    UserClientSecretQuestionResponse reload(Long id);
-    
-    /**
      * Reload the user client secret question response 
      * @param userClientSecretQuestion the user client secret question 
      * @return user client secret question response

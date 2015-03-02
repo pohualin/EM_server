@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * HATEOAS wrapper for UserClientSecretQuestion
  */
-@XmlRootElement(name = "secret-question")
+@XmlRootElement(name = "secretQuestionResponse")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserClientSecretQuestionResponseResource extends ResourceSupport {
 

@@ -52,22 +52,11 @@ public class UserClientSecretQuestionResponsePersistenceImpl implements
 
     @Override
     public UserClientSecretQuestionResponse reload(
-            Long id) {
-       return userClientSecretQuestionResponseRepository.findOne(id);
-    }
-
-   
-    @Override
-    public UserClientSecretQuestionResponse reload(
     	UserClientSecretQuestionResponse userClientSecretQuestion){
-        if (userClientSecretQuestion == null || 
-    	     userClientSecretQuestion.getUserClient().getId() == null ||
-    	     userClientSecretQuestion.getSecretQuestion().getId() == null) {
+        if (userClientSecretQuestion == null || userClientSecretQuestion.getId() == null) {
              return null;
         }
-        return userClientSecretQuestionResponseRepository.
-        		findByUserClientIdAndSecretQuestionId(userClientSecretQuestion.getUserClient().getId(),
-        				userClientSecretQuestion.getSecretQuestion().getId());
+        return userClientSecretQuestionResponseRepository.findOne(userClientSecretQuestion.getId());
     }
 
    

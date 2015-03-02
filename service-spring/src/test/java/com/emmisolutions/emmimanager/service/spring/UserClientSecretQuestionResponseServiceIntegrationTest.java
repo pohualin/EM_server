@@ -10,6 +10,7 @@ import com.emmisolutions.emmimanager.model.SecretQuestion;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
+import com.emmisolutions.emmimanager.persistence.SecretQuestionPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
@@ -39,15 +40,9 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
     @Resource
     SecretQuestionRepository secretQuestionRepository;
         
-    @Test
-    public void loadAllSecretQuestions(){
-        List<SecretQuestion> list = createSecretQuestions();
-        secretQuestionRepository.save(list);
-        Page<SecretQuestion> set = userClientSecretQuestionResponseService.list(new PageRequest(0, 10));
-        assertThat("SecretQuestion has been created", set.hasContent(), is(true) );
-     
-    }   
-
+    @Resource
+    SecretQuestionPersistence secretQuestionPersistence;
+    
     @Test
     public void testFindEmpty() {
         Client client = makeNewRandomClient();
@@ -97,6 +92,7 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
         List<SecretQuestion> list = createSecretQuestions();
+        Page<SecretQuestion> set = secretQuestionPersistence.findAll(new PageRequest(0, 10));
         SecretQuestion secretQuestion = secretQuestionRepository.save(list.get(0));
         UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
         questionResponse.setSecretQuestion(secretQuestion);

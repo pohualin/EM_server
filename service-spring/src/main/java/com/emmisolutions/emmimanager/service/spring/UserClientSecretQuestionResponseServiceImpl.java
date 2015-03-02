@@ -66,23 +66,18 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         UserClientSecretQuestionResponse toSave = null;
         if (inDb != null){
             // there is currently a response to this question
-            inDb.setResponse(questionResponse.getResponse());
-            toSave = inDb;
+        	toSave = inDb;
+            toSave.setResponse(questionResponse.getResponse());
+            toSave.setSecretQuestion(questionResponse.getSecretQuestion());
         } else {
-            
             // check to see how many responses are currently stored
-            if (userClientSecretQuestionResponsePersistence.findByUserClient(questionResponse.getUserClient(), 
-                    new PageRequest(0, 10, Sort.Direction.ASC, "id")).getNumberOfElements() >= 2){
-                toSave = userClientSecretQuestionResponsePersistence.reload(questionResponse.getId());
-                toSave.setResponse(questionResponse.getResponse());
-                toSave.setSecretQuestion(questionResponse.getSecretQuestion());
-                toSave = questionResponse;
-            }
-            else{
+            if (userClientSecretQuestionResponsePersistence.findByUserClient(questionResponse.getUserClient(), null)
+            		.getNumberOfElements() >= 2){
+                throw new InvalidDataAccessApiUsageException("There are already 2 responses in the database");
+            } else{
                 toSave = questionResponse;
             }
         }
-        
         toSave.setSecretQuestion(secretQuestionPersistence.reload(toSave.getSecretQuestion()));
         toSave.setUserClient(userClientPersistence.reload(toSave.getUserClient()));
         return userClientSecretQuestionResponsePersistence.saveOrUpdate(toSave);
@@ -112,7 +107,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         if (questionResponse == null || questionResponse.getId() == null) {
             return null;
         }
-        return userClientSecretQuestionResponsePersistence.reload(questionResponse.getId());
+        return userClientSecretQuestionResponsePersistence.reload(questionResponse);
     }
 
    

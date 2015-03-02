@@ -26,21 +26,11 @@ public interface SecretQuestionPersistence {
     Page<SecretQuestion> findAll(Pageable pageable);
     
     
-    /** 
-     * 
-     * @param secretQuestion 
-     * @return secret question
-     */
-    SecretQuestion save(SecretQuestion secretQuestion);
-
-
-   /**
+    /**
     * 
     * @param secretQuestion
-    * @return secret question
+    * @return SecretQuestion
     */
     SecretQuestion reload(SecretQuestion secretQuestion);
-    
    
-  
 }

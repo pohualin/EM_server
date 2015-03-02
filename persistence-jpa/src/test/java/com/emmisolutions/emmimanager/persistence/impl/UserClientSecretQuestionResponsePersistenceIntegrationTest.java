@@ -1,14 +1,17 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
+import java.util.Set;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.SecretQuestion;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
@@ -39,49 +42,31 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
     SecretQuestionRepository secretQuestionPersistence;
 	
 	/**
-	 * Test to find
-	 */
-	@Test
-    public void testFind() {
-		Client client = makeNewRandomClient();
-        UserClient user = makeNewRandomUserClient(client); 
-        assertThat(user.getId(), is(notNullValue()));
-        assertThat(user.getVersion(), is(notNullValue()));
-        UserClient user1 = userClientPersistence.reload(user);
-        assertThat("the users saved should be the same as the user fetched",
-                user, is(user1));
-        Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence
-                .findByUserClient(user1, null);
-        assertThat("Find pageable question response with client Id", findByUser.hasContent(), is(false));
-    
-    }
-    
-	/**
-	 * Test save
+	 * Test save and find
 	 */
     @Test
-    public void save() {
+    public void saveAndFind() {
     	Client client = makeNewRandomClient();
         UserClient user = makeNewRandomUserClient(client);   
-        SecretQuestion secretQuestion = new SecretQuestion();
-        secretQuestion.setSecretQuestion("What was the make and model of your first car?");
-        SecretQuestion secretQuestionId  = secretQuestionPersistence.save(secretQuestion);
+        
+        Page<SecretQuestion> set = secretQuestionPersistence.findAll(new PageRequest(0, 10));
 
     	UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
-    	questionResponse.setSecretQuestion(secretQuestionId);
+    	questionResponse.setSecretQuestion(set.getContent().get(1));
     	questionResponse.setResponse("Response");
     	questionResponse.setUserClient(user);
     	questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponsePersistence.saveOrUpdate(questionResponse);
-    	userClientSecretQuestionResponsePersistence.reload(questionResponse.getId());    	
+    	userClientSecretQuestionResponsePersistence.reload(questionResponse);    	
         assertThat("Client was given an id", questionResponse.getId(), is(notNullValue()));
           
         UserClientSecretQuestionResponse findByClientIdAndQuestionId = userClientSecretQuestionResponsePersistence.reload(questionResponse);
         
-        assertThat("Find list question response with client Id", findByClientIdAndQuestionId, is(notNullValue()));
+        assertThat("Find one question response with client Id", findByClientIdAndQuestionId, is(notNullValue()));
         
         Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence
                 .findByUserClient(user, new PageRequest(0, 10));
-        assertThat("Find pageable question response with client Id", findByUser.hasContent(), is(true));
+        
+        assertThat("Find pageable question response with user client", findByUser, hasItem(questionResponse));       
     } 
   
     

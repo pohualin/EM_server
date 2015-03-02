@@ -12,7 +12,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 /**
  * Creates a UserClientSecretQuestionResponsesResource from a UserClientSecretQuestionResponses
  */
-@Component
+@Component("userClientSecretQuestionResponseResourceAssembler")
 public class UserClientSecretQuestionResponseResourceAssembler implements
         ResourceAssembler<UserClientSecretQuestionResponse, UserClientSecretQuestionResponseResource> {
 
