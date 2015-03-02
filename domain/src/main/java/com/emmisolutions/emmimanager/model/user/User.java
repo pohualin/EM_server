@@ -53,9 +53,6 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     @Column(name = "credentials_non_expired")
     private boolean credentialsNonExpired = false;
 
-    @Column(name = "email_validated")
-    private boolean emailValidated = false;
-
     @NotNull
     @Size(min = 0, max = 50)
     @Column(name = "last_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
@@ -107,9 +104,7 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+    public abstract Collection<? extends GrantedAuthority> getAuthorities();
 
     public String getFirstName() {
         return firstName;
@@ -183,13 +178,5 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
 
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
-    }
-
-    public boolean isEmailValidated() {
-        return emailValidated;
-    }
-
-    public void setEmailValidated(boolean emailValidated) {
-        this.emailValidated = emailValidated;
     }
 }

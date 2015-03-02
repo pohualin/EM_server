@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Collection;
 @Table(name = "user_client_permission")
 @XmlRootElement(name = "permission")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserClientPermission {
+public class UserClientPermission implements Serializable {
 
     @Id
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
