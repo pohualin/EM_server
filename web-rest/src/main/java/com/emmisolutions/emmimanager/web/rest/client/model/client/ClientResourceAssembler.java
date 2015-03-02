@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.web.rest.client.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
             return null;
         }
         ClientResource ret = new ClientResource();
-        ret.add(linkTo(methodOn(ClientsResource.class).get(entity.getId())).withSelfRel());
         ret.add(linkTo(methodOn(UserClientsPasswordResource.class).passwordPolicy(entity.getId())).withRel("passwordPolicy"));
         ret.setEntity(entity);
         return ret;

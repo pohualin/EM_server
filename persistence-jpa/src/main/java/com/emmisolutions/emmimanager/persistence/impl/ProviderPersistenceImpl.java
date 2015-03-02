@@ -40,8 +40,11 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
     }
 
     @Override
-    public Provider reload(Long id) {
-        return providerRepository.findOne(id);
+    public Provider reload(Provider provider) {
+        if (provider == null || provider.getId() == null) {
+            return null;
+        }
+        return providerRepository.findOne(provider.getId());
     }
 
     @Override

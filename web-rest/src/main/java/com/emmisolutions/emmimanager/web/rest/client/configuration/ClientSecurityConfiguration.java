@@ -2,8 +2,8 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.configuration.SecurityConfiguration;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,9 +22,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
@@ -53,9 +56,8 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
 
     @Resource(name = "clientUserDetailsService")
-    private UserDetailsService userDetailsService;
+    private UserDetailsService clientUserDetailsService;
 
-    @Resource(name = "legacyAuthenticationProvider")
     private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource
@@ -64,20 +66,16 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource
     PermissionEvaluator permissionEvaluator;
 
-    @PostConstruct
-    private void init(){
-        authenticationProvider.setUserDetailsService(userDetailsService);
+    @Resource(name = "legacyAuthenticationProvider")
+    private void setAuthenticationProvider(UserDetailsConfigurableAuthenticationProvider authenticationProvider){
+        authenticationProvider.setUserDetailsService(clientUserDetailsService);
+        this.authenticationProvider =  authenticationProvider;
     }
 
-    /**
-     * Setup the global authentication settings
-     *
-     * @param auth to setup
-     * @throws Exception if there's a problem with the user details service
-     */
-    @Inject
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider);
+    @Bean(name="clientAuthenticationManager")
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     /**
@@ -89,6 +87,44 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         DefaultWebSecurityExpressionHandler ret = new DefaultWebSecurityExpressionHandler();
         ret.setPermissionEvaluator(permissionEvaluator);
         return ret;
+    }
+
+    /**
+     * Session storage for security context
+     *
+     * @return an HttpSessionSecurityContextRepository
+     */
+    @Bean(name = "clientSecurityContextRepository")
+    public SecurityContextRepository securityContextRepository(){
+        HttpSessionSecurityContextRepository ret = new HttpSessionSecurityContextRepository();
+        ret.setSpringSecurityContextKey("SPRING_SECURITY_CONTEXT_CLIENT");
+        return ret;
+    }
+
+    /**
+     * Sets remember me at the context root
+     *
+     * @return the TokenBasedRememberMeServices
+     */
+    @Bean(name = "clientTokenBasedRememberMeServices")
+    public TokenBasedRememberMeServices tokenBasedRememberMeServices(){
+        RootTokenBasedRememberMeServices rootTokenBasedRememberMeServices =
+                new RootTokenBasedRememberMeServices("EM2_RMC_KEY_999087!", clientUserDetailsService);
+        rootTokenBasedRememberMeServices.setUseSecureCookie(false);
+        rootTokenBasedRememberMeServices.setParameter("remember-me");
+        rootTokenBasedRememberMeServices.setCookieName("EM2_RMC");
+        return rootTokenBasedRememberMeServices;
+    }
+
+    /**
+     * Setup the global authentication settings
+     *
+     * @param auth to setup
+     * @throws Exception if there's a problem with the user details service
+     */
+    @Inject
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider);
     }
 
     /**
@@ -107,32 +143,34 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi-client/authenticated");
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-client.jsp?error");
         http
+                .securityContext()
+                    .securityContextRepository(securityContextRepository())
+                    .and()
                 .requestMatchers()
                     .antMatchers("/webapi-client/**")
                 .and()
-                .exceptionHandling()
-                    .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                            new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
-                .and()
+                    .exceptionHandling()
+                        .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
+                                new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
+                    .and()
                 .rememberMe()
-                .key(SecurityConfiguration.REMEMBER_ME_KEY)
-                    .userDetailsService(userDetailsService)
+                    .key(tokenBasedRememberMeServices().getKey())
+                    .rememberMeServices(tokenBasedRememberMeServices())
                 .and()
                 .formLogin()
                 .loginPage("/login-client.jsp")
                     .loginProcessingUrl(loginProcessingUrl)
-                .successHandler(ajaxAuthenticationSuccessHandler)
-                .failureHandler(ajaxAuthenticationFailureHandler)
+                    .successHandler(ajaxAuthenticationSuccessHandler)
+                    .failureHandler(ajaxAuthenticationFailureHandler)
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
                 .permitAll()
                 .and()
                 .logout()
-                .logoutUrl(logoutProcessingUrl)
+                    .logoutUrl(logoutProcessingUrl)
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-                .and()
+                    .permitAll()
+                    .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
