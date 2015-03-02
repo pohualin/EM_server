@@ -90,9 +90,6 @@ public class UserClient extends User {
     @Column(name = "activation_expiration_time_utc")
     private LocalDateTime activationExpirationDateTime;
 
-    @Transient
-    private boolean impersonated;
-
     public UserClient() {
 
     }
@@ -149,7 +146,7 @@ public class UserClient extends User {
                 for (UserClientPermission permission : clientRole.getUserClientRole().getUserClientPermissions()) {
                     authorityList.add(
                             new SimpleGrantedAuthority(permission.getName().toString() + "_" +
-                                    clientRole.getUserClientRole().getClient().getId()));
+                                    clientRole.getUserClient().getClient().getId()));
                 }
             }
             // granted team authorities are in the form of PERM_NAMEOFPERMISSION_TEAMID
@@ -256,13 +253,5 @@ public class UserClient extends User {
 
     public void setActivationExpirationDateTime(LocalDateTime activationExpirationDateTime) {
         this.activationExpirationDateTime = activationExpirationDateTime;
-    }
-
-    public boolean isImpersonated() {
-        return impersonated;
-    }
-
-    public void setImpersonated(boolean impersonated) {
-        this.impersonated = impersonated;
     }
 }

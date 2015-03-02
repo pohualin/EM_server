@@ -104,7 +104,9 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     }
 
     @Override
-    public abstract Collection<? extends GrantedAuthority> getAuthorities();
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
 
     public String getFirstName() {
         return firstName;
