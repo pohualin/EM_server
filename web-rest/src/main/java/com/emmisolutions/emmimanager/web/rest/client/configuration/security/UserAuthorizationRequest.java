@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 /**
- * Check to see if a client level permission is present in the authorities.
+ * Check to see if a user is logged in
  */
 @Component("user")
 public class UserAuthorizationRequest  {
@@ -32,6 +32,9 @@ public class UserAuthorizationRequest  {
     }
 
     public boolean isLoggedIn(Authentication authentication ){
-        return this.userId.equals(((UserClient)authentication.getPrincipal()).getId());
+        if(this.userId!=null&&authentication!=null&&authentication.getPrincipal()!=null&&((UserClient)authentication.getPrincipal()).getId()!=null) {
+            return this.userId.equals(((UserClient) authentication.getPrincipal()).getId());
+        }
+        return false;
     }
 }

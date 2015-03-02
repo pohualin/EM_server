@@ -59,7 +59,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
                 user.isAccountNonExpired(),
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
-                user.isEmailValidated(),
+                ((UserClient) user).isEmailValidated(),
                 clientResource,
                 perms,
                 user instanceof UserClient && ((UserClient) user).isImpersonated());

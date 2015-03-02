@@ -38,7 +38,7 @@ public class MailServiceImpl implements MailService {
     @Value("${mail.activation.from:EmmiManager Activation <no_reply_act@emmisolutions.com>}")
     private String activationFrom;
 
-    @Value("${mail.validation.from:EmmiManager Email Validation <no_reply_act@emmisolutions.com>}")
+    @Value("${mail.validation.from:EmmiManager Email Validation <no_reply_validation@emmisolutions.com>}")
     private String emailValidationFrom;
 
     @Value("${mail.password_reset.from:EmmiManager Password Reset <no_reply_pw@emmisolutions.com>}")

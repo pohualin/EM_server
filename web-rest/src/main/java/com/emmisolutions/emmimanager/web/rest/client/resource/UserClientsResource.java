@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.client.resource;
 
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
@@ -34,6 +35,8 @@ public class UserClientsResource {
 
     @Resource
     MailService mailService;
+    @Resource
+    UserClientService userClientService;
 
     /**
      * This is an example method that demonstrates how to set up authorization
@@ -76,6 +79,9 @@ public class UserClientsResource {
                                          @RequestBody UserClient userClient) {
         if (userClient != null) {
             // send the email (asynchronously)
+            userClient.setId(userId);
+            userClient = userClientService.reload(userClient);
+            userClientService.update(userClient);
             mailService.sendValidationEmail(userClient, "http://aUrl");
             userClient.setEmailValidated(true);
         }

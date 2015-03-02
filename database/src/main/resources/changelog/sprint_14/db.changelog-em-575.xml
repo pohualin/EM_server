@@ -13,13 +13,4 @@
                   separator="~"/>
 
     </changeSet>
-
-    <changeSet id="email validation column" author="Kevin">
-        <addColumn tableName="users">
-            <column name="email_validated" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
-
 </databaseChangeLog>
