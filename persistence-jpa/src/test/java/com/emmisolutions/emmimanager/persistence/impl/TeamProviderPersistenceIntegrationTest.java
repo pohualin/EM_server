@@ -8,11 +8,13 @@ import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
+
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.*;
