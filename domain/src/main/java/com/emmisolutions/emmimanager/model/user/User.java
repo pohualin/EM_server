@@ -68,12 +68,6 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters and digits")
     private String normalizedName;
     
-    @Column(name = "login_failure_count")
-    private int loginFailureCount;
-    
-    @Column(name = "lock_expiration_time_utc")
-    private LocalDateTime lockExpirationDateTime;
-
     public Long getId() {
         return id;
     }
@@ -188,20 +182,5 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
     }
-
-    public int getLoginFailureCount() {
-        return loginFailureCount;
-    }
-
-    public void setLoginFailureCount(int loginFailureCount) {
-        this.loginFailureCount = loginFailureCount;
-    }
-
-    public LocalDateTime getLockExpirationDateTime() {
-        return lockExpirationDateTime;
-    }
-
-    public void setLockExpirationDateTime(LocalDateTime lockExpirationDateTime) {
-        this.lockExpirationDateTime = lockExpirationDateTime;
-    }
+    
 }
