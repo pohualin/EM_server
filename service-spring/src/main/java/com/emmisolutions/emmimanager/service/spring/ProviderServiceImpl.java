@@ -48,7 +48,7 @@ public class ProviderServiceImpl implements ProviderService {
         if (provider == null || provider.getId() == null) {
             return null;
         }
-        return providerPersistence.reload(provider);
+        return providerPersistence.reload(provider.getId());
     }
 
     @Override
