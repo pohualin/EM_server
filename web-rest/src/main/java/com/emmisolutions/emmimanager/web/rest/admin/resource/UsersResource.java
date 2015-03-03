@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.*;
+import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPassword;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -154,6 +155,22 @@ public class UsersResource {
             }
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @RequestMapping(value = "/users/{id}/password", method = RequestMethod.PUT, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
+    public ResponseEntity<UserResource> updatePassword(@PathVariable("id") Long id,
+                                                       @RequestBody UserClientPassword newPassword) {
+
+        UserAdmin updatedPassword = userAdminService
+                .fetchUserWillFullPermissions(userAdminService.updatePassword(
+                        new UserAdmin(id, newPassword.getPassword())));
+        if (updatedPassword != null) {
+            return new ResponseEntity<>(userResourceAssembler.toResource(updatedPassword), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
     
