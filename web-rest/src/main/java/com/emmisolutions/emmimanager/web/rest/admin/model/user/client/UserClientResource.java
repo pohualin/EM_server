@@ -19,9 +19,9 @@ public class UserClientResource extends ResourceSupport {
     private UserClient entity;
 
     private List<UserClientService.UserClientConflict> conflicts;
-
-    private UserClientService.UserClientRestrictedEmail restrictedEmail;
     
+    private UserClientService.UserClientValidationError validationError;
+
     /**
      * Override to change the link property name for serialization
      *
@@ -51,12 +51,12 @@ public class UserClientResource extends ResourceSupport {
         this.conflicts = conflicts;
     }
 
-    public UserClientService.UserClientRestrictedEmail getRestrictedEmail() {
-        return restrictedEmail;
+    public UserClientService.UserClientValidationError getValidationError() {
+        return validationError;
     }
 
-    public void setRestrictedEmail(
-            UserClientService.UserClientRestrictedEmail restrictedEmail) {
-        this.restrictedEmail = restrictedEmail;
+    public void setValidationError(
+            UserClientService.UserClientValidationError validationError) {
+        this.validationError = validationError;
     }
 }

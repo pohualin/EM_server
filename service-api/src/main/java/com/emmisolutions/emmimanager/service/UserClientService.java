@@ -82,14 +82,12 @@ public interface UserClientService {
     UserClient expireActivationToken(UserClient userClient);
     
     /**
-     * Return an UserClientRestrictEmail with a list of valid email endings if
-     * the passed in email does not pass restriction
+     * return true if the email is valid
      * 
-     * @param userClient
-     *            to validate
-     * @return an UserClientRestrictEmail with a list of valid email endings
+     * @param userClient contains email to validate
+     * @return boolean
      */
-    UserClientRestrictedEmail validateEmailAddress(UserClient userClient);
+    boolean validateEmailAddress(UserClient userClient);
 
     /**
      * Number of hours activation tokens are valid after creation
@@ -148,25 +146,57 @@ public interface UserClientService {
         }
     }
     
-    /**
-     * Contains a list of valid email endings
-     */
-    public class UserClientRestrictedEmail {
+    public class UserClientValidationError {
+        private Reason reason;
+        private UserClient userClient;
 
-        private List<String> validEmailEndings;
-
-        public List<String> getValidEmailEndings() {
-            return validEmailEndings;
+        public UserClientValidationError() {
         }
 
-        public void setValidEmailEndings(List<String> validEmailEndings) {
-            this.validEmailEndings = validEmailEndings;
+        public UserClientValidationError(Reason reason, UserClient userClient) {
+            this.reason = reason;
+            this.userClient = userClient;
         }
 
+        public Reason getReason() {
+            return reason;
+        }
+
+        public void setReason(Reason reason) {
+            this.reason = reason;
+        }
+
+        public UserClient getUserClient() {
+            return userClient;
+        }
+
+        public void setUserClient(UserClient userClient) {
+            this.userClient = userClient;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            UserClientConflict that = (UserClientConflict) o;
+            return reason == that.reason
+                    && !(userClient != null ? !userClient
+                    .equals(that.userClient) : that.userClient != null);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = reason != null ? reason.hashCode() : 0;
+            result = 31 * result
+                    + (userClient != null ? userClient.hashCode() : 0);
+            return result;
+        }
     }
-
+    
     @XmlEnum
     public enum Reason {
-        EMAIL, LOGIN
+        EMAIL, LOGIN, EMAIL_RESTRICTION
     }
 }

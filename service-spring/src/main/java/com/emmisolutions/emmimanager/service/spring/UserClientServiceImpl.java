@@ -19,6 +19,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -194,31 +195,24 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    @Transactional
-    public UserClientRestrictedEmail validateEmailAddress(UserClient userClient) {
+    @Transactional(readOnly = true)
+    public boolean validateEmailAddress(UserClient userClient) {
         ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService
                 .getByClient(userClient.getClient());
 
-        if (restrictConfig == null) {
-            // return null if client does not setup restriction
-            return null;
-        } else if (restrictConfig.isEmailConfigRestrict() == false) {
-            // return null if isEmailConfigRestrict returns false
-            return null;
+        if (restrictConfig.isEmailConfigRestrict() == false) {
+            // return true if isEmailConfigRestrict returns false
+            return true;
         } else {
             Page<EmailRestrictConfiguration> validEmailEndingPage = emailRestrictConfigurationService
                     .getByClient(null, userClient.getClient());
+            List<String> validEmailEndings = collectAllValidEmailEndings(null,
+                    validEmailEndingPage, userClient);
 
-            if (validEmailEndingPage.hasContent() == false) {
+            if (validEmailEndings.size() == 0) {
                 // return null if no valid email ending is set
-                return null;
+                return true;
             } else {
-                List<String> validEmailEndings = new ArrayList<String>();
-                for (EmailRestrictConfiguration validEmailEnding : validEmailEndingPage
-                        .getContent()) {
-                    validEmailEndings.add(validEmailEnding.getEmailEnding());
-                }
-
                 // parse email to get domain
                 String domain = StringUtils.substringAfter(
                         userClient.getEmail(), "@");
@@ -234,18 +228,36 @@ public class UserClientServiceImpl implements UserClientService {
                 }
 
                 if (validEmailEndings.contains(trimmedDomain)) {
-                    // return null if validEmailEndings contain the trimmed
+                    // return true if validEmailEndings contain the trimmed
                     // domain
-                    return null;
+                    return true;
                 } else {
-                    // build the UserClientRestrictedEmail with a list of valid
-                    // email endings
-                    UserClientRestrictedEmail restrictedEmail = new UserClientRestrictedEmail();
-                    restrictedEmail.setValidEmailEndings(validEmailEndings);
-                    return restrictedEmail;
+                    // return false if email does not match valid endings
+                    return false;
                 }
             }
         }
+    }
+    
+    private List<String> collectAllValidEmailEndings(
+            List<String> listOfValidEmailEndings,
+            Page<EmailRestrictConfiguration> validEmailEndingPage,
+            UserClient userClient) {
+        if (listOfValidEmailEndings == null) {
+            listOfValidEmailEndings = new ArrayList<String>();
+        }
+        for (EmailRestrictConfiguration validEmailEnding : validEmailEndingPage
+                .getContent()) {
+            listOfValidEmailEndings.add(validEmailEnding.getEmailEnding());
+        }
+        if (validEmailEndingPage.hasNext()) {
+            Page<EmailRestrictConfiguration> nextPage = emailRestrictConfigurationService
+                    .getByClient(validEmailEndingPage.nextPageable(),
+                            userClient.getClient());
+            collectAllValidEmailEndings(listOfValidEmailEndings, nextPage,
+                    userClient);
+        }
+        return listOfValidEmailEndings;
     }
 
 }

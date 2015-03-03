@@ -13,7 +13,6 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.UserClientService;
-import com.emmisolutions.emmimanager.service.UserClientService.UserClientRestrictedEmail;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -303,8 +302,8 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         newUserClient.setClient(client);
         newUserClient.setEmail("george@abc.com");
         // Check client without ClientRestrictConfiguration
-        UserClientRestrictedEmail restricted = userClientService.validateEmailAddress(newUserClient);
-        assertThat("Should return null UserClientRestrictedEmail", restricted, is(nullValue()));
+        boolean restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
         
         // Check client with ClientRestrictConfiguration and isEmailConfigRestrict is false
         ClientRestrictConfiguration restrictConfiguration = new ClientRestrictConfiguration();
@@ -312,13 +311,13 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         restrictConfiguration.setEmailConfigRestrict(false);
         restrictConfiguration = clientRestrictConfigurationService.create(restrictConfiguration);
         restricted = userClientService.validateEmailAddress(newUserClient);
-        assertThat("Should return null UserClientRestrictedEmail", restricted, is(nullValue()));
+        assertThat("Should return true", restricted, is(true));
         
         // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true and no email endings set
         restrictConfiguration.setEmailConfigRestrict(true);
         restrictConfiguration = clientRestrictConfigurationService.update(restrictConfiguration);
         restricted = userClientService.validateEmailAddress(newUserClient);
-        assertThat("Should return null UserClientRestrictedEmail", restricted, is(nullValue()));
+        assertThat("Should return true", restricted, is(true));
         
         // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true, email endings set with valid email
         EmailRestrictConfiguration emailEndingA = new EmailRestrictConfiguration();
@@ -330,22 +329,20 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         emailEndingB.setEmailEnding("bcd.com");
         emailRestrictConfigurationService.create(emailEndingB);
         restricted = userClientService.validateEmailAddress(newUserClient);
-        assertThat("Should return null UserClientRestrictedEmail", restricted, is(nullValue()));
+        assertThat("Should return true", restricted, is(true));
         
         newUserClient.setEmail("george@aa.abc.com");
         restricted = userClientService.validateEmailAddress(newUserClient);
-        assertThat("Should return null UserClientRestrictedEmail", restricted, is(nullValue()));
+        assertThat("Should return true", restricted, is(true));
         
         newUserClient.setEmail("george@aa.bb.abc.com");
         restricted = userClientService.validateEmailAddress(newUserClient);
-        assertThat("Should return null UserClientRestrictedEmail", restricted, is(nullValue()));
+        assertThat("Should return true", restricted, is(true));
         
         // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true, email endings set with invalid email
         newUserClient.setEmail("george@apple.com");
         restricted = userClientService.validateEmailAddress(newUserClient);
-        assertThat("Should return UserClientRestrictedEmail", restricted, is(notNullValue()));
-        assertThat("Should contain two valid email endings", restricted.getValidEmailEndings(), hasItem("abc.com"));
-        assertThat("Should contain two valid email endings", restricted.getValidEmailEndings(), hasItem("bcd.com"));
+        assertThat("Should return false", restricted, is(false));
     }
 
 }

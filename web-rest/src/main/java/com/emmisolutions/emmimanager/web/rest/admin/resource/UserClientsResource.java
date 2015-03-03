@@ -8,13 +8,12 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
-import com.emmisolutions.emmimanager.service.UserClientService.UserClientRestrictedEmail;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientRestrictedEmailResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientValidationErrorResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivationResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -65,7 +64,7 @@ public class UserClientsResource {
     UserClientConflictResourceAssembler userClientConflictResourceAssembler;
     
     @Resource
-    UserClientRestrictedEmailResourceAssembler userClientRestrictedEmailResourceAssembler;
+    UserClientValidationErrorResourceAssembler userClientValidationErrorResourceAssembler;
 
     @Resource
     MailService mailService;
@@ -140,12 +139,12 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> createUser(
             @PathVariable Long clientId, @RequestBody UserClient userClient) {
 
-        // Check email pattern
-        UserClientResource restrictedEmail = userClientRestrictedEmailResourceAssembler
-                .toResource(userClientService.validateEmailAddress(userClient));
-        
-        if (restrictedEmail != null) {
-            return new ResponseEntity<>(restrictedEmail,
+        if (!userClientService.validateEmailAddress(userClient)) {
+            UserClientService.UserClientValidationError validationError = new UserClientService.UserClientValidationError(
+                    UserClientService.Reason.EMAIL_RESTRICTION, userClient);
+            return new ResponseEntity<>(
+                    userClientValidationErrorResourceAssembler
+                            .toResource(validationError),
                     HttpStatus.NOT_ACCEPTABLE);
         } else {
          // look for conflicts before attempting to save
@@ -291,12 +290,12 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> update(
             @PathVariable("id") Long id, @RequestBody UserClient userClient) {
 
-        // Check email pattern
-        UserClientResource restrictedEmail = userClientRestrictedEmailResourceAssembler
-                .toResource(userClientService.validateEmailAddress(userClient));
-        
-        if (restrictedEmail != null) {
-            return new ResponseEntity<>(restrictedEmail,
+        if (!userClientService.validateEmailAddress(userClient)) {
+            UserClientService.UserClientValidationError validationError = new UserClientService.UserClientValidationError(
+                    UserClientService.Reason.EMAIL_RESTRICTION, userClient);
+            return new ResponseEntity<>(
+                    userClientValidationErrorResourceAssembler
+                            .toResource(validationError),
                     HttpStatus.NOT_ACCEPTABLE);
         } else {
             // look for conflicts before attempting to save
