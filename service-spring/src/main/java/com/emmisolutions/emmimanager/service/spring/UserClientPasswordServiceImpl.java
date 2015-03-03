@@ -76,8 +76,13 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 userClient.setCredentialsNonExpired(true);
                 userClient.setPasswordResetExpirationDateTime(null);
                 userClient.setPasswordResetToken(null);
-                userClient.setPasswordLastUpdateDateTime(LocalDateTime.now(DateTimeZone.UTC));
-                return userClientPersistence.saveOrUpdate(encodePassword(userClient));
+                
+                ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+                userClient.setPasswordExpireationDateTime(LocalDateTime.now(
+                        DateTimeZone.UTC).plusDays(
+                        configuration.getPasswordExpirationDays()));
+                return userClientPersistence
+                        .saveOrUpdate(encodePassword(userClient));
             }
         }
         return null;
@@ -102,12 +107,16 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 LocalDateTime expiration = userClient.getPasswordResetExpirationDateTime();
                 userClient.setPasswordResetToken(null);
                 userClient.setPasswordResetExpirationDateTime(null);
-                userClient.setPasswordLastUpdateDateTime(LocalDateTime.now(DateTimeZone.UTC));
                 if (isValid(expiration)) {
                     // the token on the user is valid, set the password and validate the email
                     userClient.setPassword(resetPasswordRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
                     userClient.setEmailValidated(true);
+                    
+                    ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+                    userClient.setPasswordExpireationDateTime(LocalDateTime.now(
+                            DateTimeZone.UTC).plusDays(
+                            configuration.getPasswordExpirationDays()));
                     ret = userClientPersistence.saveOrUpdate(encodePassword(userClient));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
@@ -268,5 +277,5 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         Matcher m = p.matcher(newPassword);
         return m.matches();
     }
-
+    
 }

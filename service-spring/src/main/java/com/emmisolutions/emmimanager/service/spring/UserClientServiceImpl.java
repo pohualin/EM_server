@@ -1,13 +1,17 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +37,17 @@ import java.util.List;
 public class UserClientServiceImpl implements UserClientService {
 
     @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
+    
+    @Resource
     ClientService clientService;
-
+    
     @Resource
     UserClientPersistence userClientPersistence;
 
     @Resource
     UserClientPasswordService userClientPasswordService;
-
+    
     @Resource
     PasswordEncoder passwordEncoder;
 
@@ -132,7 +140,11 @@ public class UserClientServiceImpl implements UserClientService {
                     userClient.setEmailValidated(true);
                     userClient.setPassword(activationRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
-                    userClient.setPasswordLastUpdateDateTime(LocalDateTime.now(DateTimeZone.UTC));
+                    
+                    ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+                    userClient.setPasswordExpireationDateTime(LocalDateTime.now(
+                            DateTimeZone.UTC).plusDays(
+                            configuration.getPasswordExpirationDays()));
                     ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
@@ -178,6 +190,14 @@ public class UserClientServiceImpl implements UserClientService {
         fromDb.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .minusHours(ACTIVATION_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
+    }
+    
+    private ClientPasswordConfiguration findClientPasswordConfiguration(UserClient userClient) {
+        Client client = null;
+        if (userClient != null) {
+            client = userClient.getClient();
+        }
+        return clientPasswordConfigurationService.get(client);
     }
 
 }
