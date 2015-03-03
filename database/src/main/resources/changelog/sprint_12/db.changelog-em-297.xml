@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create_secret_question" author="wlee">
+
+		<createTable tableName="secret_question">
+           <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_secret_question"/>
+            </column>
+            <column name="version" type="INT"/>
+            <column name="rank" type="INT"/>
+            <column name="secret_question" type="nvarchar(1000)"><constraints nullable="false"/></column>
+            <column name="created_by" type="nvarchar(255)"><constraints nullable="false"/></column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}"><constraints nullable="false"/></column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>     
+        </createTable>
+	</changeSet>
+	
+	<changeSet id="user_client_secret_question_response" author="wlee">
+		<createTable tableName="user_client_secret_question_response">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_secret_question_response"/>
+            </column>
+            <column name="version" type="INT"/>
+            <column name="user_client_id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="secret_question_id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="response" type="nvarchar(200)"><constraints nullable="false"/></column>
+            <column name="created_by" type="nvarchar(255)"><constraints nullable="false"/></column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}"><constraints nullable="false"/></column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>   
+        </createTable>
+	            		
+		<addForeignKeyConstraint baseTableName="user_client_secret_question_response"
+                                 baseColumnNames="user_client_id"
+                                 constraintName="fk_user_client_secret_question_response_user_client"
+                                 referencedTableName="user_client"
+                                 referencedColumnNames="id"/>
+                                 
+        <addForeignKeyConstraint baseTableName="user_client_secret_question_response"
+                                 baseColumnNames="secret_question_id"
+                                 constraintName="fk_user_client_secret_question_response_secret_question"
+                                 referencedTableName="secret_question"
+                                 referencedColumnNames="id"/>
+                                            
+	</changeSet>
+	<changeSet id="user_client_secret_question_response_audit" author="wlee">
+		<createTable tableName="user_client_secret_question_response_audit">
+                <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="user_client_id" type="BIGINT"/>
+            <column name="secret_question_id" type="BIGINT"/>
+            <column name="response" type="nvarchar(200)"/>
+        </createTable>
+        
+        <addPrimaryKey tableName="user_client_secret_question_response_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_secret_question_response_audit"/>
+       
+		<addForeignKeyConstraint baseTableName="user_client_secret_question_response_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_secret_question_response_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+	            		
+                                                 
+	</changeSet>
+	<changeSet id="insert_set_of_secret_questions" author="wlee">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_12/data/em-297/secret_questions.csv"
+                  separator=";"
+                  tableName="secret_question"/>
+    </changeSet> 
+	
+</databaseChangeLog>
