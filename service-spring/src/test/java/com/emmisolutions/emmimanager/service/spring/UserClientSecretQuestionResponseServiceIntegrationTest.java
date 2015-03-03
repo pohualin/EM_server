@@ -37,12 +37,6 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
     @Resource
     UserClientSecretQuestionResponseService userClientSecretQuestionResponseService;
 
-    @Resource
-    SecretQuestionRepository secretQuestionRepository;
-        
-    @Resource
-    SecretQuestionPersistence secretQuestionPersistence;
-    
     @Test
     public void testFindEmpty() {
         Client client = makeNewRandomClient();
@@ -74,11 +68,10 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
     public void invalidSecretQuestion(){
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
-        List<SecretQuestion> list = createSecretQuestions();
-        secretQuestionRepository.save(list);
+        Page<SecretQuestion> list = userClientSecretQuestionResponseService.list(new PageRequest(0, 10));
         UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
         questionResponse.setUserClient(userClient);
-        questionResponse.setSecretQuestion(list.get(1));
+        questionResponse.setSecretQuestion(list.getContent().get(1));
         questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponseService.saveOrUpdate(questionResponse);
         
      }
@@ -91,11 +84,9 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
     public void testSaveAndReload() {
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
-        List<SecretQuestion> list = createSecretQuestions();
-        Page<SecretQuestion> set = secretQuestionPersistence.findAll(new PageRequest(0, 10));
-        SecretQuestion secretQuestion = secretQuestionRepository.save(list.get(0));
+        Page<SecretQuestion> set = userClientSecretQuestionResponseService.list(new PageRequest(0, 10));
         UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
-        questionResponse.setSecretQuestion(secretQuestion);
+        questionResponse.setSecretQuestion(set.getContent().get(1));
         questionResponse.setResponse("Response");
         questionResponse.setUserClient(userClient);
         questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponseService.saveOrUpdate(questionResponse);
@@ -125,25 +116,22 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         assertThat(user.getId(), is(notNullValue()));
         assertThat(user.getVersion(), is(notNullValue()));
         
-        List<SecretQuestion> list = createSecretQuestions();
-        SecretQuestion secretQuestion = secretQuestionRepository.save(list.get(0));
-        SecretQuestion secretQuestionToo = secretQuestionRepository.save(list.get(1));
-        
+        Page<SecretQuestion> list = userClientSecretQuestionResponseService.list(new PageRequest(0, 10));
         UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
         UserClientSecretQuestionResponse  questionResponseToo= new UserClientSecretQuestionResponse();
-        questionResponse.setSecretQuestion(secretQuestion);
+        questionResponse.setSecretQuestion(list.getContent().get(1));
         questionResponse.setResponse("Toyota");
         questionResponse.setUserClient(user);
         questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponseService.saveOrUpdate(questionResponse);
         
-        questionResponseToo.setSecretQuestion(secretQuestionToo);
+        questionResponseToo.setSecretQuestion(list.getContent().get(2));
         questionResponseToo.setResponse("Sushi");
         questionResponseToo.setUserClient(user);
        
         questionResponseToo = (UserClientSecretQuestionResponse)userClientSecretQuestionResponseService.saveOrUpdate(questionResponseToo);
         userClientSecretQuestionResponseService.reload(questionResponse);   
         
-        userClientSecretQuestionResponseService.reload(questionResponseToo);    
+        userClientSecretQuestionResponseService.reload(questionResponseToo);   
         
         Page<UserClientSecretQuestionResponse> page= userClientSecretQuestionResponseService
                 .findByUserClient(user, new PageRequest(0, 10));
@@ -159,20 +147,5 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         assertThat("system is the response", questionResponse.getResponse(), is("Toyota"));
         assertThat("Should return null", userClientSecretQuestionResponseService.reload(questionResponseToo), is(notNullValue()));
     } 
-    
-    private List<SecretQuestion> createSecretQuestions(){
-        List<SecretQuestion> list = new ArrayList<SecretQuestion>();
-        SecretQuestion secretQuestion = new SecretQuestion();
-        secretQuestion.setSecretQuestion("What was the make and model of your first car?");
-        secretQuestion.setRank(1);
-        
-        SecretQuestion secretQuestionToo = new SecretQuestion();
-        secretQuestionToo.setSecretQuestion("What is your favor food?");
-        secretQuestionToo.setRank(2);
-           
-        list.add(secretQuestion);
-        list.add(secretQuestionToo);
-        return list;
-    }
-    
+     
 }

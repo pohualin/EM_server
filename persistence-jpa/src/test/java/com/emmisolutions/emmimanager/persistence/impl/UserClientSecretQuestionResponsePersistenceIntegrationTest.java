@@ -21,6 +21,7 @@ import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
 
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -68,6 +69,34 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
         
         assertThat("Find pageable question response with user client", findByUser, hasItem(questionResponse));       
     } 
+    
+    /**
+     * Call the find by user client
+     */
+    public void testFindByUserClient(){
+    	Client client = makeNewRandomClient();
+        UserClient userClient = makeNewRandomUserClient(client); 
+        Page<SecretQuestion> set = secretQuestionPersistence.findAll(new PageRequest(0, 10));
+        
+        UserClientSecretQuestionResponse  questionResponse= new UserClientSecretQuestionResponse();
+    	questionResponse.setSecretQuestion(set.getContent().get(1));
+    	questionResponse.setResponse("Response");
+    	questionResponse.setUserClient(userClient);
+    	
+    	UserClientSecretQuestionResponse  questionResponse2= new UserClientSecretQuestionResponse();
+    	questionResponse2.setSecretQuestion(set.getContent().get(2));
+    	questionResponse2.setResponse("Response");
+    	questionResponse2.setUserClient(userClient);
+    	
+    	questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponsePersistence.saveOrUpdate(questionResponse);
+    	questionResponse2 = (UserClientSecretQuestionResponse) userClientSecretQuestionResponsePersistence.saveOrUpdate(questionResponse2);
+    	
+        Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence.findByUserClient(userClient, null);
+        
+        assertThat("Find pageable question response with user client", findByUser, hasItem(questionResponse)); 
+        assertThat("Find pageable question response with user client", findByUser, hasItem(questionResponse2)); 
+        
+    }
   
     
 }
