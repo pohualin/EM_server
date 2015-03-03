@@ -16,10 +16,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -47,7 +49,7 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
 
     @Override
     public Set<UserAdminUserAdminRole> saveAll(
-            Set<UserAdminUserAdminRole> userAdminUserAdminRole) {
+            List<UserAdminUserAdminRole> userAdminUserAdminRole) {
         return new HashSet<>(
                 userAdminUserAdminRoleRepository.save(userAdminUserAdminRole));
     }
@@ -76,7 +78,7 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
 
     @Override
     public UserAdmin reload(UserAdmin user) {
-        if (user == null || user.getId() == null){
+        if (user == null || user.getId() == null) {
             return null;
         }
         return userAdminRepository.findOne(user.getId());
@@ -93,8 +95,10 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
             // default pagination request if none
             pageable = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
+
         return userAdminRepository.findAll(
-                where(userSpecifications.isContractOwner()), pageable);
+                where(userSpecifications.isContractOwner()).and(
+                        userSpecifications.isNotSystemUser()), pageable);
     }
 
     @Override
@@ -104,7 +108,7 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
         }
         return userAdminRepository.findAll(
                 where(userSpecifications.hasNames(filter)).and(
-                        userSpecifications.isContractOwner()), pageable);
+                        userSpecifications.isNotSystemUser()), pageable);
     }
 
     @Override
@@ -125,5 +129,35 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
         return new HashSet<>(userAdminRepository.findAll(where(
                 userSpecifications.hasEmail(userAdmin)).and(
                 userSpecifications.isNotSelf(userAdmin))));
+    }
+
+    @Override
+    public boolean isSystemUser(UserAdmin userAdmin) {
+        boolean isSystemUser = false;
+        if (userAdmin != null) {
+            UserAdmin toCheck;
+            UserAdmin fromDb = reload(userAdmin);
+            if (fromDb != null) {
+                // an existing user
+                toCheck = fromDb;
+            } else {
+                // non-persistent user
+                toCheck = userAdmin;
+            }
+            // check for the presence of a system role
+            if (!CollectionUtils.isEmpty(toCheck.getRoles())) {
+                for (UserAdminUserAdminRole userAdminUserAdminRole : toCheck.getRoles()) {
+                    UserAdminRole adminRole = userAdminUserAdminRole.getUserAdminRole();
+                    if (adminRole.getId() != null) {
+                        UserAdminRole reloaded = userAdminroleRepository.findOne(adminRole.getId());
+                        if (reloaded != null && reloaded.isSystemRole()) {
+                            isSystemUser = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return isSystemUser;
     }
 }
