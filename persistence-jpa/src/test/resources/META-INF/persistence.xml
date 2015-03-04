@@ -52,6 +52,8 @@
         <class>com.emmisolutions.emmimanager.model.TeamLocation</class>
 		<class>com.emmisolutions.emmimanager.model.TeamProviderTeamLocation</class>
         <class>com.emmisolutions.emmimanager.model.ClientProvider</class>
+        <class>com.emmisolutions.emmimanager.model.SecretQuestion</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse</class>
         <class>com.emmisolutions.emmimanager.model.mail.EmailTemplate</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>

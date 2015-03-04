@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.*;
+import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPassword;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -33,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
  */
 @RestController
 @RequestMapping(value = "/webapi",
-    produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
+        produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE}
 )
 public class UsersResource {
 
@@ -45,13 +46,13 @@ public class UsersResource {
 
     @Resource
     UserAdminRoleResourceAssembler userAdminRoleResourceAssembler;
-    
-    @Resource 
+
+    @Resource
     UserResourceForAssociationsAssembler userAdminResourceAssembler;
 
     @Resource(name = "adminUserDetailsService")
     UserDetailsService userDetailsService;
-    
+
     /**
      * GET to retrieve authenticated user
      *
@@ -63,7 +64,7 @@ public class UsersResource {
         return new ResponseEntity<>(userResourceAssembler.toResource(
                 (UserAdmin) userDetailsService.getLoggedInUser()), HttpStatus.OK);
     }
-    
+
     /**
      * Get a page of User that satisfy the search criteria
      *
@@ -85,7 +86,7 @@ public class UsersResource {
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "term", required = false) String term) {
 
-        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.fromStringOrActive(status) , term);
+        UserAdminSearchFilter filter = new UserAdminSearchFilter(UserAdminSearchFilter.StatusFilter.fromStringOrActive(status), term);
 
         Page<UserAdmin> users = userAdminService.list(pageable, filter);
 
@@ -96,8 +97,8 @@ public class UsersResource {
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-    }    
-    
+    }
+
     /**
      * Create a brand new User
      *
@@ -109,8 +110,8 @@ public class UsersResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
     public ResponseEntity<UserResource> createUser(@RequestBody UserAdminSaveRequest req) {
         List<UserAdmin> conflicts = userAdminService.findConflictingUsers(req.getUserAdmin());
-        
-        if(conflicts.size() == 0){
+
+        if (conflicts.size() == 0) {
             UserAdmin savedUser = userAdminService.save(req);
             if (savedUser != null) {
                 // created a user client successfully
@@ -156,11 +157,34 @@ public class UsersResource {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
-    
+
+    /**
+     * Sets a password on a UserAdmin
+     *
+     * @param id          on which to set the password
+     * @param newPassword the holder for the new password
+     * @return the updated UserResource
+     */
+    @RequestMapping(value = "/users/{id}/password", method = RequestMethod.PUT, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
+    public ResponseEntity<UserResource> updatePassword(@PathVariable("id") Long id,
+                                                       @RequestBody UserClientPassword newPassword) {
+
+        UserAdmin updatedPassword = userAdminService
+                .fetchUserWillFullPermissions(userAdminService.updatePassword(
+                        new UserAdmin(id, newPassword.getPassword())));
+        if (updatedPassword != null) {
+            return new ResponseEntity<>(userResourceAssembler.toResource(updatedPassword), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
     /**
      * GET a single user
      *
-     * @param id       to load
+     * @param id to load
      * @return ClientResource or NO_CONTENT
      */
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
@@ -175,9 +199,9 @@ public class UsersResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-    
+
     /**
-     * Fetch all existing user admin roles 
+     * Fetch all existing user admin roles
      *
      * @param pageable  page specification
      * @param assembler to make resources
@@ -187,21 +211,21 @@ public class UsersResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
     @ApiOperation(value = "finds all existing user admin roles ")
     @ApiImplicitParams(value = {
-        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<UserAdminRolePage> userAdminRoles(
-        @PageableDefault(size = 10, sort = {"name"}, direction = Sort.Direction.ASC) Pageable pageable,
-        PagedResourcesAssembler<UserAdminRole> assembler) {
-    	
+            @PageableDefault(size = 10, sort = {"name"}, direction = Sort.Direction.ASC) Pageable pageable,
+            PagedResourcesAssembler<UserAdminRole> assembler) {
+
         Page<UserAdminRole> userRolePage = userAdminService.listRolesWithoutSystem(pageable);
         if (userRolePage.hasContent()) {
             return new ResponseEntity<>(
-                new UserAdminRolePage(
-                    assembler.toResource(userRolePage, userAdminRoleResourceAssembler),
-                    userRolePage),
-                HttpStatus.OK
+                    new UserAdminRolePage(
+                            assembler.toResource(userRolePage, userAdminRoleResourceAssembler),
+                            userRolePage),
+                    HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

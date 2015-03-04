@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add webapi marker" author="Matt">
+
+        <addColumn tableName="user_admin">
+            <column name="web_api_user" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_admin_audit">
+            <column name="web_api_user" type="boolean"/>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="set default web api users" author="Matt">
+
+        <update tableName="user_admin">
+            <column name="web_api_user" valueBoolean="true"/>
+            <where>login = 'super_admin'</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet id="disable existing users" author="Matt" dbms="mysql, postgresql">
+
+        <!-- remove salt and password for non-web-api users -->
+        <update tableName="user_admin">
+            <column name="password"/>
+            <column name="salt"/>
+            <where>web_api_user = false</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet id="disable existing users" author="Matt" dbms="h2, mssql">
+
+        <!-- remove salt and password for non-web-api users -->
+        <update tableName="user_admin">
+            <column name="password"/>
+            <column name="salt"/>
+            <where>web_api_user = 0</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet id="null version fix" author="Matt">
+        <update tableName="users">
+            <column name="version" valueNumeric="0"/>
+            <where>version is null</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

@@ -82,6 +82,25 @@ public class UserSpecifications {
 			}
 		};
 	}
+
+    /**
+     * Filter to ensure User is not a system level user
+     *
+     * @return the specification as a filter predicate
+     */
+    public Specification<UserAdmin> isNotSystemUser() {
+
+        return new Specification<UserAdmin>() {
+            @Override
+            public Predicate toPredicate(Root<UserAdmin> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Join<UserAdminUserAdminRole, UserAdminRole> role = root
+                        .join(UserAdmin_.roles)
+                        .join(UserAdminUserAdminRole_.userAdminRole);
+                return cb.isFalse(role.get(UserAdminRole_.systemRole));
+            }
+        };
+    }
 	
     /**
      * Add where clause to find UserAdmin with passed in email address

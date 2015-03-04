@@ -8,8 +8,11 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolationException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -22,6 +25,9 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserAdminPersistence userAdminPersistence;
+
+    @PersistenceContext
+    EntityManager entityManager;
         
     /**
      * Invalid user no login
@@ -61,7 +67,7 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
         
         Page<UserAdminRole> roles = userAdminPersistence.listRolesWithoutSystem(null);
-        Set<UserAdminUserAdminRole> userAdminUserAdminRoles = new HashSet<>();
+        List<UserAdminUserAdminRole> userAdminUserAdminRoles = new ArrayList<>();
         for(UserAdminRole role: roles.getContent()){
             UserAdminUserAdminRole uauar = new UserAdminUserAdminRole();
             uauar.setUserAdmin(user1);
@@ -162,6 +168,22 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
         Set<UserAdmin> noConflictA = userAdminPersistence
                 .findConflictingUsers(null);
         assertThat("no conflict", noConflictA.size(), is(0));
+    }
+
+    @Test
+    public void isSystemUser(){
+        UserAdmin superUser = userAdminPersistence.fetchUserWillFullPermissions("super_admin");
+        assertThat("super user is system user", userAdminPersistence.isSystemUser(superUser), is(true));
+
+        assertThat("new user is not system user", userAdminPersistence.isSystemUser(new UserAdmin()), is(false));
+
+        assertThat("null user is not system user", userAdminPersistence.isSystemUser(null), is(false));
+
+        assertThat("should remove one role", userAdminPersistence.removeAllAdminRoleByUserAdmin(superUser), is(1l));
+
+        entityManager.detach(superUser);
+
+        assertThat("super user is no longer system user", userAdminPersistence.isSystemUser(superUser), is(false));
     }
 
 }
