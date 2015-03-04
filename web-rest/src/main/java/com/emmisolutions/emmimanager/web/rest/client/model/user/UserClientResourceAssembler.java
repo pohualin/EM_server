@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.security.core.GrantedAuthority;
@@ -64,6 +65,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
                 perms,
                 user instanceof UserClient && ((UserClient) user).isImpersonated());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
         ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
         return ret;
     }
