@@ -6,34 +6,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 /**
- * Check to see if a user is logged in
+ * Check to see if the requested user id is the same as the logged in user
  */
 @Component("user")
-public class UserAuthorizationRequest  {
-
-    private Long userId;
-
-    private UserAuthorizationRequest() {
-    }
-
-    private UserAuthorizationRequest(Long userId) {
-        this.userId = userId;
-    }
+public class UserAuthorizationRequest {
 
     /**
-     * Make a new ClientAuthorizationRequest instance.
-     * This method is named this way to make SPeL code look good.
+     * Ensure user id is the same as the logged in user
      *
-     * @param userId the client id
-     * @return a new instance of this class
+     * @param userIdInRequest the user in the request
+     * @param authentication  the logged in user
+     * @return true if they match, false if otherwise
      */
-    public UserAuthorizationRequest id(Long userId) {
-        return new UserAuthorizationRequest(userId);
-    }
-
-    public boolean isLoggedIn(Authentication authentication ){
-        if(this.userId!=null&&authentication!=null&&authentication.getPrincipal()!=null) {
-            return this.userId.equals(((UserClient) authentication.getPrincipal()).getId());
+    public boolean isLoggedIn(Object userIdInRequest, Authentication authentication) {
+        if (userIdInRequest != null && authentication != null && authentication.getPrincipal() != null) {
+            return userIdInRequest.equals(((UserClient) authentication.getPrincipal()).getId());
         }
         return false;
     }

@@ -17,7 +17,11 @@ public class AuthorizationRequestPermissionEvaluator implements PermissionEvalua
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (targetDomainObject instanceof UserAuthorizationRequest){
             UserAuthorizationRequest userAuthorizationRequest = (UserAuthorizationRequest) targetDomainObject;
-            return userAuthorizationRequest.isLoggedIn(authentication);
+            return userAuthorizationRequest.isLoggedIn(permission, authentication);
+        }
+        if (targetDomainObject instanceof UserKnowsPasswordAuthorizationRequest){
+            UserKnowsPasswordAuthorizationRequest pwRequest = (UserKnowsPasswordAuthorizationRequest) targetDomainObject;
+            return pwRequest.isLoggedInAndKnowsPassword(permission, authentication);
         }
         if (targetDomainObject instanceof AuthorizationRequest){
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) targetDomainObject;
