@@ -17,6 +17,14 @@ public interface MailService {
 
 
     /**
+     * Sends an validation email to a user
+     *
+     * @param user          to send an validation to
+     * @param validationUrl url for validation
+     */
+    void sendValidationEmail(UserClient user, String validationUrl);
+
+    /**
      * Sends an password reset email to a user
      *
      * @param user             to send an activation to

@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
 import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -23,7 +24,7 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
 
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
-    ResourceAssembler<User, UserClientResource> userUserClientResourceResourceAssembler;
+    ResourceAssembler<UserClient, UserClientResource> userUserClientResourceResourceAssembler;
 
     @Resource
     MappingJackson2HttpMessageConverter jsonJacksonConverter;
@@ -42,7 +43,7 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
                     exception.getExtraInformation() instanceof User) {
                 // serialize the client resource as a json string
                 UserClientResource userClientResource =
-                        userUserClientResourceResourceAssembler.toResource((User) exception.getExtraInformation());
+                        userUserClientResourceResourceAssembler.toResource((UserClient) exception.getExtraInformation());
                 client = jsonJacksonConverter.getObjectMapper().writeValueAsString(
                         userClientResource.getClientResource());
             }

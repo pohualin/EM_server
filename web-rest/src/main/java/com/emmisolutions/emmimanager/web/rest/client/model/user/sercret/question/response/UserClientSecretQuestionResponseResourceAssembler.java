@@ -20,7 +20,9 @@ public class UserClientSecretQuestionResponseResourceAssembler implements
     public UserClientSecretQuestionResponseResource toResource(
             UserClientSecretQuestionResponse entity) {
         UserClientSecretQuestionResponseResource ret = new UserClientSecretQuestionResponseResource();
-        ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).get(entity.getUserClient().getId(), entity.getId())).withSelfRel());
+        if (!entity.getUserClient().isImpersonated()) {
+            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).get(entity.getUserClient().getId(), entity.getId())).withSelfRel());
+        }
         ret.setEntity(entity);
         return ret;
     }

@@ -179,4 +179,21 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
         mailService.sendPasswordChangeConfirmationEmail(userClient);
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
+
+    /**
+     * Ensure we can send email verification emails
+     */
+    @Test
+    public void emailVerification(){
+        String email = "email.verified@account.org";
+        setEmailMailServerUser(email);
+        int countOfMessages = getEmailsFromServer().length;
+        mailService.sendValidationEmail(null,"http://aUrl");
+        assertThat("email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
+
+        UserClient userClient = new UserClient();
+        userClient.setEmail(email);
+        mailService.sendValidationEmail(userClient,"http://aUrl");
+        assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
+    }
 }
