@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.service.*;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -208,7 +210,29 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
     public void invalidDeleteByClientAndLocation(){
         teamLocationService.delete(null, null);
     }
+    
+    @Test
+    public void saveTeamLocationWithOnlyLocationId() {
+        Client client = makeClient(RandomStringUtils.randomAlphabetic(255));
+        clientService.create(client);
 
+        Team team = makeTeamForClient(client, RandomStringUtils.randomNumeric(15));
+        Team savedTeam = teamService.create(team);
+        Location savedLocation = locationService.create( makeLocation("Location ",  RandomStringUtils.randomNumeric(15)));
+        
+        Set<TeamLocationTeamProviderSaveRequest> reqs = new HashSet<>();
+        TeamLocationTeamProviderSaveRequest saveRequest = new TeamLocationTeamProviderSaveRequest();
+        Location newLocationWithOnlyId = new Location(savedLocation.getId());
+        saveRequest.setLocation(newLocationWithOnlyId);
+        reqs.add(saveRequest);
+        
+        teamLocationService.save(savedTeam, reqs);
+        
+        Page<TeamLocation> locationPage = teamLocationService.findAllTeamLocationsWithTeam(null, savedTeam);
+        TeamLocation teamLocation = locationPage.getContent().iterator().next();
+        assertThat("TeamLocation was created", teamLocation.getId(), is(notNullValue()));
+    }
+    
     private Team makeTeamForClient(Client client, String id){
 		 Team team = new Team();
 		 team.setName("Test Team " + id);
@@ -245,13 +269,13 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
 		ReferenceGroup group = new ReferenceGroup();
 		ReferenceGroupType type = new ReferenceGroupType();
 		type.setName("refGroupType");
-		type= referenceGroupTypeRepository.save(type);
 		group.setName("ref group");
 		group.setType(type);
-		group = referenceGroupRepository.save(group);
+
 		specialty.setName("ENT");
 		specialty.setGroup(group);
-		specialty = referenceTagRepository.save(specialty);
+        group.getTags().add(specialty);
+        referenceGroupRepository.save(group);
 		return specialty;
 	}
 }

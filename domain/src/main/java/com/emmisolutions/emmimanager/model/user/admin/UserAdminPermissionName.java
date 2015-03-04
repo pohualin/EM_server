@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlEnum;
 @XmlEnum(String.class)
 public enum UserAdminPermissionName {
     PERM_GOD,
+    PERM_ADMIN_SUPER_USER,
     PERM_ADMIN_USER,
     PERM_ADMIN_CONTRACT_OWNER
 }

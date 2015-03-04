@@ -4,14 +4,21 @@ import com.emmisolutions.emmimanager.web.rest.admin.resource.ApiResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UsersResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.Resource;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -19,18 +26,41 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * The public API for this server
  */
 @XmlRootElement(name = "public")
+@Component
 public class PublicApi extends ResourceSupport {
 
+    @Value("${client.application.entry.point:/client.html}")
+    String clientEntryPoint;
+
+    @Value("${cas.server.logout.url:https://devcas1.emmisolutions.com/cas/logout}")
+    private String casServerLogoutUrl;
+
+    @Resource
+    Environment env;
+
     /**
-     * create all the common links to the app
+     * Makes a public api from the current request
+     *
+     * @return a new instance of this class with the proper links
      */
-    public PublicApi() {
+    public PublicApi create() {
+        PublicApi me = new PublicApi();
         Link self = linkTo(ApiResource.class).withSelfRel();
-        add(self);
-        add(linkTo(methodOn(UsersResource.class).authenticated()).withRel("authenticated"));
-        add(new Link(self.getHref() + "/authenticate", "authenticate"));
-        add(new Link(self.getHref() + "/logout", "logout"));
-        add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
+        me.add(self);
+        me.add(linkTo(methodOn(UsersResource.class).authenticated()).withRel("authenticated"));
+        me.add(new Link(self.getHref() + "/authenticate", "authenticate"));
+        me.add(new Link(self.getHref() + "/logout", "logout"));
+        me.add(new Link(
+                UriComponentsBuilder.fromHttpUrl(self.getHref())
+                        .replacePath(clientEntryPoint)
+                        .build(false)
+                        .toUriString(), "clientAppEntryUrl"));
+        if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
+            // add location to redirect to after logout
+            me.add(new Link(casServerLogoutUrl, "redirectOnLogout"));
+        }
+        me.add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
+        return me;
     }
 
     /**
@@ -41,7 +71,7 @@ public class PublicApi extends ResourceSupport {
     @XmlElement(name = "link")
     @XmlElementWrapper(name = "links")
     @JsonProperty("link")
-    public List<Link> getLinks(){
+    public List<Link> getLinks() {
         return super.getLinks();
     }
 

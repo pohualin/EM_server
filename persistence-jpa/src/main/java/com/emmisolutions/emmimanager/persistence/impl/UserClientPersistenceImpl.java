@@ -42,6 +42,8 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         user.setNormalizedName(matchCriteria.normalizedName(
                 user.getFirstName(), user.getLastName(), user.getLogin(),
                 user.getEmail()));
+        // make sure null is saved for blank email
+        user.setEmail(StringUtils.stripToNull(user.getEmail()));
         return userClientRepository.save(user);
     }
 
@@ -87,6 +89,30 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
             userClient.getTeamRoles().size();
         }
         return userClient;
+    }
+
+    @Override
+    public UserClient findByActivationKey(String activationKey) {
+        if (StringUtils.isNotBlank(activationKey)) {
+            return userClientRepository.findByActivationKey(activationKey);
+        }
+        return null;
+    }
+
+    @Override
+    public UserClient findByResetToken(String resetToken) {
+        if (StringUtils.isNotBlank(resetToken)) {
+            return userClientRepository.findByPasswordResetToken(resetToken);
+        }
+        return null;
+    }
+
+    @Override
+    public UserClient findByEmail(String email) {
+        if (StringUtils.isNotBlank(email)) {
+            return userClientRepository.findByEmailIgnoreCase(email);
+        }
+        return null;
     }
 
 }

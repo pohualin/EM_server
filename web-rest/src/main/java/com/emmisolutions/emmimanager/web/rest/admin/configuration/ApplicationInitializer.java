@@ -35,6 +35,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         rootContext.register(
                 RestConfiguration.class,
                 SecurityConfiguration.class,
+                CasSecurityConfiguration.class,
                 HateoasConfiguration.class,
                 SwaggerConfiguration.class,
                 ClientSecurityConfiguration.class);
@@ -71,6 +72,7 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         compressingFilter.addMappingForUrlPatterns(disps, true, "*.html");
         compressingFilter.addMappingForUrlPatterns(disps, true, "*.js");
         compressingFilter.addMappingForUrlPatterns(disps, true, "/webapi/*");
+        compressingFilter.addMappingForUrlPatterns(disps, true, "/webapi-client/*");
         compressingFilter.addMappingForUrlPatterns(disps, true, "/metrics/*");
         compressingFilter.setAsyncSupported(true);
     }

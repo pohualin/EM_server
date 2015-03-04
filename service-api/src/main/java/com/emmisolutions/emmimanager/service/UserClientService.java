@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -54,6 +55,34 @@ public interface UserClientService {
      */
     List<UserClientConflict> findConflictingUsers(UserClient userClient);
 
+    /**
+     * Activate a user from an activation code
+     *
+     * @param activationRequest used to activate the user
+     * @return the activated UserClient
+     */
+    UserClient activate(ActivationRequest activationRequest);
+
+    /**
+     * Adds an activation key to the passed user client
+     *
+     * @param userClient to add the key to
+     * @return the updated UserClient
+     */
+    UserClient addActivationKey(UserClient userClient);
+
+    /**
+     * Expires the activation token but does not remove it
+     *
+     * @param userClient on which to expire the token
+     * @return the updated UserClient
+     */
+    UserClient expireActivationToken(UserClient userClient);
+
+    /**
+     * Number of hours activation tokens are valid after creation
+     */
+    int ACTIVATION_TOKEN_HOURS_VALID = 72;
 
     /**
      * A conflicting UserClient

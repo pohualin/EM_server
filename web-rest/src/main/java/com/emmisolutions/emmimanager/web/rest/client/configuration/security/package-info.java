@@ -11,7 +11,7 @@
  * level permissions on a REST GET method 'authorizeMe' could look like:
  *
  * @RequestMapping(value = "/authorizeMe/{clientId}/{teamId}", method = RequestMethod.GET)
- * @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_USER') or " +
+ * @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or " +
  *      "hasPermission(@client._new(#clientId), 'PERM_CLIENT_USER') or " +
  *      "hasPermission(@client._new(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
  *      "hasPermission(@team._new(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA')")

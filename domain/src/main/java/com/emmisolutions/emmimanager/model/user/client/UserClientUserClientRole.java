@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Audited
 @Entity
 @Table(name = "user_client_user_client_role", uniqueConstraints = @UniqueConstraint(columnNames = {
-        "users_id", "user_client_role_id" }, name = "uk_user_client_user_client_role"))
+        "user_client_id", "user_client_role_id"}, name = "uk_user_client_user_client_role"))
 public class UserClientUserClientRole extends AbstractAuditingEntity {
 
     public UserClientUserClientRole() {
@@ -36,7 +36,7 @@ public class UserClientUserClientRole extends AbstractAuditingEntity {
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "users_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_user_client_user_client_role_users"))
+    @JoinColumn(name = "user_client_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_user_client_user_client_role_users"))
     private UserClient userClient;
 
     public Long getId() {

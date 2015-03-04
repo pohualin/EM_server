@@ -9,6 +9,9 @@
         <class>com.emmisolutions.emmimanager.model.audit.UsernameRevisionEntity</class>
         <class>com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.user.admin.UserAdmin</class>
         <class>com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission</class>
         <class>com.emmisolutions.emmimanager.model.user.admin.UserAdminRole</class>
@@ -17,6 +20,7 @@
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientPermission</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientPermissionGroup</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission</class>
@@ -48,12 +52,14 @@
         <class>com.emmisolutions.emmimanager.model.TeamLocation</class>
 		<class>com.emmisolutions.emmimanager.model.TeamProviderTeamLocation</class>
         <class>com.emmisolutions.emmimanager.model.ClientProvider</class>
+        <class>com.emmisolutions.emmimanager.model.mail.EmailTemplate</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
             <property name="org.hibernate.envers.audit_table_suffix" value="_audit"/>
             <property name="org.hibernate.envers.revision_field_name" value="revision"/>
             <property name="org.hibernate.envers.revision_type_field_name" value="revision_type"/>
+            <property name="jadira.usertype.useJdbc42Apis" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

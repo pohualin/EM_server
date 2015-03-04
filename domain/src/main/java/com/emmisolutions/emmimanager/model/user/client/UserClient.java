@@ -5,11 +5,15 @@ import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.Email;
+import org.joda.time.LocalDateTime;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,21 +25,83 @@ import java.util.List;
 @Entity
 @Audited
 @DiscriminatorValue("C")
+@Table(name = "user_client",
+        indexes = {
+                @Index(name = "ix_user_client_email", columnList = "email", unique = true)
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"login"}, name = "uk_user_client_login")
+        }
+)
 public class UserClient extends User {
+
+    @NotNull
+    @Size(min = 0, max = 255)
+    @Column(length = 255, nullable = false, columnDefinition = "nvarchar(255)")
+    private String login;
+
+    @Column(length = 40, columnDefinition = "varchar(40)")
+    @Size(min = 0, max = 40)
+    @XmlTransient
+    private String password;
+
+    @Column(length = 32, columnDefinition = "varchar(32)")
+    @Size(min = 0, max = 32)
+    @XmlTransient
+    private String salt;
+
+    @Email
+    @Size(min = 0, max = 255)
+    @Column(length = 255, columnDefinition = "nvarchar(255)")
+    private String email;
+
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "client_id",
+            foreignKey = @ForeignKey(name = "fk_user_client_client"))
+    private Client client;
+
+    @OneToMany(mappedBy = "userClient")
+    private Collection<UserClientUserClientRole> clientRoles;
+
+    @OneToMany(mappedBy = "userClient")
+    private Collection<UserClientUserClientTeamRole> teamRoles;
+
+    @Size(max = 40)
+    @Column(name = "activation_key", length = 40, columnDefinition = "nvarchar(40)")
+    private String activationKey;
+
+    @Size(max = 40)
+    @Column(name = "password_reset_token", length = 40, columnDefinition = "nvarchar(40)")
+    private String passwordResetToken;
+
+    @Column(name = "activated", nullable = false)
+    private boolean activated;
+
+    @Column(name = "never_logged_in")
+    private boolean neverLoggedIn = true;
+
+    @Column(name = "email_validated")
+    private boolean emailValidated;
+
+    @Column(name = "password_reset_expiration_time_utc")
+    private LocalDateTime passwordResetExpirationDateTime;
+
+    @Column(name = "activation_expiration_time_utc")
+    private LocalDateTime activationExpirationDateTime;
 
     public UserClient() {
 
     }
 
+    /**
+     * Creates a client by id
+     *
+     * @param id the id
+     */
     public UserClient(Long id) {
         super.setId(id);
     }
-
-    @ManyToOne
-    @NotNull
-    @JoinColumn(name = "client_id",
-            foreignKey = @ForeignKey(name = "fk_client_id"))
-    private Client client;
 
     public Client getClient() {
         return client;
@@ -44,13 +110,6 @@ public class UserClient extends User {
     public void setClient(Client client) {
         this.client = client;
     }
-
-    @OneToMany(mappedBy = "userClient")
-    private Collection<UserClientUserClientRole> clientRoles;
-
-    @OneToMany(mappedBy = "userClient")
-    private Collection<UserClientUserClientTeamRole> teamRoles;
-
 
     public Collection<UserClientUserClientRole> getClientRoles() {
         return clientRoles;
@@ -102,4 +161,97 @@ public class UserClient extends User {
         return authorities;
     }
 
+    public String getActivationKey() {
+        return activationKey;
+    }
+
+    public void setActivationKey(String activationKey) {
+        this.activationKey = activationKey;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+
+    public boolean isNeverLoggedIn() {
+        return neverLoggedIn;
+    }
+
+    public void setNeverLoggedIn(boolean neverLoggedIn) {
+        this.neverLoggedIn = neverLoggedIn;
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public boolean isEmailValidated() {
+        return emailValidated;
+    }
+
+    public void setEmailValidated(boolean emailValidated) {
+        this.emailValidated = emailValidated;
+    }
+
+    public LocalDateTime getPasswordResetExpirationDateTime() {
+        return passwordResetExpirationDateTime;
+    }
+
+    public void setPasswordResetExpirationDateTime(LocalDateTime passwordResetExpirationDateTime) {
+        this.passwordResetExpirationDateTime = passwordResetExpirationDateTime;
+    }
+
+    public LocalDateTime getActivationExpirationDateTime() {
+        return activationExpirationDateTime;
+    }
+
+    public void setActivationExpirationDateTime(LocalDateTime activationExpirationDateTime) {
+        this.activationExpirationDateTime = activationExpirationDateTime;
+    }
 }
