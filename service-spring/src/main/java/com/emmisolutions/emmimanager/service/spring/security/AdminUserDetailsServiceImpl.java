@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 public class AdminUserDetailsServiceImpl extends UserDetailsServiceImpl {
 
     @Resource
-    private UserAdminPersistence userPersistence;
+    private transient UserAdminPersistence userPersistence;
 
     @Override
     @Transactional(readOnly = true)

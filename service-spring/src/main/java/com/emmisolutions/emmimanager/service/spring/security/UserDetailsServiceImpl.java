@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Resource
-    private UserClientPersistence userClientPersistence;
+    private transient UserClientPersistence userClientPersistence;
 
     @Override
     @Transactional(readOnly = true)

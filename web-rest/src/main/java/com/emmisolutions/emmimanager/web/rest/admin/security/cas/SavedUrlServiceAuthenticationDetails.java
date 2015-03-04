@@ -37,7 +37,7 @@ public class SavedUrlServiceAuthenticationDetails implements ServiceAuthenticati
         if (StringUtils.isNotBlank(encodedRedirectUrl)) {
             // decode the encodedRedirect to use later
             this.redirectUrl = new String(urlSafeBase64.decode(encodedRedirectUrl));
-            UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(serviceUrl);
+            UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(serviceUrl);
             uriComponentsBuilder.queryParam(SERVICE_REQUEST_URL_PARAMETER, encodedRedirectUrl);
             this.serviceUrl = uriComponentsBuilder.build(false).toString();
         } else {

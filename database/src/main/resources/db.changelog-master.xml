@@ -114,7 +114,9 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-joined-strategy.xml"/>
 
+    <!-- Don't run this anymore after em-874 has gone into effect
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-admin-passwords.xml"/>
+    -->
 	
 	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-570.xml"/>
 
@@ -128,6 +130,8 @@
     
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-836.xml"/>
     
+    <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-297.xml"/>
+    
     <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-761.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-730.xml"/>
@@ -139,5 +143,7 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-em-652.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-admin.super.user.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-em-874.xml"/>
 
 </databaseChangeLog>
