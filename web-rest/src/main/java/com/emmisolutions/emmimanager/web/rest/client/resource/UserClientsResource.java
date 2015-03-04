@@ -81,7 +81,6 @@ public class UserClientsResource {
             // send the email (asynchronously)
             userClient.setId(userId);
             userClient = userClientService.reload(userClient);
-            userClientService.update(userClient);
             mailService.sendValidationEmail(userClient, "http://aUrl");
             userClient.setEmailValidated(true);
         }

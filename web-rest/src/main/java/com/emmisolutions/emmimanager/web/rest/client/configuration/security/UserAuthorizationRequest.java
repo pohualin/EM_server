@@ -32,7 +32,7 @@ public class UserAuthorizationRequest  {
     }
 
     public boolean isLoggedIn(Authentication authentication ){
-        if(this.userId!=null&&authentication!=null&&authentication.getPrincipal()!=null&&((UserClient)authentication.getPrincipal()).getId()!=null) {
+        if(this.userId!=null&&authentication!=null&&authentication.getPrincipal()!=null) {
             return this.userId.equals(((UserClient) authentication.getPrincipal()).getId());
         }
         return false;
