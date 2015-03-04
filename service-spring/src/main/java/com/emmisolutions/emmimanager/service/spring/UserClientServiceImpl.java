@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
@@ -21,12 +20,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -196,37 +195,40 @@ public class UserClientServiceImpl implements UserClientService {
     public UserClient handleLoginFailure(UserClient userClient) {
         UserClient toBeHandled = userClient;
 
-        if (toBeHandled.isAccountNonLocked()) {
-            // Authenticate failed add 1 to failure count
-            toBeHandled
-                    .setLoginFailureCount(userClient.getLoginFailureCount() + 1);
+        toBeHandled
+                .setLoginFailureCount(userClient.getLoginFailureCount() + 1);
 
-            ClientPasswordConfiguration configuration = clientPasswordConfigurationService
-                    .get(toBeHandled.getClient());
-            if (configuration.getLockoutAttemps() <= toBeHandled
-                    .getLoginFailureCount()) {
-                // Lock the user after few attempts depending on how client setup
-                toBeHandled.setAccountNonLocked(false);
-                // Do not set a lock expiration when client do not use this feature
-                if (configuration.getLockoutReset() != 0) {
-                    toBeHandled.setLockExpirationDateTime(LocalDateTime.now(
-                            DateTimeZone.UTC).plusMinutes(
-                            configuration.getLockoutReset()));
-                }
-            }
-        } else {
-            LocalDateTime now = LocalDateTime.now(DateTimeZone.UTC);
-            // if lock expired
-            if (toBeHandled.getLockExpirationDateTime() != null
-                    && now.isAfter(toBeHandled.getLockExpirationDateTime())) {
-                // Unlock and give the user few more attempts
-                toBeHandled.setAccountNonLocked(true);
-                toBeHandled.setLoginFailureCount(1);
-                toBeHandled.setLockExpirationDateTime(null);
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(toBeHandled.getClient());
+        if (configuration.getLockoutAttemps() <= toBeHandled
+                .getLoginFailureCount()) {
+            // Lock the user after few attempts depending on how client setup
+            toBeHandled.setAccountNonLocked(false);
+            // Do not set a lock expiration when client do not use this feature
+            if (configuration.getLockoutReset() != 0) {
+                toBeHandled.setLockExpirationDateTime(LocalDateTime.now(
+                        DateTimeZone.UTC).plusMinutes(
+                        configuration.getLockoutReset()));
             }
         }
 
         return userClientPersistence.saveOrUpdate(toBeHandled);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public UserClient unlockUserClient(UserClient userClient) {
+        UserClient toUpdate = userClient;
+        if (toUpdate.isAccountNonLocked() == false
+                && toUpdate.getLockExpirationDateTime() != null
+                && LocalDateTime.now(DateTimeZone.UTC).isAfter(
+                        toUpdate.getLockExpirationDateTime())) {
+            toUpdate.setAccountNonLocked(true);
+            toUpdate.setLoginFailureCount(0);
+            toUpdate.setLockExpirationDateTime(null);
+            userClientPersistence.saveOrUpdate((UserClient) toUpdate);
+        }
+        return toUpdate;
     }
     
 }

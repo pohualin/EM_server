@@ -6,6 +6,10 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientPasswordConfigurationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginError;
+import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginErrorResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginErrorResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 
 import org.springframework.hateoas.ResourceAssembler;
@@ -41,7 +45,13 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<User, UserClientResource> userUserClientResourceResourceAssembler;
+    
+    @Resource
+    ClientPasswordConfigurationResourceAssembler clientPasswordConfigurationResourceAssembler;
 
+    @Resource
+    UserClientLoginErrorResourceAssembler userClientLoginFailureResourceAssembler;
+    
     @Resource
     MappingJackson2HttpMessageConverter jsonJacksonConverter;
 
@@ -62,12 +72,37 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
                         userUserClientResourceResourceAssembler.toResource((User) exception.getExtraInformation());
                 client = jsonJacksonConverter.getObjectMapper().writeValueAsString(
                         userClientResource.getClientResource());
-            } else if (exception instanceof BadCredentialsException || exception instanceof LockedException) {
-                UserClient userClient = (UserClient)userDetailsService.loadUserByUsername((String)exception.getAuthentication().getPrincipal());
+            } else if (exception instanceof BadCredentialsException) {
+                UserClient userClient = (UserClient) userDetailsService
+                        .loadUserByUsername((String) exception
+                                .getAuthentication().getPrincipal());
                 userClient = userClientService.handleLoginFailure(userClient);
-                ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(userClient.getClient());
-                request.setAttribute("userClient", userClient);
-                request.setAttribute("policy", configuration);
+                ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                        .get(userClient.getClient());
+
+                UserClientLoginError failure = new UserClientLoginError(
+                        UserClientLoginError.Reason.BAD_CREDENTIAL,
+                        userClient, configuration);
+                UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler
+                        .toResource(failure);
+                String loginError = jsonJacksonConverter.getObjectMapper()
+                        .writeValueAsString(resource);
+                request.setAttribute("loginError", loginError);
+            } else if (exception instanceof LockedException) {
+                UserClient userClient = (UserClient) userDetailsService
+                        .loadUserByUsername((String) exception
+                                .getAuthentication().getPrincipal());
+                userClient = userClientService.reload(userClient);
+                ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                        .get(userClient.getClient());
+                UserClientLoginError failure = new UserClientLoginError(
+                        UserClientLoginError.Reason.LOCK,
+                        userClient, configuration);
+                UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler
+                        .toResource(failure);
+                String loginError = jsonJacksonConverter.getObjectMapper()
+                        .writeValueAsString(resource);
+                request.setAttribute("loginError", loginError);
             }
             // push the client into the request (it'll get picked up by login-expired.jsp)
             request.setAttribute("client", client);

@@ -8,19 +8,13 @@ import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +47,7 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
     @Override
     @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        super.setPreAuthenticationChecks(new LegacyAuthenticationProvider.PreAuthenticationChecks());
+        super.setHideUserNotFoundExceptions(false);
         return super.authenticate(authentication);
     }
 
@@ -81,18 +75,15 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             UserClient userClient = ((UserClient) userDetails);
             userClient.setPasswordResetExpirationDateTime(null);
             userClient.setPasswordResetToken(null);
-            if(!userClient.isAccountNonLocked() || userClient.getLoginFailureCount() != 0 || userClient.getLockExpirationDateTime() != null){
-                userClient.setLoginFailureCount(0);
-                userClient.setLockExpirationDateTime(null);
-                userClient.setAccountNonLocked(true);
-                userClientPersistence.saveOrUpdate(userClient);
-            }
+            userClient.setLoginFailureCount(0);
+            userClient.setLockExpirationDateTime(null);
+            userClient.setAccountNonLocked(true);
             if (userClient.isNeverLoggedIn()) {
                 userClient.setNeverLoggedIn(false);
                 userClient.setActivationKey(null);
                 userClient.setActivationExpirationDateTime(null);
-                userClientPersistence.saveOrUpdate(userClient);
             }
+            userClientPersistence.saveOrUpdate(userClient);
         }
     }
 
@@ -106,7 +97,12 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
      */
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        return userDetailsService.loadUserByUsername(username);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        if (user instanceof UserClient) {
+            UserClient toUpdate = (UserClient) user;
+            user = (UserClient) userClientService.unlockUserClient(toUpdate);
+        }
+        return user;
     }
 
     @Override
@@ -114,41 +110,4 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
         this.userDetailsService = userDetailsService;
     }
     
-    private class PreAuthenticationChecks implements UserDetailsChecker {
-        public void check(UserDetails user) {
-            if (!user.isAccountNonLocked()) {
-                if (user instanceof UserClient) {
-                    UserClient toUpdate = (UserClient) user;
-                    if (toUpdate.isAccountNonLocked() == false
-                            && toUpdate.getLockExpirationDateTime() != null
-                            && LocalDateTime.now(DateTimeZone.UTC).isAfter(
-                                    toUpdate.getLockExpirationDateTime())) {
-                        // Do not issue LockException
-                    } else {
-                        throw new LockedException(
-                                messages.getMessage(
-                                        "AbstractUserDetailsAuthenticationProvider.locked",
-                                        "User account is locked"), user);
-                    }
-                } else {
-                    throw new LockedException(messages.getMessage(
-                            "AbstractUserDetailsAuthenticationProvider.locked",
-                            "User account is locked"), user);
-                }
-            }
-
-            if (!user.isEnabled()) {
-                throw new DisabledException(messages.getMessage(
-                        "AbstractUserDetailsAuthenticationProvider.disabled",
-                        "User is disabled"), user);
-            }
-
-            if (!user.isAccountNonExpired()) {
-                throw new AccountExpiredException(messages.getMessage(
-                        "AbstractUserDetailsAuthenticationProvider.expired",
-                        "User account has expired"), user);
-            }
-        }
-    }
-
 }

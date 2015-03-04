@@ -87,6 +87,15 @@ public interface UserClientService {
      * @return handled userClient
      */
     UserClient handleLoginFailure(UserClient userClient);
+    
+    /**
+     * Unlock userClient if it is locked and lock is expired
+     * 
+     * @param userClient
+     *            to unlock
+     * @return an unlocked UserClient
+     */
+    UserClient unlockUserClient(UserClient userClient);
 
     /**
      * Number of hours activation tokens are valid after creation
