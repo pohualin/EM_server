@@ -32,7 +32,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
-    
+
     @Resource
     UserClientPasswordService userClientPasswordService;
 
@@ -228,7 +228,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         Client client = makeNewRandomClient();
         ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(client);
         assertThat("allowed user self reset password is true", configuration.isPasswordReset(), is(true));
-        
+
         UserClient userClient = makeNewRandomUserClient(client);
         assertThat("reset token is created",
                 userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
@@ -237,15 +237,15 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         assertThat("reset token is not created",
                 userClientPasswordService.forgotPassword(null),
                 is(nullValue()));
-        
+
         configuration.setPasswordReset(false);
         configuration = clientPasswordConfigurationService.save(configuration);
         assertThat("allowed user self reset password is false", configuration.isPasswordReset(), is(false));
-        
+
         assertThat("reset token is not created",
                 userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(nullValue()));
-        
+
         assertThat("reset token is not created",
                 userClientPasswordService
                         .forgotPassword("notfound@notfound.com"),
@@ -333,7 +333,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
                 userClientPasswordService.findPasswordPolicyUsingActivationToken(userClient.getActivationKey());
         assertThat("existing policy was found", policy, is(existingPolicy));
     }
-    
+
     @Test
     public void testValidateNewPassword(){
         Client client = makeNewRandomClient();
@@ -342,106 +342,106 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         req.setLogin(userClient.getLogin());
         req.setNewPassword("");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("abc");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("abcABC");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
 
         req.setNewPassword("abcABC123");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(client);
         configuration = clientPasswordConfigurationService.save(configuration);
-        
+
         req.setNewPassword("abcABC");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("abcABC123");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         configuration.setSpecialChars(true);
         configuration = clientPasswordConfigurationService.save(configuration);
-        
+
         req.setNewPassword("abcABC");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("abcABC123");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         configuration.setLowercaseLetters(false);
         configuration = clientPasswordConfigurationService.save(configuration);
-        
+
         req.setNewPassword("abcABC123");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("ABCABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         configuration.setUppercaseLetters(false);
         configuration = clientPasswordConfigurationService.save(configuration);
-        
+
         req.setNewPassword("abcABC123");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("123123123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         configuration.setNumbers(false);
         configuration = clientPasswordConfigurationService.save(configuration);
-        
+
         req.setNewPassword("abcABC123");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
-        
+
         req.setNewPassword("!!!!!!!!![]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
     }
-    
+
     @Test
     public void testValidateNewResetPassword(){
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
         userClient.setEmail("apple@abc.com");
         userClientService.update(userClient);
-        
+
         ResetPasswordRequest req = new ResetPasswordRequest();
         req.setResetToken(userClientPasswordService.forgotPassword("apple@abc.com").getPasswordResetToken());
-        
+
         req.setNewPassword("abcABC");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
 
         req.setNewPassword("abcABC123");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
     }
-    
+
     @Test
     public void testValidateNewActivatePassword(){
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
         userClient = userClientService.addActivationKey(new UserClient(userClient.getId()));
-        
+
         ActivationRequest req = new ActivationRequest();
         req.setActivationToken(userClient.getActivationKey());
-        
+
         req.setNewPassword("abcABC");
         assertThat("Should not match", userClientPasswordService.validateNewPassword(req), is(false));
 
         req.setNewPassword("abcABC123");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
-        
+
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
     }

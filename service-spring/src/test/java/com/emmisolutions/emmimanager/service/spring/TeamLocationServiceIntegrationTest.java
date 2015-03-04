@@ -210,7 +210,7 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
     public void invalidDeleteByClientAndLocation(){
         teamLocationService.delete(null, null);
     }
-    
+
     @Test
     public void saveTeamLocationWithOnlyLocationId() {
         Client client = makeClient(RandomStringUtils.randomAlphabetic(255));

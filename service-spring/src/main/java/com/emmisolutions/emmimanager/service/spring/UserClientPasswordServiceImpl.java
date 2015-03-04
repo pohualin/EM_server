@@ -232,7 +232,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         }
         return valid;
     }
-    
+
     @Override
     @Transactional
     public boolean validateNewPassword(ResetPasswordRequest resetPasswordRequest) {
