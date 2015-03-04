@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientPasswordConfigurationResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginError;
 import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginErrorResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginErrorResourceAssembler;
@@ -45,10 +44,7 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     UserDetailsService userDetailsService;
     
     @Resource(name = "userClientAuthenticationResourceAssembler")
-    ResourceAssembler<User, UserClientResource> userUserClientResourceResourceAssembler;
-    
-    @Resource
-    ClientPasswordConfigurationResourceAssembler clientPasswordConfigurationResourceAssembler;
+    ResourceAssembler<UserClient, UserClientResource> userUserClientResourceResourceAssembler;
 
     @Resource
     UserClientLoginErrorResourceAssembler userClientLoginFailureResourceAssembler;
@@ -84,7 +80,6 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
                             .handleLoginFailure(userClient);
                     ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                             .get(userClient.getClient());
-
                     if (userClient.isAccountNonLocked() == true) {
                         failure = new UserClientLoginError(
                                 UserClientLoginError.Reason.BAD, userClient,

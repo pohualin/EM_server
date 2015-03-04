@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.springframework.hateoas.ResourceAssembler;
@@ -31,7 +32,7 @@ public class UserClientsResource {
     UserDetailsService userDetailsService;
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
-    ResourceAssembler<User, UserClientResource> userResourceAssembler;
+    ResourceAssembler<UserClient, UserClientResource> userResourceAssembler;
 
     @Resource
     MailService mailService;
@@ -46,14 +47,17 @@ public class UserClientsResource {
      * @param teamId   the Team id
      * @return AUTHORIZED if the logged in user is authorized
      */
-    @RequestMapping(value = "/auth-test/{clientId}/{teamId}", method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or " +
-            "hasPermission(@client.id(#clientId), 'PERM_CLIENT_USER') or " +
-            "hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA')"
+    @RequestMapping(value = "/auth-test/{clientId}/{teamId}/{userId}", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA') or " +
+            "hasPermission(@password, #pw) or " +
+            "hasPermission(@user, #userId)"
     )
-    public ResponseEntity<String> authorized(@PathVariable Long clientId, @PathVariable Long teamId) {
-        return new ResponseEntity<>("AUTHORIZED for client: " + clientId + ", team: " + teamId, HttpStatus.OK);
+    public ResponseEntity<String> authorized(@PathVariable Long clientId, @PathVariable Long teamId,
+                                             @PathVariable Long userId, @RequestParam(required = false) String pw) {
+        return new ResponseEntity<>("AUTHORIZED for client: " + clientId +
+                ", team: " + teamId +
+                ", user: " + userId + ", pw: " + pw, HttpStatus.OK);
     }
 
     /**
@@ -64,7 +68,7 @@ public class UserClientsResource {
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
     @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
-        return new ResponseEntity<>(userResourceAssembler.toResource(userDetailsService.getLoggedInUser()),
+        return new ResponseEntity<>(userResourceAssembler.toResource((UserClient) userDetailsService.getLoggedInUser()),
                 HttpStatus.OK);
     }
 
@@ -73,8 +77,7 @@ public class UserClientsResource {
      * @return OK
      */
     @RequestMapping(value = "/{userId}/validateEmail", method = RequestMethod.POST)
-    @PreAuthorize("hasPermission(@user.id(#userId),null)"
-    )
+    @PreAuthorize("hasPermission(@user, #userId)")
     public ResponseEntity<Void> validate(@PathVariable Long userId,
                                          @RequestBody UserClient userClient) {
         if (userClient != null) {
