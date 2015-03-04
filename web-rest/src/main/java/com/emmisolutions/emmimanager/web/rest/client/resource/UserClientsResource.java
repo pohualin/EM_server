@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.springframework.hateoas.ResourceAssembler;
@@ -31,7 +32,7 @@ public class UserClientsResource {
     UserDetailsService userDetailsService;
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
-    ResourceAssembler<User, UserClientResource> userResourceAssembler;
+    ResourceAssembler<UserClient, UserClientResource> userResourceAssembler;
 
     @Resource
     MailService mailService;
@@ -64,7 +65,7 @@ public class UserClientsResource {
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
     @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
-        return new ResponseEntity<>(userResourceAssembler.toResource(userDetailsService.getLoggedInUser()),
+        return new ResponseEntity<>(userResourceAssembler.toResource((UserClient) userDetailsService.getLoggedInUser()),
                 HttpStatus.OK);
     }
 
