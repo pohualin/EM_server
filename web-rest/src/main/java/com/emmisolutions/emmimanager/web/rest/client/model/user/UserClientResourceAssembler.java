@@ -60,13 +60,16 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isAccountNonExpired(),
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
+                user.isEmailValidated(),
                 clientResource,
                 perms,
                 user.isImpersonated());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
         if (!user.isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
+            ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
         }
+        
         return ret;
     }
 

@@ -27,11 +27,7 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active;
-    private boolean accountNonExpired;
-    private boolean accountNonLocked;
-    private boolean credentialsNonExpired;
-    private boolean impersonated;
+    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated;
 
     private ClientResource clientResource;
 
@@ -55,6 +51,7 @@ public class UserClientResource extends ResourceSupport {
      * @param accountNonExpired     account is not expired
      * @param accountNonLocked      account is not locked
      * @param credentialsNonExpired credentials are not expired
+     * @param emailValidated        email is validated
      * @param permissions           permissions
      */
     public UserClientResource(Long id,
@@ -67,6 +64,7 @@ public class UserClientResource extends ResourceSupport {
                               boolean accountNonExpired,
                               boolean accountNonLocked,
                               boolean credentialsNonExpired,
+                              boolean emailValidated,
                               ClientResource clientResource,
                               List<String> permissions,
                               boolean impersonated) {
@@ -80,9 +78,10 @@ public class UserClientResource extends ResourceSupport {
         this.accountNonExpired = accountNonExpired;
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
+        this.emailValidated = emailValidated;
         this.clientResource = clientResource;
         this.permissions = permissions;
-        this.setImpersonated(impersonated);
+        this.impersonated = impersonated;
     }
 
     /**
@@ -103,13 +102,5 @@ public class UserClientResource extends ResourceSupport {
 
     public void setClientResource(ClientResource clientResource) {
         this.clientResource = clientResource;
-    }
-
-    public boolean isImpersonated() {
-        return impersonated;
-    }
-
-    public void setImpersonated(boolean impersonated) {
-        this.impersonated = impersonated;
     }
 }
