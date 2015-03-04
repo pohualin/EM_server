@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.hateoas.ResourceSupport;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
@@ -25,7 +26,18 @@ public class UserClientLoginError extends ResourceSupport {
 
     private ClientPasswordConfiguration clientPasswordConfiguration;
 
+    private Client client;
+
     public UserClientLoginError() {
+    }
+
+    public UserClientLoginError(Reason reason) {
+        this.reason = reason;
+    }
+
+    public UserClientLoginError(Reason reason, Client client) {
+        this.reason = reason;
+        this.client = client;
     }
 
     public UserClientLoginError(Reason reason, UserClient userClient,
@@ -60,6 +72,14 @@ public class UserClientLoginError extends ResourceSupport {
         this.clientPasswordConfiguration = clientPasswordConfiguration;
     }
 
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -72,7 +92,9 @@ public class UserClientLoginError extends ResourceSupport {
                         : that.userClient != null)
                 && !(clientPasswordConfiguration != null ? !clientPasswordConfiguration
                         .equals(that.clientPasswordConfiguration)
-                        : that.clientPasswordConfiguration != null);
+                        : that.clientPasswordConfiguration != null)
+                && !(client != null ? !client.equals(that.client)
+                        : that.client != null);
     }
 
     @Override
@@ -82,12 +104,13 @@ public class UserClientLoginError extends ResourceSupport {
                 * result
                 + (userClient != null ? userClient.hashCode() : 0)
                 + (clientPasswordConfiguration != null ? clientPasswordConfiguration
-                        .hashCode() : 0);
+                        .hashCode() : 0)
+                + (client != null ? client.hashCode() : 0);
         return result;
     }
 
     @XmlEnum
     public static enum Reason {
-        BAD_CREDENTIAL, LOCK
+        BAD, LOCK, EXPIRED
     }
 }

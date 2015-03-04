@@ -47,7 +47,6 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
     @Override
     @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        super.setHideUserNotFoundExceptions(false);
         return super.authenticate(authentication);
     }
 

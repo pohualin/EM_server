@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
@@ -65,29 +66,38 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             // handle ajax error
             String client = null;
-            if (exception instanceof CredentialsExpiredException &&
-                    exception.getExtraInformation() instanceof User) {
-                // serialize the client resource as a json string
-                UserClientResource userClientResource =
-                        userUserClientResourceResourceAssembler.toResource((User) exception.getExtraInformation());
-                client = jsonJacksonConverter.getObjectMapper().writeValueAsString(
-                        userClientResource.getClientResource());
-            } else if (exception instanceof BadCredentialsException) {
+            UserClientLoginError failure = null;
+            if (exception instanceof CredentialsExpiredException
+                    && exception.getExtraInformation() instanceof User) {
                 UserClient userClient = (UserClient) userDetailsService
                         .loadUserByUsername((String) exception
                                 .getAuthentication().getPrincipal());
-                userClient = userClientService.handleLoginFailure(userClient);
-                ClientPasswordConfiguration configuration = clientPasswordConfigurationService
-                        .get(userClient.getClient());
+                failure = new UserClientLoginError(
+                        UserClientLoginError.Reason.EXPIRED,
+                        userClient.getClient());
+            } else if (exception instanceof BadCredentialsException) {
+                try {
+                    UserClient userClient = (UserClient) userDetailsService
+                            .loadUserByUsername((String) exception
+                                    .getAuthentication().getPrincipal());
+                    userClient = userClientService
+                            .handleLoginFailure(userClient);
+                    ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                            .get(userClient.getClient());
 
-                UserClientLoginError failure = new UserClientLoginError(
-                        UserClientLoginError.Reason.BAD_CREDENTIAL,
-                        userClient, configuration);
-                UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler
-                        .toResource(failure);
-                String loginError = jsonJacksonConverter.getObjectMapper()
-                        .writeValueAsString(resource);
-                request.setAttribute("loginError", loginError);
+                    if (userClient.isAccountNonLocked() == true) {
+                        failure = new UserClientLoginError(
+                                UserClientLoginError.Reason.BAD, userClient,
+                                configuration);
+                    } else {
+                        failure = new UserClientLoginError(
+                                UserClientLoginError.Reason.LOCK, userClient,
+                                configuration);
+                    }
+                } catch (UsernameNotFoundException e) {
+                    failure = new UserClientLoginError(
+                            UserClientLoginError.Reason.BAD);
+                }
             } else if (exception instanceof LockedException) {
                 UserClient userClient = (UserClient) userDetailsService
                         .loadUserByUsername((String) exception
@@ -95,17 +105,20 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
                 userClient = userClientService.reload(userClient);
                 ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                         .get(userClient.getClient());
-                UserClientLoginError failure = new UserClientLoginError(
-                        UserClientLoginError.Reason.LOCK,
-                        userClient, configuration);
-                UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler
-                        .toResource(failure);
+                failure = new UserClientLoginError(
+                        UserClientLoginError.Reason.LOCK, userClient,
+                        configuration);
+            }
+            
+            UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler
+                    .toResource(failure);
+            
+            if(resource != null){
                 String loginError = jsonJacksonConverter.getObjectMapper()
                         .writeValueAsString(resource);
                 request.setAttribute("loginError", loginError);
             }
-            // push the client into the request (it'll get picked up by login-expired.jsp)
-            request.setAttribute("client", client);
+            
             // send back a 401, which will go to the login-expired.jsp page for output
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
         } else {
