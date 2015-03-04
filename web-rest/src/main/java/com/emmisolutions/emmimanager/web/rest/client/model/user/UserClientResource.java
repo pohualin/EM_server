@@ -27,7 +27,11 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated;
+    private boolean active;
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean impersonated;
 
     private ClientResource clientResource;
 
@@ -78,7 +82,7 @@ public class UserClientResource extends ResourceSupport {
         this.credentialsNonExpired = credentialsNonExpired;
         this.clientResource = clientResource;
         this.permissions = permissions;
-        this.impersonated = impersonated;
+        this.setImpersonated(impersonated);
     }
 
     /**
@@ -99,5 +103,13 @@ public class UserClientResource extends ResourceSupport {
 
     public void setClientResource(ClientResource clientResource) {
         this.clientResource = clientResource;
+    }
+
+    public boolean isImpersonated() {
+        return impersonated;
+    }
+
+    public void setImpersonated(boolean impersonated) {
+        this.impersonated = impersonated;
     }
 }

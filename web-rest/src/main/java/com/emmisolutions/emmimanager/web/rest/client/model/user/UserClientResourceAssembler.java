@@ -24,7 +24,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * Creates a UserResource from a UserClient
  */
 @Component("userClientAuthenticationResourceAssembler")
-public class UserClientResourceAssembler implements ResourceAssembler<User, UserClientResource> {
+public class UserClientResourceAssembler implements ResourceAssembler<UserClient, UserClientResource> {
 
     @Resource(name = "userClientClientResourceAssembler")
     ResourceAssembler<Client, ClientResource> clientResourceAssembler;
@@ -32,7 +32,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
     Pattern clientSpecificPermission = Pattern.compile("([A-Z_]*)_[0-9]+");
 
     @Override
-    public UserClientResource toResource(User user) {
+    public UserClientResource toResource(UserClient user) {
         if (user == null) {
             return null;
         }
@@ -52,19 +52,21 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
         UserClientResource ret = new UserClientResource(
                 user.getId(),
                 user.getVersion(),
-                user instanceof UserClient ? ((UserClient) user).getLogin() : ((UserAdmin) user).getLogin(),
+                user.getLogin(),
                 user.getFirstName(),
                 user.getLastName(),
-                user instanceof UserClient ? ((UserClient) user).getEmail() : ((UserAdmin) user).getEmail(),
+                user.getEmail(),
                 user.isActive(),
                 user.isAccountNonExpired(),
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
                 clientResource,
                 perms,
-                user instanceof UserClient && ((UserClient) user).isImpersonated());
+                user.isImpersonated());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
-        ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
+        if (!user.isImpersonated()) {
+            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
+        }
         return ret;
     }
 
