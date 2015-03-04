@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.hateoas.ResourceSupport;
 
+import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
+
 /**
  * HATEOAS wrapper for UserClientLoginError, essentially a DTO instead of a
  * wrapper.
@@ -17,12 +19,22 @@ public class UserClientLoginErrorResource extends ResourceSupport {
 
     private UserClientLoginError entity;
 
+    private ClientResource clientResource;
+
     public UserClientLoginError getEntity() {
         return entity;
     }
 
     public void setEntity(UserClientLoginError entity) {
         this.entity = entity;
+    }
+
+    public ClientResource getClientResource() {
+        return clientResource;
+    }
+
+    public void setClientResource(ClientResource clientResource) {
+        this.clientResource = clientResource;
     }
 
 }
