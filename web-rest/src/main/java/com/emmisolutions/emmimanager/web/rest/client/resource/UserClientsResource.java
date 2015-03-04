@@ -1,16 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
 import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -32,6 +32,11 @@ public class UserClientsResource {
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<User, UserClientResource> userResourceAssembler;
+
+    @Resource
+    MailService mailService;
+    @Resource
+    UserClientService userClientService;
 
     /**
      * This is an example method that demonstrates how to set up authorization
@@ -61,6 +66,26 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> authenticated() {
         return new ResponseEntity<>(userResourceAssembler.toResource(userDetailsService.getLoggedInUser()),
                 HttpStatus.OK);
+    }
+
+    /**
+     * Send an validation email
+     * @return OK
+     */
+    @RequestMapping(value = "/{userId}/validateEmail", method = RequestMethod.POST)
+    @PreAuthorize("hasPermission(@user.id(#userId),null)"
+    )
+    public ResponseEntity<Void> validate(@PathVariable Long userId,
+                                         @RequestBody UserClient userClient) {
+        if (userClient != null) {
+            // send the email (asynchronously)
+            userClient.setId(userId);
+            userClient = userClientService.reload(userClient);
+            mailService.sendValidationEmail(userClient, "http://aUrl");
+            userClient.setEmailValidated(true);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

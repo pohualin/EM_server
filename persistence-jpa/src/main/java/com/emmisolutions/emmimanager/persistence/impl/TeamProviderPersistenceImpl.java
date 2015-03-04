@@ -40,7 +40,7 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
     
     @Resource
     TeamProviderRepository teamProviderRepository;
-    
+
     @Resource
     TeamPersistence teamPersistence;
 
@@ -59,7 +59,7 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
         if (existingTeam == null || existingProvider == null) {
             throw new IllegalArgumentException("Team or Provider is not in the database");
         }
-        
+
         provider.setTeam(existingTeam);
         provider.setProvider(existingProvider);
         return teamProviderRepository.save(provider);

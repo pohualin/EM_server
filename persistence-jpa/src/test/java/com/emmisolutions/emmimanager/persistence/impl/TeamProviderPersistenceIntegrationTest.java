@@ -101,16 +101,16 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
             teamProviderPersistence.delete(team.getClient(), two.getProvider()),
             is(1l));
     }
-    
+
     /**
      * This test is so that when a client passes just the id of the provider, the association between the team and the provider is still made.
-     *  
+     *
      */
     @Test
-    public void saveTeamProviderWithOnlyProviderIdSet() {        
+    public void saveTeamProviderWithOnlyProviderIdSet() {
         Team team = makeNewRandomTeam(null);
         Provider provider = makeNewRandomProvider();
-        
+
         TeamProvider tp = new TeamProvider(new Team(team.getId()), new Provider(provider.getId()));
         TeamProvider saved = teamProviderPersistence.save(tp);
         assertThat("save was successful",
