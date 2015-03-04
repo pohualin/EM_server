@@ -13,6 +13,8 @@ import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -312,6 +314,13 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("third fail lock", userClient.isAccountNonLocked(), is(false));
         assertThat("third fail lock with lock expiration timestamp", userClient.getLockExpirationDateTime(), is(notNullValue()));
         
+        userClient.setLockExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC).minusMinutes(2));
+        userClient = userClientService.update(userClient);
+        userClient = userClientService.unlockUserClient(userClient);
+        assertThat("unlock done", userClient.getLoginFailureCount(), is(0));
+        assertThat("unlock done", userClient.isAccountNonLocked(), is(true));
+        assertThat("unlock done", userClient.getLockExpirationDateTime(), is(nullValue()));
+        
         configuration.setLockoutReset(0);
         configuration = clientPasswordConfigurationService.save(configuration);
         UserClient userClientA = makeNewRandomUserClient(client);
@@ -327,9 +336,8 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClientA = userClientService.handleLoginFailure(userClientA);
         assertThat("third fail lock", userClientA.getLoginFailureCount(), is(3));
         assertThat("third fail lock", userClientA.isAccountNonLocked(), is(false));
-        assertThat("third fail lock with lock permenantly", userClient.getLockExpirationDateTime(), is(notNullValue()));
+        assertThat("third fail lock with lock permenantly", userClient.getLockExpirationDateTime(), is(nullValue()));
         
     }
-
 
 }
