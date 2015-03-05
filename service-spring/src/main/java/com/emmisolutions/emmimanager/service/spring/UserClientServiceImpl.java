@@ -2,11 +2,15 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
@@ -47,6 +51,12 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
+    
+    @Resource
+    ClientRestrictConfigurationService clientRestrictConfigurationService;
+    
+    @Resource
+    EmailRestrictConfigurationService emailRestrictConfigurationService;
 
     @Resource
     PasswordEncoder passwordEncoder;
@@ -227,4 +237,69 @@ public class UserClientServiceImpl implements UserClientService {
         return toUpdate;
     }
     
+    @Transactional(readOnly = true)
+    public boolean validateEmailAddress(UserClient userClient) {
+        ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService
+                .getByClient(userClient.getClient());
+
+        if (restrictConfig == null || restrictConfig.isEmailConfigRestrict() == false) {
+            // return true if isEmailConfigRestrict returns false
+            return true;
+        } else {
+            Page<EmailRestrictConfiguration> validEmailEndingPage = emailRestrictConfigurationService
+                    .getByClient(null, userClient.getClient());
+            List<String> validEmailEndings = collectAllValidEmailEndings(null,
+                    validEmailEndingPage, userClient);
+
+            if (validEmailEndings.size() == 0) {
+                // return null if no valid email ending is set
+                return true;
+            } else {
+                // parse email to get domain
+                String domain = StringUtils.substringAfter(
+                        userClient.getEmail(), "@");
+
+                // Get the last two parts of domain separated by "."
+                int count = StringUtils.countMatches(domain, ".");
+                String trimmedDomain = "";
+                if (count == 1) {
+                    trimmedDomain = domain;
+                } else if (count > 1) {
+                    trimmedDomain = domain.substring(StringUtils
+                            .lastOrdinalIndexOf(domain, ".", 2) + 1);
+                }
+
+                if (validEmailEndings.contains(trimmedDomain)) {
+                    // return true if validEmailEndings contain the trimmed
+                    // domain
+                    return true;
+                } else {
+                    // return false if email does not match valid endings
+                    return false;
+                }
+            }
+        }
+    }
+    
+    private List<String> collectAllValidEmailEndings(
+            List<String> listOfValidEmailEndings,
+            Page<EmailRestrictConfiguration> validEmailEndingPage,
+            UserClient userClient) {
+        if (listOfValidEmailEndings == null) {
+            listOfValidEmailEndings = new ArrayList<String>();
+        }
+        for (EmailRestrictConfiguration validEmailEnding : validEmailEndingPage
+                .getContent()) {
+            listOfValidEmailEndings.add(validEmailEnding.getEmailEnding());
+        }
+        if (validEmailEndingPage.hasNext()) {
+            Page<EmailRestrictConfiguration> nextPage = emailRestrictConfigurationService
+                    .getByClient(validEmailEndingPage.nextPageable(),
+                            userClient.getClient());
+            collectAllValidEmailEndings(listOfValidEmailEndings, nextPage,
+                    userClient);
+        }
+        return listOfValidEmailEndings;
+    }
+
 }
