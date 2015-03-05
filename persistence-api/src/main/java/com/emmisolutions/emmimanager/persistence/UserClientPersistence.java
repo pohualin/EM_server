@@ -76,4 +76,14 @@ public interface UserClientPersistence {
      * @return the UserClient or null
      */
     UserClient findByEmail(String email);
+    
+    /**
+     * Set account non lock to true, reset login failure count and lock
+     * expiration timestamp
+     * 
+     * @param userClient
+     *            to unlock
+     * @return an unlocked userClient
+     */
+    UserClient unlockUserClient(UserClient userClient);
 }

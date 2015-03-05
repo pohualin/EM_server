@@ -1,11 +1,13 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -39,6 +42,9 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     ClientService clientService;
+    
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
 
     @Resource
     UserClientPersistence userClientPersistence;
@@ -144,6 +150,7 @@ public class UserClientServiceImpl implements UserClientService {
                     userClient.setEmailValidated(true);
                     userClient.setPassword(activationRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
+                    userClientPersistence.unlockUserClient(userClient);
                     ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
@@ -192,6 +199,44 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
+    @Transactional
+    public UserClient handleLoginFailure(UserClient userClient) {
+        UserClient toBeHandled = userClient;
+
+        toBeHandled
+                .setLoginFailureCount(userClient.getLoginFailureCount() + 1);
+
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(toBeHandled.getClient());
+        if (configuration.getLockoutAttemps() <= toBeHandled
+                .getLoginFailureCount()) {
+            // Lock the user after few attempts depending on how client setup
+            toBeHandled.setAccountNonLocked(false);
+            // Do not set a lock expiration when client do not use this feature
+            if (configuration.getLockoutReset() != 0) {
+                toBeHandled.setLockExpirationDateTime(LocalDateTime.now(
+                        DateTimeZone.UTC).plusMinutes(
+                        configuration.getLockoutReset()));
+            }
+        }
+
+        return userClientPersistence.saveOrUpdate(toBeHandled);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public UserClient unlockUserClient(UserClient userClient) {
+        UserClient toUpdate = userClient;
+        if (toUpdate.isAccountNonLocked() == false
+                && toUpdate.getLockExpirationDateTime() != null
+                && LocalDateTime.now(DateTimeZone.UTC).isAfter(
+                        toUpdate.getLockExpirationDateTime())) {
+            toUpdate = userClientPersistence
+                    .unlockUserClient((UserClient) toUpdate);
+        }
+        return toUpdate;
+    }
+    
     @Transactional(readOnly = true)
     public boolean validateEmailAddress(UserClient userClient) {
         ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService

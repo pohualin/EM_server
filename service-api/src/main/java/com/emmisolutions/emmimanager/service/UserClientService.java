@@ -82,9 +82,28 @@ public interface UserClientService {
     UserClient expireActivationToken(UserClient userClient);
     
     /**
+     * Handle login failed userCLient
+     * 
+     * @param userClient
+     *            to deal with
+     * @return handled userClient
+     */
+    UserClient handleLoginFailure(UserClient userClient);
+
+    /**
+     * Unlock userClient if it is locked and lock is expired
+     * 
+     * @param userClient
+     *            to unlock
+     * @return an unlocked UserClient
+     */
+    UserClient unlockUserClient(UserClient userClient);
+
+    /**
      * return true if the email is valid
      * 
-     * @param userClient contains email to validate
+     * @param userClient
+     *            contains email to validate
      * @return boolean
      */
     boolean validateEmailAddress(UserClient userClient);
