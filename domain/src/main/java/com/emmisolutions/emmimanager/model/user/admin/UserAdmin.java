@@ -51,11 +51,25 @@ public class UserAdmin extends User {
     @OneToMany(mappedBy = "userAdmin")
     private Set<UserAdminUserAdminRole> roles;
 
+    @Column(name = "web_api_user", nullable = false, columnDefinition = "boolean")
+    private boolean webApiUser;
+
     /**
      * Calls super()
      */
     public UserAdmin() {
         super();
+    }
+
+    /**
+     * Constructor for password change
+     *
+     * @param id    the id
+     * @param password the new password
+     */
+    public UserAdmin(Long id, String password) {
+        setId(id);
+        this.password = password;
     }
 
     /**
@@ -140,5 +154,13 @@ public class UserAdmin extends User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isWebApiUser() {
+        return webApiUser;
+    }
+
+    public void setWebApiUser(boolean webApiEnabled) {
+        this.webApiUser = webApiEnabled;
     }
 }

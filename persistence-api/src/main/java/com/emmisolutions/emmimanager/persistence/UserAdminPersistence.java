@@ -1,14 +1,14 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import java.util.Set;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.emmisolutions.emmimanager.model.UserAdminSearchFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * User persistence interface.
@@ -85,14 +85,21 @@ public interface UserAdminPersistence {
      * @return the set of saved
      */
     Set<UserAdminUserAdminRole> saveAll(
-            Set<UserAdminUserAdminRole> userAdminUserAdminRole);
-    
+            List<UserAdminUserAdminRole> userAdminUserAdminRole);
+
     /**
      * Find any existing users with same email address
-     * 
-     * @param userAdmin
-     *            to find
+     *
+     * @param userAdmin to find
      * @return a set of UserAdmin with same email address
      */
     Set<UserAdmin> findConflictingUsers(UserAdmin userAdmin);
+
+    /**
+     * Determines if the passed user is a system level user
+     *
+     * @param userAdmin to be tested, can be non-persistent
+     * @return true if user is or would be a system user
+     */
+    boolean isSystemUser(UserAdmin userAdmin);
 }

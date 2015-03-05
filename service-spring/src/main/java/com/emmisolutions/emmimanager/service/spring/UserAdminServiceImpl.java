@@ -8,16 +8,18 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdminUserAdminRole;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * An example of a Service class. It can only contact the persistence layer
@@ -33,28 +35,39 @@ public class UserAdminServiceImpl implements UserAdminService {
     @Resource(name = "adminUserDetailsService")
     UserDetailsService userDetailsService;
 
+    @Resource
+    PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional
     public UserAdmin save(UserAdminSaveRequest req) {
-        Set<UserAdminUserAdminRole> roles = new HashSet<>();
-        for (UserAdminRole userAdminRole : req.getRoles()) {
-            UserAdminUserAdminRole userAdminUserAdminRole = new UserAdminUserAdminRole();
-            userAdminUserAdminRole.setUserAdmin(req.getUserAdmin());
-            userAdminUserAdminRole.setUserAdminRole(userAdminRole);
-            roles.add(userAdminUserAdminRole);
+        if (req == null || req.getUserAdmin() == null ||
+                userAdminPersistence.isSystemUser(req.getUserAdmin())) {
+            throw new InvalidDataAccessApiUsageException("Invalid save request");
         }
 
         UserAdmin user = req.getUserAdmin();
-
         boolean modificationOfLoggedInUser = false;
-
         UserAdmin userFromDb = userAdminPersistence.reload(user);
         if (userFromDb != null) {
+            // this is an update
             modificationOfLoggedInUser = userFromDb.equals(userDetailsService.getLoggedInUser());
-            // don't allow password change on update
+            // override values that cannot be changed during save
             user.setPassword(userFromDb.getPassword());
             user.setSalt(userFromDb.getSalt());
             user.setCredentialsNonExpired(true);
+            user.setAccountNonExpired(userFromDb.isAccountNonExpired());
+            user.setAccountNonLocked(userFromDb.isAccountNonLocked());
+            if (modificationOfLoggedInUser) {
+                // don't allow change of web-api or active if the user is changing themselves
+                user.setWebApiUser(userFromDb.isWebApiUser());
+                user.setActive(userFromDb.isActive());
+            }
+            if (!user.isWebApiUser()) {
+                // remove passwords for non-web-api users
+                user.setPassword(null);
+                user.setSalt(null);
+            }
         } else {
             // new user, don't allow passwords to be set here
             user.setPassword(null);
@@ -65,39 +78,38 @@ public class UserAdminServiceImpl implements UserAdminService {
         // save the updates
         user = userAdminPersistence.saveOrUpdate(user);
 
-        // don't allow a user to escalate or change their own role
-        if (!modificationOfLoggedInUser && roles.size() > 0) {
+        // update the user roles, when not changing the logged in user
+        if (!modificationOfLoggedInUser && !CollectionUtils.isEmpty(req.getRoles())) {
+            List<UserAdminUserAdminRole> roles = new ArrayList<>();
+            for (UserAdminRole userAdminRole : req.getRoles()) {
+                UserAdminUserAdminRole userAdminUserAdminRole = new UserAdminUserAdminRole();
+                userAdminUserAdminRole.setUserAdmin(req.getUserAdmin());
+                userAdminUserAdminRole.setUserAdminRole(userAdminRole);
+                roles.add(userAdminUserAdminRole);
+            }
             userAdminPersistence.removeAllAdminRoleByUserAdmin(user);
-            userAdminPersistence.saveAll(roles);
-            user.setRoles(roles);
+            user.setRoles(userAdminPersistence.saveAll(roles));
         }
+
         return user;
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserAdmin reload(UserAdmin user) {
-        if (user == null || user.getId() == null) {
-            return null;
-        }
         return userAdminPersistence.reload(user);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserAdmin fetchUserWillFullPermissions(UserAdmin user) {
-        if (user == null || user.getId() == null) {
+        UserAdmin fromDb = userAdminPersistence.reload(user);
+        if (fromDb == null) {
             return null;
         }
-        user = userAdminPersistence.reload(user);
-        return userAdminPersistence.fetchUserWillFullPermissions(user.getLogin());
+        return userAdminPersistence.fetchUserWillFullPermissions(fromDb.getLogin());
     }
 
-    /**
-     * @param page             Page number of users needed
-     * @param userSearchFilter search filter for teams
-     * @return a particular page of users
-     */
     @Override
     @Transactional(readOnly = true)
     public Page<UserAdmin> list(Pageable page, UserAdminSearchFilter userSearchFilter) {
@@ -105,14 +117,33 @@ public class UserAdminServiceImpl implements UserAdminService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UserAdminRole> listRolesWithoutSystem(Pageable pageable) {
         return userAdminPersistence.listRolesWithoutSystem(pageable);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<UserAdmin> findConflictingUsers(UserAdmin userAdmin) {
         return new ArrayList<>(userAdminPersistence.findConflictingUsers(userAdmin));
+    }
+
+    @Override
+    @Transactional
+    public UserAdmin updatePassword(UserAdmin userAdmin) {
+        UserAdmin inDb = reload(userAdmin);
+        if (inDb != null && inDb.isWebApiUser()) {
+            inDb.setPassword(userAdmin.getPassword());
+            return userAdminPersistence.saveOrUpdate(encodePassword(inDb));
+        }
+        return null;
+    }
+
+    private UserAdmin encodePassword(UserAdmin userAdmin) {
+        String encodedPasswordPlusSalt = passwordEncoder.encode(userAdmin.getPassword());
+        userAdmin.setPassword(encodedPasswordPlusSalt.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
+        userAdmin.setSalt(encodedPasswordPlusSalt.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
+        return userAdmin;
     }
 
 }
