@@ -140,9 +140,7 @@ public class UserClientServiceImpl implements UserClientService {
                     userClient.setEmailValidated(true);
                     userClient.setPassword(activationRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
-                    userClient.setAccountNonLocked(true);
-                    userClient.setLoginFailureCount(0);
-                    userClient.setLockExpirationDateTime(null);
+                    userClientPersistence.unlockUserClient(userClient);
                     ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
@@ -223,10 +221,8 @@ public class UserClientServiceImpl implements UserClientService {
                 && toUpdate.getLockExpirationDateTime() != null
                 && LocalDateTime.now(DateTimeZone.UTC).isAfter(
                         toUpdate.getLockExpirationDateTime())) {
-            toUpdate.setAccountNonLocked(true);
-            toUpdate.setLoginFailureCount(0);
-            toUpdate.setLockExpirationDateTime(null);
-            userClientPersistence.saveOrUpdate((UserClient) toUpdate);
+            toUpdate = userClientPersistence
+                    .unlockUserClient((UserClient) toUpdate);
         }
         return toUpdate;
     }
