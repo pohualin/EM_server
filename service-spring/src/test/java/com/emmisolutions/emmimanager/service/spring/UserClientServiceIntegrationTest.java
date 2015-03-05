@@ -2,14 +2,23 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -27,6 +36,15 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientService clientService;
+    
+    @Resource
+    ClientRestrictConfigurationService clientRestrictConfigurationService;
+    
+    @Resource
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
+    
+    @Resource
+    EmailRestrictConfigurationService emailRestrictConfigurationService;
 
     @Resource
     UserClientService userClientService;
@@ -284,6 +302,107 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClientService.addActivationKey(null);
     }
 
-
+    /**
+     * Test lock and unlock UserClient
+     */
+    @Test
+    public void lockUserClient(){
+        Client client = makeNewRandomClient();
+        UserClient userClient = makeNewRandomUserClient(client);
+        
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(client);
+        assertThat("lock attemp", configuration.getLockoutAttemps(), is(3));
+        assertThat("lock duration", configuration.getLockoutReset(), is(5));
+        
+        userClient = userClientService.handleLoginFailure(userClient);
+        assertThat("first fail don't lock", userClient.getLoginFailureCount(), is(1));
+        assertThat("first fail don't lock", userClient.isAccountNonLocked(), is(true));
+        
+        userClient = userClientService.handleLoginFailure(userClient);
+        assertThat("second fail don't lock", userClient.getLoginFailureCount(), is(2));
+        assertThat("second fail don't lock", userClient.isAccountNonLocked(), is(true));
+        
+        userClient = userClientService.handleLoginFailure(userClient);
+        assertThat("third fail lock", userClient.getLoginFailureCount(), is(3));
+        assertThat("third fail lock", userClient.isAccountNonLocked(), is(false));
+        assertThat("third fail lock with lock expiration timestamp", userClient.getLockExpirationDateTime(), is(notNullValue()));
+        
+        userClient.setLockExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC).minusMinutes(2));
+        userClient = userClientService.update(userClient);
+        userClient = userClientService.unlockUserClient(userClient);
+        assertThat("unlock done", userClient.getLoginFailureCount(), is(0));
+        assertThat("unlock done", userClient.isAccountNonLocked(), is(true));
+        assertThat("unlock done", userClient.getLockExpirationDateTime(), is(nullValue()));
+        
+        configuration.setLockoutReset(0);
+        configuration = clientPasswordConfigurationService.save(configuration);
+        UserClient userClientA = makeNewRandomUserClient(client);
+        
+        userClientA = userClientService.handleLoginFailure(userClientA);
+        assertThat("first fail don't lock", userClientA.getLoginFailureCount(), is(1));
+        assertThat("first fail don't lock", userClientA.isAccountNonLocked(), is(true));
+        
+        userClientA = userClientService.handleLoginFailure(userClientA);
+        assertThat("second fail don't lock", userClientA.getLoginFailureCount(), is(2));
+        assertThat("second fail don't lock", userClientA.isAccountNonLocked(), is(true));
+        
+        userClientA = userClientService.handleLoginFailure(userClientA);
+        assertThat("third fail lock", userClientA.getLoginFailureCount(), is(3));
+        assertThat("third fail lock", userClientA.isAccountNonLocked(), is(false));
+        assertThat("third fail lock with lock permenantly", userClient.getLockExpirationDateTime(), is(nullValue()));
+    }
+    
+    /**
+     * Test email restriction
+     */
+    @Test
+    public void testEmailRestriction(){
+        Client client = makeNewRandomClient();
+        UserClient newUserClient = new UserClient();
+        newUserClient.setClient(client);
+        newUserClient.setEmail("george@abc.com");
+        // Check client without ClientRestrictConfiguration
+        boolean restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration and isEmailConfigRestrict is false
+        ClientRestrictConfiguration restrictConfiguration = new ClientRestrictConfiguration();
+        restrictConfiguration.setClient(client);
+        restrictConfiguration.setEmailConfigRestrict(false);
+        restrictConfiguration = clientRestrictConfigurationService.create(restrictConfiguration);
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true and no email endings set
+        restrictConfiguration.setEmailConfigRestrict(true);
+        restrictConfiguration = clientRestrictConfigurationService.update(restrictConfiguration);
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true, email endings set with valid email
+        EmailRestrictConfiguration emailEndingA = new EmailRestrictConfiguration();
+        emailEndingA.setClient(client);
+        emailEndingA.setEmailEnding("abc.com");
+        emailRestrictConfigurationService.create(emailEndingA);
+        EmailRestrictConfiguration emailEndingB = new EmailRestrictConfiguration();
+        emailEndingB.setClient(client);
+        emailEndingB.setEmailEnding("bcd.com");
+        emailRestrictConfigurationService.create(emailEndingB);
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        newUserClient.setEmail("george@aa.abc.com");
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        newUserClient.setEmail("george@aa.bb.abc.com");
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true, email endings set with invalid email
+        newUserClient.setEmail("george@apple.com");
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return false", restricted, is(false));
+    }
 
 }

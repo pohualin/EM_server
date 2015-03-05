@@ -81,8 +81,9 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 userClient.setPasswordExpireationDateTime(LocalDateTime.now(
                         DateTimeZone.UTC).plusDays(
                         configuration.getPasswordExpirationDays()));
-                return userClientPersistence
-                        .saveOrUpdate(encodePassword(userClient));
+                
+                userClientPersistence.unlockUserClient(userClient);
+                return userClientPersistence.saveOrUpdate(encodePassword(userClient));
             }
         }
         return null;
@@ -117,6 +118,8 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     userClient.setPasswordExpireationDateTime(LocalDateTime.now(
                             DateTimeZone.UTC).plusDays(
                             configuration.getPasswordExpirationDays()));
+
+                    userClientPersistence.unlockUserClient(userClient);
                     ret = userClientPersistence.saveOrUpdate(encodePassword(userClient));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
