@@ -197,7 +197,7 @@ public class UserClientServiceImpl implements UserClientService {
         ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService
                 .getByClient(userClient.getClient());
 
-        if (restrictConfig.isEmailConfigRestrict() == false) {
+        if (restrictConfig == null || restrictConfig.isEmailConfigRestrict() == false) {
             // return true if isEmailConfigRestrict returns false
             return true;
         } else {
