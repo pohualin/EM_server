@@ -19,7 +19,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,6 @@ import javax.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * It can only contact the persistence layer and is responsible for Transaction
