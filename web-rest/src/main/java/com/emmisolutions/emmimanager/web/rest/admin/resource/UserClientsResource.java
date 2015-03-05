@@ -152,6 +152,7 @@ public class UserClientsResource {
                     .toResource(userClientService.findConflictingUsers(userClient));
 
             if (conflictingUserClient == null) {
+                setReloadedClient(clientId, userClient);
                 UserClient savedUserClient = userClientService.create(userClient);
                 if (savedUserClient != null) {
 
@@ -318,6 +319,13 @@ public class UserClientsResource {
                         HttpStatus.NOT_ACCEPTABLE);
             }
         }
+    }
+    
+    private void setReloadedClient(Long clientId, UserClient userClient){
+        Client client = new Client();
+        client.setId(clientId);
+        client = clientService.reload(client);
+        userClient.setClient(client);
     }
 
 }
