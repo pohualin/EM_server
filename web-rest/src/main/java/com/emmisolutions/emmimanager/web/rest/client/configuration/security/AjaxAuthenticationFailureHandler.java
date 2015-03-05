@@ -1,9 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginError;
@@ -29,48 +27,47 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Returns a 401 error code (Unauthorized) to the client, specialized for Ajax requests.
+ * Returns a 401 error code (Unauthorized) to the client, specialized for Ajax
+ * requests.
  */
 @Component("clientAjaxAuthenticationFailureHandler")
-public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class AjaxAuthenticationFailureHandler extends
+        SimpleUrlAuthenticationFailureHandler {
 
     @Resource
-    ClientPasswordConfigurationService clientPasswordConfigurationService;
-    
-    @Resource
     UserClientService userClientService;
-    
+
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
-    
+
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<UserClient, UserClientResource> userUserClientResourceResourceAssembler;
 
     @Resource
     UserClientLoginErrorResourceAssembler userClientLoginFailureResourceAssembler;
-    
+
     @Resource
     MappingJackson2HttpMessageConverter jsonJacksonConverter;
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request,
+            HttpServletResponse response, AuthenticationException exception)
+            throws IOException, ServletException {
         // put the exception into the request
         request.setAttribute("exception", exception);
 
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             // handle ajax error
-            String client = null;
             UserClientLoginError failure = null;
             if (exception instanceof CredentialsExpiredException
                     && exception.getExtraInformation() instanceof User) {
                 UserClient userClient = (UserClient) userDetailsService
                         .loadUserByUsername((String) exception
                                 .getAuthentication().getPrincipal());
+                userClient = userClientService.reload(userClient);
                 failure = new UserClientLoginError(
-                        UserClientLoginError.Reason.EXPIRED,
-                        userClient.getClient());
+                        UserClientLoginError.Reason.EXPIRED, userClient);
             } else if (exception instanceof BadCredentialsException) {
                 try {
                     UserClient userClient = (UserClient) userDetailsService
@@ -78,16 +75,12 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
                                     .getAuthentication().getPrincipal());
                     userClient = userClientService
                             .handleLoginFailure(userClient);
-                    ClientPasswordConfiguration configuration = clientPasswordConfigurationService
-                            .get(userClient.getClient());
                     if (userClient.isAccountNonLocked() == true) {
                         failure = new UserClientLoginError(
-                                UserClientLoginError.Reason.BAD, userClient,
-                                configuration);
+                                UserClientLoginError.Reason.BAD, userClient);
                     } else {
                         failure = new UserClientLoginError(
-                                UserClientLoginError.Reason.LOCK, userClient,
-                                configuration);
+                                UserClientLoginError.Reason.LOCK, userClient);
                     }
                 } catch (UsernameNotFoundException e) {
                     failure = new UserClientLoginError(
@@ -98,24 +91,23 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
                         .loadUserByUsername((String) exception
                                 .getAuthentication().getPrincipal());
                 userClient = userClientService.reload(userClient);
-                ClientPasswordConfiguration configuration = clientPasswordConfigurationService
-                        .get(userClient.getClient());
                 failure = new UserClientLoginError(
-                        UserClientLoginError.Reason.LOCK, userClient,
-                        configuration);
+                        UserClientLoginError.Reason.LOCK, userClient);
             }
-            
+
             UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler
                     .toResource(failure);
-            
-            if(resource != null){
+
+            if (resource != null) {
                 String loginError = jsonJacksonConverter.getObjectMapper()
                         .writeValueAsString(resource);
                 request.setAttribute("loginError", loginError);
             }
-            
-            // send back a 401, which will go to the login-expired.jsp page for output
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
+
+            // send back a 401, which will go to the login-expired.jsp page for
+            // output
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                    exception.getMessage());
         } else {
             // not ajax, do what we normally do
             super.onAuthenticationFailure(request, response, exception);

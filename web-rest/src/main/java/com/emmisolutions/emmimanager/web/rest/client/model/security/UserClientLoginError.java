@@ -24,10 +24,6 @@ public class UserClientLoginError extends ResourceSupport {
 
     private UserClient userClient;
 
-    private ClientPasswordConfiguration clientPasswordConfiguration;
-
-    private Client client;
-
     public UserClientLoginError() {
     }
 
@@ -35,16 +31,9 @@ public class UserClientLoginError extends ResourceSupport {
         this.reason = reason;
     }
 
-    public UserClientLoginError(Reason reason, Client client) {
-        this.reason = reason;
-        this.client = client;
-    }
-
-    public UserClientLoginError(Reason reason, UserClient userClient,
-            ClientPasswordConfiguration clientPasswordConfiguration) {
+    public UserClientLoginError(Reason reason, UserClient userClient) {
         this.reason = reason;
         this.userClient = userClient;
-        this.clientPasswordConfiguration = clientPasswordConfiguration;
     }
 
     public Reason getReason() {
@@ -63,23 +52,6 @@ public class UserClientLoginError extends ResourceSupport {
         this.userClient = userClient;
     }
 
-    public ClientPasswordConfiguration getClientPasswordConfiguration() {
-        return clientPasswordConfiguration;
-    }
-
-    public void setClientPasswordConfiguration(
-            ClientPasswordConfiguration clientPasswordConfiguration) {
-        this.clientPasswordConfiguration = clientPasswordConfiguration;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -89,23 +61,13 @@ public class UserClientLoginError extends ResourceSupport {
         UserClientLoginError that = (UserClientLoginError) o;
         return reason == that.reason
                 && !(userClient != null ? !userClient.equals(that.userClient)
-                        : that.userClient != null)
-                && !(clientPasswordConfiguration != null ? !clientPasswordConfiguration
-                        .equals(that.clientPasswordConfiguration)
-                        : that.clientPasswordConfiguration != null)
-                && !(client != null ? !client.equals(that.client)
-                        : that.client != null);
+                        : that.userClient != null);
     }
 
     @Override
     public int hashCode() {
         int result = reason != null ? reason.hashCode() : 0;
-        result = 31
-                * result
-                + (userClient != null ? userClient.hashCode() : 0)
-                + (clientPasswordConfiguration != null ? clientPasswordConfiguration
-                        .hashCode() : 0)
-                + (client != null ? client.hashCode() : 0);
+        result = 31 * result + (userClient != null ? userClient.hashCode() : 0);
         return result;
     }
 

@@ -7,4 +7,6 @@
             || request.getAttribute("exception") instanceof BadCredentialsException 
             || request.getAttribute("exception") instanceof LockedException) {%>
     <%=request.getAttribute("loginError")%>
+<%} else {%>
+    <%=request.getAttribute("exception")%>
 <%}%>

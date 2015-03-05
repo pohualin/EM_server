@@ -30,9 +30,10 @@ public class UserClientLoginErrorResourceAssembler implements
         UserClientLoginErrorResource ret = new UserClientLoginErrorResource();
         ret.setEntity(userClientLoginFailure);
 
-        if (userClientLoginFailure.getClient() != null) {
+        if (userClientLoginFailure.getUserClient() != null) {
             ret.setClientResource(clientResourceAssembler
-                    .toResource(userClientLoginFailure.getClient()));
+                    .toResource(userClientLoginFailure.getUserClient()
+                            .getClient()));
         }
 
         return ret;
