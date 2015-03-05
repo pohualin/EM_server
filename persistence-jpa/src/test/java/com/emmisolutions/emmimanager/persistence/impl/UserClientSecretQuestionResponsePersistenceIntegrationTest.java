@@ -2,7 +2,9 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import com.emmisolutions.emmimanager.model.Client;
@@ -17,6 +19,7 @@ import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.annotation.Resource;
 
@@ -64,6 +67,25 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
     } 
     
     /**
+     * Reloading a null should return a null
+     */
+    @Test
+    public void reloadNull(){
+    	UserClientSecretQuestionResponse userClientNull = userClientSecretQuestionResponsePersistence.reload(null);
+    	assertThat("reload of null returns null", userClientNull, is(nullValue()));
+    }
+    
+    /**
+     * Loading via null page request branch
+     */
+    @Test
+    public void loadNullPage() {
+    	Client client = makeNewRandomClient();
+        UserClient userClient = makeNewRandomUserClient(client); 
+        assertThat("Reference Roles are loaded", userClientSecretQuestionResponsePersistence.findByUserClient(userClient, null).getTotalElements(), is(0l));
+    }
+    
+    /**
      * Call the find by user client
      */
     public void testFindByUserClient(){
@@ -84,7 +106,11 @@ public class UserClientSecretQuestionResponsePersistenceIntegrationTest extends
     	questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponsePersistence.saveOrUpdate(questionResponse);
     	questionResponse2 = (UserClientSecretQuestionResponse) userClientSecretQuestionResponsePersistence.saveOrUpdate(questionResponse2);
     	
-        Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence.findByUserClient(userClient, null);
+    	Page<UserClientSecretQuestionResponse> findByUser = userClientSecretQuestionResponsePersistence.findByUserClient(userClient, new PageRequest(0, 10));
+        assertThat("should return a page of UserClientUserClientTeamRole",
+        		findByUser.hasContent(), is(true));
+        assertThat("page is null ", userClientSecretQuestionResponsePersistence.reload(null), is(nullValue()));
+        
         
         assertThat("Find pageable question response with user client", findByUser, hasItem(questionResponse)); 
         assertThat("Find pageable question response with user client", findByUser, hasItem(questionResponse2)); 

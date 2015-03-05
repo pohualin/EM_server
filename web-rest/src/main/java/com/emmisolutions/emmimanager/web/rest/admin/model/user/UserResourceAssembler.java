@@ -74,6 +74,12 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
             ret.add(referenceTagsLinkForAdmin());
         }
 
+        if (user.isWebApiUser()) {
+            // add the password link when the user is a web api user
+            ret.setWebApiUser(user.isWebApiUser());
+            ret.add(linkTo(methodOn(UsersResource.class).updatePassword(user.getId(), null)).withRel("password"));
+        }
+
         return ret;
     }
 
