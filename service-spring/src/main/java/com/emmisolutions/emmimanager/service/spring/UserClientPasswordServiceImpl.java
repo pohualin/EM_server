@@ -76,6 +76,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 userClient.setCredentialsNonExpired(true);
                 userClient.setPasswordResetExpirationDateTime(null);
                 userClient.setPasswordResetToken(null);
+                userClientPersistence.unlockUserClient(userClient);
                 return userClientPersistence.saveOrUpdate(encodePassword(userClient));
             }
         }
@@ -106,6 +107,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     userClient.setPassword(resetPasswordRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
                     userClient.setEmailValidated(true);
+                    userClientPersistence.unlockUserClient(userClient);
                     ret = userClientPersistence.saveOrUpdate(encodePassword(userClient));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);

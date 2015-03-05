@@ -4,8 +4,10 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +30,9 @@ import javax.annotation.Resource;
 public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider
         implements UserDetailsConfigurableAuthenticationProvider {
 
+    @Resource
+    UserClientService userClientService;
+    
     @Resource
     UserAdminPersistence userAdminPersistence;
 
@@ -73,8 +78,9 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
                 userClient.setNeverLoggedIn(false);
                 userClient.setActivationKey(null);
                 userClient.setActivationExpirationDateTime(null);
-                userClientPersistence.saveOrUpdate(userClient);
             }
+            userClientPersistence.unlockUserClient(userClient);
+            userClientPersistence.saveOrUpdate(userClient);
         }
     }
 
@@ -88,12 +94,17 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
      */
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        return userDetailsService.loadUserByUsername(username);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        if (user instanceof UserClient) {
+            UserClient toUpdate = (UserClient) user;
+            user = (UserClient) userClientService.unlockUserClient(toUpdate);
+        }
+        return user;
     }
 
     @Override
     public void setUserDetailsService(UserDetailsService userDetailsService){
         this.userDetailsService = userDetailsService;
     }
-
+    
 }

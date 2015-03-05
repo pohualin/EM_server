@@ -115,4 +115,13 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         return null;
     }
 
+    @Override
+    public UserClient unlockUserClient(UserClient userClient) {
+        UserClient toUnlock = userClient;
+        toUnlock.setAccountNonLocked(true);
+        toUnlock.setLoginFailureCount(0);
+        toUnlock.setLockExpirationDateTime(null);
+        return userClientRepository.save(toUnlock);
+    }
+
 }
