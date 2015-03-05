@@ -3,10 +3,12 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.xml.bind.annotation.XmlEnum;
+
 import java.util.List;
 
 /**
@@ -78,6 +80,14 @@ public interface UserClientService {
      * @return the updated UserClient
      */
     UserClient expireActivationToken(UserClient userClient);
+    
+    /**
+     * return true if the email is valid
+     * 
+     * @param userClient contains email to validate
+     * @return boolean
+     */
+    boolean validateEmailAddress(UserClient userClient);
 
     /**
      * Number of hours activation tokens are valid after creation
@@ -135,9 +145,58 @@ public interface UserClientService {
             return result;
         }
     }
+    
+    public class UserClientValidationError {
+        private Reason reason;
+        private UserClient userClient;
 
+        public UserClientValidationError() {
+        }
+
+        public UserClientValidationError(Reason reason, UserClient userClient) {
+            this.reason = reason;
+            this.userClient = userClient;
+        }
+
+        public Reason getReason() {
+            return reason;
+        }
+
+        public void setReason(Reason reason) {
+            this.reason = reason;
+        }
+
+        public UserClient getUserClient() {
+            return userClient;
+        }
+
+        public void setUserClient(UserClient userClient) {
+            this.userClient = userClient;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            UserClientConflict that = (UserClientConflict) o;
+            return reason == that.reason
+                    && !(userClient != null ? !userClient
+                    .equals(that.userClient) : that.userClient != null);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = reason != null ? reason.hashCode() : 0;
+            result = 31 * result
+                    + (userClient != null ? userClient.hashCode() : 0);
+            return result;
+        }
+    }
+    
     @XmlEnum
     public enum Reason {
-        EMAIL, LOGIN
+        EMAIL, LOGIN, EMAIL_RESTRICTION
     }
 }

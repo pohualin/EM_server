@@ -2,13 +2,18 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -27,6 +32,12 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ClientService clientService;
+    
+    @Resource
+    ClientRestrictConfigurationService clientRestrictConfigurationService;
+    
+    @Resource
+    EmailRestrictConfigurationService emailRestrictConfigurationService;
 
     @Resource
     UserClientService userClientService;
@@ -284,6 +295,54 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClientService.addActivationKey(null);
     }
 
-
+    @Test
+    public void testEmailRestriction(){
+        Client client = makeNewRandomClient();
+        UserClient newUserClient = new UserClient();
+        newUserClient.setClient(client);
+        newUserClient.setEmail("george@abc.com");
+        // Check client without ClientRestrictConfiguration
+        boolean restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration and isEmailConfigRestrict is false
+        ClientRestrictConfiguration restrictConfiguration = new ClientRestrictConfiguration();
+        restrictConfiguration.setClient(client);
+        restrictConfiguration.setEmailConfigRestrict(false);
+        restrictConfiguration = clientRestrictConfigurationService.create(restrictConfiguration);
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true and no email endings set
+        restrictConfiguration.setEmailConfigRestrict(true);
+        restrictConfiguration = clientRestrictConfigurationService.update(restrictConfiguration);
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true, email endings set with valid email
+        EmailRestrictConfiguration emailEndingA = new EmailRestrictConfiguration();
+        emailEndingA.setClient(client);
+        emailEndingA.setEmailEnding("abc.com");
+        emailRestrictConfigurationService.create(emailEndingA);
+        EmailRestrictConfiguration emailEndingB = new EmailRestrictConfiguration();
+        emailEndingB.setClient(client);
+        emailEndingB.setEmailEnding("bcd.com");
+        emailRestrictConfigurationService.create(emailEndingB);
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        newUserClient.setEmail("george@aa.abc.com");
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        newUserClient.setEmail("george@aa.bb.abc.com");
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return true", restricted, is(true));
+        
+        // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true, email endings set with invalid email
+        newUserClient.setEmail("george@apple.com");
+        restricted = userClientService.validateEmailAddress(newUserClient);
+        assertThat("Should return false", restricted, is(false));
+    }
 
 }
