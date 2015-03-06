@@ -74,7 +74,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${cas.provider.key:12234245632699}")
     private String casProviderKey;
 
-    @Value("${cas.username.suffix:@emmisolutions.com}")
+    @Value("${cas.username.suffix:@emmisolutions.com, localhost}")
     private String userNameSuffix;
 
     @Resource

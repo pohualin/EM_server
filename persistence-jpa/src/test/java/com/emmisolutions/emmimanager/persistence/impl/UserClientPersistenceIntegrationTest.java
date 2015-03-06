@@ -322,5 +322,19 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
                 is(nullValue())
         );
     }
+    
+    @Test
+    public void unlockUserClient(){
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setAccountNonLocked(false);
+        userClient.setLoginFailureCount(3);
+        userClient = userClientPersistence.saveOrUpdate(userClient);
+        assertThat("User is locked", userClient.isAccountNonLocked(), is(false));
+        assertThat("User is locked", userClient.getLoginFailureCount(), is(3));
+        
+        userClient = userClientPersistence.unlockUserClient(userClient);
+        assertThat("User is unlocked", userClient.isAccountNonLocked(), is(true));
+        assertThat("User is unlocked", userClient.getLoginFailureCount(), is(0));
+    }
 
 }

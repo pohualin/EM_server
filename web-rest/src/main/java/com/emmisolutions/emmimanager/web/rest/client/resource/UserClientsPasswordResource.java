@@ -181,7 +181,7 @@ public class UserClientsPasswordResource {
             } else {
                 mailService.sendPasswordResetNotEnabled(userClient);
             }
-            
+
         } else {
             // send invalid account reset email
             mailService.sendInvalidAccountPasswordResetEmail(userClient);
