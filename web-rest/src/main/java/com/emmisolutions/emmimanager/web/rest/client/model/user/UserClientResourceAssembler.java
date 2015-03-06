@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +24,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * Creates a UserResource from a UserClient
  */
 @Component("userClientAuthenticationResourceAssembler")
-public class UserClientResourceAssembler implements ResourceAssembler<User, UserClientResource> {
+public class UserClientResourceAssembler implements ResourceAssembler<UserClient, UserClientResource> {
 
     @Resource(name = "userClientClientResourceAssembler")
     ResourceAssembler<Client, ClientResource> clientResourceAssembler;
@@ -31,7 +32,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
     Pattern clientSpecificPermission = Pattern.compile("([A-Z_]*)_[0-9]+");
 
     @Override
-    public UserClientResource toResource(User user) {
+    public UserClientResource toResource(UserClient user) {
         if (user == null) {
             return null;
         }
@@ -51,18 +52,24 @@ public class UserClientResourceAssembler implements ResourceAssembler<User, User
         UserClientResource ret = new UserClientResource(
                 user.getId(),
                 user.getVersion(),
-                user instanceof UserClient ? ((UserClient) user).getLogin() : ((UserAdmin) user).getLogin(),
+                user.getLogin(),
                 user.getFirstName(),
                 user.getLastName(),
-                user instanceof UserClient ? ((UserClient) user).getEmail() : ((UserAdmin) user).getEmail(),
+                user.getEmail(),
                 user.isActive(),
                 user.isAccountNonExpired(),
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
+                user.isEmailValidated(),
                 clientResource,
                 perms,
-                user instanceof UserClient && ((UserClient) user).isImpersonated());
+                user.isImpersonated());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+        if (!user.isImpersonated()) {
+            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
+            ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
+        }
+        
         return ret;
     }
 

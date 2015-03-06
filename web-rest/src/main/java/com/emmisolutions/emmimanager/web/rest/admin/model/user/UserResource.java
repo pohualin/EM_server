@@ -31,6 +31,8 @@ public class UserResource extends ResourceSupport {
     
     private boolean active;
 
+    private boolean webApiUser;
+
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
     private List<UserAdminPermissionName> permissions;
@@ -76,4 +78,11 @@ public class UserResource extends ResourceSupport {
         return super.getLinks();
     }
 
+    public boolean getWebApiUser() {
+        return webApiUser;
+    }
+
+    public void setWebApiUser(boolean webApiUser) {
+        this.webApiUser = webApiUser;
+    }
 }
