@@ -280,5 +280,20 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         Matcher m = p.matcher(newPassword);
         return m.matches();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean verifyPassword(UserClient userClient) {
+        if (userClient != null && StringUtils.isNotBlank(userClient.getLogin())) {
+            UserClient existing = userClientPersistence
+                    .fetchUserWillFullPermissions(userClient.getLogin());
+            if (existing != null
+                    && passwordEncoder.matches(userClient.getPassword(),
+                            existing.getPassword() + existing.getSalt())) {
+                return true;
+            }
+        }
+        return false;
+    }
     
 }

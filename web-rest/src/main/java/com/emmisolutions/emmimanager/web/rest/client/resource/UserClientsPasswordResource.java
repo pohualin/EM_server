@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.client.resource;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
@@ -69,6 +70,22 @@ public class UserClientsPasswordResource {
             }
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+    
+    @RequestMapping(value = "/password/change", method = RequestMethod.POST, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @PermitAll
+    public ResponseEntity<Void> changePassword(
+            @RequestBody ChangePasswordRequest changePasswordRequest) {
+
+        UserClient toVerify = new UserClient();
+        toVerify.setLogin(changePasswordRequest.getLogin());
+        toVerify.setPassword(changePasswordRequest.getExistingPassword());
+        if (userClientPasswordService.verifyPassword(toVerify)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
         }
     }
 

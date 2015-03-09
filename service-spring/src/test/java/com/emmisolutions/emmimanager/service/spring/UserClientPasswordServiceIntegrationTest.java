@@ -445,4 +445,31 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
     }
+    
+    @Test
+    public void verifyPassword() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPassword("aPassword");
+        userClientPasswordService.updatePassword(userClient);
+        
+        assertThat("bad UserClient return false",
+                userClientPasswordService.verifyPassword(null), is(false));
+        
+        assertThat("bad UserClient return false",
+                userClientPasswordService.verifyPassword(new UserClient()), is(false));
+        
+        UserClient toVerify = new UserClient();
+        toVerify.setLogin("notThere");
+        assertThat("bad UserClient return false",
+                userClientPasswordService.verifyPassword(new UserClient()), is(false));
+        
+        toVerify.setLogin(userClient.getLogin());
+        toVerify.setPassword("wrong");
+        assertThat("bad password return false",
+                userClientPasswordService.verifyPassword(toVerify), is(false));
+        
+        toVerify.setPassword("aPassword");
+        assertThat("good password return true",
+                userClientPasswordService.verifyPassword(toVerify), is(true));
+    }
 }
