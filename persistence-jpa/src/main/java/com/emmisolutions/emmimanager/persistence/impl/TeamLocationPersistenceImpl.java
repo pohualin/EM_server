@@ -38,7 +38,9 @@ public class TeamLocationPersistenceImpl implements TeamLocationPersistence {
         if (team == null || location == null) {
             throw new IllegalArgumentException("Team or Location is not in the database");
         }
-
+        
+        teamLocation.setTeam(team);
+        teamLocation.setLocation(location);
         return teamLocationRepository.save(teamLocation);
     }
 

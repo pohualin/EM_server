@@ -3,6 +3,9 @@ package com.emmisolutions.emmimanager.web.rest.client.model.user;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.hateoas.ResourceAssembler;
@@ -40,8 +43,9 @@ public class ClientUserClientResourceAssembler implements
                 entity.isActive(),
                 entity.isAccountNonExpired(), 
                 entity.isAccountNonLocked(),
-                entity.isCredentialsNonExpired(), 
-                clientResource, null);
+                entity.isCredentialsNonExpired(),
+                entity.isEmailValidated(),
+                clientResource, null, entity.isImpersonated());
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withRel("getById"));
         return ret;
     }

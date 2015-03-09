@@ -24,6 +24,8 @@ import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProvider_;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
 
@@ -39,6 +41,12 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
     @Resource
     TeamProviderRepository teamProviderRepository;
 
+    @Resource
+    TeamPersistence teamPersistence;
+
+    @Resource
+    ProviderPersistence providerPersistence;
+
     @Override
     public TeamProvider reload(Long id) {
         return teamProviderRepository.findOne(id);
@@ -46,6 +54,14 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
 
     @Override
     public TeamProvider save(TeamProvider provider) {
+        Team existingTeam = teamPersistence.reload(provider.getTeam());
+        Provider existingProvider = providerPersistence.reload(provider.getProvider());
+        if (existingTeam == null || existingProvider == null) {
+            throw new IllegalArgumentException("Team or Provider is not in the database");
+        }
+
+        provider.setTeam(existingTeam);
+        provider.setProvider(existingProvider);
         return teamProviderRepository.save(provider);
     }
 

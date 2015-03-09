@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
+
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
 import org.joda.time.LocalDateTime;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,6 +92,15 @@ public class UserClient extends User {
     @Column(name = "activation_expiration_time_utc")
     private LocalDateTime activationExpirationDateTime;
 
+    @Transient
+    private boolean impersonated;
+    
+    @Column(name = "login_failure_count")
+    private int loginFailureCount;
+    
+    @Column(name = "lock_expiration_time_utc")
+    private LocalDateTime lockExpirationDateTime;
+
     public UserClient() {
 
     }
@@ -146,7 +157,7 @@ public class UserClient extends User {
                 for (UserClientPermission permission : clientRole.getUserClientRole().getUserClientPermissions()) {
                     authorityList.add(
                             new SimpleGrantedAuthority(permission.getName().toString() + "_" +
-                                    clientRole.getUserClient().getClient().getId()));
+                                    clientRole.getUserClientRole().getClient().getId()));
                 }
             }
             // granted team authorities are in the form of PERM_NAMEOFPERMISSION_TEAMID
@@ -253,5 +264,29 @@ public class UserClient extends User {
 
     public void setActivationExpirationDateTime(LocalDateTime activationExpirationDateTime) {
         this.activationExpirationDateTime = activationExpirationDateTime;
+    }
+
+    public boolean isImpersonated() {
+        return impersonated;
+    }
+
+    public void setImpersonated(boolean impersonated) {
+        this.impersonated = impersonated;
+    }
+    
+    public int getLoginFailureCount() {
+        return loginFailureCount;
+    }
+
+    public void setLoginFailureCount(int loginFailureCount) {
+        this.loginFailureCount = loginFailureCount;
+    }
+
+    public LocalDateTime getLockExpirationDateTime() {
+        return lockExpirationDateTime;
+    }
+
+    public void setLockExpirationDateTime(LocalDateTime lockExpirationDateTime) {
+        this.lockExpirationDateTime = lockExpirationDateTime;
     }
 }

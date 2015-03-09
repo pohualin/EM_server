@@ -19,6 +19,8 @@ public class UserClientResource extends ResourceSupport {
     private UserClient entity;
 
     private List<UserClientService.UserClientConflict> conflicts;
+    
+    private UserClientService.UserClientValidationError validationError;
 
     /**
      * Override to change the link property name for serialization
@@ -47,5 +49,14 @@ public class UserClientResource extends ResourceSupport {
     public void setConflicts(
             List<UserClientService.UserClientConflict> conflicts) {
         this.conflicts = conflicts;
+    }
+
+    public UserClientService.UserClientValidationError getValidationError() {
+        return validationError;
+    }
+
+    public void setValidationError(
+            UserClientService.UserClientValidationError validationError) {
+        this.validationError = validationError;
     }
 }

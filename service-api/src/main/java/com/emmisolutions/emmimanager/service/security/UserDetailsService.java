@@ -3,10 +3,12 @@ package com.emmisolutions.emmimanager.service.security;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
+import java.io.Serializable;
+
 /**
  * Service which allows us to work with User/UserDetails.
  */
-public interface UserDetailsService extends org.springframework.security.core.userdetails.UserDetailsService {
+public interface UserDetailsService extends org.springframework.security.core.userdetails.UserDetailsService, Serializable {
 
     /**
      * Fetches the currently logged in user.

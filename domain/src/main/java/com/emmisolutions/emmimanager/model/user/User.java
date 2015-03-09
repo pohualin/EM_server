@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.model.user;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.hibernate.envers.Audited;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -64,7 +66,7 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     @NotAudited
     @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters and digits")
     private String normalizedName;
-
+    
     public Long getId() {
         return id;
     }
@@ -104,9 +106,7 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+    public abstract Collection<? extends GrantedAuthority> getAuthorities();
 
     public String getFirstName() {
         return firstName;
@@ -181,4 +181,5 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
     }
+    
 }
