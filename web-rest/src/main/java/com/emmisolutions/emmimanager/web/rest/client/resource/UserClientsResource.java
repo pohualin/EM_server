@@ -1,21 +1,31 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflict;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 
 
 /**
@@ -32,6 +42,18 @@ public class UserClientsResource {
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<User, UserClientResource> userResourceAssembler;
+    
+    @Resource
+    UserClientService userClientService;
+    
+    @Resource
+    UserClientResourceAssembler userClientResourceAssembler;
+    
+    @Resource
+    ClientUserConflictResourceAssembler conflictsResourceAssembler;
+    
+    @Resource
+    ClientUserClientResourceAssembler clientUserClientResourceAssembler;
 
     /**
      * This is an example method that demonstrates how to set up authorization
@@ -62,6 +84,34 @@ public class UserClientsResource {
         return new ResponseEntity<>(userResourceAssembler.toResource(userDetailsService.getLoggedInUser()),
                 HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/authenticated", method = RequestMethod.PUT)
+    public ResponseEntity<UserClientResource> updateUserClient(@RequestBody UserClient userClient){
 
+      // look for conflicts before attempting to save
+      List<UserClientConflict> conflicts = userClientService.findConflictingUsers(userClient);
 
+      if (conflicts.isEmpty()) {
+          UserClient updatedUserClient = userClientService.update(userClient);
+          if (updatedUserClient != null) {
+              return new ResponseEntity<>(
+                      clientUserClientResourceAssembler
+                              .toResource(updatedUserClient),
+                      HttpStatus.OK);
+          } else {
+              return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+          }
+      } else {
+          // found some conflicting users
+          return new ResponseEntity<>(conflictsResourceAssembler.toResource(conflicts),
+                  HttpStatus.NOT_ACCEPTABLE);
+      }
+  }
+  
+  @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.GET)
+  @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
+  public ResponseEntity<UserClientResource> getById(@PathVariable ("userClientId") Long userClientid) {
+      return new ResponseEntity<>(clientUserClientResourceAssembler.toResource((UserClient)userDetailsService.get(new UserClient(userClientid))),
+              HttpStatus.OK);
+  }
 }
