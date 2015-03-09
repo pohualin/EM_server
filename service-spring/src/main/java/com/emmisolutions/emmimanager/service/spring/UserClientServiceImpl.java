@@ -151,12 +151,7 @@ public class UserClientServiceImpl implements UserClientService {
                     userClient.setEmailValidated(true);
                     userClient.setPassword(activationRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
-                    
-                    ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
-                    userClient.setPasswordExpireationDateTime(LocalDateTime.now(
-                            DateTimeZone.UTC).plusDays(
-                            configuration.getPasswordExpirationDays()));
-
+                    userClientPasswordService.updatePasswordExpirationTime(userClient);
                     userClientPersistence.unlockUserClient(userClient);
                     ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
                 } else {
