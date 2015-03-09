@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -15,10 +16,11 @@ public interface ClientPasswordConfigurationRepository extends
 
     /**
      * Find ClientPasswordConfiguration by passed in client
-     * 
+     *
      * @param client
      *            to lookup
      * @return null or an existing ClientPasswordConfiguration
      */
+    @Cacheable(value = "clientPasswordConfigurationByClient", key = "#p0")
     public ClientPasswordConfiguration findByClient(Client client);
 }

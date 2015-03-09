@@ -87,6 +87,7 @@ public class PersistenceConfiguration {
      * @return the factory
      */
     @Bean(name = "entityManagerFactory")
+    @DependsOn("cacheManager")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect jpaDialect) {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
@@ -216,6 +217,12 @@ public class PersistenceConfiguration {
         properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
         properties.setProperty("org.hibernate.envers.revision_field_name", "revision");
         properties.setProperty("org.hibernate.envers.revision_type_field_name", "revision_type");
+        properties.setProperty("hibernate.cache.use_second_level_cache", "true");
+        properties.setProperty("hibernate.cache.use_query_cache", "true");
+        properties.setProperty("hibernate.generate_statistics", "true");
+        properties.setProperty("hibernate.cache.region.factory_class", "com.emmisolutions.emmimanager.persistence.configuration.HazelcastCacheRegionFactory");
+        properties.setProperty("hibernate.cache.use_minimal_puts", "true");
+        properties.setProperty("hibernate.cache.hazelcast.use_lite_member", "true");
         return properties;
     }
 

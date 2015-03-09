@@ -19,6 +19,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
@@ -97,6 +98,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean(name = "clientSecurityContextRepository")
     public SecurityContextRepository securityContextRepository(){
         HttpSessionSecurityContextRepository ret = new HttpSessionSecurityContextRepository();
+        ret.setAllowSessionCreation(false);
         ret.setSpringSecurityContextKey("SPRING_SECURITY_CONTEXT_CLIENT");
         return ret;
     }
@@ -111,6 +113,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         RootTokenBasedRememberMeServices rootTokenBasedRememberMeServices =
                 new RootTokenBasedRememberMeServices("EM2_RMC_KEY_999087!", clientUserDetailsService);
         rootTokenBasedRememberMeServices.setUseSecureCookie(false);
+        rootTokenBasedRememberMeServices.setAlwaysRemember(true);
         rootTokenBasedRememberMeServices.setParameter("remember-me");
         rootTokenBasedRememberMeServices.setCookieName("EM2_RMC");
         return rootTokenBasedRememberMeServices;
@@ -143,6 +146,9 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi-client/authenticated");
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-client.jsp?error");
         http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
                 .securityContext()
                     .securityContextRepository(securityContextRepository())
                     .and()
