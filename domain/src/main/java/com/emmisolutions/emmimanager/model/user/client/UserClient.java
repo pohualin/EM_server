@@ -91,6 +91,9 @@ public class UserClient extends User {
 
     @Column(name = "activation_expiration_time_utc")
     private LocalDateTime activationExpirationDateTime;
+    
+    @Column(name = "password_expiration_time_utc")
+    private LocalDateTime passwordExpirationDateTime;
 
     @Transient
     private boolean impersonated;
@@ -264,6 +267,15 @@ public class UserClient extends User {
 
     public void setActivationExpirationDateTime(LocalDateTime activationExpirationDateTime) {
         this.activationExpirationDateTime = activationExpirationDateTime;
+    }
+
+    public LocalDateTime getPasswordExpireationDateTime() {
+        return passwordExpirationDateTime;
+    }
+
+    public void setPasswordExpireationDateTime(
+            LocalDateTime passwordExpirationDateTime) {
+        this.passwordExpirationDateTime = passwordExpirationDateTime;
     }
 
     public boolean isImpersonated() {

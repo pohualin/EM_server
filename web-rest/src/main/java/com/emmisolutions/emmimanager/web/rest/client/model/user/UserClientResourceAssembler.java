@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
@@ -63,7 +61,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isEmailValidated(),
                 clientResource,
                 perms,
-                user.isImpersonated());
+                user.isImpersonated(),
+                user.getPasswordExpireationDateTime());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
         if (!user.isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
