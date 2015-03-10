@@ -113,9 +113,12 @@ public class UserClientsResource {
                         .getLoggedInUser()), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/authenticated", method = RequestMethod.PUT)
-    public ResponseEntity<UserClientResource> updateUserClient(@RequestBody UserClient userClient) {
+    @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.PUT)
+    @PreAuthorize("hasPermission(@user, #userClientId)")
+    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId, @RequestBody UserClient userClient) {
 
+        userClient.setId(userClientId);
+        
         // look for conflicts before attempting to save
         List<UserClientConflict> conflicts = userClientService.findConflictingUsers(userClient);
 
@@ -133,8 +136,8 @@ public class UserClientsResource {
     }
 
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.GET)
-    @PreAuthorize("hasPermission(@user, #userClientid)")
-    public ResponseEntity<UserClientResource> getById(@PathVariable("userClientId") Long userClientid) {
-        return new ResponseEntity<>(clientUserClientResourceAssembler.toResource((UserClient) userDetailsService.get(new UserClient(userClientid))), HttpStatus.OK);
+    @PreAuthorize("hasPermission(@user, #userClientId)")
+    public ResponseEntity<UserClientResource> getById(@PathVariable("userClientId") Long userClientId) {
+        return new ResponseEntity<>(clientUserClientResourceAssembler.toResource((UserClient) userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
     }
 }

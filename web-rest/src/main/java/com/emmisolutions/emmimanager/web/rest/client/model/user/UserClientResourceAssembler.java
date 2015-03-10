@@ -63,8 +63,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 clientResource,
                 perms,
                 user.isImpersonated());
-        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withRel("getById"));
-        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
         if (!user.isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));

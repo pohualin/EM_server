@@ -46,7 +46,7 @@ public class ClientUserClientResourceAssembler implements
                 entity.isCredentialsNonExpired(),
                 entity.isEmailValidated(),
                 clientResource, null, entity.isImpersonated());
-        ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withRel("getById"));
+        ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withSelfRel());
         return ret;
     }
 }
