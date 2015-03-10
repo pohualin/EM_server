@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -36,6 +37,8 @@ public class UserClientResource extends ResourceSupport {
 
     private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated;
 
+    private LocalDateTime passwordExpirationTime;
+    
     private ClientResource clientResource;
 
     @XmlElement(name = "permission")
@@ -75,7 +78,8 @@ public class UserClientResource extends ResourceSupport {
                               boolean emailValidated,
                               ClientResource clientResource,
                               List<String> permissions,
-                              boolean impersonated) {
+                              boolean impersonated,
+                              LocalDateTime passwordExpirationTime) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -90,6 +94,7 @@ public class UserClientResource extends ResourceSupport {
         this.clientResource = clientResource;
         this.permissions = permissions;
         this.impersonated = impersonated;
+        this.passwordExpirationTime = passwordExpirationTime;
     }
 
     /**

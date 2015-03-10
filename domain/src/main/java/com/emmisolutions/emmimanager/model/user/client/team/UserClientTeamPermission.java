@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Collection;
 @Table(name = "user_client_team_permission")
 @XmlRootElement(name = "permission")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserClientTeamPermission {
+public class UserClientTeamPermission implements Serializable {
 
     @Id
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)

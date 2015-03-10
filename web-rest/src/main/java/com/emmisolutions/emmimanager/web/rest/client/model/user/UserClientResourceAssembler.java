@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
+
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -62,7 +63,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isEmailValidated(),
                 clientResource,
                 perms,
-                user.isImpersonated());
+                user.isImpersonated(), user.getPasswordExpireationDateTime());
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
         if (!user.isImpersonated()) {
