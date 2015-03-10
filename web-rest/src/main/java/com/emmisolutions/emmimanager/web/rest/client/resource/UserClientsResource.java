@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflict;
@@ -41,8 +40,8 @@ public class UserClientsResource {
     UserDetailsService userDetailsService;
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
-    ResourceAssembler<User, UserClientResource> userResourceAssembler;
-
+    ResourceAssembler<UserClient, UserClientResource> userResourceAssembler;
+    
     @Resource
     UserClientResourceAssembler userClientResourceAssembler;
 
