@@ -113,6 +113,13 @@ public class UserClientsResource {
                         .getLoggedInUser()), HttpStatus.OK);
     }
 
+    /**
+     * PUT for updates to a given user client
+     * 
+     * @param userClientId
+     * @param userClient
+     * @return
+     */
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId, @RequestBody UserClient userClient) {
@@ -135,6 +142,12 @@ public class UserClientsResource {
         }
     }
 
+    /**
+     * GET for a given user client
+     * 
+     * @param userClientId
+     * @return
+     */
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> getById(@PathVariable("userClientId") Long userClientId) {
