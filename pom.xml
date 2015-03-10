@@ -57,6 +57,8 @@
         <javax-mail.version>1.5.2</javax-mail.version>
         <sun-mail.version>${javax-mail.version}</sun-mail.version>
         <commons.codec.version>1.10</commons.codec.version>
+        <hazelcast.version>3.4.1</hazelcast.version>
+        <kryo.version>3.0.0</kryo.version>
     </properties>
 
     <build>
@@ -95,6 +97,7 @@
                                     <excludes>
                                         <exclude>*.logging.*</exclude>
                                         <exclude>com.emmisolutions.emmimanager.web.rest.*</exclude>
+                                        <exclude>com.emmisolutions.emmimanager.persistence.configuration.*</exclude>
                                         <exclude>
                                             com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration
                                         </exclude>
@@ -613,6 +616,27 @@
                 <groupId>salesforce</groupId>
                 <artifactId>salesforce</artifactId>
                 <version>${salesforce.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>${hazelcast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast-hibernate4</artifactId>
+                <version>${hazelcast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast-spring</artifactId>
+                <version>${hazelcast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.esotericsoftware</groupId>
+                <artifactId>kryo</artifactId>
+                <version>${kryo.version}</version>
             </dependency>
 
         </dependencies>

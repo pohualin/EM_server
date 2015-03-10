@@ -8,10 +8,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration.AUTHORIZATION_COOKIE_NAME;
+import static com.emmisolutions.emmimanager.web.rest.client.configuration.ImpersonationConfiguration.IMP_AUTHORIZATION_COOKIE_NAME;
 import static com.emmisolutions.emmimanager.web.rest.client.configuration.ImpersonationConfiguration.TRIGGER_VALUE;
 
 /**
@@ -32,6 +35,13 @@ public class ImpersonationFilter extends OncePerRequestFilter {
             context.setAuthentication(null);
             SecurityContextHolder.clearContext();
             ImpersonationHolder.setClientId(clientId);
+        }
+        // kill impersonation cookies
+        for (Cookie cookie : request.getCookies()) {
+            if (StringUtils.equalsIgnoreCase(cookie.getName(), IMP_AUTHORIZATION_COOKIE_NAME) ||
+                    StringUtils.equalsIgnoreCase(cookie.getName(), AUTHORIZATION_COOKIE_NAME)){
+                cookie.setValue(null);
+            }
         }
         filterChain.doFilter(request, response);
         ImpersonationHolder.clear();

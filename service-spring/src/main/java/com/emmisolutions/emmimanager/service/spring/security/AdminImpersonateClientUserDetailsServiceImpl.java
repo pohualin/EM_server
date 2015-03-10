@@ -4,17 +4,20 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ImpersonationHolder;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.model.user.client.*;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
+import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
+import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import static com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName.PERM_CLIENT_SUPER_USER;
@@ -32,11 +35,25 @@ public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsSer
     @Resource
     private transient ClientPersistence clientPersistence;
 
+    private static final String CLIENT_ID_SEPARATOR = "~~";
+
     @Override
     @Transactional(readOnly = true)
     public User loadUserByUsername(final String login) {
 
-        UserAdmin trueLogin = userPersistence.fetchUserWillFullPermissions(login);
+        String[] loginWithClientId = StringUtils.splitByWholeSeparator(login, CLIENT_ID_SEPARATOR);
+        String loginToLoad;
+
+        if (loginWithClientId != null && loginWithClientId.length == 2) {
+            loginToLoad = loginWithClientId[0];
+            if (StringUtils.isNumeric(loginWithClientId[1])){
+                ImpersonationHolder.setClientId(Long.parseLong(loginWithClientId[1]));
+            }
+        } else {
+            loginToLoad = login;
+        }
+
+        UserAdmin trueLogin = userPersistence.fetchUserWillFullPermissions(loginToLoad);
         if (trueLogin == null || CollectionUtils.isEmpty(trueLogin.getAuthorities())){
             throw new UsernameNotFoundException("User " + login + " was not found.");
         }
@@ -56,12 +73,13 @@ public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsSer
         role.setUserClientRole(new UserClientRole("impersonated", client, new HashSet<UserClientPermission>(){{
             add(new UserClientPermission(PERM_CLIENT_SUPER_USER));
         }}));
-        impersonated.setClientRoles(new ArrayList<UserClientUserClientRole>(){{
+        impersonated.setClientRoles(new HashSet<UserClientUserClientRole>(){{
             add(role);
         }});
         impersonated.setFirstName(trueLogin.getFirstName());
         impersonated.setLastName(trueLogin.getLastName());
         impersonated.setEmail(trueLogin.getEmail());
+        impersonated.setPassword("***********impersonated_user***********");
         impersonated.setActivated(true);
         impersonated.setCredentialsNonExpired(true);
         impersonated.setEmailValidated(true);
@@ -69,7 +87,7 @@ public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsSer
         impersonated.setAccountNonLocked(true);
         impersonated.setActive(true);
         impersonated.setClient(client);
-        impersonated.setLogin(trueLogin.getLogin());
+        impersonated.setLogin(trueLogin.getLogin() + CLIENT_ID_SEPARATOR + client.getId());
         impersonated.setTeamRoles(new HashSet<UserClientUserClientTeamRole>());
         return impersonated;
     }
