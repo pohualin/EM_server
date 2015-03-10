@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -16,6 +18,7 @@ import java.io.Serializable;
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_strings_language_id_key",
                 columnNames = {"language_id", "key_path"}))
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Strings extends AbstractAuditingEntity implements Serializable {
 
     @Id

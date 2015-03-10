@@ -76,6 +76,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 userClient.setCredentialsNonExpired(true);
                 userClient.setPasswordResetExpirationDateTime(null);
                 userClient.setPasswordResetToken(null);
+                updatePasswordExpirationTime(userClient);
                 userClientPersistence.unlockUserClient(userClient);
                 return userClientPersistence.saveOrUpdate(encodePassword(userClient));
             }
@@ -107,6 +108,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     userClient.setPassword(resetPasswordRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
                     userClient.setEmailValidated(true);
+                    updatePasswordExpirationTime(userClient);
                     userClientPersistence.unlockUserClient(userClient);
                     ret = userClientPersistence.saveOrUpdate(encodePassword(userClient));
                 } else {
@@ -245,6 +247,16 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     resetPasswordRequest.getNewPassword());
         }
         return valid;
+    }
+    
+    @Override
+    @Transactional
+    public UserClient updatePasswordExpirationTime(UserClient userClient) {
+        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
+        userClient.setPasswordExpireationDateTime(LocalDateTime.now(
+                DateTimeZone.UTC).plusDays(
+                configuration.getPasswordExpirationDays()));
+        return userClientPersistence.saveOrUpdate(userClient);
     }
 
     private boolean validatePassword(ClientPasswordConfiguration configuration,

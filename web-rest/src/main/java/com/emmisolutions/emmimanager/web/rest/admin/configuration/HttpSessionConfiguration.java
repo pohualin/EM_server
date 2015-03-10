@@ -10,14 +10,16 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 /**
- * A session listener that sets the session timeout interval..
+ * A session listener that sets the session timeout interval.. Note, this
+ * application is set up to never create HttpSession objects. If one is
+ * created, this would be considered an error.
  */
 @WebListener
 public class HttpSessionConfiguration implements HttpSessionListener {
 
     private transient static final Logger LOGGER = LoggerFactory.getLogger(HttpSessionConfiguration.class);
 
-    private static final int TIMEOUT_MINUTES = 15;
+    private static final int TIMEOUT_MINUTES = 1;
 
     /**
      * Sets the timeout to TIMEOUT_MINUTES
@@ -26,7 +28,7 @@ public class HttpSessionConfiguration implements HttpSessionListener {
      */
     public void sessionCreated(HttpSessionEvent event) {
         event.getSession().setMaxInactiveInterval(TIMEOUT_MINUTES * 60);
-        LOGGER.debug("Session ID: {} created at {} and is valid for {} minutes", event.getSession().getId(), DateTime.now(), TIMEOUT_MINUTES);
+        LOGGER.error("Session ID: {} created at {} and is valid for {} minutes", event.getSession().getId(), DateTime.now(), TIMEOUT_MINUTES);
     }
 
     /**

@@ -8,8 +8,6 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +23,6 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserAdminPersistence userAdminPersistence;
-
-    @PersistenceContext
-    EntityManager entityManager;
         
     /**
      * Invalid user no login
@@ -87,7 +82,7 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
 
         logout();
     }
-    
+
     /**
      * save then reloadLocationUsingClient
      */
@@ -180,10 +175,6 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("null user is not system user", userAdminPersistence.isSystemUser(null), is(false));
 
         assertThat("should remove one role", userAdminPersistence.removeAllAdminRoleByUserAdmin(superUser), is(1l));
-
-        entityManager.detach(superUser);
-
-        assertThat("super user is no longer system user", userAdminPersistence.isSystemUser(superUser), is(false));
     }
 
 }
