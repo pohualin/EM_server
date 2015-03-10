@@ -447,29 +447,14 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     }
     
     @Test
-    public void verifyPassword() {
+    public void updatePasswordExpirationTime() {
         UserClient userClient = makeNewRandomUserClient(null);
-        userClient.setPassword("aPassword");
-        userClientPasswordService.updatePassword(userClient);
-        
-        assertThat("bad UserClient return false",
-                userClientPasswordService.verifyPassword(null), is(false));
-        
-        assertThat("bad UserClient return false",
-                userClientPasswordService.verifyPassword(new UserClient()), is(false));
-        
-        UserClient toVerify = new UserClient();
-        toVerify.setLogin("notThere");
-        assertThat("bad UserClient return false",
-                userClientPasswordService.verifyPassword(new UserClient()), is(false));
-        
-        toVerify.setLogin(userClient.getLogin());
-        toVerify.setPassword("wrong");
-        assertThat("bad password return false",
-                userClientPasswordService.verifyPassword(toVerify), is(false));
-        
-        toVerify.setPassword("aPassword");
-        assertThat("good password return true",
-                userClientPasswordService.verifyPassword(toVerify), is(true));
+        assertThat("userClient without password expiration time",
+                userClient.getPasswordExpireationDateTime(), is(nullValue()));
+
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+        assertThat("userClient with password expiration time",
+                userClient.getPasswordExpireationDateTime(), is(notNullValue()));
     }
 }

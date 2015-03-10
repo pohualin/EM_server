@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.UserClientService;
@@ -8,7 +7,6 @@ import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
-
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +36,6 @@ public class UserClientsResource {
 
     @Resource
     MailService mailService;
-
     @Resource
     UserClientService userClientService;
 
