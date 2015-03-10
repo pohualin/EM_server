@@ -1,9 +1,11 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
+import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationSuccessHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasImpersonationAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenticationDetailsSource;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
@@ -22,6 +24,7 @@ import org.springframework.security.cas.web.authentication.ServiceAuthentication
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,11 +37,13 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import static com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration.CLIENT_RMC_HASH_KEY_SECRET;
+
 /**
  * Impersonation in the client application or administrative users logging into the client side
  * application is dealt by using CAS. It does this by looking for the TRIGGER_VALUE as a query
  * parameter or header.
- *
+ * <p/>
  * This class uses many of the components configured within the CasSecurityConfiguration class
  * and then tweaks them to come back to the client facing application.
  *
@@ -48,6 +53,8 @@ import javax.servlet.http.HttpServletRequest;
 @Profile(value = {"cas", "prod"})
 @Order(110)
 public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
+
+    static final String IMP_AUTHORIZATION_COOKIE_NAME = "EM2_IMP_RMC";
 
     @Value("${cas.service.validation.client.uri:/webapi-client/j_spring_cas_security_check}")
     private String casValidationUri;
@@ -71,7 +78,7 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
     Cas20ServiceTicketValidator cas20ServiceTicketValidator;
 
     @Resource
-    private CasAuthenticationSuccessHandler casAuthenticationSuccessHandler;
+    CasImpersonationAuthenticationSuccessHandler casImpersonationAuthenticationSuccessHandler;
 
     @Resource
     private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
@@ -98,13 +105,38 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     /**
+     * Sets remember me at the context root
+     *
+     * @return the TokenBasedRememberMeServices
+     */
+    @Bean(name = "impersonationTokenBasedRememberMeServices")
+    public RootTokenBasedRememberMeServices impersonationTokenBasedRememberMeServices() {
+        RootTokenBasedRememberMeServices rootTokenBasedRememberMeServices =
+                new RootTokenBasedRememberMeServices(CLIENT_RMC_HASH_KEY_SECRET, new UserDetailsService() {
+                    @Override
+                    public User getLoggedInUser() {
+                        return userDetailsService.getLoggedInUser();
+                    }
+
+                    @Override
+                    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                        return userDetailsService.loadUserByUsername(username);
+                    }
+                });
+        rootTokenBasedRememberMeServices.setAlwaysRemember(true);
+        rootTokenBasedRememberMeServices.setUseSessionCookieOnly(true);
+        rootTokenBasedRememberMeServices.setCookieName(IMP_AUTHORIZATION_COOKIE_NAME);
+        return rootTokenBasedRememberMeServices;
+    }
+
+    /**
      * This filter is responsible for dealing with impersonation concerns at
      * the spring security framework level
      *
      * @return the ImpersonationFilter
      */
     @Bean
-    public ImpersonationFilter impersonationFilter(){
+    public ImpersonationFilter impersonationFilter() {
         return new ImpersonationFilter();
     }
 
@@ -140,12 +172,13 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
         return dynamicAuthenticationDetailsSource;
     }
 
+
     @Bean
     public CasAuthenticationFilter impersonationAuthenticationFilter() throws Exception {
         CasAuthenticationFilter casAuthenticationFilter = new AllowSuccessHandlerCasAuthenticationFilter();
         casAuthenticationFilter.setAuthenticationManager(authenticationManager());
         casAuthenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/webapi-client/j_spring_cas_security_check"));
-        casAuthenticationFilter.setAuthenticationSuccessHandler(casAuthenticationSuccessHandler);
+        casAuthenticationFilter.setAuthenticationSuccessHandler(casImpersonationAuthenticationSuccessHandler);
         casAuthenticationFilter.setServiceProperties(impersonationServiceProperties());
         casAuthenticationFilter.setAuthenticationDetailsSource(impersonationAuthenticationDetailsSource());
         casAuthenticationFilter.setProxyAuthenticationFailureHandler(casAuthenticationFailureHandler);
@@ -180,10 +213,13 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         casAuthenticationEntryPoint.setServiceProperties(impersonationServiceProperties());
         http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
                 .addFilterAfter(impersonationFilter(),
                         SecurityContextPersistenceFilter.class)
                 .addFilter(impersonationAuthenticationFilter())
-                .securityContext()
+                    .securityContext()
                     .securityContextRepository(clientSecurityContextRepository)
                     .and()
                 .requestMatchers()
@@ -193,15 +229,19 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
                                     impersonationRequestMatcher()))
                     .and()
                 .exceptionHandling()
-                .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint,
-                        impersonationRequestMatcher())
+                    .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint,
+                            impersonationRequestMatcher())
+                    .and()
+                .rememberMe()
+                    .key(impersonationTokenBasedRememberMeServices().getKey())
+                    .rememberMeServices(impersonationTokenBasedRememberMeServices())
                 .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
-                .requestMatchers(new OrRequestMatcher(new AntPathRequestMatcher("/webapi-client/j_spring_cas_security_check"),
-                        impersonationRequestMatcher()))
-                .authenticated();
+                    .requestMatchers(new OrRequestMatcher(new AntPathRequestMatcher("/webapi-client/j_spring_cas_security_check"),
+                            impersonationRequestMatcher()))
+                    .authenticated();
     }
 
 }

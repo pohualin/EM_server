@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+import com.emmisolutions.emmimanager.persistence.configuration.CacheConfiguration;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * Root integration test harness
  */
-@ContextConfiguration(classes = PersistenceConfiguration.class)
+@ContextConfiguration(classes = {PersistenceConfiguration.class, CacheConfiguration.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @ActiveProfiles("test")

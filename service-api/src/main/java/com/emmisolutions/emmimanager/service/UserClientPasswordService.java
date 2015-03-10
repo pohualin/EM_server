@@ -114,4 +114,13 @@ public interface UserClientPasswordService {
      * @return true/false for valid/invalid password
      */
     boolean validateNewPassword(ResetPasswordRequest resetPasswordRequest);
+    
+    /**
+     * Set password expiration time to userClient
+     * 
+     * @param userClient
+     *            to set
+     * @return an userClient with password expiration time set
+     */
+    public UserClient updatePasswordExpirationTime(UserClient userClient);
 }
