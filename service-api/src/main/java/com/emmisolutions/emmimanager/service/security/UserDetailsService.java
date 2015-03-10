@@ -23,6 +23,6 @@ public interface UserDetailsService extends org.springframework.security.core.us
      * @param userClient
      * @return
      */
-    User get(UserClient userClient);
+    UserClient get(UserClient userClient);
 
 }

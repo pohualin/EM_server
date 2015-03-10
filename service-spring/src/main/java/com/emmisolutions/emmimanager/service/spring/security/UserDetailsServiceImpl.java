@@ -51,7 +51,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return user;
     }
     
-    public User get(UserClient userClient){
+    public UserClient get(UserClient userClient){
         return userClientPersistence.reload(userClient);
     }
 }

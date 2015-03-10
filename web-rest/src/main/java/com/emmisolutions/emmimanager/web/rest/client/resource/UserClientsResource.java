@@ -150,6 +150,6 @@ public class UserClientsResource {
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> getById(@PathVariable("userClientId") Long userClientId) {
-        return new ResponseEntity<>(clientUserClientResourceAssembler.toResource((UserClient) userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
+        return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
     }
 }
