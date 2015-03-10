@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
-import com.emmisolutions.emmimanager.config.Constants;
 import com.emmisolutions.emmimanager.persistence.configuration.serializer.SpecificationsKryoStreamSerializer;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
@@ -29,7 +28,6 @@ public class CacheConfiguration {
 
     @Resource
     private Environment env;
-
 
     private CacheManager cacheManager;
 
@@ -62,13 +60,13 @@ public class CacheConfiguration {
         config.getNetworkConfig().setPort(5701);
         config.getNetworkConfig().setPortAutoIncrement(true);
 
-        if (env.acceptsProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)) {
+//        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST)) {
             System.setProperty("hazelcast.local.localAddress", "127.0.0.1");
 
             config.getNetworkConfig().getJoin().getAwsConfig().setEnabled(false);
             config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
             config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(false);
-        }
+//        }
 
         config.getMapConfigs().put("default", initializeDefaultMapConfig());
         config.getMapConfigs().put("com.emmisolutions.emmimanager.model.*", initializeDomainMapConfig());

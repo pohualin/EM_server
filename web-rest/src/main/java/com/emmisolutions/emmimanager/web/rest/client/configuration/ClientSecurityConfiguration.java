@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
@@ -23,7 +24,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
@@ -43,6 +43,10 @@ import javax.inject.Inject;
 @Order(200)
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    static final String AUTHORIZATION_COOKIE_NAME = "EM2_RMC";
+
+    static final String CLIENT_RMC_HASH_KEY_SECRET = "EM2_RMC_SECRET_KEY_999087!";
 
     @Resource(name = "clientAjaxAuthenticationSuccessHandler")
     private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
@@ -104,19 +108,29 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * Sets remember me at the context root
+     * Sets remember me at the context root. Uses the same secret key so that hashing will
+     * work regardless of the implementation used to set the key.
      *
      * @return the TokenBasedRememberMeServices
      */
     @Bean(name = "clientTokenBasedRememberMeServices")
-    public TokenBasedRememberMeServices tokenBasedRememberMeServices(){
+    public RootTokenBasedRememberMeServices tokenBasedRememberMeServices(){
         RootTokenBasedRememberMeServices rootTokenBasedRememberMeServices =
-                new RootTokenBasedRememberMeServices("EM2_RMC_KEY_999087!", clientUserDetailsService);
-        rootTokenBasedRememberMeServices.setUseSecureCookie(false);
+                new RootTokenBasedRememberMeServices(CLIENT_RMC_HASH_KEY_SECRET, clientUserDetailsService);
         rootTokenBasedRememberMeServices.setAlwaysRemember(true);
         rootTokenBasedRememberMeServices.setParameter("remember-me");
-        rootTokenBasedRememberMeServices.setCookieName("EM2_RMC");
+        rootTokenBasedRememberMeServices.setCookieName(AUTHORIZATION_COOKIE_NAME);
         return rootTokenBasedRememberMeServices;
+    }
+
+    /**
+     * This service can switch between impersonation and regular client
+     * based remember me based upon the cookie names passed.
+     * @return the remember me services
+     */
+    @Bean
+    public DelegateRememberMeServices delegateRememberMeServices(){
+      return new DelegateRememberMeServices();
     }
 
     /**
@@ -161,7 +175,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .and()
                 .rememberMe()
                     .key(tokenBasedRememberMeServices().getKey())
-                    .rememberMeServices(tokenBasedRememberMeServices())
+                    .rememberMeServices(delegateRememberMeServices())
                 .and()
                 .formLogin()
                 .loginPage("/login-client.jsp")

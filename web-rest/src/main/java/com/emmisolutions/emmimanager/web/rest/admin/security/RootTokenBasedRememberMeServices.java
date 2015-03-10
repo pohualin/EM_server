@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.security;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +22,9 @@ import java.lang.reflect.Method;
  */
 public class RootTokenBasedRememberMeServices extends TokenBasedRememberMeServices {
 
-    private Boolean useSecureCookie = null;
-
     private Method setHttpOnlyMethod;
+
+    private boolean useSessionCookieOnly;
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
@@ -40,8 +41,8 @@ public class RootTokenBasedRememberMeServices extends TokenBasedRememberMeServic
     }
 
     @Override
-    public void setUseSecureCookie(boolean useSecureCookie) {
-        this.useSecureCookie = useSecureCookie;
+    public String extractRememberMeCookie(HttpServletRequest request) {
+        return super.extractRememberMeCookie(request);
     }
 
     @Override
@@ -49,18 +50,27 @@ public class RootTokenBasedRememberMeServices extends TokenBasedRememberMeServic
         String paramValue = request.getParameter(getParameter());
         Object authPrincipal = authentication.getPrincipal();
         int validity = 15 * 60;
-        if (authPrincipal instanceof UserClient){
+
+        if (authPrincipal instanceof UserClient) {
+            // use the configured client level idle time for UserClients
             ClientPasswordConfiguration clientPasswordConfiguration =
                     clientPasswordConfigurationService.get(((UserClient) authPrincipal).getClient());
             validity = clientPasswordConfiguration.getIdleTime() * 60;
         }
 
         if (paramValue != null) {
+            // if the user has checked the 'remember-me' field change timeout to configured validity (e.g. one month)
             if (paramValue.equalsIgnoreCase("true") || paramValue.equalsIgnoreCase("on") ||
                     paramValue.equalsIgnoreCase("yes") || paramValue.equals("1")) {
                 validity = getTokenValiditySeconds();
             }
         }
+
+        if (useSessionCookieOnly) {
+            // this should be a session based cookie, use the configured timeout (internally)
+            validity = getTokenValiditySeconds();
+        }
+
         return validity;
     }
 
@@ -68,14 +78,18 @@ public class RootTokenBasedRememberMeServices extends TokenBasedRememberMeServic
     protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
         String cookieValue = encodeCookie(tokens);
         Cookie cookie = new Cookie(getCookieName(), cookieValue);
-        cookie.setMaxAge(maxAge);
-        cookie.setPath("/");
 
-        if (useSecureCookie == null) {
-            cookie.setSecure(request.isSecure());
+        if (useSessionCookieOnly) {
+            cookie.setMaxAge(-1);
         } else {
-            cookie.setSecure(useSecureCookie);
+            cookie.setMaxAge(maxAge);
         }
+
+        cookie.setPath("/"); // need to set at root of site
+
+        // set secure flag if ssl is in use via a proxy or directly
+        cookie.setSecure(request.isSecure() ||
+                StringUtils.equalsIgnoreCase(request.getHeader("X-Forwarded-Ssl"), "on"));
 
         if (setHttpOnlyMethod != null) {
             ReflectionUtils.invokeMethod(setHttpOnlyMethod, cookie, Boolean.TRUE);
@@ -89,6 +103,7 @@ public class RootTokenBasedRememberMeServices extends TokenBasedRememberMeServic
     @Override
     protected UserDetails processAutoLoginCookie(String[] cookieTokens, HttpServletRequest request, HttpServletResponse response) {
         final UserDetails ret = super.processAutoLoginCookie(cookieTokens, request, response);
+        // re-write the cookie on each request (which is a login due to stateless back-end) for new timestamp
         onLoginSuccess(request, response, new RememberMeAuthenticationToken(getKey(), ret, ret.getAuthorities()));
         return ret;
     }
@@ -102,5 +117,7 @@ public class RootTokenBasedRememberMeServices extends TokenBasedRememberMeServic
         response.addCookie(cookie);
     }
 
-
+    public void setUseSessionCookieOnly(boolean useSessionCookieOnly) {
+        this.useSessionCookieOnly = useSessionCookieOnly;
+    }
 }

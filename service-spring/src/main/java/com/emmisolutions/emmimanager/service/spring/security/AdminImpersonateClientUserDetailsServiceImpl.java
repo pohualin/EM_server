@@ -11,6 +11,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +35,25 @@ public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsSer
     @Resource
     private transient ClientPersistence clientPersistence;
 
+    private static final String CLIENT_ID_SEPARATOR = "~~";
+
     @Override
     @Transactional(readOnly = true)
     public User loadUserByUsername(final String login) {
 
-        UserAdmin trueLogin = userPersistence.fetchUserWillFullPermissions(login);
+        String[] loginWithClientId = StringUtils.splitByWholeSeparator(login, CLIENT_ID_SEPARATOR);
+        String loginToLoad;
+
+        if (loginWithClientId != null && loginWithClientId.length == 2) {
+            loginToLoad = loginWithClientId[0];
+            if (StringUtils.isNumeric(loginWithClientId[1])){
+                ImpersonationHolder.setClientId(Long.parseLong(loginWithClientId[1]));
+            }
+        } else {
+            loginToLoad = login;
+        }
+
+        UserAdmin trueLogin = userPersistence.fetchUserWillFullPermissions(loginToLoad);
         if (trueLogin == null || CollectionUtils.isEmpty(trueLogin.getAuthorities())){
             throw new UsernameNotFoundException("User " + login + " was not found.");
         }
@@ -64,7 +79,7 @@ public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsSer
         impersonated.setFirstName(trueLogin.getFirstName());
         impersonated.setLastName(trueLogin.getLastName());
         impersonated.setEmail(trueLogin.getEmail());
-        impersonated.setPassword("******************");
+        impersonated.setPassword("***********impersonated_user***********");
         impersonated.setActivated(true);
         impersonated.setCredentialsNonExpired(true);
         impersonated.setEmailValidated(true);
@@ -72,7 +87,7 @@ public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsSer
         impersonated.setAccountNonLocked(true);
         impersonated.setActive(true);
         impersonated.setClient(client);
-        impersonated.setLogin(trueLogin.getLogin());
+        impersonated.setLogin(trueLogin.getLogin() + CLIENT_ID_SEPARATOR + client.getId());
         impersonated.setTeamRoles(new HashSet<UserClientUserClientTeamRole>());
         return impersonated;
     }

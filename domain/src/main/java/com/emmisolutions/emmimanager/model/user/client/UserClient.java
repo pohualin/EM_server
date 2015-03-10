@@ -32,7 +32,6 @@ import java.util.*;
                 @UniqueConstraint(columnNames = {"login"}, name = "uk_user_client_login")
         }
 )
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class UserClient extends User {
 
     @NotNull
@@ -62,11 +61,9 @@ public class UserClient extends User {
     private Client client;
 
     @OneToMany(mappedBy = "userClient")
-    @Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<UserClientUserClientRole> clientRoles;
 
     @OneToMany(mappedBy = "userClient")
-    @Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<UserClientUserClientTeamRole> teamRoles;
 
     @Size(max = 40)

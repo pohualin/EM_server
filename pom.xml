@@ -97,6 +97,7 @@
                                     <excludes>
                                         <exclude>*.logging.*</exclude>
                                         <exclude>com.emmisolutions.emmimanager.web.rest.*</exclude>
+                                        <exclude>com.emmisolutions.emmimanager.persistence.configuration.*</exclude>
                                         <exclude>
                                             com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration
                                         </exclude>
