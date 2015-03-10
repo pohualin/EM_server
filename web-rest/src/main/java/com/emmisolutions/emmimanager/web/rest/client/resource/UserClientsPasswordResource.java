@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -87,15 +88,28 @@ public class UserClientsPasswordResource {
         }
     }
 
+    /**
+     * Update password for existing UserClient
+     * 
+     * @param changePasswordRequest
+     *            to save new password
+     * @return OK if everything went through NOT_ACCEPTABLE if either old
+     *         password does not match or new password pattern does not meet
+     */
     @RequestMapping(value = "/password/change", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @PermitAll
+    @PreAuthorize(
+            "hasPermission(@password, #changePasswordRequest.existingPassword)"
+    )
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> changePassword(
             @RequestBody ChangePasswordRequest changePasswordRequest) {
 
         List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
                 .validateRequest(changePasswordRequest);
         if (errors.size() == 0) {
+            UserClient toUpdate = new UserClient();
+            toUpdate.setLogin(changePasswordRequest.getLogin());
+            toUpdate.setPassword(changePasswordRequest.getNewPassword());
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<UserClientPasswordValidationErrorResource>();

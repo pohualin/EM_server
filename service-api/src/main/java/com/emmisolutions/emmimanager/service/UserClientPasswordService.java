@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
-import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 
