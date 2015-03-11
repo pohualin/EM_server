@@ -1,27 +1,38 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService.UserClientPasswordValidationError;
 import com.emmisolutions.emmimanager.service.mail.MailService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.ClientPasswordConfigurationResource;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
+import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResourceAssembler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -39,6 +50,15 @@ public class UserClientsPasswordResource {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
+    
+    @Resource
+    UserClientPasswordValidationService userClientPasswordValidationService;
+    
+    @Resource(name = "clientUserDetailsService")
+    UserDetailsService userDetailsService;
+    
+    @Resource
+    UserClientPasswordValidationErrorResourceAssembler userClientPasswordValidationErrorResourceAssembler;
 
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
@@ -48,7 +68,10 @@ public class UserClientsPasswordResource {
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
-
+    
+    @Resource(name="clientTokenBasedRememberMeServices")
+    RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
+    
     /**
      * Updates the password to the password on the user
      *
@@ -92,6 +115,42 @@ public class UserClientsPasswordResource {
             return new ResponseEntity<>(HttpStatus.GONE);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+    
+    /**
+     * Update password for existing UserClient
+     * 
+     * @param changePasswordRequest
+     *            to save new password
+     * @return OK if everything went through NOT_ACCEPTABLE if either old
+     *         password does not match or new password pattern does not meet
+     */
+    @RequestMapping(value = "/password/change", method = RequestMethod.POST, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @PreAuthorize("hasPermission(@password, #changePasswordRequest.existingPassword)")
+    public ResponseEntity<List<UserClientPasswordValidationErrorResource>> changePassword(
+            HttpServletRequest request, HttpServletResponse response, 
+            @RequestBody ChangePasswordRequest changePasswordRequest) {
+
+        List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
+                .validateRequest(changePasswordRequest);
+        if (errors.size() == 0) {
+            UserClient toUpdate = (UserClient) userDetailsService
+                    .loadUserByUsername(changePasswordRequest.getLogin());
+            toUpdate.setPassword(changePasswordRequest.getNewPassword());
+            tokenBasedRememberMeServices.rewriteLoginToken(request, response, 
+                    userClientPasswordService.updatePassword(toUpdate, true));
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<UserClientPasswordValidationErrorResource>();
+            for (UserClientPasswordValidationError error : errors) {
+                errorResources
+                        .add(userClientPasswordValidationErrorResourceAssembler
+                                .toResource(error));
+            }
+            return new ResponseEntity<>(errorResources,
+                    HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
