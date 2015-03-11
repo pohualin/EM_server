@@ -49,7 +49,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
-        userClient.setCredentialsNonExpired(false);
+        userClient.setCredentialsNonExpired(user.isCredentialsNonExpired());
         userClient.setPassword(user.getPassword());
         // set the expiration length based upon the user never logging in
         userClient.setPasswordResetExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)

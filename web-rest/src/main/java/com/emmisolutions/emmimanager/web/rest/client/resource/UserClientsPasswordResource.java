@@ -14,6 +14,7 @@ import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService.UserClientPasswordValidationError;
 import com.emmisolutions.emmimanager.service.mail.MailService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
@@ -49,6 +50,9 @@ public class UserClientsPasswordResource {
     
     @Resource
     UserClientPasswordValidationService userClientPasswordValidationService;
+    
+    @Resource(name = "clientUserDetailsService")
+    UserDetailsService userDetailsService;
     
     @Resource
     UserClientPasswordValidationErrorResourceAssembler userClientPasswordValidationErrorResourceAssembler;
@@ -125,9 +129,11 @@ public class UserClientsPasswordResource {
         List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
                 .validateRequest(changePasswordRequest);
         if (errors.size() == 0) {
-            UserClient toUpdate = new UserClient();
-            toUpdate.setLogin(changePasswordRequest.getLogin());
+            UserClient toUpdate = (UserClient) userDetailsService
+                    .loadUserByUsername(changePasswordRequest.getLogin());
+            toUpdate.setCredentialsNonExpired(true);
             toUpdate.setPassword(changePasswordRequest.getNewPassword());
+            userClientPasswordService.updatePassword(toUpdate);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<UserClientPasswordValidationErrorResource>();

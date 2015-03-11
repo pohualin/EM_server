@@ -38,6 +38,7 @@ public class UserClientPasswordResource {
     public ResponseEntity<Void> set(@PathVariable Long userId, @RequestBody UserClientPassword password) {
         UserClient toUpdate = new UserClient(userId);
         toUpdate.setPassword(password.getPassword());
+        toUpdate.setCredentialsNonExpired(false);
         userClientPasswordService.updatePassword(toUpdate);
         return new ResponseEntity<>(HttpStatus.OK);
     }
