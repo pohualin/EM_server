@@ -61,9 +61,11 @@ public class UserClient extends User {
     private Client client;
 
     @OneToMany(mappedBy = "userClient")
+    @XmlTransient
     private Set<UserClientUserClientRole> clientRoles;
 
     @OneToMany(mappedBy = "userClient")
+    @XmlTransient
     private Set<UserClientUserClientTeamRole> teamRoles;
 
     @Size(max = 40)

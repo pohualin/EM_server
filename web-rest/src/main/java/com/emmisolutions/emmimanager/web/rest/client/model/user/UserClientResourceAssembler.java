@@ -47,8 +47,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             }
 
         }
-        ClientResource clientResource = user instanceof UserClient ?
-                clientResourceAssembler.toResource(((UserClient) user).getClient()) : null;
+        ClientResource clientResource = 
+                clientResourceAssembler.toResource(((UserClient) user).getClient());
 
         UserClientResource ret = new UserClientResource(
                 user.getId(),
@@ -70,7 +70,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
         if (!user.isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
-            ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null)).withRel("changePassword"));
+            ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
         }
         
         return ret;

@@ -16,6 +16,7 @@ import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResourceAssembler;
@@ -30,6 +31,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -65,7 +68,10 @@ public class UserClientsPasswordResource {
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
-
+    
+    @Resource(name="clientTokenBasedRememberMeServices")
+    RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
+    
     /**
      * Updates the password to the password on the user
      *
@@ -124,6 +130,7 @@ public class UserClientsPasswordResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @PreAuthorize("hasPermission(@password, #changePasswordRequest.existingPassword)")
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> changePassword(
+            HttpServletRequest request, HttpServletResponse response, 
             @RequestBody ChangePasswordRequest changePasswordRequest) {
 
         List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
@@ -131,9 +138,9 @@ public class UserClientsPasswordResource {
         if (errors.size() == 0) {
             UserClient toUpdate = (UserClient) userDetailsService
                     .loadUserByUsername(changePasswordRequest.getLogin());
-            toUpdate.setCredentialsNonExpired(true);
             toUpdate.setPassword(changePasswordRequest.getNewPassword());
-            userClientPasswordService.updatePassword(toUpdate);
+            tokenBasedRememberMeServices.rewriteLoginToken(request, response, 
+                    userClientPasswordService.updatePassword(toUpdate, true));
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<UserClientPasswordValidationErrorResource>();

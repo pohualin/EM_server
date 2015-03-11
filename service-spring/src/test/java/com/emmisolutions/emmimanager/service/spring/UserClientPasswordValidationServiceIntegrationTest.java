@@ -32,7 +32,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
     public void validateRequest() {
         UserClient userClient = makeNewRandomUserClient(null);
         userClient.setPassword("aPassword");
-        userClientPasswordService.updatePassword(userClient);
+        userClientPasswordService.updatePassword(userClient, true);
         try {
             userClientPasswordValidationService.validateRequest(null);
             fail("ChangePasswordRequest can not be null.");

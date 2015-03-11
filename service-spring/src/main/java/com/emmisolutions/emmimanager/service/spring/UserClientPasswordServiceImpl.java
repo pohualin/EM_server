@@ -43,19 +43,19 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     @Override
     @Transactional
-    public void updatePassword(UserClient user) {
+    public UserClient updatePassword(UserClient user, boolean setCredentialNonExpired) {
         UserClient userClient = userClientPersistence.reload(user);
         if (userClient == null) {
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
-        userClient.setCredentialsNonExpired(user.isCredentialsNonExpired());
+        userClient.setCredentialsNonExpired(setCredentialNonExpired);
         userClient.setPassword(user.getPassword());
         // set the expiration length based upon the user never logging in
         userClient.setPasswordResetExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .plusHours(userClient.isNeverLoggedIn() ? UserClientService.ACTIVATION_TOKEN_HOURS_VALID :
                         RESET_TOKEN_HOURS_VALID));
-        userClientPersistence.saveOrUpdate(encodePassword(userClient));
+        return userClientPersistence.saveOrUpdate(encodePassword(userClient));
     }
 
     @Override
