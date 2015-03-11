@@ -6,13 +6,11 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
-
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -47,7 +45,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             }
 
         }
-        ClientResource clientResource = 
+        ClientResource clientResource =
                 clientResourceAssembler.toResource(((UserClient) user).getClient());
 
         UserClientResource ret = new UserClientResource(
@@ -66,7 +64,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 perms,
                 user.isImpersonated(),
                 user.getPasswordExpireationDateTime());
-        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
         if (!user.isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
