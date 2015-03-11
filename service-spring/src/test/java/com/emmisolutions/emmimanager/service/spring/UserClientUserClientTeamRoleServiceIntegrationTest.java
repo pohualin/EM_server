@@ -318,6 +318,6 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
         Client client = team.getClient();
         UserClient userClient = makeNewRandomUserClient(client);
         UserClient reloadedUserClient = userDetailsService.get(userClient);
-        assertThat("The reloaded User Client is not null", reloadedUserClient, is(notNullValue()));
+        assertThat("The reloaded User Client is the same one that was passed in:", reloadedUserClient.getId(), is(userClient.getId()));
     }
 }
