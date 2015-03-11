@@ -70,7 +70,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 perms,
                 user.isImpersonated(),
                 user.getPasswordExpireationDateTime());
-        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
         if (!user.isImpersonated()) {
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
             UriTemplate uriTemplate = new UriTemplate(link.getHref())
