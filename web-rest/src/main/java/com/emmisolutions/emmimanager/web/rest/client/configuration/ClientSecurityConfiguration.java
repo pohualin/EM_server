@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
+
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeServices;
@@ -8,10 +11,12 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRemem
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +29,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
@@ -62,6 +68,9 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Resource(name = "clientUserDetailsService")
     private UserDetailsService clientUserDetailsService;
+    
+    @Resource
+    Environment env;
 
     private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
@@ -129,8 +138,12 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the remember me services
      */
     @Bean
-    public DelegateRememberMeServices delegateRememberMeServices(){
-      return new DelegateRememberMeServices();
+    public RememberMeServices delegateRememberMeServices(){
+    	if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
+    		return new DelegateRememberMeServices();
+    	} else {
+    		return tokenBasedRememberMeServices();
+    	}
     }
 
     /**
