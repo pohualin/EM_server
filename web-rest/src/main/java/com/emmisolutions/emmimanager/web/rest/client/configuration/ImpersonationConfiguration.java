@@ -1,12 +1,10 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasImpersonationAuthenticationSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenticationDetailsSource;
+import static com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration.CLIENT_RMC_HASH_KEY_SECRET;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,10 +32,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import static com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration.CLIENT_RMC_HASH_KEY_SECRET;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasImpersonationAuthenticationSuccessHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenticationDetailsSource;
 
 /**
  * Impersonation in the client application or administrative users logging into the client side
@@ -121,6 +123,11 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
                     @Override
                     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
                         return userDetailsService.loadUserByUsername(username);
+                    }
+                    
+                    @Override
+                    public UserClient get(UserClient userClient){
+                        return userDetailsService.get(userClient);
                     }
                 });
         rootTokenBasedRememberMeServices.setAlwaysRemember(true);

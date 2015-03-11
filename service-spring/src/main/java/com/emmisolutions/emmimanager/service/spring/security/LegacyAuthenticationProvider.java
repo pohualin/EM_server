@@ -72,15 +72,15 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
         if (userDetails instanceof UserClient) {
             // mark that the user has logged in successfully
             UserClient userClient = ((UserClient) userDetails);
-            userClient.setPasswordResetExpirationDateTime(null);
-            userClient.setPasswordResetToken(null);
-            if (userClient.isNeverLoggedIn()) {
-                userClient.setNeverLoggedIn(false);
-                userClient.setActivationKey(null);
-                userClient.setActivationExpirationDateTime(null);
+            UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);
+            unlockedUser.setPasswordResetExpirationDateTime(null);
+            unlockedUser.setPasswordResetToken(null);
+            if (unlockedUser.isNeverLoggedIn()) {
+                unlockedUser.setNeverLoggedIn(false);
+                unlockedUser.setActivationKey(null);
+                unlockedUser.setActivationExpirationDateTime(null);
             }
-            userClientPersistence.unlockUserClient(userClient);
-            userClientPersistence.saveOrUpdate(userClient);
+            userClientPersistence.saveOrUpdate(unlockedUser);
         }
     }
 

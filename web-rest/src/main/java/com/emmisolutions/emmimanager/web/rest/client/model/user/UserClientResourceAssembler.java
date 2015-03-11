@@ -6,8 +6,10 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
-
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.TemplateVariable;
+import org.springframework.hateoas.TemplateVariables;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.hateoas.UriTemplate;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -47,7 +51,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             }
 
         }
-        ClientResource clientResource = 
+
+        ClientResource clientResource =
                 clientResourceAssembler.toResource(((UserClient) user).getClient());
 
         UserClientResource ret = new UserClientResource(
@@ -66,9 +71,17 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 perms,
                 user.isImpersonated(),
                 user.getPasswordExpireationDateTime());
-        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
         if (!user.isImpersonated()) {
-            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
+            Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
+            UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                    new TemplateVariable("password",
+                            TemplateVariable.VariableType.REQUEST_PARAM)));
+            ret.add(new Link(uriTemplate, link.getRel()));
+            
+            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
         }
