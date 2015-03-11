@@ -50,7 +50,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         return user;
     }
-    
+
+    @Override
+    @Transactional(readOnly = true)
     public UserClient get(UserClient userClient){
         return userClientPersistence.reload(userClient);
     }

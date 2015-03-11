@@ -12,6 +12,7 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientUserClientTeamRoleService;
 
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -38,6 +40,9 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
 
     @Resource
     UserClientUserClientTeamRoleService userClientUserClientTeamRoleService;
+
+    @Resource(name = "clientUserDetailsService")
+    UserDetailsService userDetailsService;
 
     /**
      * Ensure findPossible works with and without
@@ -304,5 +309,15 @@ public class UserClientUserClientTeamRoleServiceIntegrationTest extends
         UserClientUserClientTeamRole reloaded = userClientUserClientTeamRoleService
                 .reload(new UserClientUserClientTeamRole(first.getId()));
         assertThat("should return nothing", reloaded == null, is(true));
+    }
+
+
+    @Test
+    public void testReloadUserClient(){
+        Team team = makeNewRandomTeam(null);
+        Client client = team.getClient();
+        UserClient userClient = makeNewRandomUserClient(client);
+        UserClient reloadedUserClient = userDetailsService.get(userClient);
+        assertThat("The reloaded User Client is not null", reloadedUserClient, is(notNullValue()));
     }
 }
