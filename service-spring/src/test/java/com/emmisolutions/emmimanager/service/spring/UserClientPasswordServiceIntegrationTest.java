@@ -445,4 +445,16 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
     }
+    
+    @Test
+    public void updatePasswordExpirationTime() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("userClient without password expiration time",
+                userClient.getPasswordExpireationDateTime(), is(nullValue()));
+
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+        assertThat("userClient with password expiration time",
+                userClient.getPasswordExpireationDateTime(), is(notNullValue()));
+    }
 }

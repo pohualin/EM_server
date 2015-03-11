@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
@@ -41,11 +42,11 @@ import java.util.List;
 public class UserClientServiceImpl implements UserClientService {
 
     @Resource
-    ClientService clientService;
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
     
     @Resource
-    ClientPasswordConfigurationService clientPasswordConfigurationService;
-
+    ClientService clientService;
+    
     @Resource
     UserClientPersistence userClientPersistence;
 
@@ -150,6 +151,7 @@ public class UserClientServiceImpl implements UserClientService {
                     userClient.setEmailValidated(true);
                     userClient.setPassword(activationRequest.getNewPassword());
                     userClient.setCredentialsNonExpired(true);
+                    userClientPasswordService.updatePasswordExpirationTime(userClient);
                     userClientPersistence.unlockUserClient(userClient);
                     ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
                 } else {
@@ -196,6 +198,14 @@ public class UserClientServiceImpl implements UserClientService {
         fromDb.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .minusHours(ACTIVATION_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
+    }
+    
+    private ClientPasswordConfiguration findClientPasswordConfiguration(UserClient userClient) {
+        Client client = null;
+        if (userClient != null) {
+            client = userClient.getClient();
+        }
+        return clientPasswordConfigurationService.get(client);
     }
 
     @Override

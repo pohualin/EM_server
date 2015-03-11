@@ -23,6 +23,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -74,7 +75,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${cas.provider.key:12234245632699}")
     private String casProviderKey;
 
-    @Value("${cas.username.suffix:@emmisolutions.com, localhost}")
+    @Value("${cas.username.suffix:@emmisolutions.com}")
     private String userNameSuffix;
 
     @Resource
@@ -87,7 +88,6 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     TokenBasedRememberMeServices adminTokenBasedRememberMeServices;
 
     private Base64 urlSafeBase64;
-
 
     /**
      * This defines the service that is going to be validated. In
@@ -258,33 +258,36 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
                 .addFilter(casAuthenticationFilter())
                 .securityContext()
-                .securityContextRepository(adminSecurityContextRepository)
-                .and()
+                    .securityContextRepository(adminSecurityContextRepository)
+                    .and()
                 .requestMatchers()
-                        // ignore the form login and logout pages
-                .requestMatchers(
-                        new AndRequestMatcher(
-                                new NegatedRequestMatcher(
-                                        new AntPathRequestMatcher(SecurityConfiguration.loginProcessingUrl)),
-                                new NegatedRequestMatcher(
-                                        new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)),
-                                new NegatedRequestMatcher(
-                                        new AntPathRequestMatcher("*.jsp")),
-                                new NegatedRequestMatcher(
-                                        new AntPathRequestMatcher("/webapi/messages")),
-                                new AntPathRequestMatcher("/webapi/**"))
-                )
-                .and()
+                    // ignore the form login and logout pages
+                    .requestMatchers(
+                            new AndRequestMatcher(
+                                    new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher(SecurityConfiguration.loginProcessingUrl)),
+                                    new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher(SecurityConfiguration.logoutProcessingUrl)),
+                                    new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher("*.jsp")),
+                                    new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher("/webapi/messages")),
+                                    new AntPathRequestMatcher("/webapi/**"))
+                    )
+                    .and()
                 .exceptionHandling()
-                .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
-                        new AntPathRequestMatcher("/webapi/**"))
-                .and()
+                    .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
+                            new AntPathRequestMatcher("/webapi/**"))
+                    .and()
                 .rememberMe()
-                .key(adminTokenBasedRememberMeServices.getKey())
-                .rememberMeServices(adminTokenBasedRememberMeServices)
-                .and()
+                    .key(adminTokenBasedRememberMeServices.getKey())
+                    .rememberMeServices(adminTokenBasedRememberMeServices)
+                    .and()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()

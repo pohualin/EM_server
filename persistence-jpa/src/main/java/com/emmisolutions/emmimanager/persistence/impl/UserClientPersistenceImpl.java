@@ -83,12 +83,7 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
 
     @Override
     public UserClient fetchUserWillFullPermissions(String currentLogin) {
-        UserClient userClient = userClientRepository.findByLoginIgnoreCase(currentLogin);
-        if (userClient != null) {
-            userClient.getClientRoles().size();
-            userClient.getTeamRoles().size();
-        }
-        return userClient;
+        return userClientRepository.findByLoginIgnoreCase(currentLogin);
     }
 
     @Override

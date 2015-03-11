@@ -1,12 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security.cas;
 
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,10 +23,18 @@ import static com.emmisolutions.emmimanager.web.rest.client.configuration.Impers
 @Component
 public class CasAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
+    @Resource(name ="adminTokenBasedRememberMeServices")
+    TokenBasedRememberMeServices adminTokenBasedRememberMeServices;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication)
             throws IOException, ServletException {
+
+        if (authentication.getPrincipal() instanceof UserAdmin) {
+            // bridge CAS success to Remember me success
+            adminTokenBasedRememberMeServices.onLoginSuccess(request, response, authentication);
+        }
 
         if (authentication.getDetails() instanceof SavedUrlServiceAuthenticationDetails) {
             // pull the place to redirect to from the saved URL which was recorded prior to service ticket creation

@@ -18,6 +18,7 @@ import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivat
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -139,7 +140,8 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> createUser(
             @PathVariable Long clientId, @RequestBody UserClient userClient) {
 
-        if (!userClientService.validateEmailAddress(userClient)) {
+        if (StringUtils.isNotBlank(userClient.getEmail())
+                && !userClientService.validateEmailAddress(userClient)) {
             UserClientService.UserClientValidationError validationError = new UserClientService.UserClientValidationError(
                     UserClientService.Reason.EMAIL_RESTRICTION, userClient);
             return new ResponseEntity<>(
@@ -291,7 +293,8 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> update(
             @PathVariable("id") Long id, @RequestBody UserClient userClient) {
 
-        if (!userClientService.validateEmailAddress(userClient)) {
+        if (StringUtils.isNotBlank(userClient.getEmail())
+                && !userClientService.validateEmailAddress(userClient)) {
             UserClientService.UserClientValidationError validationError = new UserClientService.UserClientValidationError(
                     UserClientService.Reason.EMAIL_RESTRICTION, userClient);
             return new ResponseEntity<>(
