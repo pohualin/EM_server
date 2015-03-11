@@ -4,8 +4,8 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
-
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.TemplateVariable;
@@ -51,8 +51,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             }
 
         }
-        ClientResource clientResource = user instanceof UserClient ?
-                clientResourceAssembler.toResource(((UserClient) user).getClient()) : null;
+        ClientResource clientResource = 
+                clientResourceAssembler.toResource(((UserClient) user).getClient());
 
         UserClientResource ret = new UserClientResource(
                 user.getId(),
@@ -81,6 +81,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
+            ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
         }
         
         return ret;
