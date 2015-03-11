@@ -41,8 +41,6 @@ public class LoggingAspect {
         Logger log = getLogger(joinPoint);
         if (env.acceptsProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)) {
             log.error("Exception in {}() with cause = {}", joinPoint.getSignature().getName(), e.getCause(), e);
-        } else {
-            log.error("Exception in {}() with cause = {}", joinPoint.getSignature().getName(), e.getCause());
         }
     }
 

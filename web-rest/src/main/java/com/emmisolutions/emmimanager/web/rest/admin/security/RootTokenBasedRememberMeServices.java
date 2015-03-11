@@ -3,9 +3,11 @@ package com.emmisolutions.emmimanager.web.rest.admin.security;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
@@ -15,6 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.lang.reflect.Method;
 
 /**
@@ -106,6 +109,19 @@ public class RootTokenBasedRememberMeServices extends TokenBasedRememberMeServic
         // re-write the cookie on each request (which is a login due to stateless back-end) for new timestamp
         onLoginSuccess(request, response, new RememberMeAuthenticationToken(getKey(), ret, ret.getAuthorities()));
         return ret;
+    }
+    
+    /**
+     * Use this method to rewrite the login/authentication token when the user client has changed the
+     * password or login name.
+     * 
+     * @param request the servlet request
+     * @param response the servlet response
+     * @param userClient the changed User Client
+     */
+    public void rewriteLoginToken(HttpServletRequest request, HttpServletResponse response, UserClient userClient) {
+        onLoginSuccess(request, response, new RememberMeAuthenticationToken(getKey(), userClient, 
+                SecurityContextHolder.getContext().getAuthentication().getAuthorities()));
     }
 
     @Override

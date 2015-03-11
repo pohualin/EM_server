@@ -51,7 +51,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             }
 
         }
-        ClientResource clientResource = 
+
+        ClientResource clientResource =
                 clientResourceAssembler.toResource(((UserClient) user).getClient());
 
         UserClientResource ret = new UserClientResource(
