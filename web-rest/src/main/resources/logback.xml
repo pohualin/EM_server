@@ -37,6 +37,7 @@
     <logger name="com.mangofactory.swagger" level="WARN"/>
     <logger name="com.wordnik.swagger" level="warn"/>
     <logger name="liquibase" level="warn"/>
+    <logger name="org.apache.catalina.core" level="OFF"/>
 
     <root level="${logback.loglevel}">
         <appender-ref ref="CONSOLE"/>
