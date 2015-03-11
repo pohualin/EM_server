@@ -1,5 +1,8 @@
 <Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2_ID">
 
+
+    <Manager pathname="" />
+
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
               password=""
