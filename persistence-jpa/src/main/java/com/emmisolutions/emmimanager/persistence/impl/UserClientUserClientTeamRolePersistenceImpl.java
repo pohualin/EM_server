@@ -4,6 +4,8 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.UserClientUserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientUserClientTeamRoleRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,10 @@ public class UserClientUserClientTeamRolePersistenceImpl implements
         userClientUserClientTeamRoleRepository.delete(userClientUserClientId);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "clientFindById", allEntries = true),
+            @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
+    })
     @Override
     public void delete(Long userClientId, Long userClientTeamRoleId) {
         userClientUserClientTeamRoleRepository
@@ -62,6 +68,10 @@ public class UserClientUserClientTeamRolePersistenceImpl implements
                 .findOne(userClientUserClientId);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "clientFindById", allEntries = true),
+            @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
+    })
     @Override
     public UserClientUserClientTeamRole saveOrUpdate(
             UserClientUserClientTeamRole userClientUserClientTeamRole) {
