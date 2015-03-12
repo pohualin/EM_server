@@ -88,14 +88,14 @@ public class PersistenceConfiguration {
      */
     @Bean(name = "entityManagerFactory")
     @DependsOn("cacheManager")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect jpaDialect) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect jpaDialect, Environment env) {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         entityManagerFactoryBean.setPackagesToScan("com.emmisolutions.emmimanager.model");
         entityManagerFactoryBean.setPersistenceUnitName("EmmiManagerPersistenceUnit");
         entityManagerFactoryBean.setJpaDialect(jpaDialect);
-        entityManagerFactoryBean.setJpaProperties(getCommonJpaProperties());
+        entityManagerFactoryBean.setJpaProperties(getCommonJpaProperties(env));
         return entityManagerFactoryBean;
     }
 
@@ -208,10 +208,10 @@ public class PersistenceConfiguration {
     }
 
 
-    private Properties getCommonJpaProperties() {
+    private Properties getCommonJpaProperties(Environment env) {
         Properties properties = new Properties();
         properties.setProperty(DIALECT, dialect);
-        properties.setProperty(SHOW_SQL, showSql.toString());
+        properties.setProperty(SHOW_SQL, env.acceptsProfiles(SPRING_PROFILE_TEST) ? "false" : showSql.toString());
         properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
         properties.setProperty("javax.persistence.validation.mode", "ddl, callback");
         properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");

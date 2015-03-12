@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add new team permission for scheduling" author="Matt">
+
+        <insert tableName="user_client_team_permission">
+            <column name="name" value="PERM_CLIENT_TEAM_SCHEDULE_PROGRAM"/>
+            <column name="rank" value="5"/>
+        </insert>
+
+        <update tableName="user_client_team_role_user_client_team_permission">
+            <column name="permission_name" value="PERM_CLIENT_TEAM_SCHEDULE_PROGRAM"/>
+            <where>permission_name = 'PERM_CLIENT_TEAM_MANAGE_EMMI'</where>
+        </update>
+
+        <update tableName="user_client_reference_team_role_permission">
+            <column name="name" value="PERM_CLIENT_TEAM_SCHEDULE_PROGRAM"/>
+            <where>name = 'PERM_CLIENT_TEAM_MANAGE_EMMI'</where>
+        </update>
+
+        <update tableName="strings">
+            <column name="key_path" value="PERM_CLIENT_TEAM_SCHEDULE_PROGRAM"/>
+            <column name="message" value="Schedule Emmi"/>
+            <where>key_path = 'PERM_CLIENT_TEAM_MANAGE_EMMI'</where>
+        </update>
+
+        <delete tableName="user_client_team_permission">
+            <where>name = 'PERM_CLIENT_TEAM_MANAGE_EMMI'</where>
+        </delete>
+
+    </changeSet>
+    
+</databaseChangeLog>
