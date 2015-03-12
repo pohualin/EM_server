@@ -35,6 +35,14 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
     UserClient findByPasswordResetToken(String resetToken);
 
     /**
+     * Finds a UserClient by validation token
+     *
+     * @param validationToken the key
+     * @return UserClient or null
+     */
+    UserClient findByValidationToken(String validationToken);
+
+    /**
      * Find a user by email address
      *
      * @param email to search for

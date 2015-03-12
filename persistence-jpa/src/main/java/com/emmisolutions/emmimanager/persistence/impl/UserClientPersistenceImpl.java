@@ -108,6 +108,14 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     }
 
     @Override
+    public UserClient findByValidationToken(String validationToken) {
+        if (StringUtils.isNotBlank(validationToken)) {
+            return userClientRepository.findByValidationToken(validationToken);
+        }
+        return null;
+    }
+
+    @Override
     public UserClient findByEmail(String email) {
         if (StringUtils.isNotBlank(email)) {
             return userClientRepository.findByEmailIgnoreCase(email);
