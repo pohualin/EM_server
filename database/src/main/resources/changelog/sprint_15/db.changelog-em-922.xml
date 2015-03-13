@@ -18,7 +18,7 @@
 
 	</changeSet>
 	
-	<changeSet id="add unique constraint for user client secret question response" author="wlee">
+	<changeSet id="update unique constraint for user client secret question response" author="wlee">
         
         <!-- UKs -->
         <addUniqueConstraint tableName="user_client_secret_question_response" columnNames="user_client_id, secret_question_id"
