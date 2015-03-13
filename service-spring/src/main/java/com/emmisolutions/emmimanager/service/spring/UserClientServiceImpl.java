@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
@@ -41,11 +42,11 @@ import java.util.List;
 public class UserClientServiceImpl implements UserClientService {
 
     @Resource
-    ClientService clientService;
+    ClientPasswordConfigurationService clientPasswordConfigurationService;
     
     @Resource
-    ClientPasswordConfigurationService clientPasswordConfigurationService;
-
+    ClientService clientService;
+    
     @Resource
     UserClientPersistence userClientPersistence;
 
@@ -145,13 +146,16 @@ public class UserClientServiceImpl implements UserClientService {
                 userClient.setActivationKey(null);
                 userClient.setActivationExpirationDateTime(null);
                 if (isValid(expiration)) {
+                    UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);
                     // activation key (and timestamp) is valid
-                    userClient.setActivated(true);
-                    userClient.setEmailValidated(true);
-                    userClient.setPassword(activationRequest.getNewPassword());
-                    userClient.setCredentialsNonExpired(true);
-                    userClientPersistence.unlockUserClient(userClient);
-                    ret = userClientPersistence.saveOrUpdate(userClientPasswordService.encodePassword(userClient));
+                    unlockedUser.setActivated(true);
+                    unlockedUser.setEmailValidated(true);
+                    unlockedUser.setPassword(activationRequest.getNewPassword());
+                    unlockedUser.setCredentialsNonExpired(true);
+                    
+                    ret = userClientPasswordService
+                            .updatePasswordExpirationTime(userClientPasswordService
+                                    .encodePassword(unlockedUser));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
                 }
@@ -196,6 +200,14 @@ public class UserClientServiceImpl implements UserClientService {
         fromDb.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .minusHours(ACTIVATION_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
+    }
+    
+    private ClientPasswordConfiguration findClientPasswordConfiguration(UserClient userClient) {
+        Client client = null;
+        if (userClient != null) {
+            client = userClient.getClient();
+        }
+        return clientPasswordConfigurationService.get(client);
     }
 
     @Override

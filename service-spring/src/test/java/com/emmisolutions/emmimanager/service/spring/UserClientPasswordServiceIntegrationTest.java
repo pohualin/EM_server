@@ -52,7 +52,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
             fail("should not be able to login with the new password until it has been changed");
         } catch (BadCredentialsException bce) {
             userClient.setPassword(newPassword);
-            userClientPasswordService.updatePassword(userClient);
+            userClientPasswordService.updatePassword(userClient, false);
             assertThat("can login with the new user client", login(userClient.getLogin(), newPassword),
                     is((User) userClient));
         }
@@ -63,7 +63,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void badUpdate() {
-        userClientPasswordService.updatePassword(null);
+        userClientPasswordService.updatePassword(null, false);
     }
 
     /**
@@ -73,7 +73,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     public void updateToNullPassword() {
         UserClient userClient = makeNewRandomUserClient(null);
         userClient.setPassword(null);
-        userClientPasswordService.updatePassword(userClient);
+        userClientPasswordService.updatePassword(userClient, false);
         login(userClient.getLogin(), null);
     }
 
@@ -89,7 +89,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
 
         user.setPassword(pw);
         // set the password as an admin
-        userClientPasswordService.updatePassword(user);
+        userClientPasswordService.updatePassword(user, false);
         try {
             // try to login with the updated admin password
             login(user.getLogin(), pw);
@@ -444,5 +444,17 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
 
         req.setNewPassword("abcABC123[]!");
         assertThat("Should match", userClientPasswordService.validateNewPassword(req), is(true));
+    }
+    
+    @Test
+    public void updatePasswordExpirationTime() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("userClient without password expiration time",
+                userClient.getPasswordExpireationDateTime(), is(nullValue()));
+
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+        assertThat("userClient with password expiration time",
+                userClient.getPasswordExpireationDateTime(), is(notNullValue()));
     }
 }

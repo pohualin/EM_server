@@ -1,7 +1,7 @@
 <%@ page import="org.springframework.security.authentication.CredentialsExpiredException" %>
 <%@ page import="org.springframework.security.authentication.BadCredentialsException" %>
 <%@ page import="org.springframework.security.authentication.LockedException" %>
-
+<%@ page session="false" %>
 <%@ page isErrorPage="true" %>
 <%if (request.getAttribute("exception") instanceof CredentialsExpiredException 
             || request.getAttribute("exception") instanceof BadCredentialsException 

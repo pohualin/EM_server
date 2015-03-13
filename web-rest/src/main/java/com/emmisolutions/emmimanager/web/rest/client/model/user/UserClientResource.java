@@ -1,12 +1,20 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
-import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.joda.time.LocalDateTime;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import javax.xml.bind.annotation.*;
-import java.util.List;
+import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * HATEOAS wrapper for User, essentially a DTO instead of a wrapper.
@@ -29,13 +37,16 @@ public class UserClientResource extends ResourceSupport {
 
     private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated;
 
+    private LocalDateTime passwordExpirationTime;
+    
     private ClientResource clientResource;
 
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
     private List<String> permissions;
 
-
+    private List<UserClientService.UserClientConflict> conflicts;
+    
     public UserClientResource() {
     }
 
@@ -67,7 +78,8 @@ public class UserClientResource extends ResourceSupport {
                               boolean emailValidated,
                               ClientResource clientResource,
                               List<String> permissions,
-                              boolean impersonated) {
+                              boolean impersonated,
+                              LocalDateTime passwordExpirationTime) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -82,6 +94,7 @@ public class UserClientResource extends ResourceSupport {
         this.clientResource = clientResource;
         this.permissions = permissions;
         this.impersonated = impersonated;
+        this.passwordExpirationTime = passwordExpirationTime;
     }
 
     /**
@@ -102,5 +115,13 @@ public class UserClientResource extends ResourceSupport {
 
     public void setClientResource(ClientResource clientResource) {
         this.clientResource = clientResource;
+    }
+
+    public List<UserClientService.UserClientConflict> getConflicts() {
+        return conflicts;
+    }
+
+    public void setConflicts(List<UserClientService.UserClientConflict> conflicts) {
+        this.conflicts = conflicts;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -59,17 +60,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource
     PasswordEncoder passwordEncoder;
 
-    private static final String REMEMBER_ME_KEY = "EM2_ADMIN_RMT";
-
     @Resource(name = "legacyAuthenticationProvider")
-    private void setAuthenticationProvider(UserDetailsConfigurableAuthenticationProvider authenticationProvider){
+    private void setAuthenticationProvider(UserDetailsConfigurableAuthenticationProvider authenticationProvider) {
         authenticationProvider.setUserDetailsService(adminUserDetailsService);
-        this.authenticationProvider =  authenticationProvider;
+        this.authenticationProvider = authenticationProvider;
     }
 
+    /**
+     * This is the context repository but we shouldn't really ever need this one since we are
+     * not using HttpSession objects to store our authenticated users.
+     *
+     * @return the security repo
+     */
     @Bean(name = "adminSecurityContextRepository")
-    public SecurityContextRepository securityContextRepository(){
+    public SecurityContextRepository securityContextRepository() {
         HttpSessionSecurityContextRepository ret = new HttpSessionSecurityContextRepository();
+        ret.setAllowSessionCreation(false);
         ret.setSpringSecurityContextKey("SPRING_SECURITY_CONTEXT_ADMIN");
         return ret;
     }
@@ -80,10 +86,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the TokenBasedRememberMeServices
      */
     @Bean(name = "adminTokenBasedRememberMeServices")
-    public TokenBasedRememberMeServices tokenBasedRememberMeServices(){
+    public TokenBasedRememberMeServices tokenBasedRememberMeServices() {
         RootTokenBasedRememberMeServices rootTokenBasedRememberMeServices =
                 new RootTokenBasedRememberMeServices("EM2_ADMIN_RMC_KEY_1223452!", adminUserDetailsService);
-        rootTokenBasedRememberMeServices.setUseSecureCookie(false);
+        rootTokenBasedRememberMeServices.setUseSessionCookieOnly(true);
+        rootTokenBasedRememberMeServices.setAlwaysRemember(true);
         rootTokenBasedRememberMeServices.setParameter("remember-me");
         rootTokenBasedRememberMeServices.setCookieName("EM2_ADMIN_RMC");
         return rootTokenBasedRememberMeServices;
@@ -103,14 +110,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi/authenticated");
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-admin.jsp?error");
-        if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)){
+        if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
             // only register the login and logout URLs for processing when CAS is enabled
             http
                     .requestMatchers()
                         .antMatchers(loginProcessingUrl, logoutProcessingUrl)
-                    .and()
+                        .and()
                     .exceptionHandling()
-                    .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
+                        .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
                             new AntPathRequestMatcher(loginProcessingUrl));
         } else {
             // cas isn't enabled register as normal
@@ -120,12 +127,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .and()
                     .exceptionHandling()
                         .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                                new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
+                            new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
         }
         http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
                 .securityContext()
                     .securityContextRepository(securityContextRepository())
-                        .and()
+                    .and()
                 .authenticationProvider(authenticationProvider)
                 .formLogin()
                     .loginPage("/login-admin.jsp")

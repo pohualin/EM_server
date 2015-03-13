@@ -4,7 +4,8 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
-
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
 import org.joda.time.LocalDateTime;
@@ -15,11 +16,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A user for a single client.
@@ -64,10 +61,12 @@ public class UserClient extends User {
     private Client client;
 
     @OneToMany(mappedBy = "userClient")
-    private Collection<UserClientUserClientRole> clientRoles;
+    @XmlTransient
+    private Set<UserClientUserClientRole> clientRoles;
 
     @OneToMany(mappedBy = "userClient")
-    private Collection<UserClientUserClientTeamRole> teamRoles;
+    @XmlTransient
+    private Set<UserClientUserClientTeamRole> teamRoles;
 
     @Size(max = 40)
     @Column(name = "activation_key", length = 40, columnDefinition = "nvarchar(40)")
@@ -95,16 +94,19 @@ public class UserClient extends User {
 
     @Column(name = "activation_expiration_time_utc")
     private LocalDateTime activationExpirationDateTime;
+    
+    @Column(name = "password_expiration_time_utc")
+    private LocalDateTime passwordExpirationDateTime;
 
     @Column(name = "validation_expiration_time_utc")
     private LocalDateTime validationExpirationDateTime;
 
     @Transient
     private boolean impersonated;
-    
+
     @Column(name = "login_failure_count")
     private int loginFailureCount;
-    
+
     @Column(name = "lock_expiration_time_utc")
     private LocalDateTime lockExpirationDateTime;
 
@@ -129,19 +131,19 @@ public class UserClient extends User {
         this.client = client;
     }
 
-    public Collection<UserClientUserClientRole> getClientRoles() {
+    public Set<UserClientUserClientRole> getClientRoles() {
         return clientRoles;
     }
 
-    public void setClientRoles(Collection<UserClientUserClientRole> clientRoles) {
+    public void setClientRoles(Set<UserClientUserClientRole> clientRoles) {
         this.clientRoles = clientRoles;
     }
 
-    public Collection<UserClientUserClientTeamRole> getTeamRoles() {
+    public Set<UserClientUserClientTeamRole> getTeamRoles() {
         return teamRoles;
     }
 
-    public void setTeamRoles(Collection<UserClientUserClientTeamRole> teamRoles) {
+    public void setTeamRoles(Set<UserClientUserClientTeamRole> teamRoles) {
         this.teamRoles = teamRoles;
     }
 
@@ -273,6 +275,15 @@ public class UserClient extends User {
         this.activationExpirationDateTime = activationExpirationDateTime;
     }
 
+    public LocalDateTime getPasswordExpireationDateTime() {
+        return passwordExpirationDateTime;
+    }
+
+    public void setPasswordExpireationDateTime(
+            LocalDateTime passwordExpirationDateTime) {
+        this.passwordExpirationDateTime = passwordExpirationDateTime;
+    }
+
     public boolean isImpersonated() {
         return impersonated;
     }
@@ -280,7 +291,7 @@ public class UserClient extends User {
     public void setImpersonated(boolean impersonated) {
         this.impersonated = impersonated;
     }
-    
+
     public int getLoginFailureCount() {
         return loginFailureCount;
     }

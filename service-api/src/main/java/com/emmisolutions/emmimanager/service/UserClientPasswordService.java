@@ -20,8 +20,10 @@ public interface UserClientPasswordService {
      * Update the UserClient password and expire it at the same time.
      *
      * @param user the user to be updated
+     * @param setCredentialNonExpire to set
+     * @return the updated UserClient
      */
-    void updatePassword(UserClient user);
+    UserClient updatePassword(UserClient user, boolean setCredentialNonExpired);
 
     /**
      * Updates a UserClient password from an expired password change request
@@ -114,4 +116,13 @@ public interface UserClientPasswordService {
      * @return true/false for valid/invalid password
      */
     boolean validateNewPassword(ResetPasswordRequest resetPasswordRequest);
+    
+    /**
+     * Set password expiration time to userClient
+     * 
+     * @param userClient
+     *            to set
+     * @return an userClient with password expiration time set
+     */
+    public UserClient updatePasswordExpirationTime(UserClient userClient);
 }

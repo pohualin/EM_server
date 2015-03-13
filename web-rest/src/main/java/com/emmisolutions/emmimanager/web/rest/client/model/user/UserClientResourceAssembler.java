@@ -1,19 +1,28 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.TemplateVariable;
+import org.springframework.hateoas.TemplateVariables;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.hateoas.UriTemplate;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -44,8 +53,9 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             }
 
         }
-        ClientResource clientResource = user instanceof UserClient ?
-                clientResourceAssembler.toResource(((UserClient) user).getClient()) : null;
+
+        ClientResource clientResource =
+                clientResourceAssembler.toResource(((UserClient) user).getClient());
 
         UserClientResource ret = new UserClientResource(
                 user.getId(),
@@ -61,11 +71,21 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isEmailValidated(),
                 clientResource,
                 perms,
-                user.isImpersonated());
-        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withSelfRel());
+                user.isImpersonated(),
+                user.getPasswordExpireationDateTime());
+        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
         if (!user.isImpersonated()) {
-            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null)).withRel("secretQuestionResponses"));
+            Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
+            UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                    new TemplateVariable("password",
+                            TemplateVariable.VariableType.REQUEST_PARAM)));
+            ret.add(new Link(uriTemplate, link.getRel()));
+            
+            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
+            ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
         }
         
         return ret;

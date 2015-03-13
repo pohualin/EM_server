@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.security;
 
 import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
 import java.io.Serializable;
 
@@ -15,4 +16,13 @@ public interface UserDetailsService extends org.springframework.security.core.us
      * @return the currently logged in user or null if nobody logged in
      */
     User getLoggedInUser();
+    
+    /**
+     * Fetches a given user client.
+     * 
+     * @param userClient
+     * @return
+     */
+    UserClient get(UserClient userClient);
+
 }

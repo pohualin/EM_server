@@ -57,9 +57,27 @@
         <javax-mail.version>1.5.2</javax-mail.version>
         <sun-mail.version>${javax-mail.version}</sun-mail.version>
         <commons.codec.version>1.10</commons.codec.version>
+        <hazelcast.version>3.4.1</hazelcast.version>
+        <kryo.version>3.0.0</kryo.version>
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/*.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -95,6 +113,7 @@
                                     <excludes>
                                         <exclude>*.logging.*</exclude>
                                         <exclude>com.emmisolutions.emmimanager.web.rest.*</exclude>
+                                        <exclude>com.emmisolutions.emmimanager.persistence.configuration.*</exclude>
                                         <exclude>
                                             com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration
                                         </exclude>
@@ -615,6 +634,27 @@
                 <version>${salesforce.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>${hazelcast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast-hibernate4</artifactId>
+                <version>${hazelcast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast-spring</artifactId>
+                <version>${hazelcast.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.esotericsoftware</groupId>
+                <artifactId>kryo</artifactId>
+                <version>${kryo.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -710,4 +750,24 @@
         </snapshotRepository>
     </distributionManagement>
 
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- log configuration -->
+                <logback.loglevel>DEBUG</logback.loglevel>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <!-- log configuration -->
+                <logback.loglevel>INFO</logback.loglevel>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -73,7 +73,10 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
 
     @Override
     public UserAdmin reload(String login) {
-        return userAdminRepository.findByLoginIgnoreCase(login);
+        if (StringUtils.isBlank(login)){
+            return null;
+        }
+        return userAdminRepository.fetchWithFullPermissions(StringUtils.lowerCase(login));
     }
 
     @Override
@@ -86,7 +89,7 @@ public class UserAdminPersistenceImpl implements UserAdminPersistence {
 
     @Override
     public UserAdmin fetchUserWillFullPermissions(String login) {
-        return userAdminRepository.fetchWithFullPermissions(login);
+        return reload(login);
     }
 
     @Override
