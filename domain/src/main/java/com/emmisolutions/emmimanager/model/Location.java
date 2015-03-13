@@ -41,21 +41,16 @@ public class Location extends AbstractAuditingEntity {
     @Column(nullable = false)
     private String name;
 
-    @NotNull
     @Length(max = 255)
-    @Pattern(regexp = "[2-9][0-9][0-9]-[2-9][0-9][0-9]-[0-9][0-9][0-9][0-9]", message = "Phone number must be 10 digits and the 1st and 4th digit cannot be a 1 or 0")
-    @Column(nullable = false)
+    @Pattern(regexp = "\\s*|[2-9][0-9][0-9]-[2-9][0-9][0-9]-[0-9][0-9][0-9][0-9]", message = "Phone number must be 10 digits and the 1st and 4th digit cannot be a 1 or 0")
     private String phone;
 
-    @NotNull
     @Length(max = 255)
     @Pattern(regexp = "[0-9A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
-    @Column(nullable = false)
     private String city;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(length = 2, nullable = false)
+    @Column(length = 2)
     private State state;
 
     @NotNull
