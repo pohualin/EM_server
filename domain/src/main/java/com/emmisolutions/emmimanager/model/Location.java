@@ -49,6 +49,7 @@ public class Location extends AbstractAuditingEntity {
     @Pattern(regexp = "[0-9A-Za-z-'=_;:@#&,.!() ]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( )")
     private String city;
 
+    @Length(max = 2)
     @Enumerated(EnumType.STRING)
     private State state;
 
