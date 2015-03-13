@@ -71,14 +71,14 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     !userClient.isCredentialsNonExpired() &&
                     passwordEncoder.matches(expiredPasswordChangeRequest.getExistingPassword(),
                             userClient.getPassword() + userClient.getSalt())) {
+                UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);;
                 // user exists, credentials are expired, before reset expiration date and existing password is correct
-                userClient.setPassword(expiredPasswordChangeRequest.getNewPassword());
-                userClient.setCredentialsNonExpired(true);
-                userClient.setPasswordResetExpirationDateTime(null);
-                userClient.setPasswordResetToken(null);
-                updatePasswordExpirationTime(userClient);
-                userClientPersistence.unlockUserClient(userClient);
-                return userClientPersistence.saveOrUpdate(encodePassword(userClient));
+                unlockedUser.setPassword(expiredPasswordChangeRequest.getNewPassword());
+                unlockedUser.setCredentialsNonExpired(true);
+                unlockedUser.setPasswordResetExpirationDateTime(null);
+                unlockedUser.setPasswordResetToken(null);
+                
+                return updatePasswordExpirationTime(encodePassword(unlockedUser));
             }
         }
         return null;
@@ -104,13 +104,13 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 userClient.setPasswordResetToken(null);
                 userClient.setPasswordResetExpirationDateTime(null);
                 if (isValid(expiration)) {
+                    UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);
                     // the token on the user is valid, set the password and validate the email
-                    userClient.setPassword(resetPasswordRequest.getNewPassword());
-                    userClient.setCredentialsNonExpired(true);
-                    userClient.setEmailValidated(true);
-                    updatePasswordExpirationTime(userClient);
-                    userClientPersistence.unlockUserClient(userClient);
-                    ret = userClientPersistence.saveOrUpdate(encodePassword(userClient));
+                    unlockedUser.setPassword(resetPasswordRequest.getNewPassword());
+                    unlockedUser.setCredentialsNonExpired(true);
+                    unlockedUser.setEmailValidated(true);
+                    
+                    ret = updatePasswordExpirationTime(encodePassword(unlockedUser));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
                 }
