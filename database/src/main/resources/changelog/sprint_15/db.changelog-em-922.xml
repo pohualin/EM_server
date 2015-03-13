@@ -4,13 +4,29 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+	<changeSet id="find and delete constraints from user client secret question response" author="wlee">
+		<sql><![CDATA[
+		    DELETE from user_client_secret_question_response where user_client_id IN (
+				SELECT DUP.user_client_id FROM 
+				(
+					SELECT user_client_id, secret_question_id, count(*) as c FROM user_client_secret_question_response 
+					group by user_client_id, secret_question_id 
+					having count(*) > 1 
+				) AS DUP
+			)
+	    ]]></sql>
 
-    <changeSet id="add unique constraint for user client secret question response" author="wlee">
-
+	</changeSet>
+	
+	<changeSet id="add unique constraint for user client secret question response" author="wlee">
+        
         <!-- UKs -->
         <addUniqueConstraint tableName="user_client_secret_question_response" columnNames="user_client_id, secret_question_id"
                              constraintName="uk_user_client_secret_question"/>
 
     </changeSet>
+	
+
+    
 
 </databaseChangeLog>
