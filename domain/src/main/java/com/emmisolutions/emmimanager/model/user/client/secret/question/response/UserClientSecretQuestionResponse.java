@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.SecretQuestion;
-import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
 import javax.persistence.Column;
@@ -12,9 +11,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -29,7 +30,9 @@ import org.hibernate.envers.NotAudited;
  */
 @Entity
 @Audited
-@Table(name = "user_client_secret_question_response")
+@Table(name = "user_client_secret_question_response",
+	uniqueConstraints =
+	@UniqueConstraint(columnNames = {"user_client_id", "secret_question_id"}, name = "uk_user_client_secret_question"))
 @XmlRootElement(name = "user_client_secret_question_response")
 public class UserClientSecretQuestionResponse extends AbstractAuditingEntity implements Serializable {
 
