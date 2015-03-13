@@ -81,20 +81,20 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             ret.setTeams(teams);
         }
 
-        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
         if (!user.isImpersonated()) {
+            ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
             UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                     new TemplateVariable("password",
                             TemplateVariable.VariableType.REQUEST_PARAM)));
             ret.add(new Link(uriTemplate, link.getRel()));
-            
+
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
         }
-        
+
         return ret;
     }
 
