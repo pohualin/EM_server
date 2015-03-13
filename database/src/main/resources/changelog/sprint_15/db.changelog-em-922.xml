@@ -19,11 +19,12 @@
 	</changeSet>
 	
 	<changeSet id="update unique constraint for user client secret question response" author="wlee">
-        
-        <!-- UKs -->
+        <preConditions onFail="MARK_RAN">
+            <constraintExists constraintName="uk_user_client_secret_question"
+                         tableName="user_client_secret_question_response"/>
+        </preConditions>
         <addUniqueConstraint tableName="user_client_secret_question_response" columnNames="user_client_id, secret_question_id"
                              constraintName="uk_user_client_secret_question"/>
-
     </changeSet>
 	
 
