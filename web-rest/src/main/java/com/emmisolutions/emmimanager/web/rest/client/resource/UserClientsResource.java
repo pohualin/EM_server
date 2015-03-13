@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
@@ -124,6 +126,7 @@ public class UserClientsResource {
                                     .toUriString();
             // send the email (asynchronously)
             mailService.sendValidationEmail(savedUserClient, validationHref);
+            userClientService.update(savedUserClient);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

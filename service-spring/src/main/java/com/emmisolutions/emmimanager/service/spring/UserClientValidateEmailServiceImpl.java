@@ -62,6 +62,7 @@ public class UserClientValidateEmailServiceImpl implements UserClientValidationE
                 userClient.setValidationToken(null);
                 if (isValid(expiration)) {
                     userClient.setEmailValidated(true);
+                    userClientPersistence.saveOrUpdate(userClient);
                 }
             }
         }

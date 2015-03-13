@@ -44,6 +44,7 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                 user.getEmail()));
         // make sure null is saved for blank email
         user.setEmail(StringUtils.stripToNull(user.getEmail()));
+        user.setEmailValidated(user.isEmailValidated());
         return userClientRepository.save(user);
     }
 
