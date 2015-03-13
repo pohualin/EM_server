@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import com.emmisolutions.emmimanager.web.rest.client.model.api.PublicApi;
+import com.emmisolutions.emmimanager.web.rest.client.model.api.ClientFacingPublicApi;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +27,7 @@ public class ApiResource {
      * @return PublicApi
      */
     @RequestMapping(method = RequestMethod.GET)
-    public PublicApi get() {
-        return new PublicApi();
+    public ClientFacingPublicApi get() {
+        return new ClientFacingPublicApi();
     }
 }
