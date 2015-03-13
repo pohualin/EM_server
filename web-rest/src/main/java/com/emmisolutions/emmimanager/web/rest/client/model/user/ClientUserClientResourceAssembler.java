@@ -1,17 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import javax.annotation.Resource;
-
-import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.stereotype.Component;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Creates a UserClientResource from a UserClient
@@ -27,8 +26,6 @@ public class ClientUserClientResourceAssembler implements
         if (entity == null) {
             return null;
         }
-        ClientResource clientResource = entity instanceof UserClient ? clientResourceAssembler
-                .toResource(((UserClient) entity).getClient()) : null;
 
         UserClientResource ret = new UserClientResource(
                 entity.getId(),
@@ -42,7 +39,10 @@ public class ClientUserClientResourceAssembler implements
                 entity.isAccountNonLocked(),
                 entity.isCredentialsNonExpired(),
                 entity.isEmailValidated(),
-                clientResource, null, entity.isImpersonated(), entity.getPasswordExpireationDateTime());
+                clientResourceAssembler.toResource(entity.getClient()),
+                null,
+                entity.isImpersonated(),
+                entity.getPasswordExpireationDateTime());
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withSelfRel());
         return ret;
     }
