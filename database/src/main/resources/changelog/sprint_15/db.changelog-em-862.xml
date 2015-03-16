@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="email validate email link7" author="Kevin">
+        <delete tableName="email_template">
+            <where>type='VALIDATION'</where>
+        </delete>
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_15/data/em-862/email-validate-email.data"
+                  tableName="email_template"
+                  separator="~"/>
+
+    </changeSet>
+
+    <changeSet id="add validation token expiration timestamps" author="Kevin">
+
+        <addColumn tableName="user_client">
+            <column name="validation_expiration_time_utc" type="timestamp"/>
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="validation_expiration_time_utc" type="timestamp"/>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="add reset validation token" author="Kevin">
+        <addColumn tableName="user_client">
+            <column name="validation_token" type="nvarchar(40)"/>
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="validation_token" type="nvarchar(40)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
