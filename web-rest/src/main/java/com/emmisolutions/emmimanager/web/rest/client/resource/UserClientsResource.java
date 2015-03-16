@@ -31,12 +31,23 @@ import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClient
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.PermitAll;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
  * User REST API
@@ -96,46 +107,23 @@ public class UserClientsResource {
     }
 
     /**
-     * send validation email
-     * @param userId user to get for email personalization
-     * @return OK if everything worked
+     * Send an validation email
+     * 
+     * @return OK
      */
-    @RequestMapping(value = "/{userId}/sendEmail", method = RequestMethod.POST)
+    @RequestMapping(value = "/{userId}/validateEmail", method = RequestMethod.POST)
     @PreAuthorize("hasPermission(@user, #userId)")
-    public ResponseEntity<Void> sendValidationEmail(@PathVariable Long userId) {
-        // update the validation token, invalidating others
-        UserClient savedUserClient = userClientValidationEmailService.addValidationTokenTo(new UserClient(userId));
-        if (savedUserClient != null) {
-            // get the proper url (the way we make hateoas links), then replace the path with the client entry point
-            String validationHref =
-                    UriComponentsBuilder.fromHttpUrl(
-                            linkTo(methodOn(UserClientsResource.class)
-                                    .validateEmail(null)).withSelfRel().getHref())
-                                    .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI, savedUserClient.getValidationToken()))
-                                    .build(false)
-                                    .toUriString();
+    public ResponseEntity<Void> validate(@PathVariable Long userId,
+            @RequestBody UserClient userClient) {
+        if (userClient != null) {
             // send the email (asynchronously)
-            mailService.sendValidationEmail(savedUserClient, validationHref);
-            userClientService.update(savedUserClient);
-            return new ResponseEntity<>(HttpStatus.OK);
+            userClient.setId(userId);
+            userClient = userClientService.reload(userClient);
+            mailService.sendValidationEmail(userClient, "http://aUrl");
+            userClient.setEmailValidated(true);
         }
 
-        return new ResponseEntity<>(HttpStatus.GONE);
-    }
-
-    /**
-     * validate email token
-     * @param validationToken token to validate
-     * @return OK if everything worked
-     */
-    @RequestMapping(value = "/validate/", method = RequestMethod.PUT)
-    @PermitAll
-    public ResponseEntity<Void> validateEmail(@RequestBody ValidationToken validationToken) {
-        UserClient savedUserClient = userClientValidationEmailService.validate(validationToken.getValidationToken());
-        if(savedUserClient!=null){
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.GONE);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
     /**
@@ -145,7 +133,7 @@ public class UserClientsResource {
      *         authorized.
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
+    @PreAuthorize("hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
         return new ResponseEntity<>(
                 userResourceAssembler.toResource((UserClient) userDetailsService

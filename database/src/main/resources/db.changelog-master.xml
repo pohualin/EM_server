@@ -157,5 +157,11 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-877.xml"/>
     
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-297.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-922.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-890.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-844.xml"/>
  
 </databaseChangeLog>

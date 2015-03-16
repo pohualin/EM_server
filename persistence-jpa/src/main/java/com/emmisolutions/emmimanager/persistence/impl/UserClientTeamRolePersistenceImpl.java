@@ -6,6 +6,8 @@ import com.emmisolutions.emmimanager.persistence.UserClientReferenceTeamRolePers
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamPermissionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamRoleRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +37,10 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
         return userClientTeamRoleRepository.findByClientId(clientId, page);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "clientFindById", allEntries = true),
+            @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
+    })
     @Override
     public UserClientTeamRole save(UserClientTeamRole userClientTeamRole) {
         if (userClientTeamRole == null){
@@ -53,6 +59,10 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
         return userClientTeamRoleRepository.findOne(userClientTeamRole.getId());
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "clientFindById", allEntries = true),
+            @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
+    })
     @Override
     public void remove(Long id) {
         userClientTeamRoleRepository.delete(id);

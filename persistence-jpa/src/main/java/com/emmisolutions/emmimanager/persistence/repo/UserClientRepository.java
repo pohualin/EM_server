@@ -34,10 +34,12 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
             @CacheEvict(value = "clientFindByLoginIgnoreCase", key = "#p0.login")
     })
     @Override
+    @SuppressWarnings("unchecked")
     UserClient save(UserClient userClient);
 
     @Cacheable(value = "clientFindById", key = "#p0")
     @Override
+    @SuppressWarnings("unchecked")
     UserClient findOne(Long id);
 
 

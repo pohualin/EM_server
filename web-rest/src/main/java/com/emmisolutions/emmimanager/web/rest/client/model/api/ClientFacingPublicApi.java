@@ -19,12 +19,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * The public API for this server
  */
 @XmlRootElement(name = "client-public")
-public class PublicApi extends ResourceSupport {
+public class ClientFacingPublicApi extends ResourceSupport {
 
     /**
      * create all the common links to the app
      */
-    public PublicApi() {
+    public ClientFacingPublicApi() {
         Link self = linkTo(ApiResource.class).withSelfRel();
         add(self);
         add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
