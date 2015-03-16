@@ -5,7 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 
-    <changeSet id="email validate email link2" author="Kevin">
+    <changeSet id="email validate email link7" author="Kevin">
+        <delete tableName="email_template">
+            <where>type='VALIDATION'</where>
+        </delete>
 
         <loadData encoding="UTF-8"
                   file="changelog/sprint_15/data/em-862/email-validate-email.data"

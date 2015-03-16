@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.emmisolutions.emmimanager.web.rest.client.model.ValidationToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
@@ -25,27 +26,16 @@ import com.emmisolutions.emmimanager.service.UserClientValidationEmailService;
 import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflict;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.client.model.api.PublicApi;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
-import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
-
-import java.util.LinkedHashMap;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 
 /**
@@ -127,21 +117,25 @@ public class UserClientsResource {
             // send the email (asynchronously)
             mailService.sendValidationEmail(savedUserClient, validationHref);
             userClientService.update(savedUserClient);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.GONE);
     }
 
     /**
      * validate email token
-     * @param validationTokenObject token to validate
+     * @param validationToken token to validate
      * @return OK if everything worked
      */
     @RequestMapping(value = "/validate/", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<Void> validateEmail(@RequestBody LinkedHashMap<String,String> validationTokenObject) {
-        userClientValidationEmailService.validate(validationTokenObject.get("validationToken"));
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Void> validateEmail(@RequestBody ValidationToken validationToken) {
+        UserClient savedUserClient = userClientValidationEmailService.validate(validationToken.getValidationToken());
+        if(savedUserClient!=null){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.GONE);
     }
     
     /**
