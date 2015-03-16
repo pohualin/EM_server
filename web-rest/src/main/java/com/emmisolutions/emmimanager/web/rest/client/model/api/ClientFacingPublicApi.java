@@ -1,11 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.api;
 
 import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
-import com.emmisolutions.emmimanager.web.rest.client.resource.ApiResource;
-import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
-import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivationResource;
-import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
-import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.*;
@@ -44,7 +40,7 @@ public class ClientFacingPublicApi extends ResourceSupport {
         add(new Link(urlWithTokenParameter(activationPasswordPolicy), activationPasswordPolicy.getRel()));
         add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
         add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null, null, null)).withRel("secretQuestions"));
-        
+        add(linkTo(methodOn(UserClientsResource.class).validateEmail(null)).withRel("validateEmail"));
     }
 
     private String urlWithTokenParameter(Link link){
