@@ -44,6 +44,8 @@ public class ClientUserClientResourceAssembler implements
                 entity.isEmailValidated(),
                 clientResource, null, entity.isImpersonated(), entity.getPasswordExpireationDateTime());
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).verifyPassword(entity.getId())).withRel("verifyPassword"));
+
         return ret;
     }
 }
