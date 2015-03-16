@@ -109,8 +109,8 @@ public class UserClientsResource {
             // get the proper url (the way we make hateoas links), then replace the path with the client entry point
             String validationHref =
                     UriComponentsBuilder.fromHttpUrl(
-                            linkTo(methodOn(UserClientsValidationResource.class)
-                                    .validate(null)).withSelfRel().getHref())
+                            linkTo(methodOn(UserClientsResource.class)
+                                    .validateEmail(null)).withSelfRel().getHref())
                                     .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI, savedUserClient.getValidationToken()))
                                     .build(false)
                                     .toUriString();
