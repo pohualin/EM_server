@@ -1,20 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
+import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.LocalDateTime;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
-import com.emmisolutions.emmimanager.service.UserClientService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.xml.bind.annotation.*;
+import java.util.List;
+import java.util.Set;
 
 /**
  * HATEOAS wrapper for User, essentially a DTO instead of a wrapper.
@@ -40,6 +36,8 @@ public class UserClientResource extends ResourceSupport {
     private LocalDateTime passwordExpirationTime;
     
     private ClientResource clientResource;
+
+    private Set<TeamResource> teams;
 
     @XmlElement(name = "permission")
     @XmlElementWrapper(name = "permissions")
@@ -123,5 +121,13 @@ public class UserClientResource extends ResourceSupport {
 
     public void setConflicts(List<UserClientService.UserClientConflict> conflicts) {
         this.conflicts = conflicts;
+    }
+
+    public Set<TeamResource> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(Set<TeamResource> teams) {
+        this.teams = teams;
     }
 }

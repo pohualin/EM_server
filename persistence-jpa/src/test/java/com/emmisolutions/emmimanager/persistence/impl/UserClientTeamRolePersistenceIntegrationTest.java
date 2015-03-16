@@ -59,11 +59,11 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
     @Test
     public void permissionSave() {
         Set<UserClientTeamPermission> userClientTeamPermissions = new HashSet<>();
-        userClientTeamPermissions.add(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI));
+        userClientTeamPermissions.add(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_SCHEDULE_PROGRAM));
         UserClientTeamRole userClientTeamRole = userClientTeamRolePersistence.save(new UserClientTeamRole("permission save", makeNewRandomClient(), userClientTeamPermissions));
         assertThat("permission present",
             userClientTeamRolePersistence.permissionsFor(userClientTeamRole),
-            hasItem(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_MANAGE_EMMI)));
+            hasItem(new UserClientTeamPermission(UserClientTeamPermissionName.PERM_CLIENT_TEAM_SCHEDULE_PROGRAM)));
     }
 
     /**
