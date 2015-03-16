@@ -4,6 +4,8 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientUserClientRole;
 import com.emmisolutions.emmimanager.persistence.UserClientUserClientRolePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientUserClientRoleRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,10 @@ public class UserClientUserClientRolePersistenceImpl implements
     @Resource
     UserClientUserClientRoleRepository userClientUserClientRoleRepository;
 
+    @Caching(evict = {
+            @CacheEvict(value = "clientFindById", allEntries = true),
+            @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
+    })
     @Override
     public UserClientUserClientRole saveOrUpdate(
             UserClientUserClientRole userClientUserClientRole) {
@@ -48,6 +54,10 @@ public class UserClientUserClientRolePersistenceImpl implements
                 .findOne(userClientUserClientId);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "clientFindById", allEntries = true),
+            @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
+    })
     @Override
     public void delete(Long userClientUserClientId) {
         userClientUserClientRoleRepository.delete(userClientUserClientId);

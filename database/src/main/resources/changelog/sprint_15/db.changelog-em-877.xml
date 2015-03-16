@@ -13,5 +13,15 @@
         	<where>password_expiration_days = 0</where>
         </update>
     </changeSet>
+
+    <changeSet id="update EmmiManager timeout default password configuration standard" author="Paul">
+        <update tableName="default_password_configuration">
+        	<column name="idle_time_min">1</column>
+        </update>
+        <update tableName="client_password_configuration">
+        	<column name="idle_time">1</column>
+        	<where>idle_time = 0</where>
+        </update>
+    </changeSet>
     
 </databaseChangeLog>

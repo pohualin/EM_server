@@ -34,10 +34,12 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
             @CacheEvict(value = "clientFindByLoginIgnoreCase", key = "#p0.login")
     })
     @Override
+    @SuppressWarnings("unchecked")
     UserClient save(UserClient userClient);
 
     @Cacheable(value = "clientFindById", key = "#p0")
     @Override
+    @SuppressWarnings("unchecked")
     UserClient findOne(Long id);
 
 
@@ -56,6 +58,14 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
      * @return UserClient or null
      */
     UserClient findByPasswordResetToken(String resetToken);
+
+    /**
+     * Finds a UserClient by validation token
+     *
+     * @param validationToken the key
+     * @return UserClient or null
+     */
+    UserClient findByValidationToken(String validationToken);
 
     /**
      * Find a user by email address

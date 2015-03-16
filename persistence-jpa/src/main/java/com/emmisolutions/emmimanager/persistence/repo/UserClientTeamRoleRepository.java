@@ -19,4 +19,6 @@ public interface UserClientTeamRoleRepository extends JpaRepository<UserClientTe
      * @return a page of UserClientTeamRole objects
      */
     Page<UserClientTeamRole> findByClientId(long clientId, Pageable page);
+
+
 }

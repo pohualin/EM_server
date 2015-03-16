@@ -52,7 +52,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         ReferenceGroup group = new ReferenceGroup();
         group.setName(RandomStringUtils.randomAlphanumeric(18));
         groupSaveReqOne.setReferenceGroup(group);
-        ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
+        referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
     }
 
     /**
@@ -77,7 +77,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         groupSaveReqOne.setReferenceTags(tagList);
         refGroupSaveRequests.add(groupSaveReqOne);
 
-        Set<ReferenceGroup> groups = new HashSet();
+        Set<ReferenceGroup> groups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupSaveRequests){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             groups.add(savedGroup);
@@ -119,7 +119,7 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void createNewReferenceGroupWithReferenceTags(){
-        Set<ReferenceGroup> groups = new HashSet();
+        Set<ReferenceGroup> groups = new HashSet<>();
         for(RefGroupSaveRequest request: refGroupWithTags()){
             ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(request);
             groups.add(savedGroup);

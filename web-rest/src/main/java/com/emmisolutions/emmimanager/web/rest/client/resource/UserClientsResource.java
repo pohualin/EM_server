@@ -8,6 +8,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import com.emmisolutions.emmimanager.web.rest.client.model.ValidationToken;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.UserClientValidationEmailService;
 import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflict;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
@@ -30,6 +33,13 @@ import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConfli
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientValidationErrorResourceAssembler;
 
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.annotation.security.PermitAll;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 
 /**
  * User REST API
@@ -62,6 +72,15 @@ public class UserClientsResource {
 
     @Resource
     ClientUserClientValidationErrorResourceAssembler clientUserClientValidationErrorResourceAssembler;
+
+    @Resource
+    UserClientValidationEmailService userClientValidationEmailService;
+
+    @Value("${client.application.entry.point:/client.html}")
+    String clientEntryPoint;
+
+    private static final String VALIDATION_CLIENT_APPLICATION_URI = "#/validateEmail/%s";
+
     /**
      * This is an example method that demonstrates how to set up authorization
      * for client and team specific permissions.
@@ -84,25 +103,48 @@ public class UserClientsResource {
     }
 
     /**
-     * Send an validation email
-     * 
-     * @return OK
+     * send validation email
+     * @param userId user to get for email personalization
+     * @return OK if everything worked
      */
-    @RequestMapping(value = "/{userId}/validateEmail", method = RequestMethod.POST)
+    @RequestMapping(value = "/{userId}/sendEmail", method = RequestMethod.POST)
     @PreAuthorize("hasPermission(@user, #userId)")
-    public ResponseEntity<Void> validate(@PathVariable Long userId,
-            @RequestBody UserClient userClient) {
-        if (userClient != null) {
+    public ResponseEntity<Void> sendValidationEmail(@PathVariable Long userId) {
+        // update the validation token, invalidating others
+        UserClient savedUserClient = userClientValidationEmailService.addValidationTokenTo(new UserClient(userId));
+        if (savedUserClient != null) {
+            // get the proper url (the way we make hateoas links), then replace the path with the client entry point
+            String validationHref =
+                    UriComponentsBuilder.fromHttpUrl(
+                            linkTo(methodOn(UserClientsResource.class)
+                                    .validateEmail(null)).withSelfRel().getHref())
+                                    .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI, savedUserClient.getValidationToken()))
+                                    .build(false)
+                                    .toUriString();
             // send the email (asynchronously)
-            userClient.setId(userId);
-            userClient = userClientService.reload(userClient);
-            mailService.sendValidationEmail(userClient, "http://aUrl");
-            userClient.setEmailValidated(true);
+            mailService.sendValidationEmail(savedUserClient, validationHref);
+            userClientService.update(savedUserClient);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.GONE);
     }
-    
+
+    /**
+     * validate email token
+     * @param validationToken token to validate
+     * @return OK if everything worked
+     */
+    @RequestMapping(value = "/validate/", method = RequestMethod.PUT)
+    @PermitAll
+    public ResponseEntity<Void> validateEmail(@RequestBody ValidationToken validationToken) {
+        UserClient savedUserClient = userClientValidationEmailService.validate(validationToken.getValidationToken());
+        if(savedUserClient!=null){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.GONE);
+    }
+
     /**
      * GET to retrieve authenticated user.
      *
@@ -110,7 +152,7 @@ public class UserClientsResource {
      *         authorized.
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
-    @PreAuthorize("hasAnyRole('PERM_GOD', 'PERM_ADMIN_SUPER_USER', 'PERM_ADMIN_USER') or hasPermission(@startsWith, 'PERM_CLIENT')")
+    @PreAuthorize("hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
         return new ResponseEntity<>(
                 userResourceAssembler.toResource((UserClient) userDetailsService

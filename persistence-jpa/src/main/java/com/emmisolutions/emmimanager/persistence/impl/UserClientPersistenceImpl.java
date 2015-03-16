@@ -44,6 +44,7 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                 user.getEmail()));
         // make sure null is saved for blank email
         user.setEmail(StringUtils.stripToNull(user.getEmail()));
+        user.setEmailValidated(user.isEmailValidated());
         return userClientRepository.save(user);
     }
 
@@ -98,6 +99,14 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     public UserClient findByResetToken(String resetToken) {
         if (StringUtils.isNotBlank(resetToken)) {
             return userClientRepository.findByPasswordResetToken(resetToken);
+        }
+        return null;
+    }
+
+    @Override
+    public UserClient findByValidationToken(String validationToken) {
+        if (StringUtils.isNotBlank(validationToken)) {
+            return userClientRepository.findByValidationToken(validationToken);
         }
         return null;
     }
