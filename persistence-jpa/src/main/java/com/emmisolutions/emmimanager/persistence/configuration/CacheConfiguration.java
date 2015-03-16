@@ -61,11 +61,13 @@ public class CacheConfiguration {
         config.getNetworkConfig().setPortAutoIncrement(true);
 
 //        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST)) {
-            System.setProperty("hazelcast.local.localAddress", "127.0.0.1");
 
-            config.getNetworkConfig().getJoin().getAwsConfig().setEnabled(false);
-            config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
-            config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(false);
+        config.setProperty("hazelcast.version.check.enabled", "false");
+        config.setProperty("hazelcast.local.localAddress", "127.0.0.1");
+
+        config.getNetworkConfig().getJoin().getAwsConfig().setEnabled(false);
+        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+        config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(false);
 //        }
 
         config.getMapConfigs().put("default", initializeDefaultMapConfig());
