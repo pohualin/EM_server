@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring.mail;
 
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateType;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.UserClientValidationEmailService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +94,7 @@ public class MailServiceImpl implements MailService {
         Context context = new Context();
         context.setVariable("user", user);
         context.setVariable("activationUrl", url);
+        context.setVariable("emailValidationTimeout", UserClientValidationEmailService.VALIDATION_TOKEN_HOURS_VALID);
         String content = templateEngine.process("db:" + type.toString(), context);
         String subject = "Action Required";
 

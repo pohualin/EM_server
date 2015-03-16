@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
@@ -91,7 +93,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             ret.add(new Link(uriTemplate, link.getRel()));
 
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
-            ret.add(linkTo(methodOn(UserClientsResource.class).validate(user.getId(), null)).withRel("validate"));
+            ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
         }
 
