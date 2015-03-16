@@ -166,17 +166,16 @@ public class UserClientsResource {
         return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
     }
 
-
     /**
-     * GET for a given user client
-     *
+     * GET for a given user client verified with password
      * @param userClientId
+     * @param pw
      * @return
      */
     @RequestMapping(value = "/verifyPassword/{userClientId}", method = RequestMethod.GET)
-    //@PreAuthorize("hasPermission(@password, #password)")
-    @PreAuthorize("hasPermission(@user, #userClientId)")
-    public ResponseEntity<UserClientResource> verifyPassword(@PathVariable("userClientId") Long userClientId) { //probably needs to send in RequestBody String password , @RequestParam(required = false) String password
+    @PreAuthorize("hasPermission(@password, #pw)")
+    public ResponseEntity<UserClientResource> verifyPassword(@PathVariable("userClientId") Long userClientId,
+                                                             @RequestParam(required = false) String pw) {
         return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
     }
 }

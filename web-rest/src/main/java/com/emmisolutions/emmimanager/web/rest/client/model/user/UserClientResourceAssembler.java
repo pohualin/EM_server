@@ -73,7 +73,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.getPasswordExpireationDateTime());
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
-        ret.add(linkTo(methodOn(UserClientsResource.class).verifyPassword(user.getId())).withRel("verifyPassword"));
+        ret.add(linkTo(methodOn(UserClientsResource.class).verifyPassword(user.getId(), user.getPassword())).withRel("verifyPassword"));
 
         if (!user.isImpersonated()) {
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
