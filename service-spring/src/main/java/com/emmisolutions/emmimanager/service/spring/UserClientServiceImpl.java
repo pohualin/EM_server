@@ -14,6 +14,7 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -62,6 +63,9 @@ public class UserClientServiceImpl implements UserClientService {
     @Resource
     PasswordEncoder passwordEncoder;
 
+    @Resource
+    MailService mailService;
+
     @Override
     @Transactional
     public UserClient create(UserClient userClient) {
@@ -108,7 +112,20 @@ public class UserClientServiceImpl implements UserClientService {
         // validation should be false if the email address has changed, otherwise set it to whatever it was previously
         userClient.setEmailValidated(
                 StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
-        return userClientPersistence.saveOrUpdate(userClient);
+
+        //update the login when email is updated if their login is the email
+        if(inDb.getLogin()!=null && inDb.getEmail()!=null && userClient.getEmail()!=null && StringUtils.equalsIgnoreCase(inDb.getLogin(), inDb.getEmail())){
+            userClient.setLogin(StringUtils.lowerCase(userClient.getEmail()));
+        }
+
+        UserClient savedUserClient = userClientPersistence.saveOrUpdate(userClient);
+
+        //send validation mail when email is updated
+        if (userClient.getEmail() != null && !StringUtils.equalsIgnoreCase(savedUserClient.getEmail(),userClient.getEmail())){
+            mailService.sendValidationEmail(savedUserClient,"http://aUrl");
+        }
+
+        return savedUserClient;
     }
 
     @Override

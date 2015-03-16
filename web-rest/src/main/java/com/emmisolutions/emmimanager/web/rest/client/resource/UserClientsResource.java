@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,8 @@ import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientValidationErrorResourceAssembler;
+
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 
 /**
@@ -57,6 +60,8 @@ public class UserClientsResource {
     @Resource
     UserClientService userClientService;
 
+    @Resource
+    ClientUserClientValidationErrorResourceAssembler clientUserClientValidationErrorResourceAssembler;
     /**
      * This is an example method that demonstrates how to set up authorization
      * for client and team specific permissions.
@@ -124,20 +129,28 @@ public class UserClientsResource {
     public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId, @RequestBody UserClient userClient) {
 
         userClient.setId(userClientId);
-        
-        // look for conflicts before attempting to save
-        List<UserClientConflict> conflicts = userClientService.findConflictingUsers(userClient);
 
-        if (conflicts.isEmpty()) {
-            UserClient updatedUserClient = userClientService.update(userClient);
-            if (updatedUserClient != null) {
-                return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(updatedUserClient), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        if (StringUtils.isNotBlank(userClient.getEmail())
+                && !userClientService.validateEmailAddress(userClient)) {
+            UserClientService.UserClientValidationError validationError = new UserClientService.UserClientValidationError(
+                    UserClientService.Reason.EMAIL_RESTRICTION, userClient);
+            return new ResponseEntity<>(clientUserClientValidationErrorResourceAssembler.toResource(validationError), HttpStatus.NOT_ACCEPTABLE);
         } else {
-            // found some conflicting users
-            return new ResponseEntity<>(conflictsResourceAssembler.toResource(conflicts), HttpStatus.NOT_ACCEPTABLE);
+
+            // look for conflicts before attempting to save
+            List<UserClientConflict> conflicts = userClientService.findConflictingUsers(userClient);
+
+            if (conflicts.isEmpty()) {
+                UserClient updatedUserClient = userClientService.update(userClient);
+                if (updatedUserClient != null) {
+                    return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(updatedUserClient), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                // found some conflicting users
+                return new ResponseEntity<>(conflictsResourceAssembler.toResource(conflicts), HttpStatus.NOT_ACCEPTABLE);
+            }
         }
     }
 
