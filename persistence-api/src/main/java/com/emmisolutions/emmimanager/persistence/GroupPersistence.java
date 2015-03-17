@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSaveRequest;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.TeamTag;
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -58,4 +55,12 @@ public interface GroupPersistence {
      * @return set of conflicting teams
      */
     Set<TeamTag> findTeamsPreventingSaveOf(List<GroupSaveRequest> groupSaveRequests, Long clientId);
+
+    /**
+     * Checks to see if any groups point to the saved reference group
+     *
+     * @param saved the reference group
+     * @return true if groups are already using, false if groups are not
+     */
+    boolean doAnyGroupsUse(ReferenceGroup saved);
 }

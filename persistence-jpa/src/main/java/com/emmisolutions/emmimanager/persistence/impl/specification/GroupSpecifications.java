@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Group;
-import com.emmisolutions.emmimanager.model.GroupSearchFilter;
-import com.emmisolutions.emmimanager.model.Group_;
+import com.emmisolutions.emmimanager.model.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +25,29 @@ public class GroupSpecifications {
         return new Specification<Group>() {
             @Override
             public Predicate toPredicate(Root<Group> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getClientId()!=null) {
+                if (searchFilter != null && searchFilter.getClientId() != null) {
                     return cb.equal(root.get(Group_.client), searchFilter.getClientId());
+                }
+                return null;
+            }
+        };
+    }
+
+    /**
+     * find all Groups that use a particular reference group
+     *
+     * @param referenceGroup which points to a ReferenceGroupType that is used by a group
+     * @return the specification if the reference group is persistent
+     */
+    public Specification<Group> using(final ReferenceGroup referenceGroup) {
+        return new Specification<Group>() {
+            @Override
+            public Predicate toPredicate(Root<Group> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (referenceGroup != null &&
+                        referenceGroup.getType() != null &&
+                        referenceGroup.getType().getId() != null) {
+                    return cb.equal(root.get(Group_.type).get(ReferenceGroupType_.id),
+                            referenceGroup.getType().getId());
                 }
                 return null;
             }
