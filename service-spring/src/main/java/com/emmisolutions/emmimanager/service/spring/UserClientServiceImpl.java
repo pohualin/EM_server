@@ -112,20 +112,7 @@ public class UserClientServiceImpl implements UserClientService {
         // validation should be false if the email address has changed, otherwise set it to whatever it was previously
         userClient.setEmailValidated(
                 StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
-
-        //update the login when email is updated if their login is the email
-        if(inDb.getLogin()!=null && inDb.getEmail()!=null && userClient.getEmail()!=null && StringUtils.equalsIgnoreCase(inDb.getLogin(), inDb.getEmail())){
-            userClient.setLogin(StringUtils.lowerCase(userClient.getEmail()));
-        }
-
-        UserClient savedUserClient = userClientPersistence.saveOrUpdate(userClient);
-
-        //send validation mail when email is updated
-        if (userClient.getEmail() != null && !StringUtils.equalsIgnoreCase(savedUserClient.getEmail(),userClient.getEmail())){
-            mailService.sendValidationEmail(savedUserClient,"http://aUrl");
-        }
-
-        return savedUserClient;
+        return userClientPersistence.saveOrUpdate(userClient);
     }
 
     @Override

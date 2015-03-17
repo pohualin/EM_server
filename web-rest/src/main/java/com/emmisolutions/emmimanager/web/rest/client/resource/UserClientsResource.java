@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import org.apache.commons.lang3.StringUtils;
 import com.emmisolutions.emmimanager.web.rest.client.model.ValidationToken;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,8 @@ import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResour
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -75,6 +78,9 @@ public class UserClientsResource {
 
     @Resource
     UserClientValidationEmailService userClientValidationEmailService;
+
+    @Resource(name="clientTokenBasedRememberMeServices")
+    RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
 
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
@@ -168,7 +174,10 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
-    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId, @RequestBody UserClient userClient) {
+    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId,
+                                                               @RequestBody UserClient userClient,
+                                                               HttpServletRequest request,
+                                                               HttpServletResponse response) {
 
         userClient.setId(userClientId);
 
@@ -184,6 +193,10 @@ public class UserClientsResource {
 
             if (conflicts.isEmpty()) {
                 UserClient updatedUserClient = userClientService.update(userClient);
+
+                // update auth token
+                tokenBasedRememberMeServices.rewriteLoginToken(request, response, updatedUserClient);
+
                 if (updatedUserClient != null) {
                     return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(updatedUserClient), HttpStatus.OK);
                 } else {
@@ -211,13 +224,13 @@ public class UserClientsResource {
     /**
      * GET for a given user client verified with password
      * @param userClientId
-     * @param pw
+     * @param password
      * @return
      */
     @RequestMapping(value = "/verifyPassword/{userClientId}", method = RequestMethod.GET)
-    @PreAuthorize("hasPermission(@password, #pw)")
+    @PreAuthorize("hasPermission(@password, #password)")
     public ResponseEntity<UserClientResource> verifyPassword(@PathVariable("userClientId") Long userClientId,
-                                                             @RequestParam(required = false) String pw) {
+                                                             @RequestParam(value = "password", required = false) String password) {
         return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
     }
 }
