@@ -284,7 +284,18 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void goodDelete() {
-        referenceGroupService.delete(referenceGroupService.loadReferenceGroups(null).iterator().next());
+        RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();
+        ReferenceGroup group = new ReferenceGroup();
+        group.setName(RandomStringUtils.randomAlphanumeric(8));
+        final ReferenceTag tagOne = new ReferenceTag();
+        tagOne.setName(RandomStringUtils.randomAlphanumeric(8));
+        groupSaveReqOne.setReferenceGroup(group);
+        groupSaveReqOne.setReferenceTags(new ArrayList<ReferenceTag>() {{
+                                             add(tagOne);
+                                         }}
+        );
+        ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
+        referenceGroupService.delete(savedGroup);
     }
 
 }
