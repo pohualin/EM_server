@@ -14,7 +14,6 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
-import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -62,9 +61,6 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     PasswordEncoder passwordEncoder;
-
-    @Resource
-    MailService mailService;
 
     @Override
     @Transactional
