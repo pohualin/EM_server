@@ -1,13 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.groups;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ReferenceGroupsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ReferenceGroupsResource;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Responsible for creating a ReferenceGroupResource (which has links) from a ReferenceGroup
@@ -18,8 +17,9 @@ public class ReferenceGroupResourceAssembler implements ResourceAssembler<Refere
 	@Override
 	public ReferenceGroupResource toResource(ReferenceGroup entity) {
 		ReferenceGroupResource ret = new ReferenceGroupResource();
-		ret.add(linkTo(methodOn(ReferenceGroupsResource.class).getAllReferenceGroups(null, null, null)).withSelfRel());
-		ret.add(ReferenceTagPage.createTagsReferenceDataLink(entity.getId()));
+        ret.add(linkTo(methodOn(ReferenceGroupsResource.class).getReferenceGroup(entity.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(ReferenceGroupsResource.class).deletable(entity.getId())).withRel("deletable"));
+        ret.add(ReferenceTagPage.createTagsReferenceDataLink(entity.getId()));
 		ret.setEntity(entity);
 		return ret;
 	}

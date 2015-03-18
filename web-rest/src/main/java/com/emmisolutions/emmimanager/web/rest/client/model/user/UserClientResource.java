@@ -46,7 +46,7 @@ public class UserClientResource extends ResourceSupport {
     private List<UserClientService.UserClientConflict> conflicts;
 
     private UserClientService.UserClientValidationError validationError;
-    
+
     public UserClientResource() {
     }
 
@@ -125,19 +125,19 @@ public class UserClientResource extends ResourceSupport {
         this.conflicts = conflicts;
     }
 
-    public Set<TeamResource> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(Set<TeamResource> teams) {
-        this.teams = teams;
-    }
-
     public UserClientService.UserClientValidationError getValidationError() {
         return validationError;
     }
 
     public void setValidationError(UserClientService.UserClientValidationError validationError) {
         this.validationError = validationError;
+    }
+
+    public Set<TeamResource> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(Set<TeamResource> teams) {
+        this.teams = teams;
     }
 }
