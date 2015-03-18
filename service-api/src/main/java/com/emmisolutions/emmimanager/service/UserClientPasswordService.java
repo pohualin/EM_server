@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 
@@ -32,6 +33,8 @@ public interface UserClientPasswordService {
      * @return the updated user client
      */
     UserClient changeExpiredPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
+    
+    UserClient changePassword(ChangePasswordRequest changePasswordRequest);
 
     /**
      * Encodes whatever password is currently on the UserClient
@@ -74,7 +77,7 @@ public interface UserClientPasswordService {
      * @return the updated UserClient
      */
     UserClient expireResetToken(UserClient userClient);
-
+    
     /**
      * Finds a password configuration for a particular reset token
      * or returns the default password configuration

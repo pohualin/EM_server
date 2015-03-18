@@ -54,9 +54,6 @@ public class UserClientsPasswordResource {
     @Resource
     UserClientPasswordValidationService userClientPasswordValidationService;
     
-    @Resource(name = "clientUserDetailsService")
-    UserDetailsService userDetailsService;
-    
     @Resource
     UserClientPasswordValidationErrorResourceAssembler userClientPasswordValidationErrorResourceAssembler;
 
@@ -130,17 +127,16 @@ public class UserClientsPasswordResource {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @PreAuthorize("hasPermission(@password, #changePasswordRequest.existingPassword)")
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> changePassword(
-            HttpServletRequest request, HttpServletResponse response, 
+            HttpServletRequest request, HttpServletResponse response,
             @RequestBody ChangePasswordRequest changePasswordRequest) {
 
         List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
                 .validateRequest(changePasswordRequest);
         if (errors.size() == 0) {
-            UserClient toUpdate = (UserClient) userDetailsService
-                    .loadUserByUsername(changePasswordRequest.getLogin());
-            toUpdate.setPassword(changePasswordRequest.getNewPassword());
-            tokenBasedRememberMeServices.rewriteLoginToken(request, response, 
-                    userClientPasswordService.updatePassword(toUpdate, true));
+            UserClient updated = userClientPasswordService
+                    .changePassword(changePasswordRequest);
+            tokenBasedRememberMeServices.rewriteLoginToken(request, response,
+                    updated);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<UserClientPasswordValidationErrorResource>();

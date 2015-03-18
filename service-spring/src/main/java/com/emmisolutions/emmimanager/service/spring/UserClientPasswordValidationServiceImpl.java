@@ -15,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.UserClientPasswordHistory;
 import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService;
 
 /**
@@ -29,6 +31,9 @@ public class UserClientPasswordValidationServiceImpl implements
 
     @Resource
     private UserClientPersistence userClientPersistence;
+
+    @Resource
+    UserClientPasswordHistoryService userClientPasswordHistoryService;
 
     @Resource
     PasswordEncoder passwordEncoder;
@@ -63,6 +68,12 @@ public class UserClientPasswordValidationServiceImpl implements
             errors.add(validatePasswordPatternError);
         }
 
+        // Check if password repeats
+        UserClientPasswordValidationError validatePasswordRepeatsError = checkPasswordHistory(toVerify);
+        if (validatePasswordRepeatsError != null) {
+            errors.add(validatePasswordRepeatsError);
+        }
+
         return errors;
     }
 
@@ -89,6 +100,44 @@ public class UserClientPasswordValidationServiceImpl implements
         if (!validatePasswordPattern(configuration, userClient.getPassword())) {
             return new UserClientPasswordValidationError(
                     UserClientPasswordValidationService.Reason.POLICY);
+        }
+
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserClientPasswordValidationError checkPasswordHistory(
+            UserClient userClient) {
+        if (userClient == null || StringUtils.isBlank(userClient.getPassword())) {
+            throw new InvalidDataAccessApiUsageException(
+                    "UserClient can not be null. Password to be verified is required.");
+        }
+
+        UserClient existing = userClientPersistence
+                .fetchUserWillFullPermissions(userClient.getLogin());
+        if (existing == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
+        }
+
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(existing.getClient());
+
+        List<UserClientPasswordHistory> histories = userClientPasswordHistoryService
+                .get(existing);
+        if (histories.size() > configuration.getPasswordRepetitions()) {
+            histories = histories.subList(0,
+                    configuration.getPasswordRepetitions());
+        }
+
+        // Return UserClientPasswordValidationError if new password repeats
+        for (UserClientPasswordHistory history : histories) {
+            if (passwordEncoder.matches(userClient.getPassword(),
+                    history.getPassword() + history.getSalt())) {
+                return new UserClientPasswordValidationError(
+                        UserClientPasswordValidationService.Reason.HISTORY);
+            }
         }
 
         return null;

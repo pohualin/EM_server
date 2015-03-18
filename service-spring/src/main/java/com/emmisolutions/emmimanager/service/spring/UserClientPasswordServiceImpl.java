@@ -7,10 +7,12 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
@@ -34,6 +36,9 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     @Resource
     private UserClientPersistence userClientPersistence;
+    
+    @Resource
+    private UserClientPasswordHistoryService userClientPasswordHistoryService;
 
     @Resource
     PasswordEncoder passwordEncoder;
@@ -78,10 +83,35 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 unlockedUser.setPasswordResetExpirationDateTime(null);
                 unlockedUser.setPasswordResetToken(null);
                 
+                // Pass old password to save in password history
+                UserClient toDealWithHistory = new UserClient(unlockedUser.getId());
+                toDealWithHistory.setPassword(expiredPasswordChangeRequest
+                        .getExistingPassword());
+                userClientPasswordHistoryService
+                        .handleUserClientPasswordHistory(toDealWithHistory);
+                
                 return updatePasswordExpirationTime(encodePassword(unlockedUser));
             }
         }
         return null;
+    }
+    
+    @Override
+    public UserClient changePassword(ChangePasswordRequest changePasswordRequest) {
+        UserClient toUpdate = userClientPersistence
+                .fetchUserWillFullPermissions(changePasswordRequest.getLogin());
+        toUpdate.setPassword(changePasswordRequest.getNewPassword());
+        toUpdate = updatePassword(toUpdate, true);
+        toUpdate = updatePasswordExpirationTime(toUpdate);
+
+        // Pass old password to save in password history
+        UserClient toDealWithHistory = new UserClient(toUpdate.getId());
+        toDealWithHistory.setPassword(changePasswordRequest
+                .getExistingPassword());
+        userClientPasswordHistoryService
+                .handleUserClientPasswordHistory(toDealWithHistory);
+        
+        return toUpdate;
     }
 
     @Override
@@ -95,7 +125,6 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
     @Override
     @Transactional
     public UserClient resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        UserClient ret = null;
         if (resetPasswordRequest != null) {
             UserClient userClient =
                     userClientPersistence.findByResetToken(resetPasswordRequest.getResetToken());
@@ -110,13 +139,19 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     unlockedUser.setCredentialsNonExpired(true);
                     unlockedUser.setEmailValidated(true);
                     
-                    ret = updatePasswordExpirationTime(encodePassword(unlockedUser));
+                    // Pass old password to save in password history
+                    UserClient toDealWithHistory = new UserClient(unlockedUser.getId());
+                    toDealWithHistory.setPassword(userClient.getPassword());
+                    userClientPasswordHistoryService
+                            .handleUserClientPasswordHistory(toDealWithHistory);
+                    
+                    return updatePasswordExpirationTime(encodePassword(unlockedUser));
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
                 }
             }
         }
-        return ret;
+        return null;
     }
 
     @Override
@@ -166,7 +201,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 .minusHours(RESET_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
     }
-
+    
     @Override
     @Transactional(readOnly = true)
     public ClientPasswordConfiguration findPasswordPolicyUsingResetToken(String resetToken) {
@@ -256,6 +291,8 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         userClient.setPasswordExpireationDateTime(LocalDateTime.now(
                 DateTimeZone.UTC).plusDays(
                 configuration.getPasswordExpirationDays()));
+        userClient
+                .setPasswordSavedDateTime(LocalDateTime.now(DateTimeZone.UTC));
         return userClientPersistence.saveOrUpdate(userClient);
     }
 

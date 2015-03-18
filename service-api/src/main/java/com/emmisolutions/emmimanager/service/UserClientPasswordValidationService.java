@@ -33,6 +33,8 @@ public interface UserClientPasswordValidationService {
      */
     UserClientPasswordValidationError validatePasswordPattern(
             UserClient userClient);
+    
+    UserClientPasswordValidationError checkPasswordHistory(UserClient userClient);
 
     /**
      * Check if password matches client password policy pattern
@@ -84,6 +86,6 @@ public interface UserClientPasswordValidationService {
 
     @XmlEnum
     public static enum Reason {
-        BAD, POLICY
+        BAD, POLICY, HISTORY
     }
 }
