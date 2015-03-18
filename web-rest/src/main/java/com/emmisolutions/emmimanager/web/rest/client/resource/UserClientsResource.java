@@ -229,8 +229,8 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/verifyPassword/{userClientId}", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@password, #password)")
-    public ResponseEntity<UserClientResource> verifyPassword(@PathVariable("userClientId") Long userClientId,
+    public ResponseEntity<Void> verifyPassword(@PathVariable("userClientId") Long userClientId,
                                                              @RequestParam(value = "password", required = false) String password) {
-        return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
