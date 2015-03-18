@@ -237,10 +237,9 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public UserClient unlockUserClient(UserClient userClient) {
+    public UserClient resetUserClientLock(UserClient userClient) {
         UserClient toUpdate = userClient;
-        if (toUpdate.isAccountNonLocked() == false
-                && toUpdate.getLockExpirationDateTime() != null
+        if (toUpdate.getLockExpirationDateTime() != null
                 && LocalDateTime.now(DateTimeZone.UTC).isAfter(
                         toUpdate.getLockExpirationDateTime())) {
             toUpdate = userClientPersistence

@@ -329,7 +329,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         
         userClient.setLockExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC).minusMinutes(2));
         userClient = userClientService.update(userClient);
-        userClient = userClientService.unlockUserClient(userClient);
+        userClient = userClientService.resetUserClientLock(userClient);
         assertThat("unlock done", userClient.getLoginFailureCount(), is(0));
         assertThat("unlock done", userClient.isAccountNonLocked(), is(true));
         assertThat("unlock done", userClient.getLockExpirationDateTime(), is(nullValue()));
