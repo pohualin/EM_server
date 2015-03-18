@@ -175,7 +175,10 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
-    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId") Long userClientId, @RequestBody UserClient userClient) {
+    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId") Long userClientId,
+                                                               @RequestBody UserClient userClient,
+                                                               HttpServletRequest request,
+                                                               HttpServletResponse response) {
 
         userClient.setId(userClientId);
 
@@ -191,6 +194,10 @@ public class UserClientsResource {
 
             if (conflicts.isEmpty()) {
                 UserClient updatedUserClient = userClientService.update(userClient);
+
+                // update auth token
+                tokenBasedRememberMeServices.rewriteLoginToken(request, response, updatedUserClient);
+
                 if (updatedUserClient != null) {
                     return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(updatedUserClient), HttpStatus.OK);
                 } else {
