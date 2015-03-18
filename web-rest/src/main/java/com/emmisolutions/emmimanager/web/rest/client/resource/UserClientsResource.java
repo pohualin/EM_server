@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
+import org.apache.commons.lang3.StringUtils;
 import com.emmisolutions.emmimanager.web.rest.client.model.ValidationToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
@@ -29,10 +31,14 @@ import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientValidationErrorResourceAssembler;
+
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -68,12 +74,19 @@ public class UserClientsResource {
     UserClientService userClientService;
 
     @Resource
+    ClientUserClientValidationErrorResourceAssembler clientUserClientValidationErrorResourceAssembler;
+
+    @Resource
     UserClientValidationEmailService userClientValidationEmailService;
+
+    @Resource(name="clientTokenBasedRememberMeServices")
+    RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
 
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
 
     private static final String VALIDATION_CLIENT_APPLICATION_URI = "#/validateEmail/%s";
+
     /**
      * This is an example method that demonstrates how to set up authorization
      * for client and team specific permissions.
@@ -161,23 +174,38 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
-    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId, @RequestBody UserClient userClient) {
+    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId,
+                                                               @RequestBody UserClient userClient,
+                                                               HttpServletRequest request,
+                                                               HttpServletResponse response) {
 
         userClient.setId(userClientId);
-        
-        // look for conflicts before attempting to save
-        List<UserClientConflict> conflicts = userClientService.findConflictingUsers(userClient);
 
-        if (conflicts.isEmpty()) {
-            UserClient updatedUserClient = userClientService.update(userClient);
-            if (updatedUserClient != null) {
-                return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(updatedUserClient), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        if (StringUtils.isNotBlank(userClient.getEmail())
+                && !userClientService.validateEmailAddress(userClient)) {
+            UserClientService.UserClientValidationError validationError = new UserClientService.UserClientValidationError(
+                    UserClientService.Reason.EMAIL_RESTRICTION, userClient);
+            return new ResponseEntity<>(clientUserClientValidationErrorResourceAssembler.toResource(validationError), HttpStatus.NOT_ACCEPTABLE);
         } else {
-            // found some conflicting users
-            return new ResponseEntity<>(conflictsResourceAssembler.toResource(conflicts), HttpStatus.NOT_ACCEPTABLE);
+
+            // look for conflicts before attempting to save
+            List<UserClientConflict> conflicts = userClientService.findConflictingUsers(userClient);
+
+            if (conflicts.isEmpty()) {
+                UserClient updatedUserClient = userClientService.update(userClient);
+
+                // update auth token
+                tokenBasedRememberMeServices.rewriteLoginToken(request, response, updatedUserClient);
+
+                if (updatedUserClient != null) {
+                    return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(updatedUserClient), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                // found some conflicting users
+                return new ResponseEntity<>(conflictsResourceAssembler.toResource(conflicts), HttpStatus.NOT_ACCEPTABLE);
+            }
         }
     }
 
@@ -191,5 +219,18 @@ public class UserClientsResource {
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> getById(@PathVariable("userClientId") Long userClientId) {
         return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
+    }
+
+    /**
+     * GET for a given user client verified with password
+     * @param userClientId
+     * @param password
+     * @return
+     */
+    @RequestMapping(value = "/verifyPassword/{userClientId}", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@password, #password)")
+    public ResponseEntity<Void> verifyPassword(@PathVariable("userClientId") Long userClientId,
+                                                             @RequestParam(value = "password", required = false) String password) {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
