@@ -48,8 +48,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * User REST API
  */
 @RestController("clientUserClientsResource")
-@RequestMapping(value = "/webapi-client", produces = { APPLICATION_JSON_VALUE,
-        APPLICATION_XML_VALUE })
+@RequestMapping(value = "/webapi-client", produces = {APPLICATION_JSON_VALUE,
+        APPLICATION_XML_VALUE})
 public class UserClientsResource {
 
     @Resource(name = "clientUserDetailsService")
@@ -57,7 +57,7 @@ public class UserClientsResource {
 
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<UserClient, UserClientResource> userResourceAssembler;
-    
+
     @Resource
     UserClientResourceAssembler userClientResourceAssembler;
 
@@ -79,7 +79,7 @@ public class UserClientsResource {
     @Resource
     UserClientValidationEmailService userClientValidationEmailService;
 
-    @Resource(name="clientTokenBasedRememberMeServices")
+    @Resource(name = "clientTokenBasedRememberMeServices")
     RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
 
     @Value("${client.application.entry.point:/client.html}")
@@ -92,7 +92,7 @@ public class UserClientsResource {
      * for client and team specific permissions.
      *
      * @param clientId the Client id
-     * @param teamId the Team id
+     * @param teamId   the Team id
      * @return AUTHORIZED if the logged in user is authorized
      */
     @RequestMapping(value = "/auth-test/{clientId}/{teamId}/{userId}", method = RequestMethod.GET)
@@ -101,8 +101,8 @@ public class UserClientsResource {
             + "hasPermission(@password, #pw) or "
             + "hasPermission(@user, #userId)")
     public ResponseEntity<String> authorized(@PathVariable Long clientId,
-            @PathVariable Long teamId, @PathVariable Long userId,
-            @RequestParam(required = false) String pw) {
+                                             @PathVariable Long teamId, @PathVariable Long userId,
+                                             @RequestParam(required = false) String pw) {
         return new ResponseEntity<>("AUTHORIZED for client: " + clientId
                 + ", team: " + teamId + ", user: " + userId + ", pw: " + pw,
                 HttpStatus.OK);
@@ -110,6 +110,7 @@ public class UserClientsResource {
 
     /**
      * send validation email
+     *
      * @param userId user to get for email personalization
      * @return OK if everything worked
      */
@@ -123,13 +124,12 @@ public class UserClientsResource {
             String validationHref =
                     UriComponentsBuilder.fromHttpUrl(
                             linkTo(methodOn(UserClientsResource.class)
-                                    .validateEmail(null)).withSelfRel().getHref())
-                                    .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI, savedUserClient.getValidationToken()))
-                                    .build(false)
-                                    .toUriString();
+                                    .validateEmailToken(null)).withSelfRel().getHref())
+                            .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI, savedUserClient.getValidationToken()))
+                            .build(false)
+                            .toUriString();
             // send the email (asynchronously)
             mailService.sendValidationEmail(savedUserClient, validationHref);
-            userClientService.update(savedUserClient);
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
@@ -138,15 +138,16 @@ public class UserClientsResource {
 
     /**
      * validate email token
+     *
      * @param validationToken token to validate
      * @return OK if everything worked
      */
     @RequestMapping(value = "/validate/", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<Void> validateEmail(@RequestBody ValidationToken validationToken) {
-        UserClient savedUserClient = userClientValidationEmailService.validate(validationToken.getValidationToken());
-        if(savedUserClient!=null){
-            return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserClientResource> validateEmailToken(@RequestBody ValidationToken validationToken) {
+        UserClient savedUserClient = userClientValidationEmailService.validateEmailToken(validationToken.getValidationToken());
+        if (savedUserClient != null) {
+            return new ResponseEntity<>(userResourceAssembler.toResource(savedUserClient), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.GONE);
     }
@@ -155,7 +156,7 @@ public class UserClientsResource {
      * GET to retrieve authenticated user.
      *
      * @return UserClientResource when authorized or 401 if the user is not
-     *         authorized.
+     * authorized.
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@startsWith, 'PERM_CLIENT')")
@@ -167,14 +168,14 @@ public class UserClientsResource {
 
     /**
      * PUT for updates to a given user client
-     * 
+     *
      * @param userClientId
      * @param userClient
      * @return
      */
     @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
-    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId")Long userClientId,
+    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId") Long userClientId,
                                                                @RequestBody UserClient userClient,
                                                                HttpServletRequest request,
                                                                HttpServletResponse response) {
@@ -211,7 +212,7 @@ public class UserClientsResource {
 
     /**
      * GET for a given user client
-     * 
+     *
      * @param userClientId
      * @return
      */
@@ -223,6 +224,7 @@ public class UserClientsResource {
 
     /**
      * GET for a given user client verified with password
+     *
      * @param userClientId
      * @param password
      * @return
@@ -230,7 +232,7 @@ public class UserClientsResource {
     @RequestMapping(value = "/verifyPassword/{userClientId}", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@password, #password)")
     public ResponseEntity<Void> verifyPassword(@PathVariable("userClientId") Long userClientId,
-                                                             @RequestParam(value = "password", required = false) String password) {
+                                               @RequestParam(value = "password", required = false) String password) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
