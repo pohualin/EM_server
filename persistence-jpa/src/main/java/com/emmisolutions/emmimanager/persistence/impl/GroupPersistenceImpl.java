@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.GroupPersistence;
+import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.GroupSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.GroupRepository;
 import org.hibernate.annotations.QueryHints;
@@ -38,6 +39,9 @@ public class GroupPersistenceImpl implements GroupPersistence {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @Resource
+    ReferenceGroupPersistence referenceGroupPersistence;
 
     @Override
     public Group save(Group group) {
@@ -103,5 +107,19 @@ public class GroupPersistenceImpl implements GroupPersistence {
             conflictingTeams = groupRepository.findTeamsPreventingSaveOf(clientId, notInTheseTags);
         }
         return new HashSet<>(conflictingTeams);
+    }
+
+    @Override
+    public boolean doAnyGroupsUse(ReferenceGroup referenceGroup) {
+        if (referenceGroup != null && referenceGroup.getId() != null) {
+            ReferenceGroup persistent = referenceGroupPersistence.reload(referenceGroup.getId());
+            if (persistent != null) {
+                Page<Group> groupPage =
+                        groupRepository.findAll(groupSpecifications.using(persistent),
+                                new PageRequest(0, 1));
+                return groupPage.getTotalElements() > 0;
+            }
+        }
+        return false;
     }
 }

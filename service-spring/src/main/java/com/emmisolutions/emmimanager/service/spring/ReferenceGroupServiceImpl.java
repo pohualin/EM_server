@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.persistence.GroupPersistence;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
 import com.emmisolutions.emmimanager.persistence.ReferenceGroupTypePersistence;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
@@ -30,8 +31,11 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 	
 	@Resource
 	ReferenceGroupTypePersistence referenceGroupTypePersistence;
-	
-	@Override
+
+    @Resource
+    GroupPersistence groupPersistence;
+
+    @Override
 	@Transactional(readOnly = true)
 	public Page<ReferenceGroup> loadReferenceGroups(Pageable page) {
 		return referenceGroupPersistence.loadReferenceGroups(page);
@@ -42,9 +46,23 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
     public ReferenceGroup save(ReferenceGroup group) {
         return referenceGroupPersistence.save(group);
     }
-	
-	@Override
-	@Transactional
+
+    @Override
+    public boolean isDeletable(ReferenceGroup group) {
+        return !groupPersistence.doAnyGroupsUse(group);
+    }
+
+    @Override
+    @Transactional
+    public void delete(ReferenceGroup referenceGroup) {
+        if (referenceGroup == null) {
+            throw new InvalidDataAccessApiUsageException("Reference group needs to be persistent");
+        }
+        referenceGroupPersistence.delete(reload(referenceGroup.getId()));
+    }
+
+    @Override
+    @Transactional
 	public ReferenceGroup updateReferenceGroup(ReferenceGroup group) {
 	    if (group == null || group.getId() == null){
 	        throw new InvalidDataAccessApiUsageException("group cannot be null");
@@ -68,22 +86,26 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
                 CollectionUtils.isEmpty(groupSaveRequest.getReferenceTags())){
             throw new InvalidDataAccessApiUsageException("Tags cannot be null");
         }
-
         ReferenceGroup referenceGroup = groupSaveRequest.getReferenceGroup();
 
-        // create the type
-        ReferenceGroupType referenceGroupType = groupSaveRequest.getReferenceGroup().getType();
-        if (referenceGroupType == null){
-            referenceGroupType = new ReferenceGroupType();
-            groupSaveRequest.getReferenceGroup().setType(referenceGroupType);
+        ReferenceGroup savedReferenceGroup = referenceGroupPersistence.reload(referenceGroup.getId());
+        if (savedReferenceGroup != null) {
+            referenceGroup.setType(savedReferenceGroup.getType());
         }
-        referenceGroupType.setName(groupSaveRequest.getReferenceGroup().getName().replaceAll(" ", "_").toUpperCase());
 
-        // find if the type is already saved
-        ReferenceGroupType savedType = referenceGroupTypePersistence.findByName(referenceGroupType.getName());
-        if (savedType != null){
-            referenceGroup.setType(savedType);
+        // create the type, if necessary
+        String newTypeName = referenceGroup.getName().replaceAll(" ", "_").toUpperCase();
+        if (referenceGroup.getType() == null) {
+            // find if the type is already saved
+            ReferenceGroupType savedType = referenceGroupTypePersistence.findByName(newTypeName);
+            if (savedType != null) {
+                referenceGroup.setType(savedType);
+            } else {
+                referenceGroup.setType(new ReferenceGroupType());
+            }
         }
+        referenceGroup.getType().setName(newTypeName);
+
 
         // add the tags to the group
         referenceGroup.setTags(new HashSet<ReferenceTag>());

@@ -70,6 +70,14 @@ public interface UserClientPersistence {
     UserClient findByResetToken(String resetToken);
 
     /**
+     * Finds a UserClient by its validation token
+     *
+     * @param validationToken to find by
+     * @return a UserClient or null
+     */
+    UserClient findByValidationToken(String validationToken);
+
+    /**
      * Finds a user by email
      *
      * @param email to lookup

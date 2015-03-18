@@ -83,6 +83,7 @@ public class UserClientsPasswordResource {
         if(userClientPasswordService.validateNewPassword(expiredPasswordChangeRequest)){
             UserClient modifiedUser = userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
             if (modifiedUser != null) {
+                mailService.sendPasswordChangeConfirmationEmail(modifiedUser);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.GONE);
@@ -137,9 +138,24 @@ public class UserClientsPasswordResource {
                     .changePassword(changePasswordRequest);
             tokenBasedRememberMeServices.rewriteLoginToken(request, response,
                     updated);
+            
+            /*
+            UserClient toUpdate = (UserClient) userDetailsService
+                    .loadUserByUsername(changePasswordRequest.getLogin());
+            toUpdate.setPassword(changePasswordRequest.getNewPassword());
+
+            // save the new password
+            UserClient updatedUserClient = userClientPasswordService.updatePassword(toUpdate, true);
+
+            // send change email
+
+
+            // update user's login token
+            tokenBasedRememberMeServices.rewriteLoginToken(request, response,updatedUserClient);
+            */
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<UserClientPasswordValidationErrorResource>();
+            List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<>();
             for (UserClientPasswordValidationError error : errors) {
                 errorResources
                         .add(userClientPasswordValidationErrorResourceAssembler

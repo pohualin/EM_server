@@ -76,6 +76,10 @@ public class UserClient extends User {
     @Column(name = "password_reset_token", length = 40, columnDefinition = "nvarchar(40)")
     private String passwordResetToken;
 
+    @Size(max = 40)
+    @Column(name = "validation_token", length = 40, columnDefinition = "nvarchar(40)")
+    private String validationToken;
+
     @Column(name = "activated", nullable = false)
     private boolean activated;
 
@@ -96,6 +100,9 @@ public class UserClient extends User {
     
     @Column(name = "password_saved_time_utc")
     private LocalDateTime passwordSavedDateTime;
+
+    @Column(name = "validation_expiration_time_utc")
+    private LocalDateTime validationExpirationDateTime;
 
     @Transient
     private boolean impersonated;
@@ -310,5 +317,21 @@ public class UserClient extends User {
 
     public void setLockExpirationDateTime(LocalDateTime lockExpirationDateTime) {
         this.lockExpirationDateTime = lockExpirationDateTime;
+    }
+
+    public LocalDateTime getValidationExpirationDateTime() {
+        return validationExpirationDateTime;
+    }
+
+    public void setValidationExpirationDateTime(LocalDateTime validationExpirationDateTime) {
+        this.validationExpirationDateTime = validationExpirationDateTime;
+    }
+
+    public String getValidationToken() {
+        return validationToken;
+    }
+
+    public void setValidationToken(String validationToken) {
+        this.validationToken = validationToken;
     }
 }
