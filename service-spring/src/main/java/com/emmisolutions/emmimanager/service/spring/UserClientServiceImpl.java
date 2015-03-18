@@ -44,10 +44,10 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
-    
+
     @Resource
     ClientService clientService;
-    
+
     @Resource
     UserClientPersistence userClientPersistence;
 
@@ -110,9 +110,10 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setPasswordResetToken(inDb.getPasswordResetToken());
         userClient.setPasswordResetExpirationDateTime(inDb.getPasswordResetExpirationDateTime());
         // validation should be false if the email address has changed, otherwise set it to whatever it was previously
-        userClient.setEmailValidated(StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
-        //update the login when email is updated if their login is the email
+        userClient.setEmailValidated(
+                StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
 
+        //update the login when email is updated if their login is the email
         if (inDb.getLogin() != null && inDb.getEmail() != null && userClient.getEmail() != null && StringUtils.equalsIgnoreCase(inDb.getLogin(), inDb.getEmail())) {
             userClient.setLogin(StringUtils.lowerCase(userClient.getEmail()));
         }
@@ -168,7 +169,7 @@ public class UserClientServiceImpl implements UserClientService {
                     unlockedUser.setEmailValidated(true);
                     unlockedUser.setPassword(activationRequest.getNewPassword());
                     unlockedUser.setCredentialsNonExpired(true);
-                    
+
                     ret = userClientPasswordService
                             .updatePasswordExpirationTime(userClientPasswordService
                                     .encodePassword(unlockedUser));
@@ -217,7 +218,7 @@ public class UserClientServiceImpl implements UserClientService {
                 .minusHours(ACTIVATION_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
     }
-    
+
     private ClientPasswordConfiguration findClientPasswordConfiguration(UserClient userClient) {
         Client client = null;
         if (userClient != null) {
