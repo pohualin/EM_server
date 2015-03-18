@@ -79,6 +79,10 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isImpersonated(),
                 user.getPasswordExpireationDateTime());
 
+        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
+        ret.add(createVerifyPasswordLink(user));
+
         if (!CollectionUtils.isEmpty(teams)){
             ret.setTeams(teams);
         }
@@ -98,6 +102,15 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
         }
 
         return ret;
+    }
+
+    public static Link createVerifyPasswordLink(UserClient user){
+        Link verifyPasswordLink = linkTo(methodOn(UserClientsResource.class).verifyPassword(user.getId(), null)).withRel("verifyPassword");
+        UriTemplate verifyPasswordUriTemplate = new UriTemplate(verifyPasswordLink.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("password",
+                                TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(verifyPasswordUriTemplate, verifyPasswordLink.getRel());
     }
 
 }

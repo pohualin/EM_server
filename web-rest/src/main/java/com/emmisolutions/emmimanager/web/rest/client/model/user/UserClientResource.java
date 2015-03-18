@@ -44,7 +44,9 @@ public class UserClientResource extends ResourceSupport {
     private List<String> permissions;
 
     private List<UserClientService.UserClientConflict> conflicts;
-    
+
+    private UserClientService.UserClientValidationError validationError;
+
     public UserClientResource() {
     }
 
@@ -121,6 +123,14 @@ public class UserClientResource extends ResourceSupport {
 
     public void setConflicts(List<UserClientService.UserClientConflict> conflicts) {
         this.conflicts = conflicts;
+    }
+
+    public UserClientService.UserClientValidationError getValidationError() {
+        return validationError;
+    }
+
+    public void setValidationError(UserClientService.UserClientValidationError validationError) {
+        this.validationError = validationError;
     }
 
     public Set<TeamResource> getTeams() {
