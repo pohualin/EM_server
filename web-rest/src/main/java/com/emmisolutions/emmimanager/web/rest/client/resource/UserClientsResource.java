@@ -130,7 +130,6 @@ public class UserClientsResource {
                             .toUriString();
             // send the email (asynchronously)
             mailService.sendValidationEmail(savedUserClient, validationHref);
-            userClientService.update(savedUserClient);
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
