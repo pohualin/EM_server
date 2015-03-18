@@ -8,6 +8,8 @@ import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -66,6 +68,18 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             password += ((UserAdmin) userDetails).getSalt();
         }
         if (!passwordEncoder.matches(presentedPassword, password)) {
+			// In case of an UserClient was locked and lock is expired.
+			// We want to initiate another transaction to unlock the UserClient and
+			// reset failure count.
+			if (userDetails instanceof UserClient) {
+				UserClient toUpdate = (UserClient) userDetails;
+				if (toUpdate.getLockExpirationDateTime() != null
+						&& LocalDateTime.now(DateTimeZone.UTC).isAfter(
+								toUpdate.getLockExpirationDateTime())) {
+					userClientService
+							.resetUserClientLock((UserClient) userDetails);
+				}
+			}
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
@@ -97,7 +111,14 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
         UserDetails user = userDetailsService.loadUserByUsername(username);
         if (user instanceof UserClient) {
             UserClient toUpdate = (UserClient) user;
-            user = (UserClient) userClientService.unlockUserClient(toUpdate);
+            // User is locked but the lock is expired
+            if (!toUpdate.isAccountNonLocked()
+    				&& toUpdate.getLockExpirationDateTime() != null
+    				&& LocalDateTime.now(DateTimeZone.UTC).isAfter(
+    						toUpdate.getLockExpirationDateTime())) {
+                // By pass PreAuthentication check by setting this flag to true
+    			toUpdate.setAccountNonLocked(true);
+    		}
         }
         return user;
     }

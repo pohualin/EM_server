@@ -22,14 +22,14 @@ public interface ClientPasswordConfigurationRepository extends
      *            to lookup
      * @return null or an existing ClientPasswordConfiguration
      */
-    @Cacheable(value = "clientPasswordConfigurationByClient", key = "#p0")
+    @Cacheable(value = "clientPasswordConfigurationByClient", key = "#p0.id")
     public ClientPasswordConfiguration findByClient(Client client);
 
     @Override
-    @CacheEvict(value = "clientPasswordConfigurationByClient", key = "#p0.client")
+    @CacheEvict(value = "clientPasswordConfigurationByClient", key = "#p0.client.id")
     ClientPasswordConfiguration save(ClientPasswordConfiguration entity);
 
     @Override
-    @CacheEvict(value = "clientPasswordConfigurationByClient", key = "#p0.client")
+    @CacheEvict(value = "clientPasswordConfigurationByClient", key = "#p0.client.id")
     void delete(ClientPasswordConfiguration entity);
 }

@@ -141,8 +141,10 @@ public class UserClientsPasswordResource {
                     .loadUserByUsername(changePasswordRequest.getLogin());
             toUpdate.setPassword(changePasswordRequest.getNewPassword());
 
-            // save the new password
-            UserClient updatedUserClient = userClientPasswordService.updatePassword(toUpdate, true);
+			// save the new password and update password expiration time
+			UserClient updatedUserClient = userClientPasswordService
+					.updatePasswordExpirationTime(userClientPasswordService
+							.updatePassword(toUpdate, true));
 
             // send change email
             mailService.sendPasswordChangeConfirmationEmail(updatedUserClient);
