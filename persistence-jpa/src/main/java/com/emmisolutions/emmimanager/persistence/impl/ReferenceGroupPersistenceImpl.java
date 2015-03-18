@@ -1,16 +1,15 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.ReferenceGroup;
+import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import com.emmisolutions.emmimanager.model.ReferenceGroup;
-import com.emmisolutions.emmimanager.persistence.ReferenceGroupPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
+import javax.annotation.Resource;
 
 /**
  *  ReferenceGroupPersistence implementation
@@ -41,5 +40,10 @@ public class ReferenceGroupPersistenceImpl implements ReferenceGroupPersistence 
             return null;
         }
         return referenceGroupRepository.findOne(id);
+    }
+
+    @Override
+    public void delete(ReferenceGroup referenceGroup) {
+        referenceGroupRepository.delete(referenceGroup);
     }
 }
