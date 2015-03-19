@@ -6,7 +6,10 @@ import javax.xml.bind.annotation.XmlEnum;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 
 /**
  * Password validation service for an UserClient
@@ -14,7 +17,8 @@ import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRe
 public interface UserClientPasswordValidationService {
 
     /**
-     * Verify existing password and validate new password pattern
+     * Validate new password passed in ChangePasswordRequest. Must meet password
+     * policy and not repeat X numbers of past passwords
      * 
      * @param changePasswordRequest
      *            to check
@@ -24,17 +28,51 @@ public interface UserClientPasswordValidationService {
             ChangePasswordRequest changePasswordRequest);
 
     /**
-     * Check and see if password meet the password policy pattern
+     * Validate new password passed in ExpiredPasswordChangeRequest. Must meet
+     * password policy and not repeat X numbers of past passwords
      * 
-     * @param userClient
+     * @param expiredPasswordChangeRequest
      *            to check
-     * @return null if meet or UserClientPasswordValidationError with reason
-     *         POLICY
+     * @return a list of UserClientPasswordValidationError with reason
      */
-    UserClientPasswordValidationError validatePasswordPattern(
-            UserClient userClient);
-    
-    UserClientPasswordValidationError checkPasswordHistory(UserClient userClient);
+    List<UserClientPasswordValidationError> validateRequest(
+            ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
+
+    /**
+     * Validate new password passed in ResetPasswordRequest. Must meet password
+     * policy and not repeat X numbers of past passwords
+     * 
+     * @param resetPasswordRequest
+     *            to check
+     * @return a list of UserClientPasswordValidationError with reason
+     */
+    List<UserClientPasswordValidationError> validateRequest(
+            ResetPasswordRequest resetPasswordRequest);
+
+    /**
+     * Validate new password passed in ActivationRequest. Must meet password
+     * policy and not repeat X numbers of past passwords
+     * 
+     * @param activationRequest
+     *            to check
+     * @return a list of UserClientPasswordValidationError with reason
+     */
+    List<UserClientPasswordValidationError> validateRequest(
+            ActivationRequest activationRequest);
+
+    /**
+     * See if password repeats past x passwords
+     * 
+     * @param confituration
+     *            to refer
+     * @param existing
+     *            to use
+     * @param password
+     *            to check
+     * @return true if password is valid, false if not
+     */
+    boolean checkPasswordHistory(ClientPasswordConfiguration confituration,
+            UserClient existing, String password);
 
     /**
      * Check if password matches client password policy pattern
@@ -42,7 +80,7 @@ public interface UserClientPasswordValidationService {
      * @param confituration
      *            to refer
      * @param password
-     *            to valicate
+     *            to validate
      * @return true if match or false if not
      */
     boolean validatePasswordPattern(ClientPasswordConfiguration confituration,
@@ -86,6 +124,6 @@ public interface UserClientPasswordValidationService {
 
     @XmlEnum
     public static enum Reason {
-        BAD, POLICY, HISTORY
+        POLICY, HISTORY
     }
 }

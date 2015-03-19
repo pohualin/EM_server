@@ -14,7 +14,6 @@ import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService.UserClientPasswordValidationError;
 import com.emmisolutions.emmimanager.service.mail.MailService;
-import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
@@ -78,10 +77,14 @@ public class UserClientsPasswordResource {
     @RequestMapping(value = "/password/expired", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PermitAll
-    public ResponseEntity<Void> changeExpiredPassword(@RequestBody ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
-        
-        if(userClientPasswordService.validateNewPassword(expiredPasswordChangeRequest)){
-            UserClient modifiedUser = userClientPasswordService.changeExpiredPassword(expiredPasswordChangeRequest);
+    public ResponseEntity<List<UserClientPasswordValidationErrorResource>> changeExpiredPassword(
+            @RequestBody ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
+
+        List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
+                .validateRequest(expiredPasswordChangeRequest);
+        if (errors.size() == 0) {
+            UserClient modifiedUser = userClientPasswordService
+                    .changeExpiredPassword(expiredPasswordChangeRequest);
             if (modifiedUser != null) {
                 mailService.sendPasswordChangeConfirmationEmail(modifiedUser);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -89,7 +92,14 @@ public class UserClientsPasswordResource {
                 return new ResponseEntity<>(HttpStatus.GONE);
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<>();
+            for (UserClientPasswordValidationError error : errors) {
+                errorResources
+                        .add(userClientPasswordValidationErrorResourceAssembler
+                                .toResource(error));
+            }
+            return new ResponseEntity<>(errorResources,
+                    HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -101,9 +111,12 @@ public class UserClientsPasswordResource {
      */
     @RequestMapping(value = "/password/reset", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<Void> resetPassword(
+    public ResponseEntity<List<UserClientPasswordValidationErrorResource>> resetPassword(
             @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        if (userClientPasswordService.validateNewPassword(resetPasswordRequest)) {
+
+        List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
+                .validateRequest(resetPasswordRequest);
+        if (errors.size() == 0) {
             UserClient userClient = userClientPasswordService
                     .resetPassword(resetPasswordRequest);
             if (userClient != null) {
@@ -112,7 +125,14 @@ public class UserClientsPasswordResource {
             }
             return new ResponseEntity<>(HttpStatus.GONE);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<>();
+            for (UserClientPasswordValidationError error : errors) {
+                errorResources
+                        .add(userClientPasswordValidationErrorResourceAssembler
+                                .toResource(error));
+            }
+            return new ResponseEntity<>(errorResources,
+                    HttpStatus.NOT_ACCEPTABLE);
         }
     }
     
@@ -136,25 +156,12 @@ public class UserClientsPasswordResource {
         if (errors.size() == 0) {
             UserClient updated = userClientPasswordService
                     .changePassword(changePasswordRequest);
-            tokenBasedRememberMeServices.rewriteLoginToken(request, response,
-                    updated);
-            
-            /*
-            UserClient toUpdate = (UserClient) userDetailsService
-                    .loadUserByUsername(changePasswordRequest.getLogin());
-            toUpdate.setPassword(changePasswordRequest.getNewPassword());
 
-			// save the new password and update password expiration time
-			UserClient updatedUserClient = userClientPasswordService
-					.updatePasswordExpirationTime(userClientPasswordService
-							.updatePassword(toUpdate, true));
-
-            // send change email
-
+            mailService.sendPasswordChangeConfirmationEmail(updated);
 
             // update user's login token
-            tokenBasedRememberMeServices.rewriteLoginToken(request, response,updatedUserClient);
-            */
+            tokenBasedRememberMeServices.rewriteLoginToken(request, response,
+                    updated);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<>();

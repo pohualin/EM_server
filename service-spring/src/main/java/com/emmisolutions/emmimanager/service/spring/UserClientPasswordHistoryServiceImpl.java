@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
@@ -85,29 +87,30 @@ public class UserClientPasswordHistoryServiceImpl implements
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
-        
+
         ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                 .get(fromDb.getClient());
-        
+
         // Save latest
         UserClientPasswordHistory latest = new UserClientPasswordHistory();
         latest.setUserClient(fromDb);
         latest.setPassword(fromDb.getPassword());
         latest.setSalt(fromDb.getSalt());
-        latest.setPasswordSavedTime(fromDb.getPasswordSavedDateTime());
+        latest.setPasswordSavedTime(fromDb.getPasswordSavedDateTime() != null ? fromDb
+                .getPasswordSavedDateTime() : LocalDateTime
+                .now(DateTimeZone.UTC));
         userClientPasswordHistoryPersistence.saveOrUpdate(latest);
-        
+
         List<UserClientPasswordHistory> histories = get(fromDb);
         // purge oldest
         if (histories.size() > configuration.getPasswordRepetitions()) {
             List<UserClientPasswordHistory> toPurgeList = histories.subList(
-                    configuration.getPasswordRepetitions(),
-                    histories.size());
-            for(UserClientPasswordHistory toPurge: toPurgeList){
+                    configuration.getPasswordRepetitions(), histories.size());
+            for (UserClientPasswordHistory toPurge : toPurgeList) {
                 userClientPasswordHistoryPersistence.delete(toPurge.getId());
             }
         }
-        
+
     }
 
 }

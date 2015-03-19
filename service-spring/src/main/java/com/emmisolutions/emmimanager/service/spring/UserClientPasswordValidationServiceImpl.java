@@ -16,7 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPasswordHistory;
+import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
@@ -46,8 +49,7 @@ public class UserClientPasswordValidationServiceImpl implements
     public List<UserClientPasswordValidationError> validateRequest(
             ChangePasswordRequest changePasswordRequest) {
 
-        if (changePasswordRequest == null
-                || StringUtils.isBlank(changePasswordRequest.getLogin())
+        if (StringUtils.isBlank(changePasswordRequest.getLogin())
                 || StringUtils.isBlank(changePasswordRequest
                         .getExistingPassword())
                 || StringUtils.isBlank(changePasswordRequest.getNewPassword())) {
@@ -55,23 +57,30 @@ public class UserClientPasswordValidationServiceImpl implements
                     "Required fields can not be null.");
         }
 
+        UserClient existing = userClientPersistence
+                .fetchUserWillFullPermissions(changePasswordRequest.getLogin());
+        if (existing == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
+        }
+
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(existing.getClient());
+
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
 
-        UserClient toVerify = new UserClient();
-        toVerify.setLogin(changePasswordRequest.getLogin());
-        toVerify.setPassword(changePasswordRequest.getExistingPassword());
-
         // Check if password matches pattern
-        toVerify.setPassword(changePasswordRequest.getNewPassword());
-        UserClientPasswordValidationError validatePasswordPatternError = validatePasswordPattern(toVerify);
-        if (validatePasswordPatternError != null) {
-            errors.add(validatePasswordPatternError);
+        if (!validatePasswordPattern(configuration,
+                changePasswordRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.POLICY));
         }
 
         // Check if password repeats
-        UserClientPasswordValidationError validatePasswordRepeatsError = checkPasswordHistory(toVerify);
-        if (validatePasswordRepeatsError != null) {
-            errors.add(validatePasswordRepeatsError);
+        if (!checkPasswordHistory(configuration, existing,
+                changePasswordRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.HISTORY));
         }
 
         return errors;
@@ -79,15 +88,21 @@ public class UserClientPasswordValidationServiceImpl implements
 
     @Override
     @Transactional(readOnly = true)
-    public UserClientPasswordValidationError validatePasswordPattern(
-            UserClient userClient) {
-        if (userClient == null || StringUtils.isBlank(userClient.getPassword())) {
+    public List<UserClientPasswordValidationError> validateRequest(
+            ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
+
+        if (StringUtils.isBlank(expiredPasswordChangeRequest.getLogin())
+                || StringUtils.isBlank(expiredPasswordChangeRequest
+                        .getExistingPassword())
+                || StringUtils.isBlank(expiredPasswordChangeRequest
+                        .getNewPassword())) {
             throw new InvalidDataAccessApiUsageException(
-                    "UserClient can not be null. Password to be verified is required.");
+                    "Required fields can not be null.");
         }
 
         UserClient existing = userClientPersistence
-                .fetchUserWillFullPermissions(userClient.getLogin());
+                .fetchUserWillFullPermissions(expiredPasswordChangeRequest
+                        .getLogin());
         if (existing == null) {
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
@@ -95,43 +110,125 @@ public class UserClientPasswordValidationServiceImpl implements
 
         ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                 .get(existing.getClient());
-        // Return UserClientPasswordValidationError if password pattern does not
-        // match
-        if (!validatePasswordPattern(configuration, userClient.getPassword())) {
-            return new UserClientPasswordValidationError(
-                    UserClientPasswordValidationService.Reason.POLICY);
+
+        List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
+
+        // Check if password matches pattern
+        if (!validatePasswordPattern(configuration,
+                expiredPasswordChangeRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.POLICY));
         }
 
-        return null;
+        // Check if password repeats
+        if (!checkPasswordHistory(configuration, existing,
+                expiredPasswordChangeRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.HISTORY));
+        }
+
+        return errors;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserClientPasswordValidationError checkPasswordHistory(
-            UserClient userClient) {
-        if (userClient == null || StringUtils.isBlank(userClient.getPassword())) {
+    public List<UserClientPasswordValidationError> validateRequest(
+            ResetPasswordRequest resetPasswordRequest) {
+
+        if (StringUtils.isBlank(resetPasswordRequest.getResetToken())
+                || StringUtils.isBlank(resetPasswordRequest.getNewPassword())) {
             throw new InvalidDataAccessApiUsageException(
-                    "UserClient can not be null. Password to be verified is required.");
+                    "Required fields can not be null.");
         }
 
         UserClient existing = userClientPersistence
-                .fetchUserWillFullPermissions(userClient.getLogin());
+                .findByResetToken(resetPasswordRequest.getResetToken());
         if (existing == null) {
             throw new InvalidDataAccessApiUsageException(
-                    "This method is only to be used with existing UserClient objects");
+                    "This method is only to be used with existing reset token");
         }
 
         ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                 .get(existing.getClient());
 
-        List<UserClientPasswordHistory> histories = userClientPasswordHistoryService.get(existing);
-        if(histories.size() == 0){
+        List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
+
+        // Check if password matches pattern
+        if (!validatePasswordPattern(configuration,
+                resetPasswordRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.POLICY));
+        }
+
+        // Check if password repeats
+        if (!checkPasswordHistory(configuration, existing,
+                resetPasswordRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.HISTORY));
+        }
+
+        return errors;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserClientPasswordValidationError> validateRequest(
+            ActivationRequest activationRequest) {
+
+        if (StringUtils.isBlank(activationRequest.getActivationToken())
+                || StringUtils.isBlank(activationRequest.getNewPassword())) {
+            throw new InvalidDataAccessApiUsageException(
+                    "Required fields can not be null.");
+        }
+
+        UserClient existing = userClientPersistence
+                .findByActivationKey(activationRequest.getActivationToken());
+        if (existing == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing activation token");
+        }
+
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(existing.getClient());
+
+        List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
+
+        // Check if password matches pattern
+        if (!validatePasswordPattern(configuration,
+                activationRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.POLICY));
+        }
+
+        // Check if password repeats
+        if (!checkPasswordHistory(configuration, existing,
+                activationRequest.getNewPassword())) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.HISTORY));
+        }
+
+        return errors;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkPasswordHistory(
+            ClientPasswordConfiguration configuration, UserClient existing,
+            String password) {
+        if (configuration == null || existing == null
+                || StringUtils.isBlank(password)) {
+            return false;
+        }
+
+        List<UserClientPasswordHistory> histories = userClientPasswordHistoryService
+                .get(existing);
+        if (histories.size() == 0) {
             UserClientPasswordHistory current = new UserClientPasswordHistory();
             current.setPassword(existing.getPassword());
             current.setSalt(existing.getSalt());
             histories.add(current);
         }
-        
+
         if (histories.size() > configuration.getPasswordRepetitions()) {
             histories = histories.subList(0,
                     configuration.getPasswordRepetitions());
@@ -139,20 +236,22 @@ public class UserClientPasswordValidationServiceImpl implements
 
         // Return UserClientPasswordValidationError if new password repeats
         for (UserClientPasswordHistory history : histories) {
-            if (passwordEncoder.matches(userClient.getPassword(),
-                    history.getPassword() + history.getSalt())) {
-                return new UserClientPasswordValidationError(
-                        UserClientPasswordValidationService.Reason.HISTORY);
+            if (passwordEncoder.matches(password, history.getPassword()
+                    + history.getSalt())) {
+                return false;
             }
         }
 
-        return null;
+        return true;
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean validatePasswordPattern(
             ClientPasswordConfiguration configuration, String password) {
+        if (configuration == null || StringUtils.isBlank(password)) {
+            return false;
+        }
 
         if (configuration.getPasswordLength() > password.length()) {
             return false;

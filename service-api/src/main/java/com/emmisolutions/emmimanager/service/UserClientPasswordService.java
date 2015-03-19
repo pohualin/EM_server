@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
@@ -27,13 +26,19 @@ public interface UserClientPasswordService {
     UserClient updatePassword(UserClient user, boolean setCredentialNonExpired);
 
     /**
-     * Updates a UserClient password from an expired password change request
+     * Updates an UserClient password from an expired password change request
      *
      * @param expiredPasswordChangeRequest specifies the update
      * @return the updated user client
      */
     UserClient changeExpiredPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
     
+    /**
+     * Update an UserClinet with sent in new password
+     * 
+     * @param changePasswordRequest
+     * @return
+     */
     UserClient changePassword(ChangePasswordRequest changePasswordRequest);
 
     /**
@@ -95,30 +100,6 @@ public interface UserClientPasswordService {
      * @return a password configuration for the token, never null
      */
     ClientPasswordConfiguration findPasswordPolicyUsingActivationToken(String resetToken);
-    
-    /**
-     * Service to check whether new password meets password policy guidelines for a client
-     * 
-     * @param expiredPasswordChangeRequest to check
-     * @return true/false for valid/invalid password
-     */
-    boolean validateNewPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
-    
-    /**
-     * Service to check whether new password meets password policy guidelines for a client
-     * 
-     * @param activationRequest to check
-     * @return true/false for valid/invalid password
-     */
-    boolean validateNewPassword(ActivationRequest activationRequest);
-    
-    /**
-     * Service to check whether new password meets password policy guidelines for a client
-     * 
-     * @param resetPasswordRequest to check
-     * @return true/false for valid/invalid password
-     */
-    boolean validateNewPassword(ResetPasswordRequest resetPasswordRequest);
     
     /**
      * Set password expiration time to userClient

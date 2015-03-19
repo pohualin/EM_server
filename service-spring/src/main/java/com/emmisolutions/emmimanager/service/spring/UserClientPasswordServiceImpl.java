@@ -1,12 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
@@ -83,14 +79,12 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 unlockedUser.setPasswordResetExpirationDateTime(null);
                 unlockedUser.setPasswordResetToken(null);
                 
-                // Pass old password to save in password history
-                UserClient toDealWithHistory = new UserClient(unlockedUser.getId());
-                toDealWithHistory.setPassword(expiredPasswordChangeRequest
-                        .getExistingPassword());
-                userClientPasswordHistoryService
-                        .handleUserClientPasswordHistory(toDealWithHistory);
+                UserClient passwordUpdatedUser = updatePasswordExpirationTime(encodePassword(unlockedUser));
                 
-                return updatePasswordExpirationTime(encodePassword(unlockedUser));
+                userClientPasswordHistoryService
+                        .handleUserClientPasswordHistory(passwordUpdatedUser);
+                
+                return passwordUpdatedUser;
             }
         }
         return null;
@@ -104,12 +98,8 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         toUpdate = updatePassword(toUpdate, true);
         toUpdate = updatePasswordExpirationTime(toUpdate);
 
-        // Pass old password to save in password history
-        UserClient toDealWithHistory = new UserClient(toUpdate.getId());
-        toDealWithHistory.setPassword(changePasswordRequest
-                .getExistingPassword());
         userClientPasswordHistoryService
-                .handleUserClientPasswordHistory(toDealWithHistory);
+                .handleUserClientPasswordHistory(toUpdate);
         
         return toUpdate;
     }
@@ -139,13 +129,12 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     unlockedUser.setCredentialsNonExpired(true);
                     unlockedUser.setEmailValidated(true);
                     
-                    // Pass old password to save in password history
-                    UserClient toDealWithHistory = new UserClient(unlockedUser.getId());
-                    toDealWithHistory.setPassword(userClient.getPassword());
-                    userClientPasswordHistoryService
-                            .handleUserClientPasswordHistory(toDealWithHistory);
+                    UserClient passwordUpdatedUser = updatePasswordExpirationTime(encodePassword(unlockedUser));
                     
-                    return updatePasswordExpirationTime(encodePassword(unlockedUser));
+                    userClientPasswordHistoryService
+                            .handleUserClientPasswordHistory(passwordUpdatedUser);
+                    
+                    return passwordUpdatedUser;
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
                 }
@@ -230,62 +219,6 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     @Override
     @Transactional
-    public boolean validateNewPassword(
-            ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
-        UserClient userClient = userClientPersistence
-                .fetchUserWillFullPermissions(expiredPasswordChangeRequest
-                        .getLogin());
-        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
-        boolean valid = false;
-
-        if (configuration.getPasswordLength() > expiredPasswordChangeRequest
-                .getNewPassword().length()) {
-            valid = false;
-        } else {
-            valid = validatePassword(configuration,
-                    expiredPasswordChangeRequest.getNewPassword());
-        }
-        return valid;
-    }
-
-    @Override
-    @Transactional
-    public boolean validateNewPassword(ActivationRequest activationRequest) {
-        UserClient userClient = userClientPersistence
-                .findByActivationKey(activationRequest.getActivationToken());
-        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
-        boolean valid = false;
-
-        if (configuration.getPasswordLength() > activationRequest
-                .getNewPassword().length()) {
-            valid = false;
-        } else {
-            valid = validatePassword(configuration,
-                    activationRequest.getNewPassword());
-        }
-        return valid;
-    }
-
-    @Override
-    @Transactional
-    public boolean validateNewPassword(ResetPasswordRequest resetPasswordRequest) {
-        UserClient userClient = userClientPersistence
-                .findByResetToken(resetPasswordRequest.getResetToken());
-        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
-        boolean valid = false;
-
-        if (configuration.getPasswordLength() > resetPasswordRequest
-                .getNewPassword().length()) {
-            valid = false;
-        } else {
-            valid = validatePassword(configuration,
-                    resetPasswordRequest.getNewPassword());
-        }
-        return valid;
-    }
-    
-    @Override
-    @Transactional
     public UserClient updatePasswordExpirationTime(UserClient userClient) {
         ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
         userClient.setPasswordExpireationDateTime(LocalDateTime.now(
@@ -294,28 +227,6 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         userClient
                 .setPasswordSavedDateTime(LocalDateTime.now(DateTimeZone.UTC));
         return userClientPersistence.saveOrUpdate(userClient);
-    }
-
-    private boolean validatePassword(ClientPasswordConfiguration configuration,
-            String newPassword) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("^");
-        if (configuration.hasLowercaseLetters()) {
-            sb.append("(?=.*[a-z])");
-        }
-        if (configuration.hasUppercaseLetters()) {
-            sb.append("(?=.*[A-Z])");
-        }
-        if (configuration.hasNumbers()) {
-            sb.append("(?=.*[0-9])");
-        }
-        if (configuration.hasSpecialChars()) {
-            sb.append("(?=.*(_|[^\\w]))");
-        }
-        sb.append(".+$");
-        Pattern p = Pattern.compile(sb.toString());
-        Matcher m = p.matcher(newPassword);
-        return m.matches();
     }
 
 }
