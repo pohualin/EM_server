@@ -86,6 +86,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         } catch (InvalidDataAccessApiUsageException e) {
         }
 
+        request.setLogin(userClient.getLogin());
         UserClientPasswordValidationError policyError = new UserClientPasswordValidationError(
                 UserClientPasswordValidationService.Reason.POLICY);
         request.setNewPassword("bad");
@@ -261,6 +262,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         } catch (InvalidDataAccessApiUsageException e) {
         }
 
+        request.setLogin(userClient.getLogin());
         UserClientPasswordValidationError policyError = new UserClientPasswordValidationError(
                 UserClientPasswordValidationService.Reason.POLICY);
         request.setNewPassword("bad");
@@ -288,6 +290,8 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         userClientService.update(userClient);
         userClient.setPassword("currentPassword1");
         userClientPasswordService.updatePassword(userClient, true);
+        String token = userClientPasswordService.forgotPassword(
+                "apple@abc.com").getPasswordResetToken();
 
         ResetPasswordRequest request = new ResetPasswordRequest();
 
@@ -297,8 +301,8 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         } catch (InvalidDataAccessApiUsageException e) {
         }
 
-        request.setResetToken(userClientPasswordService.forgotPassword(
-                "apple@abc.com").getPasswordResetToken());
+        
+        request.setResetToken(token);
         try {
             userClientPasswordValidationService.validateRequest(request);
             fail("New password can not be null.");
@@ -312,6 +316,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         } catch (InvalidDataAccessApiUsageException e) {
         }
 
+        request.setResetToken(token);
         UserClientPasswordValidationError policyError = new UserClientPasswordValidationError(
                 UserClientPasswordValidationService.Reason.POLICY);
         request.setNewPassword("bad");
@@ -361,6 +366,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         } catch (InvalidDataAccessApiUsageException e) {
         }
         
+        request.setActivationToken(userClient.getActivationKey());
         UserClientPasswordValidationError policyError = new UserClientPasswordValidationError(
                 UserClientPasswordValidationService.Reason.POLICY);
         request.setNewPassword("bad");
