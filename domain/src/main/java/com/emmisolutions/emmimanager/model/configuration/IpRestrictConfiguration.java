@@ -135,4 +135,15 @@ public class IpRestrictConfiguration extends AbstractAuditingEntity implements
         return id != null ? id.hashCode() : 0;
     }
 
+    @Override
+    public String toString() {
+        return "IpRestrictConfiguration{" +
+                "client=" + client +
+                ", id=" + id +
+                ", version=" + version +
+                ", description='" + description + '\'' +
+                ", ipRangeStart='" + ipRangeStart + '\'' +
+                ", ipRangeEnd='" + ipRangeEnd + '\'' +
+                '}';
+    }
 }

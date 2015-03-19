@@ -53,7 +53,7 @@ public class UserClientValidateEmailServiceImpl implements UserClientValidationE
      */
     @Override
     @Transactional
-    public UserClient validate(String validationEmailToken) {
+    public UserClient validateEmailToken(String validationEmailToken) {
         UserClient ret = null;
         if (validationEmailToken != null) {
             UserClient userClient =userClientPersistence.findByValidationToken(validationEmailToken);

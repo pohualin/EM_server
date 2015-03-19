@@ -24,5 +24,5 @@ public interface UserClientValidationEmailService {
      * @return
      */
     @Transactional
-    UserClient validate(String validationEmailToken);
+    UserClient validateEmailToken(String validationEmailToken);
 }

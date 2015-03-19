@@ -14,6 +14,7 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -43,21 +44,24 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
-    
+
     @Resource
     ClientService clientService;
-    
+
     @Resource
     UserClientPersistence userClientPersistence;
 
     @Resource
     UserClientPasswordService userClientPasswordService;
-    
+
     @Resource
     ClientRestrictConfigurationService clientRestrictConfigurationService;
-    
+
     @Resource
     EmailRestrictConfigurationService emailRestrictConfigurationService;
+
+    @Resource
+    MailService mailService;
 
     @Resource
     PasswordEncoder passwordEncoder;
@@ -152,7 +156,7 @@ public class UserClientServiceImpl implements UserClientService {
                     unlockedUser.setEmailValidated(true);
                     unlockedUser.setPassword(activationRequest.getNewPassword());
                     unlockedUser.setCredentialsNonExpired(true);
-                    
+
                     ret = userClientPasswordService
                             .updatePasswordExpirationTime(userClientPasswordService
                                     .encodePassword(unlockedUser));
@@ -201,7 +205,7 @@ public class UserClientServiceImpl implements UserClientService {
                 .minusHours(ACTIVATION_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
     }
-    
+
     private ClientPasswordConfiguration findClientPasswordConfiguration(UserClient userClient) {
         Client client = null;
         if (userClient != null) {
@@ -237,18 +241,17 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public UserClient unlockUserClient(UserClient userClient) {
+    public UserClient resetUserClientLock(UserClient userClient) {
         UserClient toUpdate = userClient;
-        if (toUpdate.isAccountNonLocked() == false
-                && toUpdate.getLockExpirationDateTime() != null
+        if (toUpdate.getLockExpirationDateTime() != null
                 && LocalDateTime.now(DateTimeZone.UTC).isAfter(
-                        toUpdate.getLockExpirationDateTime())) {
+                toUpdate.getLockExpirationDateTime())) {
             toUpdate = userClientPersistence
                     .unlockUserClient((UserClient) toUpdate);
         }
         return toUpdate;
     }
-    
+
     @Transactional(readOnly = true)
     public boolean validateEmailAddress(UserClient userClient) {
         ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService
@@ -292,7 +295,7 @@ public class UserClientServiceImpl implements UserClientService {
             }
         }
     }
-    
+
     private List<String> collectAllValidEmailEndings(
             List<String> listOfValidEmailEndings,
             Page<EmailRestrictConfiguration> validEmailEndingPage,
