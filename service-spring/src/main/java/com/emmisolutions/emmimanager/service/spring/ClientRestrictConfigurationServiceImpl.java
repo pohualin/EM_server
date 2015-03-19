@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 
 /**
  * Service Implementation class to deal with ClientRestrictConfiguration
+ *
  */
 @Service
 public class ClientRestrictConfigurationServiceImpl implements
@@ -50,9 +51,12 @@ public class ClientRestrictConfigurationServiceImpl implements
     @Override
     @Transactional
     public ClientRestrictConfiguration getByClient(Client client) {
-        return client != null && client.getId() != null ?
-                clientRestrictConfigurationPersistence
-                        .findByClient(client) : null;
+        Client reloadClient = clientService.reload(client);
+        if (reloadClient != null) {
+            return clientRestrictConfigurationPersistence.findByClient(reloadClient);
+        } else {
+            return null;
+        }
     }
 
     @Override
