@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -23,6 +20,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientPasswordHistory
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 
 /**
  * Test Service Implementation for UserClientPasswordHistory
@@ -30,6 +28,9 @@ import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
 public class UserClientPasswordHistoryServiceIntegrationTest extends
         BaseIntegrationTest {
 
+    @Resource
+    UserClientPasswordService userClientPasswordService;
+    
     @Resource
     UserClientPasswordHistoryService userClientPasswordHistoryService;
     
@@ -123,23 +124,26 @@ public class UserClientPasswordHistoryServiceIntegrationTest extends
     @Test
     public void handlePasswordHistory(){
         UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPassword("password3");
+        userClient = userClientPasswordService.updatePassword(userClient, false);
+        userClient = userClientPasswordService.updatePasswordExpirationTime(userClient);
         Client client = userClient.getClient();
         ClientPasswordConfiguration configuration = makeNewRandomClientPasswordConfiguration(client);
         
         // Client does not allow past one password
-        configuration.setPasswordRepetitions(1);
+        configuration.setPasswordRepetitions(2);
         configuration = clientPasswordConfigurationService.save(configuration);
         
         UserClientPasswordHistory history1 = new UserClientPasswordHistory();
         history1.setUserClient(userClient);
-        history1.setPasswordSavedTime(LocalDateTime.now(DateTimeZone.UTC));
+        history1.setPasswordSavedTime(LocalDateTime.now(DateTimeZone.UTC).minusDays(2));
         history1.setPassword("password1");
         history1.setSalt("salt1");
         history1 = userClientPasswordHistoryService.save(history1);
         
         UserClientPasswordHistory history2 = new UserClientPasswordHistory();
         history2.setUserClient(userClient);
-        history2.setPasswordSavedTime(LocalDateTime.now(DateTimeZone.UTC));
+        history2.setPasswordSavedTime(LocalDateTime.now(DateTimeZone.UTC).minusDays(1));
         history2.setPassword("password2");
         history2.setSalt("salt2");
         history2 = userClientPasswordHistoryService.save(history2);
@@ -151,5 +155,11 @@ public class UserClientPasswordHistoryServiceIntegrationTest extends
         }
         
         userClientPasswordHistoryService.handleUserClientPasswordHistory(userClient);
+        
+        List<UserClientPasswordHistory> histories = userClientPasswordHistoryService.get(userClient);
+        assertThat("histories should contain password history2", histories, hasItem(history2));
+        
+        assertThat("histories should contain password history2", histories, not(hasItem(history1)));
+        
     }
 }

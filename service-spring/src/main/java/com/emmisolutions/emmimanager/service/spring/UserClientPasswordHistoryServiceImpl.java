@@ -89,19 +89,25 @@ public class UserClientPasswordHistoryServiceImpl implements
         ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                 .get(fromDb.getClient());
         
-        List<UserClientPasswordHistory> histories = get(fromDb);
+        // Save latest
+        UserClientPasswordHistory latest = new UserClientPasswordHistory();
+        latest.setUserClient(fromDb);
+        latest.setPassword(fromDb.getPassword());
+        latest.setSalt(fromDb.getSalt());
+        latest.setPasswordSavedTime(fromDb.getPasswordSavedDateTime());
+        userClientPasswordHistoryPersistence.saveOrUpdate(latest);
         
+        List<UserClientPasswordHistory> histories = get(fromDb);
         // purge oldest
         if (histories.size() > configuration.getPasswordRepetitions()) {
             List<UserClientPasswordHistory> toPurgeList = histories.subList(
-                    configuration.getPasswordRepetitions() - 1,
+                    configuration.getPasswordRepetitions(),
                     histories.size());
             for(UserClientPasswordHistory toPurge: toPurgeList){
                 userClientPasswordHistoryPersistence.delete(toPurge.getId());
             }
         }
         
-        // TODO: insert latest
     }
 
 }

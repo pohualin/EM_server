@@ -155,24 +155,16 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
 
         UserClientPasswordHistory historyA = new UserClientPasswordHistory();
         historyA.setUserClient(userClient);
-        historyA.setPasswordSavedTime(LocalDateTime.now().minusDays(1));
-        ;
+        historyA.setPasswordSavedTime(LocalDateTime.now().minusDays(2));
         historyA.setPassword(userClient.getPassword());
         historyA.setSalt(userClient.getSalt());
         historyA = userClientPasswordHistoryService.save(historyA);
 
-        userClient.setPassword("password2");
+        userClient.setPassword("currentPassword");
         userClient = userClientPersistence
                 .saveOrUpdate(userClientPasswordService
                         .encodePassword(userClient));
-        UserClientPasswordHistory historyB = new UserClientPasswordHistory();
-        historyB.setUserClient(userClient);
-        historyB.setPasswordSavedTime(LocalDateTime.now().minusDays(2));
-        ;
-        historyB.setPassword(userClient.getPassword());
-        historyB.setSalt(userClient.getSalt());
-        historyB = userClientPasswordHistoryService.save(historyB);
-
+        
         UserClient toValidate = new UserClient();
         toValidate.setLogin(userClient.getLogin());
         toValidate.setPassword("password3");
@@ -185,7 +177,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
                 .checkPasswordHistory(toValidate).getReason(),
                 is(UserClientPasswordValidationService.Reason.HISTORY));
 
-        toValidate.setPassword("password2");
+        toValidate.setPassword("currentPassword");
         assertThat("Password repeats", userClientPasswordValidationService
                 .checkPasswordHistory(toValidate).getReason(),
                 is(UserClientPasswordValidationService.Reason.HISTORY));
@@ -194,12 +186,12 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         configuration.setPasswordRepetitions(1);
         clientPasswordConfigurationService.save(configuration);
 
-        toValidate.setPassword("password1");
+        toValidate.setPassword("currentPassword");
         assertThat("Password repeats", userClientPasswordValidationService
                 .checkPasswordHistory(toValidate).getReason(),
                 is(UserClientPasswordValidationService.Reason.HISTORY));
 
-        toValidate.setPassword("password2");
+        toValidate.setPassword("password1");
         assertThat("Password does not repeat",
                 userClientPasswordValidationService
                         .checkPasswordHistory(toValidate), is(nullValue()));

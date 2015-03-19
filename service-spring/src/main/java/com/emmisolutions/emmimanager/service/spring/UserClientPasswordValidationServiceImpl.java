@@ -124,8 +124,14 @@ public class UserClientPasswordValidationServiceImpl implements
         ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                 .get(existing.getClient());
 
-        List<UserClientPasswordHistory> histories = userClientPasswordHistoryService
-                .get(existing);
+        List<UserClientPasswordHistory> histories = userClientPasswordHistoryService.get(existing);
+        if(histories.size() == 0){
+            UserClientPasswordHistory current = new UserClientPasswordHistory();
+            current.setPassword(existing.getPassword());
+            current.setSalt(existing.getSalt());
+            histories.add(current);
+        }
+        
         if (histories.size() > configuration.getPasswordRepetitions()) {
             histories = histories.subList(0,
                     configuration.getPasswordRepetitions());
