@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
@@ -36,7 +37,9 @@ public class IpRangeAuthorizationRequest {
     public boolean withinClientAllowedRange(UserClient userClient, HttpProxyAwareAuthenticationDetails details) {
         boolean isWithinAllowedRange;
 
-        if (clientRestrictConfigurationService.getByClient(userClient.getClient()).isIpConfigRestrict()) {
+        ClientRestrictConfiguration clientRestrictConfiguration =
+                clientRestrictConfigurationService.getByClient(userClient.getClient());
+        if (clientRestrictConfiguration != null && clientRestrictConfiguration.isIpConfigRestrict()) {
             // pull the first page of restrictions
             Page<IpRestrictConfiguration> pageOfRestrictions =
                     ipRestrictConfigurationService.getByClient(null, userClient.getClient());
