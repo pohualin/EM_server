@@ -30,10 +30,14 @@ public class AuthorizationRequestPermissionEvaluator implements PermissionEvalua
         }
         if (targetDomainObject instanceof IpRangeAuthorizationRequest){
             IpRangeAuthorizationRequest ipRangeAuthorizationRequest = (IpRangeAuthorizationRequest) targetDomainObject;
-            if (authentication.getPrincipal() instanceof UserClient &&
-                    authentication.getDetails() instanceof HttpProxyAwareAuthenticationDetails) {
-                return ipRangeAuthorizationRequest.withinClientAllowedRange((UserClient) authentication.getPrincipal(),
-                        (HttpProxyAwareAuthenticationDetails) authentication.getDetails());
+            if (authentication.getPrincipal() instanceof UserClient) {
+                if (authentication.getDetails() instanceof HttpProxyAwareAuthenticationDetails) {
+                    return ipRangeAuthorizationRequest.withinClientAllowedRange((UserClient) authentication.getPrincipal(),
+                            (HttpProxyAwareAuthenticationDetails) authentication.getDetails());
+                } else {
+                    // don't check ip unless the details are specific
+                    return true;
+                }
             }
         }
         return false;
