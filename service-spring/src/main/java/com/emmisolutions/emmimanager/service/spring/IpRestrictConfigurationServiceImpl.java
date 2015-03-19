@@ -1,18 +1,19 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import javax.annotation.Resource;
-import javax.transaction.Transactional;
-
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.IpRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.IpRestrictConfigurationService;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import javax.transaction.Transactional;
 
 /**
  * Service implementation class for IpRestrictConfiguration entity
@@ -59,8 +60,11 @@ public class IpRestrictConfigurationServiceImpl implements
             throw new InvalidDataAccessApiUsageException(
                     "Client or clientId can not be null.");
         }
+        // creating PageRequest here so caching of list method works like we expect
         return ipRestrictConfigurationPersistence
-                .list(pageable, client.getId());
+                .list(pageable == null ?
+                        new PageRequest(0, 10, new Sort(Sort.Direction.ASC, "ipRangeStart")) : pageable,
+                        client.getId());
     }
 
     @Override

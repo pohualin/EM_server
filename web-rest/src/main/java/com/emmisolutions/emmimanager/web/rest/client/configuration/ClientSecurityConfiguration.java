@@ -1,8 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
-import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
-import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
-
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeServices;
@@ -11,7 +8,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRemem
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
-
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.ProxyAwareWebAuthenticationDetailsSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +33,9 @@ import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
 
 /**
  * Spring Security Setup
@@ -129,7 +129,19 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         rootTokenBasedRememberMeServices.setAlwaysRemember(true);
         rootTokenBasedRememberMeServices.setParameter("remember-me");
         rootTokenBasedRememberMeServices.setCookieName(AUTHORIZATION_COOKIE_NAME);
+        rootTokenBasedRememberMeServices.setAuthenticationDetailsSource(authenticationDetailsSource());
         return rootTokenBasedRememberMeServices;
+    }
+
+    /**
+     * The authentication details source knows how to read the proxied
+     * ipv4 address properly.
+     *
+     * @return the ProxyAwareWebAuthenticationDetailsSource
+     */
+    @Bean
+    public ProxyAwareWebAuthenticationDetailsSource authenticationDetailsSource(){
+        return new ProxyAwareWebAuthenticationDetailsSource();
     }
 
     /**
@@ -140,7 +152,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public RememberMeServices delegateRememberMeServices(){
     	if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
-    		return new DelegateRememberMeServices();
+            return new DelegateRememberMeServices();
     	} else {
     		return tokenBasedRememberMeServices();
     	}
@@ -222,7 +234,11 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi-client/validate/").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()
-                    .antMatchers("/webapi-client/**").authenticated();
+                    .antMatchers("/webapi-client/**").authenticated()
+                    .antMatchers(("/webapi-client/**")).access(
+                            "hasPermission(@startsWith, 'PERM_CLIENT')") // make sure user has PERM_CLIENT permission
+                    .antMatchers(("/webapi-client/**")).access(
+                            "hasPermission(@ipRangeWithinClientConfiguration, 'for the client')"); // ip range checks
     }
 
 }
