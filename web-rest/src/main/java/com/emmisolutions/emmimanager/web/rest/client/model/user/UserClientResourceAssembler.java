@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
@@ -80,9 +78,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.getPasswordExpireationDateTime(),
                 user.getPasswordSavedDateTime());
 
-        ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
-        ret.add(createVerifyPasswordLink(user));
 
         if (!CollectionUtils.isEmpty(teams)){
             ret.setTeams(teams);
@@ -90,6 +86,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
 
         if (!user.isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+            ret.add(createVerifyPasswordLink(user));
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
             UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(

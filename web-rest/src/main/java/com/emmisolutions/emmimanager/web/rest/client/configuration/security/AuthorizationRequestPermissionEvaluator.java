@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,18 @@ public class AuthorizationRequestPermissionEvaluator implements PermissionEvalua
         if (targetDomainObject instanceof AuthorizationRequest){
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) targetDomainObject;
             return authorizationRequest.hasPermission(permission, authentication);
+        }
+        if (targetDomainObject instanceof IpRangeAuthorizationRequest){
+            IpRangeAuthorizationRequest ipRangeAuthorizationRequest = (IpRangeAuthorizationRequest) targetDomainObject;
+            if (authentication.getPrincipal() instanceof UserClient) {
+                if (authentication.getDetails() instanceof HttpProxyAwareAuthenticationDetails) {
+                    return ipRangeAuthorizationRequest.withinClientAllowedRange((UserClient) authentication.getPrincipal(),
+                            (HttpProxyAwareAuthenticationDetails) authentication.getDetails());
+                } else {
+                    // don't check ip unless the details are specific
+                    return true;
+                }
+            }
         }
         return false;
     }
