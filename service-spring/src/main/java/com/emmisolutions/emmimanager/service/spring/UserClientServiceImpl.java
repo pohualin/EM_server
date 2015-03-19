@@ -8,15 +8,9 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.UserClientPasswordService;
-import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.*;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -30,7 +24,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -206,13 +199,6 @@ public class UserClientServiceImpl implements UserClientService {
         return userClientPersistence.saveOrUpdate(fromDb);
     }
 
-    private ClientPasswordConfiguration findClientPasswordConfiguration(UserClient userClient) {
-        Client client = null;
-        if (userClient != null) {
-            client = userClient.getClient();
-        }
-        return clientPasswordConfigurationService.get(client);
-    }
 
     @Override
     @Transactional
@@ -242,32 +228,48 @@ public class UserClientServiceImpl implements UserClientService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserClient resetUserClientLock(UserClient userClient) {
-        UserClient toUpdate = userClient;
-        if (toUpdate.getLockExpirationDateTime() != null
+        if (userClient.getLockExpirationDateTime() != null
                 && LocalDateTime.now(DateTimeZone.UTC).isAfter(
-                toUpdate.getLockExpirationDateTime())) {
-            toUpdate = userClientPersistence
-                    .unlockUserClient((UserClient) toUpdate);
+                userClient.getLockExpirationDateTime())) {
+            userClient = userClientPersistence
+                    .unlockUserClient(userClient);
         }
-        return toUpdate;
+        return userClient;
     }
 
     @Transactional(readOnly = true)
     public boolean validateEmailAddress(UserClient userClient) {
-        ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService
-                .getByClient(userClient.getClient());
 
-        if (restrictConfig == null || restrictConfig.isEmailConfigRestrict() == false) {
+        if (userClient == null || StringUtils.isBlank(userClient.getEmail())){
+            return true;
+        }
+        Client toUseForLookup;
+
+        if (userClient.getClient() != null){
+            // load from the passed in user client
+            toUseForLookup = userClient.getClient();
+        } else {
+            // load from the user in the db (if it exists)
+            UserClient fromDb = reload(userClient);
+            toUseForLookup = fromDb != null ? fromDb.getClient() : null;
+        }
+        if (toUseForLookup == null){
+            // still couldn't find a client, bomb out
+            return true;
+        }
+
+        ClientRestrictConfiguration restrictConfig = clientRestrictConfigurationService.getByClient(toUseForLookup);
+        if (restrictConfig == null || !restrictConfig.isEmailConfigRestrict()) {
             // return true if isEmailConfigRestrict returns false
             return true;
         } else {
             Page<EmailRestrictConfiguration> validEmailEndingPage = emailRestrictConfigurationService
-                    .getByClient(null, userClient.getClient());
+                    .getByClient(null, toUseForLookup);
             List<String> validEmailEndings = collectAllValidEmailEndings(null,
                     validEmailEndingPage, userClient);
 
             if (validEmailEndings.size() == 0) {
-                // return null if no valid email ending is set
+                // return true if no valid email ending is set
                 return true;
             } else {
                 // parse email to get domain
@@ -283,15 +285,7 @@ public class UserClientServiceImpl implements UserClientService {
                     trimmedDomain = domain.substring(StringUtils
                             .lastOrdinalIndexOf(domain, ".", 2) + 1);
                 }
-
-                if (validEmailEndings.contains(trimmedDomain)) {
-                    // return true if validEmailEndings contain the trimmed
-                    // domain
-                    return true;
-                } else {
-                    // return false if email does not match valid endings
-                    return false;
-                }
+                return validEmailEndings.contains(trimmedDomain);
             }
         }
     }
@@ -301,7 +295,7 @@ public class UserClientServiceImpl implements UserClientService {
             Page<EmailRestrictConfiguration> validEmailEndingPage,
             UserClient userClient) {
         if (listOfValidEmailEndings == null) {
-            listOfValidEmailEndings = new ArrayList<String>();
+            listOfValidEmailEndings = new ArrayList<>();
         }
         for (EmailRestrictConfiguration validEmailEnding : validEmailEndingPage
                 .getContent()) {

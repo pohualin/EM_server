@@ -1,16 +1,15 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import javax.annotation.Resource;
-import javax.transaction.Transactional;
-
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.stereotype.Service;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import javax.transaction.Transactional;
 
 /**
  * Service Implementation class to deal with ClientRestrictConfiguration
@@ -53,8 +52,11 @@ public class ClientRestrictConfigurationServiceImpl implements
     @Transactional
     public ClientRestrictConfiguration getByClient(Client client) {
         Client reloadClient = clientService.reload(client);
-        return clientRestrictConfigurationPersistence
-                .findByClient(reloadClient);
+        if (reloadClient != null) {
+            return clientRestrictConfigurationPersistence.findByClient(reloadClient);
+        } else {
+            return null;
+        }
     }
 
     @Override
