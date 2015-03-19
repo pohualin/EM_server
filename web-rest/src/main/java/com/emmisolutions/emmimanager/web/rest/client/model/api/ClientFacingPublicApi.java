@@ -40,7 +40,7 @@ public class ClientFacingPublicApi extends ResourceSupport {
         add(new Link(urlWithTokenParameter(activationPasswordPolicy), activationPasswordPolicy.getRel()));
         add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
         add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null, null, null)).withRel("secretQuestions"));
-        add(linkTo(methodOn(UserClientsResource.class).validateEmail(null)).withRel("validateEmail"));
+        add(linkTo(methodOn(UserClientsResource.class).validateEmailToken(null)).withRel("validateEmailToken"));
     }
 
     private String urlWithTokenParameter(Link link){
