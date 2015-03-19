@@ -375,7 +375,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         
         // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true and no email endings set
         restrictConfiguration.setEmailConfigRestrict(true);
-        restrictConfiguration = clientRestrictConfigurationService.update(restrictConfiguration);
+        clientRestrictConfigurationService.update(restrictConfiguration);
         restricted = userClientService.validateEmailAddress(newUserClient);
         assertThat("Should return true", restricted, is(true));
         
@@ -403,6 +403,19 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         newUserClient.setEmail("george@apple.com");
         restricted = userClientService.validateEmailAddress(newUserClient);
         assertThat("Should return false", restricted, is(false));
+
+        UserClient inDb = makeNewRandomUserClient(client);
+        inDb.setEmail("george@apple.com");
+        inDb.setClient(null);
+        assertThat("should load from the database and fail", userClientService.validateEmailAddress(inDb), is(false));
     }
 
+    /**
+     * Make sure our exception cases are taken care of
+     */
+    @Test
+    public void testUnCommonUserClients(){
+        assertThat("email should be 'valid'", userClientService.validateEmailAddress(null), is(true));
+        assertThat("email should be 'valid'", userClientService.validateEmailAddress(new UserClient()), is(true));
+    }
 }
