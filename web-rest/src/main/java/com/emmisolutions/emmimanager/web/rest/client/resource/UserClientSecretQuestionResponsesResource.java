@@ -112,13 +112,12 @@ public class UserClientSecretQuestionResponsesResource {
             @PathVariable("userClientId") Long userClientId,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {
        
-    	UserClient userClient = new UserClient(userClientId);
-    	userClientSecretQuestionResponse.setUserClient(userClient);
+    	userClientSecretQuestionResponse.setUserClient(new UserClient(userClientId));
         UserClientSecretQuestionResponse ucsqr = userClientSecretQuestionResponseService
                 .saveOrUpdate(userClientSecretQuestionResponse);
 
         if( ucsqr != null) {
-        	return new ResponseEntity<>(
+            return new ResponseEntity<>(
             		questionResponseAssembler
                         .toResource(ucsqr),
                         HttpStatus.OK);
