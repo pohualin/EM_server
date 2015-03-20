@@ -74,6 +74,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
                 user.isEmailValidated(),
+                user.isSecretQuestionCreated(),
                 clientResourceAssembler.toResource(user.getClient()),
                 perms,
                 user.isImpersonated(),

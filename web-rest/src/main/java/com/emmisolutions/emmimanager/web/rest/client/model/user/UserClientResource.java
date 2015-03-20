@@ -31,7 +31,7 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated;
+    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated, secretQuestionCreated;
 
     private LocalDateTime passwordExpirationTime;
     
@@ -44,7 +44,9 @@ public class UserClientResource extends ResourceSupport {
     private List<String> permissions;
 
     private List<UserClientService.UserClientConflict> conflicts;
-    
+
+    private UserClientService.UserClientValidationError validationError;
+
     public UserClientResource() {
     }
 
@@ -61,6 +63,7 @@ public class UserClientResource extends ResourceSupport {
      * @param accountNonLocked      account is not locked
      * @param credentialsNonExpired credentials are not expired
      * @param emailValidated        email is validated
+     * @param secretQuestionCreated secret question created or not
      * @param permissions           permissions
      */
     public UserClientResource(Long id,
@@ -74,6 +77,7 @@ public class UserClientResource extends ResourceSupport {
                               boolean accountNonLocked,
                               boolean credentialsNonExpired,
                               boolean emailValidated,
+                              boolean secretQuestionCreated,
                               ClientResource clientResource,
                               List<String> permissions,
                               boolean impersonated,
@@ -89,6 +93,7 @@ public class UserClientResource extends ResourceSupport {
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
         this.emailValidated = emailValidated;
+        this.secretQuestionCreated = secretQuestionCreated;
         this.clientResource = clientResource;
         this.permissions = permissions;
         this.impersonated = impersonated;
@@ -121,6 +126,14 @@ public class UserClientResource extends ResourceSupport {
 
     public void setConflicts(List<UserClientService.UserClientConflict> conflicts) {
         this.conflicts = conflicts;
+    }
+
+    public UserClientService.UserClientValidationError getValidationError() {
+        return validationError;
+    }
+
+    public void setValidationError(UserClientService.UserClientValidationError validationError) {
+        this.validationError = validationError;
     }
 
     public Set<TeamResource> getTeams() {

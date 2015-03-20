@@ -107,16 +107,18 @@ public class UserClientSecretQuestionResponsesResource {
      * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses", method = RequestMethod.POST)
+    @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientSecretQuestionResponseResource> saveOrUpdate(
             @PathVariable("userClientId") Long userClientId,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {
        
-        userClientSecretQuestionResponse.setUserClient(new UserClient(userClientId));
+    	UserClient userClient = new UserClient(userClientId);
+    	userClientSecretQuestionResponse.setUserClient(userClient);
         UserClientSecretQuestionResponse ucsqr = userClientSecretQuestionResponseService
                 .saveOrUpdate(userClientSecretQuestionResponse);
 
         if( ucsqr != null) {
-            return new ResponseEntity<>(
+        	return new ResponseEntity<>(
             		questionResponseAssembler
                         .toResource(ucsqr),
                         HttpStatus.OK);
