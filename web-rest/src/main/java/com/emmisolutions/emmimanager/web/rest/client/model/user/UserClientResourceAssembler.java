@@ -1,8 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.user;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
@@ -80,12 +78,15 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isImpersonated(),
                 user.getPasswordExpireationDateTime());
 
+        ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
+
         if (!CollectionUtils.isEmpty(teams)){
             ret.setTeams(teams);
         }
 
         if (!user.isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+            ret.add(createVerifyPasswordLink(user));
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
             UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
@@ -99,6 +100,15 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
         }
 
         return ret;
+    }
+
+    public static Link createVerifyPasswordLink(UserClient user){
+        Link verifyPasswordLink = linkTo(methodOn(UserClientsResource.class).verifyPassword(user.getId(), null)).withRel("verifyPassword");
+        UriTemplate verifyPasswordUriTemplate = new UriTemplate(verifyPasswordLink.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("password",
+                                TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(verifyPasswordUriTemplate, verifyPasswordLink.getRel());
     }
 
 }

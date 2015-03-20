@@ -90,14 +90,17 @@ public interface UserClientService {
      */
     UserClient handleLoginFailure(UserClient userClient);
 
-    /**
-     * Unlock userClient if it is locked and lock is expired
-     * 
-     * @param userClient
-     *            to unlock
-     * @return an unlocked UserClient
-     */
-    UserClient unlockUserClient(UserClient userClient);
+	/**
+	 * Reset userClient lock if it is locked and lock is expired
+	 * 
+	 * DO NOT CALL THIS METHOD TO UNLOCK AN USER_CLIENT. CALL unlockUserClient
+	 * IN UserClientPersistence INSTEAD
+	 * 
+	 * @param userClient
+	 *            to reset
+	 * @return a reseted UserClient
+	 */
+	UserClient resetUserClientLock(UserClient userClient);
 
     /**
      * return true if the email is valid

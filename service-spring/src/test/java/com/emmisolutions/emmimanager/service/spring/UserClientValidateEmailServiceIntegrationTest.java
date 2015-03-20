@@ -45,14 +45,14 @@ public class UserClientValidateEmailServiceIntegrationTest extends BaseIntegrati
         UserClient user = makeNewRandomUserClient(client);
         user = userClientValidationEmailService.addValidationTokenTo(user);
         String validationToken = user.getValidationToken();
-        user = userClientValidationEmailService.validate(validationToken);
+        user = userClientValidationEmailService.validateEmailToken(validationToken);
         assertThat(user.isEmailValidated(), is(true));
         assertThat(user.getValidationToken(), is(nullValue()));
     }
 
     @Test
     public void testValidationIsNull() {
-        UserClient user = userClientValidationEmailService.validate(null);
+        UserClient user = userClientValidationEmailService.validateEmailToken(null);
         assertThat(user, is(nullValue()));
     }
 }

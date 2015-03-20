@@ -54,6 +54,9 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamTagPersistence teamTagPersistence;
 
+    @Resource
+    ReferenceGroupPersistence referenceGroupPersistence;
+
 	UserAdmin superAdmin;
 
     ClientType clientType;
@@ -192,5 +195,17 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils.randomAlphanumeric(18)));
         team = teamPersistence.save(team);
         return team;
+    }
+
+    @Test
+    public void findByReferenceGroup() {
+        ReferenceGroup referenceGroup = referenceGroupPersistence.loadReferenceGroups(null).iterator().next();
+        Group group = makeNewRandomGroup(null);
+        assertThat("we find a group by type", groupPersistence.doAnyGroupsUse(referenceGroup), is(false));
+
+        group.setType(referenceGroup.getType());
+        groupPersistence.save(group);
+
+        assertThat("we find a group by type", groupPersistence.doAnyGroupsUse(referenceGroup), is(true));
     }
 }

@@ -1,8 +1,11 @@
 package com.emmisolutions.emmimanager.service.spring;
+
+import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.RefGroupSaveRequest;
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.GroupService;
 import com.emmisolutions.emmimanager.service.ReferenceGroupService;
 import com.emmisolutions.emmimanager.service.ReferenceTagService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,6 +36,9 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     
     @Resource
     ReferenceTagService referenceTagService;
+
+    @Resource
+    GroupService groupService;
     
     /**
      * Make sure we can load a page of reference groups
@@ -227,7 +233,10 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
             }
         }
     }
-    
+
+    /**
+     * Get all tags for a group
+     */
     @Test
     public void testGetAllTagsForGroup(){
         RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();        
@@ -248,4 +257,45 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Page of tags returned:", tagsWithNoPageLimit.getTotalElements(), is(1l));
 
     }
+
+    /**
+     * make sure the can delete evaluates properly
+     */
+    @Test
+    public void canDelete() {
+        ReferenceGroup referenceGroup = referenceGroupService.loadReferenceGroups(null).iterator().next();
+        Group group = makeNewRandomGroup(null);
+        assertThat("should still be deletable", referenceGroupService.isDeletable(referenceGroup), is(true));
+        group.setType(referenceGroup.getType());
+        groupService.save(group);
+        assertThat("should not be deletable", referenceGroupService.isDeletable(referenceGroup), is(false));
+    }
+
+    /**
+     * can't delete nothing
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badDelete() {
+        referenceGroupService.delete(null);
+    }
+
+    /**
+     * Make sure delete doesn't stack out
+     */
+    @Test
+    public void goodDelete() {
+        RefGroupSaveRequest groupSaveReqOne = new RefGroupSaveRequest();
+        ReferenceGroup group = new ReferenceGroup();
+        group.setName(RandomStringUtils.randomAlphanumeric(8));
+        final ReferenceTag tagOne = new ReferenceTag();
+        tagOne.setName(RandomStringUtils.randomAlphanumeric(8));
+        groupSaveReqOne.setReferenceGroup(group);
+        groupSaveReqOne.setReferenceTags(new ArrayList<ReferenceTag>() {{
+                                             add(tagOne);
+                                         }}
+        );
+        ReferenceGroup savedGroup = referenceGroupService.saveReferenceGroupAndReferenceTags(groupSaveReqOne);
+        referenceGroupService.delete(savedGroup);
+    }
+
 }

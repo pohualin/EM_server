@@ -8,14 +8,7 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.UserAdminService;
-import com.emmisolutions.emmimanager.service.UserClientService;
-
+import com.emmisolutions.emmimanager.service.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -51,6 +44,9 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserAdminService userAdminService;
+
+    @Resource
+    UserClientPasswordService userClientPasswordService;
 
     /**
      * Create without client and login
@@ -329,13 +325,13 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         
         userClient.setLockExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC).minusMinutes(2));
         userClient = userClientService.update(userClient);
-        userClient = userClientService.unlockUserClient(userClient);
+        userClient = userClientService.resetUserClientLock(userClient);
         assertThat("unlock done", userClient.getLoginFailureCount(), is(0));
         assertThat("unlock done", userClient.isAccountNonLocked(), is(true));
         assertThat("unlock done", userClient.getLockExpirationDateTime(), is(nullValue()));
         
         configuration.setLockoutReset(0);
-        configuration = clientPasswordConfigurationService.save(configuration);
+        clientPasswordConfigurationService.save(configuration);
         UserClient userClientA = makeNewRandomUserClient(client);
         
         userClientA = userClientService.handleLoginFailure(userClientA);
@@ -349,7 +345,13 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClientA = userClientService.handleLoginFailure(userClientA);
         assertThat("third fail lock", userClientA.getLoginFailureCount(), is(3));
         assertThat("third fail lock", userClientA.isAccountNonLocked(), is(false));
-        assertThat("third fail lock with lock permenantly", userClient.getLockExpirationDateTime(), is(nullValue()));
+        assertThat("third fail lock with lock permanently", userClient.getLockExpirationDateTime(), is(nullValue()));
+
+        // ensure that admin update password unlocks a locked user
+        userClientA = userClientPasswordService.updatePassword(userClientA, false);
+        userClientA = userClientService.handleLoginFailure(userClientA);
+        assertThat("lock should be reset", userClientA.getLoginFailureCount(), is(1));
+        assertThat("user should not be locked", userClientA.isAccountNonLocked(), is(true));
     }
     
     /**
@@ -375,7 +377,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         
         // Check client with ClientRestrictConfiguration, isEmailConfigRestrict is true and no email endings set
         restrictConfiguration.setEmailConfigRestrict(true);
-        restrictConfiguration = clientRestrictConfigurationService.update(restrictConfiguration);
+        clientRestrictConfigurationService.update(restrictConfiguration);
         restricted = userClientService.validateEmailAddress(newUserClient);
         assertThat("Should return true", restricted, is(true));
         
@@ -403,6 +405,19 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         newUserClient.setEmail("george@apple.com");
         restricted = userClientService.validateEmailAddress(newUserClient);
         assertThat("Should return false", restricted, is(false));
+
+        UserClient inDb = makeNewRandomUserClient(client);
+        inDb.setEmail("george@apple.com");
+        inDb.setClient(null);
+        assertThat("should load from the database and fail", userClientService.validateEmailAddress(inDb), is(false));
     }
 
+    /**
+     * Make sure our exception cases are taken care of
+     */
+    @Test
+    public void testUnCommonUserClients(){
+        assertThat("email should be 'valid'", userClientService.validateEmailAddress(null), is(true));
+        assertThat("email should be 'valid'", userClientService.validateEmailAddress(new UserClient()), is(true));
+    }
 }
