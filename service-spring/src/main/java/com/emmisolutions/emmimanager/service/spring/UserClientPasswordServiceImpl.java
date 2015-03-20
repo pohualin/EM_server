@@ -1,8 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -14,7 +11,6 @@ import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -25,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Implementation of UserClientPasswordService
@@ -49,13 +47,15 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
-        userClient.setCredentialsNonExpired(setCredentialNonExpired);
-        userClient.setPassword(user.getPassword());
+        // unlock a user that is locked
+        UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);
+        unlockedUser.setCredentialsNonExpired(setCredentialNonExpired);
+        unlockedUser.setPassword(user.getPassword());
         // set the expiration length based upon the user never logging in
-        userClient.setPasswordResetExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
+        unlockedUser.setPasswordResetExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .plusHours(userClient.isNeverLoggedIn() ? UserClientService.ACTIVATION_TOKEN_HOURS_VALID :
                         RESET_TOKEN_HOURS_VALID));
-        return userClientPersistence.saveOrUpdate(encodePassword(userClient));
+        return userClientPersistence.saveOrUpdate(encodePassword(unlockedUser));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     !userClient.isCredentialsNonExpired() &&
                     passwordEncoder.matches(expiredPasswordChangeRequest.getExistingPassword(),
                             userClient.getPassword() + userClient.getSalt())) {
-                UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);;
+                UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);
                 // user exists, credentials are expired, before reset expiration date and existing password is correct
                 unlockedUser.setPassword(expiredPasswordChangeRequest.getNewPassword());
                 unlockedUser.setCredentialsNonExpired(true);
@@ -109,9 +109,9 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     unlockedUser.setPassword(resetPasswordRequest.getNewPassword());
                     unlockedUser.setCredentialsNonExpired(true);
                     unlockedUser.setEmailValidated(true);
-                    
                     ret = updatePasswordExpirationTime(encodePassword(unlockedUser));
                 } else {
+                    // don't return this just update to remove the reset token
                     userClientPersistence.saveOrUpdate(userClient);
                 }
             }

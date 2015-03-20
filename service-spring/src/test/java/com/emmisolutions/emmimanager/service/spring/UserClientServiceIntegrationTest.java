@@ -8,14 +8,7 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.UserAdminService;
-import com.emmisolutions.emmimanager.service.UserClientService;
-
+import com.emmisolutions.emmimanager.service.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -51,6 +44,9 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserAdminService userAdminService;
+
+    @Resource
+    UserClientPasswordService userClientPasswordService;
 
     /**
      * Create without client and login
@@ -335,7 +331,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("unlock done", userClient.getLockExpirationDateTime(), is(nullValue()));
         
         configuration.setLockoutReset(0);
-        configuration = clientPasswordConfigurationService.save(configuration);
+        clientPasswordConfigurationService.save(configuration);
         UserClient userClientA = makeNewRandomUserClient(client);
         
         userClientA = userClientService.handleLoginFailure(userClientA);
@@ -349,7 +345,13 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClientA = userClientService.handleLoginFailure(userClientA);
         assertThat("third fail lock", userClientA.getLoginFailureCount(), is(3));
         assertThat("third fail lock", userClientA.isAccountNonLocked(), is(false));
-        assertThat("third fail lock with lock permenantly", userClient.getLockExpirationDateTime(), is(nullValue()));
+        assertThat("third fail lock with lock permanently", userClient.getLockExpirationDateTime(), is(nullValue()));
+
+        // ensure that admin update password unlocks a locked user
+        userClientA = userClientPasswordService.updatePassword(userClientA, false);
+        userClientA = userClientService.handleLoginFailure(userClientA);
+        assertThat("lock should be reset", userClientA.getLoginFailureCount(), is(1));
+        assertThat("user should not be locked", userClientA.isAccountNonLocked(), is(true));
     }
     
     /**
