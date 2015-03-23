@@ -8,10 +8,12 @@ import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -35,6 +37,9 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
 
     @Resource(name = "userClientUserClientTeamRoleTeamResourceAssembler")
     ResourceAssembler<UserClientUserClientTeamRole, TeamResource> roleTeamResourceResourceAssembler;
+
+    @Value("${admin.application.entry.point:/admin.html}")
+    String adminEntryPoint;
 
     Pattern specializedPermissions = Pattern.compile("([A-Z_]*)_[0-9]+");
 
@@ -85,18 +90,27 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
         }
 
         if (!user.isImpersonated()) {
+            // non-impersonation users only
             ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
             ret.add(createVerifyPasswordLink(user));
+            
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
-            UriTemplate uriTemplate = new UriTemplate(link.getHref())
-            .with(new TemplateVariables(
-                    new TemplateVariable("password",
-                            TemplateVariable.VariableType.REQUEST_PARAM)));
-            ret.add(new Link(uriTemplate, link.getRel()));
+            ret.add(new Link(createUriTemplate("password", link), link.getRel()));
+            
+            Link updateUserClientSecretQuestion = linkTo(methodOn(UserClientsResource.class).updateUserClient(user.getId(), false)).withRel("updateUserClientSecretQuestionFlag");
+            ret.add(new Link(createUriTemplate("secretQuestionsCreated", updateUserClientSecretQuestion), updateUserClientSecretQuestion.getRel()));
 
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
+        } else {
+            // impersonation users
+            ret.add(new Link(
+                    UriComponentsBuilder.fromHttpUrl(
+                            linkTo(methodOn(UserClientsResource.class).getById(1l)).withSelfRel().getHref())
+                            .replacePath(adminEntryPoint)
+                            .build(false)
+                            .toUriString(), "adminApp"));
         }
 
         return ret;
@@ -110,5 +124,16 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                                 TemplateVariable.VariableType.REQUEST_PARAM)));
         return new Link(verifyPasswordUriTemplate, verifyPasswordLink.getRel());
     }
+    
+    private UriTemplate createUriTemplate(String requestParameterName, Link linkName ){
+    	UriTemplate uriTemplate = new UriTemplate(linkName.getHref())
+        .with(new TemplateVariables(
+                new TemplateVariable(requestParameterName,
+                        TemplateVariable.VariableType.REQUEST_PARAM)));
+    	return uriTemplate;
+    }
+
+    
+    
 
 }
