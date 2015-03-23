@@ -47,7 +47,6 @@ public class LocationServiceImpl implements LocationService {
         }
         location.setId(null);
         location.setVersion(null);
-        location.setActive(true);
         location.setBelongsTo(null);
         return locationPersistence.save(location);
     }
