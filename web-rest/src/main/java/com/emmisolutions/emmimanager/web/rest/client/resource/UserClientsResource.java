@@ -241,7 +241,7 @@ public class UserClientsResource {
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> updateUserClient(
     		@PathVariable("userClientId") Long userClientId,
-    		@RequestParam(value = "secretQuestionsCreated", required = false) boolean secretQuestionsCreated) {
+    		@RequestParam(value = "secretQuestionsCreated", required = false) Boolean secretQuestionsCreated) {
 
     	UserClient userClient = new UserClient(userClientId);
     	userClient.setSecretQuestionCreated(secretQuestionsCreated);

@@ -97,7 +97,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
             ret.add(new Link(createUriTemplate("password", link), link.getRel()));
             
-            Link updateUserClientSecretQuestion = linkTo(methodOn(UserClientsResource.class).updateUserClient(user.getId(), false)).withRel("updateUserClientSecretQuestionFlag");
+            Link updateUserClientSecretQuestion = linkTo(methodOn(UserClientsResource.class).updateUserClient(user.getId(), null)).withRel("updateUserClientSecretQuestionFlag");
             ret.add(new Link(createUriTemplate("secretQuestionsCreated", updateUserClientSecretQuestion), updateUserClientSecretQuestion.getRel()));
 
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
