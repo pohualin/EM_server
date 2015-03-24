@@ -80,6 +80,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 clientResourceAssembler.toResource(user.getClient()),
                 perms,
                 user.isImpersonated(),
+                user.getNotNowExpirationTime(),
                 user.getPasswordExpireationDateTime());
 
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
@@ -102,6 +103,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
+            ret.add(linkTo(methodOn(UserClientsResource.class).notNow(user.getId())).withRel("notNow"));
         } else {
             // impersonation users
             ret.add(new Link(

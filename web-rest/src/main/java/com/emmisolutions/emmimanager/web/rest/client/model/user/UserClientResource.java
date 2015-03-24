@@ -33,7 +33,7 @@ public class UserClientResource extends ResourceSupport {
 
     private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated;
 
-    private LocalDateTime passwordExpirationTime;
+    private LocalDateTime passwordExpirationTime, notNowExpirationTime;
     
     private ClientResource clientResource;
 
@@ -79,6 +79,7 @@ public class UserClientResource extends ResourceSupport {
                               ClientResource clientResource,
                               List<String> permissions,
                               boolean impersonated,
+                              LocalDateTime notNowExpirationTime,
                               LocalDateTime passwordExpirationTime) {
         this.id = id;
         this.version = version;
@@ -94,6 +95,7 @@ public class UserClientResource extends ResourceSupport {
         this.clientResource = clientResource;
         this.permissions = permissions;
         this.impersonated = impersonated;
+        this.notNowExpirationTime = notNowExpirationTime;
         this.passwordExpirationTime = passwordExpirationTime;
     }
 

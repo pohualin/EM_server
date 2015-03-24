@@ -14,6 +14,7 @@ import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClient
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
@@ -223,6 +224,24 @@ public class UserClientsResource {
     @PreAuthorize("hasPermission(@password, #password)")
     public ResponseEntity<Void> verifyPassword(@PathVariable("userClientId") Long userClientId,
                                                @RequestParam(value = "password", required = false) String password) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * PUT for a given user client verified with password
+     *
+     * @param userClientId
+     * @return
+     */
+    @RequestMapping(value = "/notNow/{userClientId}", method = RequestMethod.PUT)
+    @PreAuthorize("hasPermission(@user, #userClientId)")
+    public ResponseEntity<Void> notNow(@PathVariable("userClientId") Long userClientId) {
+        final int NOT_NOW_DELAY = 30;
+        UserClient loadedUserClient = userClientService.reload(new UserClient(userClientId));
+        LocalDateTime dateTime = new LocalDateTime();
+        dateTime.plusDays(NOT_NOW_DELAY);
+        loadedUserClient.setNotNowExpirationTime(dateTime);
+        userClientService.update(loadedUserClient);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

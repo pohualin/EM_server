@@ -110,6 +110,9 @@ public class UserClient extends User {
     @Column(name = "lock_expiration_time_utc")
     private LocalDateTime lockExpirationDateTime;
 
+    @Column(name = "not_now_expiration_time_utc")
+    private LocalDateTime notNowExpirationTime;
+
     public UserClient() {
 
     }
@@ -322,5 +325,13 @@ public class UserClient extends User {
 
     public void setValidationToken(String validationToken) {
         this.validationToken = validationToken;
+    }
+
+    public LocalDateTime getNotNowExpirationTime() {
+        return notNowExpirationTime;
+    }
+
+    public void setNotNowExpirationTime(LocalDateTime notNowExpirationTime) {
+        this.notNowExpirationTime = notNowExpirationTime;
     }
 }
