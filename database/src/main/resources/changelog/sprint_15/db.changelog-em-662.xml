@@ -28,7 +28,7 @@
 	]]></sql>  	
 	</changeSet>
 	
-	<changeSet id="Retrieve and update secret question created for mssql" author="wlee" dbms=“mssql”>
+	<changeSet id="Retrieve and update secret question created for mssql" author="wlee" dbms="mssql">
         <sql><![CDATA[	  
 			update user_client set secret_question_created=1
     		where id IN( 
