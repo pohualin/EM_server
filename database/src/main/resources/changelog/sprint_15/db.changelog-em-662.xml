@@ -16,9 +16,21 @@
         </addColumn>
     </changeSet>
     
-   <changeSet id="find and update secret question created" author="wlee" >
+   <changeSet id="Retrieve and update secret question created" author="wlee" dbms=="mysql,h2,postgresql">
         <sql><![CDATA[	  
 			update user_client set secret_question_created=true
+    		where id IN( 
+    		          SELECT DUP.user_client_id FROM 
+				      (
+                          SELECT DISTINCT user_client_id FROM user_client_secret_question_response 
+				      ) AS DUP	
+	        )
+	]]></sql>  	
+	</changeSet>
+	
+	<changeSet id="Retrieve and update secret question created for mssql" author="wlee" dbms=“mssql”>
+        <sql><![CDATA[	  
+			update user_client set secret_question_created=1
     		where id IN( 
     		          SELECT DUP.user_client_id FROM 
 				      (
