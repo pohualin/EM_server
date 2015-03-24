@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflict;
 import com.emmisolutions.emmimanager.service.UserClientValidationEmailService;
@@ -57,6 +58,9 @@ public class UserClientsResource {
 
     @Resource
     ClientUserClientResourceAssembler clientUserClientResourceAssembler;
+    
+    @Resource
+    UserClientSecretQuestionResponseService userClientSecretQuestionResponseService;
 
     @Resource
     MailService mailService;
@@ -244,4 +248,29 @@ public class UserClientsResource {
         userClientService.update(loadedUserClient);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    
+    /**
+     * PUT for secret question flag to a given user client
+     *
+     * @param userClientId user client id
+     * @param secretQuestionsCreated secret question has created or not
+     * @return
+     */
+    @RequestMapping(value = "/user_client/{userClientId}/updateUserClient", method = RequestMethod.PUT)
+    @PreAuthorize("hasPermission(@user, #userClientId)")
+    public ResponseEntity<UserClientResource> updateUserClient(
+    		@PathVariable("userClientId") Long userClientId,
+    		@RequestParam(value = "secretQuestionsCreated", required = false) Boolean secretQuestionsCreated) {
+
+    	UserClient userClient = new UserClient(userClientId);
+    	userClient.setSecretQuestionCreated(secretQuestionsCreated);
+    	userClient = userClientSecretQuestionResponseService.saveOrUpdateUserClient(userClient);
+
+    	 if (userClient != null) {
+             return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userClient), HttpStatus.OK);
+         }else{
+              return new ResponseEntity<>(HttpStatus.GONE);
+         }
+    }
+
 }

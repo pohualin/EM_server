@@ -77,6 +77,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isAccountNonLocked(),
                 user.isCredentialsNonExpired(),
                 user.isEmailValidated(),
+                user.isSecretQuestionCreated(),
                 clientResourceAssembler.toResource(user.getClient()),
                 perms,
                 user.isImpersonated(),
@@ -93,12 +94,12 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             // non-impersonation users only
             ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
             ret.add(createVerifyPasswordLink(user));
+            
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
-            UriTemplate uriTemplate = new UriTemplate(link.getHref())
-            .with(new TemplateVariables(
-                    new TemplateVariable("password",
-                            TemplateVariable.VariableType.REQUEST_PARAM)));
-            ret.add(new Link(uriTemplate, link.getRel()));
+            ret.add(new Link(createUriTemplate("password", link), link.getRel()));
+            
+            Link updateUserClientSecretQuestion = linkTo(methodOn(UserClientsResource.class).updateUserClient(user.getId(), null)).withRel("updateUserClientSecretQuestionFlag");
+            ret.add(new Link(createUriTemplate("secretQuestionsCreated", updateUserClientSecretQuestion), updateUserClientSecretQuestion.getRel()));
 
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
@@ -125,5 +126,16 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                                 TemplateVariable.VariableType.REQUEST_PARAM)));
         return new Link(verifyPasswordUriTemplate, verifyPasswordLink.getRel());
     }
+    
+    private UriTemplate createUriTemplate(String requestParameterName, Link linkName ){
+    	UriTemplate uriTemplate = new UriTemplate(linkName.getHref())
+        .with(new TemplateVariables(
+                new TemplateVariable(requestParameterName,
+                        TemplateVariable.VariableType.REQUEST_PARAM)));
+    	return uriTemplate;
+    }
+
+    
+    
 
 }
