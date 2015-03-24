@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add secret question toggle" author="Wlee">
+        <addColumn tableName="user_client">
+            <column name="secret_question_created" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="secret_question_created" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    
+   <changeSet id="Retrieve and update secret question created" author="wlee" dbms="mysql,h2,postgresql">
+        <sql><![CDATA[	  
+			update user_client set secret_question_created=true
+    		where id IN( 
+    		          SELECT DUP.user_client_id FROM 
+				      (
+                          SELECT DISTINCT user_client_id FROM user_client_secret_question_response 
+				      ) AS DUP	
+	        )
+	]]></sql>  	
+	</changeSet>
+	
+	<changeSet id="Retrieve and update secret question created for mssql" author="wlee" dbms="mssql">
+        <sql><![CDATA[	  
+			update user_client set secret_question_created=1
+    		where id IN( 
+    		          SELECT DUP.user_client_id FROM 
+				      (
+                          SELECT DISTINCT user_client_id FROM user_client_secret_question_response 
+				      ) AS DUP	
+	        )
+	]]></sql>  	
+	</changeSet>
+
+</databaseChangeLog>

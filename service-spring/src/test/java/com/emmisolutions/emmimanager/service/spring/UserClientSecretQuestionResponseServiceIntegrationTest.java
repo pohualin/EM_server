@@ -11,6 +11,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.SecretQuestionPersistence;
+import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
@@ -33,6 +34,9 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
 
     @Resource
     UserClientService userClientService;
+    
+    @Resource
+    UserClientPersistence userClientPersistence;
 
     @Resource
     UserClientSecretQuestionResponseService userClientSecretQuestionResponseService;
@@ -64,6 +68,14 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
 
     }
     
+       
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testSaveAndUpdateInvalid() {
+        UserClient user = new UserClient();
+        userClientSecretQuestionResponseService.saveOrUpdateUserClient(user);
+    }
+
+    
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void invalidSecretQuestion(){
         Client client = makeNewRandomClient();
@@ -75,8 +87,31 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponseService.saveOrUpdate(questionResponse);
         
      }
-
     
+    /**
+     * Reload test
+    */
+    @Test
+    public void saveOrUpdateUserClient(){
+    	Client client = makeNewRandomClient();
+        UserClient userClient = makeNewRandomUserClient(client);
+        userClient = userClientService.reload(userClient);
+        userClient.setSecretQuestionCreated(true);
+        userClient = userClientPersistence.saveOrUpdate(userClient);
+        assertThat("user client secret question created is true", userClient.isSecretQuestionCreated(), is(true));
+            
+     }
+    
+    /**
+     * Null Test
+    */
+    @Test
+    public void testQuestionResponseIsNull() {
+    	UserClientSecretQuestionResponse questionResponse = userClientSecretQuestionResponseService.reload(null);
+        assertThat(questionResponse, is(nullValue()));
+    }
+    
+      
     /**
      * Reload test
     */
@@ -91,7 +126,6 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         questionResponse.setUserClient(userClient);
         questionResponse = (UserClientSecretQuestionResponse) userClientSecretQuestionResponseService.saveOrUpdate(questionResponse);
         assertThat("SecretQuestion has been created", questionResponse, is(questionResponse));
-        
         userClientSecretQuestionResponseService.reload(questionResponse);    
         assertThat("Should return null", userClientSecretQuestionResponseService.reload(questionResponse ), is(notNullValue()));
        
@@ -108,6 +142,7 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         
         UserClient user = new UserClient();
         user.setClient(client);
+        user.setSecretQuestionCreated(false);
         user.setFirstName("SecondName");
         user.setLastName("AnotherName");
         user.setLogin("wee@mail.com");
@@ -129,10 +164,12 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         questionResponseToo.setUserClient(user);
        
         questionResponseToo = (UserClientSecretQuestionResponse)userClientSecretQuestionResponseService.saveOrUpdate(questionResponseToo);
-        userClientSecretQuestionResponseService.reload(questionResponse);   
+        user = userClientService.reload(user);
         
-        userClientSecretQuestionResponseService.reload(questionResponseToo);   
+        user.setSecretQuestionCreated(true);
         
+        user = userClientPersistence.saveOrUpdate(user);
+                             
         Page<UserClientSecretQuestionResponse> page= userClientSecretQuestionResponseService
                 .findByUserClient(user, new PageRequest(0, 10));
         
@@ -146,6 +183,7 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         assertThat("system is the created by", questionResponse.getCreatedBy(), is("system"));
         assertThat("system is the response", questionResponse.getResponse(), is("Toyota"));
         assertThat("Should return null", userClientSecretQuestionResponseService.reload(questionResponseToo), is(notNullValue()));
+        assertThat("user client secret question created is true", user.isSecretQuestionCreated(), is(true));
     } 
      
 }
