@@ -16,7 +16,7 @@
         </addColumn>
     </changeSet>
     
-   <changeSet id="Retrieve and update secret question created" author="wlee" dbms=="mysql,h2,postgresql">
+   <changeSet id="Retrieve and update secret question created" author="wlee" dbms="mysql,h2,postgresql">
         <sql><![CDATA[	  
 			update user_client set secret_question_created=true
     		where id IN( 
