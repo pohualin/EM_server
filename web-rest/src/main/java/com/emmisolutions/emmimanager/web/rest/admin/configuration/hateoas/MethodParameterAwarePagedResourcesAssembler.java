@@ -169,38 +169,72 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
 
         Pageable first = null;
         Pageable current = null;
+        Pageable previous = null;
         if (page.hasNext()) {
             Pageable next = page.nextPageable();
-
             first = next.first();
             current = next.previousOrFirst();
         }
 
         if (page.hasPrevious()) {
-            Pageable previous = page.previousPageable();
+            previous = page.previousPageable();
             first = previous.first();
             current = previous.next();
-//            foo(resources, first, uri, prefix + Link.REL_FIRST);
-            foo(resources, previous, uri, prefix + Link.REL_PREVIOUS);
+        }
+        List<Pageable> previous5Pages = new ArrayList<>();
+        List<Pageable> next5Pages = new ArrayList<>();
+        boolean atLastPage = false;
+        boolean firstPageIsInPrevious = current != null && !current.hasPrevious();
+        if (current != null) {
+            // add 5 links back
+            Pageable startingBack = current;
+            while (startingBack.hasPrevious() && previous5Pages.size() < 5) {
+                startingBack = startingBack.previousOrFirst();
+                previous5Pages.add(0, startingBack);
+                firstPageIsInPrevious = !startingBack.hasPrevious();
+            }
+
+            // add 5 links forward
+            int count = 0;
+            int forwardMax = (current.equals(first) ? 10 : 11) - previous5Pages.size();
+            Pageable next = current;
+            while (!atLastPage && count < forwardMax) {
+                count++;
+                next5Pages.add(next);
+                next = next.next();
+                atLastPage = next.getPageNumber() >= page.getTotalPages();
+            }
+
         }
 
-        if (first != null) {
-            boolean atLastPage = false;
-
-            while (!atLastPage) {
-                foo(resources, first, uri, prefix + (first.getPageNumber() + 1));
-                first = first.next();
-                atLastPage = first.getPageNumber() >= page.getTotalPages();
-            }
-            if (page.hasNext()) {
-                foo(resources, page.nextPageable(), uri, prefix + Link.REL_NEXT);
-            }
-//            foo(resources, first.previousOrFirst(), uri, prefix + Link.REL_LAST);
-        }
-
+        // write the actual resource links
         if (current != null) {
             foo(resources, current, uri, prefix + Link.REL_SELF);
         }
+        if (!firstPageIsInPrevious && page.getTotalPages() > 1) {
+            foo(resources, first, uri, prefix + Link.REL_FIRST);
+            foo(resources, previous, uri, prefix + Link.REL_PREVIOUS);
+        }
+        for (Pageable previous5Page : previous5Pages) {
+            foo(resources, previous5Page, uri, prefix + (previous5Page.getPageNumber() + 1));
+        }
+        for (Pageable next5Page : next5Pages) {
+            foo(resources, next5Page, uri, prefix + (next5Page.getPageNumber() + 1));
+        }
+        // add the next link
+        if (page.hasNext() && !atLastPage) {
+            foo(resources, page.nextPageable(), uri, prefix + Link.REL_NEXT);
+        }
+        // add last
+        if (!atLastPage && current != null) {
+            Pageable toTheEnd = current;
+            while (!atLastPage) {
+                toTheEnd = toTheEnd.next();
+                atLastPage = toTheEnd.getPageNumber() >= page.getTotalPages();
+            }
+            foo(resources, toTheEnd.previousOrFirst(), uri, prefix + Link.REL_LAST);
+        }
+
         resources.add(appendPaginationParameterTemplates(new Link(uri)));
 
         return resources;

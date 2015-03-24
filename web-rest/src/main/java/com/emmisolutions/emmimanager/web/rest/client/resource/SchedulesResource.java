@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledProgramResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledProgramResourcePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
-import com.emmisolutions.emmimanager.web.rest.client.model.team.UserClientUserClientTeamRoleTeamResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.slf4j.Logger;
@@ -33,18 +32,18 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 /**
  * Teams resource.
  */
-@RestController("clientTeamsResource")
+@RestController("clientSchedulesResource")
 @RequestMapping(value = "/webapi-client", produces = {APPLICATION_JSON_VALUE,
         APPLICATION_XML_VALUE})
-public class TeamsResource {
+public class SchedulesResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TeamsResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulesResource.class);
 
     @Resource(name = "scheduledProgramResourceAssembler")
     ResourceAssembler<ScheduledProgram, ScheduledProgramResource> programResourceResourceAssembler;
 
-    @Resource(name = "userClientUserClientTeamRoleTeamResourceAssembler")
-    UserClientUserClientTeamRoleTeamResourceAssembler roleTeamResourceResourceAssembler;
+    @Resource(name = "clientTeamResourceAssembler")
+    ResourceAssembler<Team, TeamResource> teamTeamResourceAssembler;
 
     @Resource
     TeamService teamService;
@@ -101,10 +100,7 @@ public class TeamsResource {
         if (teamId != null) {
             Team found = teamService.reload(new Team(teamId));
             if (found != null && found.getClient().getId().equals(clientId)) {
-                TeamResource ret = new TeamResource();
-                ret.setEntity(found);
-                ret.add(roleTeamResourceResourceAssembler.createScheduleLink(found));
-                return new ResponseEntity<>(ret, HttpStatus.OK);
+                return new ResponseEntity<>(teamTeamResourceAssembler.toResource(found), HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(HttpStatus.GONE);
