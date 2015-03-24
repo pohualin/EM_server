@@ -88,6 +88,9 @@ public class UserClient extends User {
 
     @Column(name = "email_validated")
     private boolean emailValidated;
+    
+    @Column(name = "secret_question_created")
+    private boolean secretQuestionCreated;
 
     @Column(name = "password_reset_expiration_time_utc")
     private LocalDateTime passwordResetExpirationDateTime;
@@ -262,6 +265,14 @@ public class UserClient extends User {
         this.emailValidated = emailValidated;
     }
 
+    public boolean isSecretQuestionCreated() {
+		return secretQuestionCreated;
+	}
+
+	public void setSecretQuestionCreated(boolean secretQuestionCreated) {
+		this.secretQuestionCreated = secretQuestionCreated;
+	}
+	
     public LocalDateTime getPasswordResetExpirationDateTime() {
         return passwordResetExpirationDateTime;
     }

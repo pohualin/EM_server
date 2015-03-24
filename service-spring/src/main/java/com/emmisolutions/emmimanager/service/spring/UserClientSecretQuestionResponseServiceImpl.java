@@ -122,6 +122,24 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
                 .findByUserClient(userClient, pageable);
                
     }
+    
+    /**
+     * save or update user client for user client created or not flag  
+     * @param userClient the user client
+     * @return  UserClient
+     */
+    @Override
+    @Transactional
+    public UserClient saveOrUpdateUserClient(
+            UserClient userClient) {
+    	UserClient inDb = userClientService.reload(userClient);
+        if (inDb == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "This method is only to be used with existing UserClient objects");
+        }
+        inDb.setSecretQuestionCreated(userClient.isSecretQuestionCreated());
+    	return userClientPersistence.saveOrUpdate(inDb);
+    } 
 
 
 }

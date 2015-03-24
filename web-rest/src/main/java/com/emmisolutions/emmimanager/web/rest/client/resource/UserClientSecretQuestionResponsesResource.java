@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,11 +29,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResourceAssembler;
 import com.emmisolutions.emmimanager.model.SecretQuestion;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponsePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponseResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponseResourceAssembler;
@@ -107,11 +112,12 @@ public class UserClientSecretQuestionResponsesResource {
      * @return user client secret question response entity
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions/responses", method = RequestMethod.POST)
+    @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientSecretQuestionResponseResource> saveOrUpdate(
             @PathVariable("userClientId") Long userClientId,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {
        
-        userClientSecretQuestionResponse.setUserClient(new UserClient(userClientId));
+    	userClientSecretQuestionResponse.setUserClient(new UserClient(userClientId));
         UserClientSecretQuestionResponse ucsqr = userClientSecretQuestionResponseService
                 .saveOrUpdate(userClientSecretQuestionResponse);
 
@@ -189,5 +195,8 @@ public class UserClientSecretQuestionResponsesResource {
         }
         
     }
+    
+    
+   
 
 }
