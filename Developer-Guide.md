@@ -65,6 +65,7 @@ Postgres setup
 * Download a latest version of Postgres database (I have Version 1.18.1)
 * Create a blank database called emmimanager
 * Create a new user called postgres with no password
+* Give the postgres user rights to create: `GRANT CREATE ON DATABASE emmimanager to postgres`
 * If you create the user with a password, you will need to edit: server\web-rest\src\main\webapp\META-INF\context.xml to specify the password.
 * If you create a user with a different name or point to a different port, the JNDI datasource in context.xml (EmmiManagerDS) will need to be edited to match your database configuration.
 

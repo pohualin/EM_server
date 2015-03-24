@@ -147,8 +147,14 @@ public class PersistenceConfiguration {
         SpringLiquibase springLiquibase = new SpringLiquibase();
         springLiquibase.setDataSource(dataSource);
         springLiquibase.setChangeLog("classpath:db.changelog-master.xml");
-        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST)) {
+        if (env.acceptsProfiles(SPRING_PROFILE_TEST)) {
+            springLiquibase.setContexts("test");
+        }
+        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT)) {
             springLiquibase.setContexts("dev");
+        }
+        if (env.acceptsProfiles(SPRING_PROFILE_QA)) {
+            springLiquibase.setContexts("qa");
         }
         return springLiquibase;
     }
@@ -202,7 +208,7 @@ public class PersistenceConfiguration {
      * @return the aspect
      */
     @Bean(name = "PersistenceLayerAutoLogger")
-    @Profile({SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST})
+    @Profile({SPRING_PROFILE_DEVELOPMENT})
     public LoggingAspect getPersistenceLayerAutoLogger() {
         return new LoggingAspect();
     }
