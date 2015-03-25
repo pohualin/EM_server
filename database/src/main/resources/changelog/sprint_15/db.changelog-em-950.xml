@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="update_provider_table_add_specialty_column" author="Amrita">
+        <addColumn tableName="provider">
+            <column name="provider_specialty" type="BIGINT"></column>
+        </addColumn>
+        <addColumn tableName="provider_audit">
+            <column name="provider_specialty" type="BIGINT"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="update_provider_remove_old_column" author="Amrita">
+        <dropColumn tableName="provider" columnName="reference_tag_specialty"/>
+        <dropColumn tableName="provider_audit" columnName="reference_tag_specialty"/>
+    </changeSet>
+
+    <changeSet id="new_table_for_provider_specialties" author="Amrita">
+        <createTable tableName="provider_specialty">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_specialty_id"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="provider_specialty_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="name" type="nvarchar(255)"/>
+        </createTable>
+
+        <addPrimaryKey tableName="provider_specialty_audit" columnNames="id, revision" constraintName="pk_specialty_audit"/>
+
+        <addForeignKeyConstraint
+                baseTableName="provider_specialty_audit"
+                baseColumnNames="revision"
+                constraintName="fk_specialty_audit_revision"
+                referencedTableName="revision_info"
+                referencedColumnNames="revision"/>
+
+        <addForeignKeyConstraint
+                baseTableName="provider"
+                baseColumnNames="provider_specialty"
+                constraintName="fk_provider_specialty"
+                referencedTableName="provider_specialty"
+                referencedColumnNames="id"/>
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_15/data.em-950/provider-specialties.csv"
+                  separator=";"
+                  tableName="provider_specialty"/>
+
+    </changeSet>
+
+</databaseChangeLog>

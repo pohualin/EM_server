@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -90,7 +91,9 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         Provider provider = new Provider();
         provider.setFirstName("Client Provider Association");
         provider.setLastName(RandomStringUtils.randomAlphabetic(255));
-        provider.setSpecialty(new ReferenceTag(20));
+        ProviderSpecialty specialty = new ProviderSpecialty();
+        specialty.setName(RandomStringUtils.randomAlphanumeric(18));
+        provider.setSpecialty(providerService.saveSpecialty(specialty));
         provider.setEmail("whatever@whatever.com");
 
         ClientProvider clientProvider = clientProviderService.create(new ClientProvider(client, provider));
@@ -188,7 +191,11 @@ public class ClientProviderServiceIntegrationTest extends BaseIntegrationTest {
         }
         provider.setFirstName(firstName);
         provider.setLastName(RandomStringUtils.randomAlphabetic(255));
-        provider.setSpecialty(new ReferenceTag(20));
+        ProviderSpecialty specialty = new ProviderSpecialty();
+        specialty.setName(RandomStringUtils.randomAlphanumeric(18));
+        ProviderSpecialty savedSpecialty = providerService.saveSpecialty(specialty);
+
+        provider.setSpecialty(savedSpecialty);
         provider.setEmail("whatever@whatever.com");
         return providerService.create(provider);
     }
