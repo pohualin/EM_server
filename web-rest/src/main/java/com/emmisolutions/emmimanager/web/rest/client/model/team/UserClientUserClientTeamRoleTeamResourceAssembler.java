@@ -1,10 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.team;
 
-import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
-import com.emmisolutions.emmimanager.web.rest.client.resource.TeamsResource;
-import org.springframework.hateoas.Link;
+import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -26,18 +24,13 @@ public class UserClientUserClientTeamRoleTeamResourceAssembler
         for (UserClientTeamPermission userClientTeamPermission : entity.getUserClientTeamRole().getUserClientTeamPermissions()) {
             switch (userClientTeamPermission.getName()) {
                 case PERM_CLIENT_TEAM_SCHEDULE_PROGRAM:
-                    ret.add(createScheduleLink(entity.getTeam()));
+                    ret.add(linkTo(methodOn(SchedulesResource.class)
+                            .schedule(entity.getTeam().getClient().getId(), entity.getTeam().getId(), null, null, null))
+                            .withRel("schedulePrograms"));
                     break;
             }
         }
         return ret;
-    }
-
-    public Link createScheduleLink(Team team){
-         return linkTo(methodOn(TeamsResource.class).schedule(
-                 team.getClient().getId(),
-                 team.getId(), null, null, null))
-                 .withRel("schedulePrograms");
     }
 
 }
