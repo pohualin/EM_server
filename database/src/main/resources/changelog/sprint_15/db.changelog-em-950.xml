@@ -4,6 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <changeSet id="remove_old_specialties_before_dropping_column" author="Amrita">
+        <update tableName="provider">
+            <column name="reference_tag_specialty"> null </column>
+        </update>
+    </changeSet>
+
     <changeSet id="update_provider_table_add_specialty_column" author="Amrita">
         <addColumn tableName="provider">
             <column name="provider_specialty" type="BIGINT"></column>
@@ -69,5 +75,19 @@
                   tableName="provider_specialty"/>
 
     </changeSet>
+
+    <changeSet id="new_table_for_provider_specialties_delete" author="Amrita">
+        <update tableName="provider">
+            <column name="provider_specialty"> null </column>
+        </update>
+        <delete tableName="provider_specialty"></delete>
+    </changeSet>
+
+    <changeSet id="load_updated_specialties" author="Amrita">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_15/data.em-950/provider-specialties-updated.csv"
+                  separator=";"
+                  tableName="provider_specialty"/>
+</changeSet>
 
 </databaseChangeLog>
