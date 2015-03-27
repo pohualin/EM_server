@@ -144,7 +144,7 @@
                   tableName="permission"/>
     </changeSet>
 
-    <changeSet id="create_sample_contract_owner" author="Matt" context="dev">
+    <changeSet id="create_sample_contract_owner" author="Matt" context="qa,dev,test">
         <insert tableName="app_user">
             <column name="login">contract_owner</column>
             <column name="password">$2a$08$f3nFK97VWMIIeRpXocjdU.3CFS2t4Y1tJNKDjiVjZhyqjBMqFKC4W</column>

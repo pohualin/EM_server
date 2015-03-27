@@ -105,6 +105,7 @@ public class UserClientServiceImpl implements UserClientService {
         // validation should be false if the email address has changed, otherwise set it to whatever it was previously
         userClient.setEmailValidated(
                 StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
+        userClient.setSecretQuestionCreated(inDb.isSecretQuestionCreated());
         return userClientPersistence.saveOrUpdate(userClient);
     }
 

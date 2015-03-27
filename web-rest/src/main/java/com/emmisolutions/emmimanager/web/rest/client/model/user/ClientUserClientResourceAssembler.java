@@ -39,6 +39,7 @@ public class ClientUserClientResourceAssembler implements
                 entity.isAccountNonLocked(),
                 entity.isCredentialsNonExpired(),
                 entity.isEmailValidated(),
+                entity.isSecretQuestionCreated(),
                 clientResourceAssembler.toResource(entity.getClient()),
                 null,
                 entity.isImpersonated(),
