@@ -8,10 +8,8 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,8 +57,7 @@ public class ProgramsResource {
     public ProgramResourcePage possiblePrograms(
             @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
-            @PageableDefault(size = 10, sort = "id") Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
+            @PageableDefault(size = 10, sort = "name") Pageable pageable,
             PagedResourcesAssembler<Program> assembler) {
 
         Page<Program> programPage = programService.find(pageable);
