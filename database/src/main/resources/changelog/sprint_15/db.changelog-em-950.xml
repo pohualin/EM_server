@@ -70,24 +70,9 @@
                 referencedColumnNames="id"/>
 
         <loadData encoding="UTF-8"
-                  file="changelog/sprint_15/data.em-950/provider-specialties.csv"
-                  separator=";"
-                  tableName="provider_specialty"/>
-
-    </changeSet>
-
-    <changeSet id="new_table_for_provider_specialties_delete" author="Amrita">
-        <update tableName="provider">
-            <column name="provider_specialty"> null </column>
-        </update>
-        <delete tableName="provider_specialty"></delete>
-    </changeSet>
-
-    <changeSet id="load_updated_specialties" author="Amrita">
-        <loadData encoding="UTF-8"
                   file="changelog/sprint_15/data.em-950/provider-specialties-updated.csv"
                   separator=";"
                   tableName="provider_specialty"/>
-</changeSet>
+    </changeSet>
 
 </databaseChangeLog>
