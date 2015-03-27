@@ -91,7 +91,6 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    @Transactional
     public Page<ProviderSpecialty> findAllSpecialties(Pageable page) {
     	Pageable pageToFetch;
         if (page == null) {
