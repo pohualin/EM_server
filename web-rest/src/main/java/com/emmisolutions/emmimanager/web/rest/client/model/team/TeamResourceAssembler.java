@@ -26,7 +26,7 @@ public class TeamResourceAssembler
                 .withRel("schedulePrograms"));
 
         ret.add(new Link(new UriTemplate(linkTo(methodOn(ProgramsResource.class)
-                .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null, null))
+                .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null))
                 .withRel("programs").getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page",
