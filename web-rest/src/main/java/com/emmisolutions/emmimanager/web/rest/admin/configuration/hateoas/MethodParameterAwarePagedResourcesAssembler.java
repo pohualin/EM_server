@@ -222,7 +222,7 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
             foo(resources, next5Page, uri, prefix + (next5Page.getPageNumber() + 1));
         }
         // add the next link
-        if (page.hasNext() && !atLastPage) {
+        if (page.hasNext()) {
             foo(resources, page.nextPageable(), uri, prefix + Link.REL_NEXT);
         }
         // add last
