@@ -12,6 +12,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="specialty-page")
 public class ProviderSpecialtyPage extends PagedResource <ProviderSpecialtyResource> {
+
+    /**
+     * creates a wrapper for provider specialty resource
+     *
+     * @param resources
+     * @param specialtyPage
+     */
     public ProviderSpecialtyPage(PagedResources<ProviderSpecialtyResource> resources, Page<ProviderSpecialty> specialtyPage) {
         pageDefaults(resources, specialtyPage);
     }
