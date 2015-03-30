@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create schema" author="Matt">
+        <sql>
+            <![CDATA[
+            create schema program
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="rf_emmi" author="Matt">
+
+        <createTable tableName="rf_emmi" schemaName="program">
+            <column name="emmi_cd" type="integer">
+                <constraints primaryKey="true" primaryKeyName="pk_rf_emmi" nullable="false"/>
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emmi_nm" type="nvarchar(200)"/>
+            <column name="emmi_nm_mxd" type="nvarchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emmi_flnm" type="nvarchar(50)"/>
+            <column name="overlay_flnm" type="nvarchar(50)"/>
+            <column name="emmi_brnd_cd" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_trckd_sctn" type="integer"/>
+            <column name="shell" type="boolean"/>
+            <column name="available" type="boolean" defaultValueBoolean="true"/>
+            <column name="tpc_id" type="nvarchar(36)"/>
+            <column name="emmi_tp_cd" type="integer" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emmi_src_cd" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_chng_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="rf_emmi" indexName="ix_rf_emmi_k11_1" schemaName="program">
+            <column name="emmi_tp_cd"/>
+        </createIndex>
+        <createIndex tableName="rf_emmi" indexName="ix_rf_emmi_k2_k10_1_3_11" schemaName="program">
+            <column name="active"/>
+            <column name="emmi_tp_cd"/>
+        </createIndex>
+        <createIndex tableName="rf_emmi" indexName="ix_rf_emmi_k3_k11_k12" schemaName="program">
+            <column name="emmi_nm"/>
+            <column name="emmi_tp_cd"/>
+            <column name="emmi_src_cd"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="rf_emmi_type" author="Matt">
+
+        <createTable tableName="rf_emmi_type" schemaName="program">
+            <column name="emmi_tp_cd" type="integer">
+                <constraints primaryKey="true"
+                             nullable="false"
+                             primaryKeyName="pk_rf_emmi_type"/>
+            </column>
+            <column name="emmi_tp_nm" type="nvarchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_chng_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="rf_emmi_type" unique="true" schemaName="program"
+                     indexName="ak_rf_emmi_type_k2">
+            <column name="emmi_tp_nm"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="rf_emmi_brand" author="Matt">
+
+        <createTable tableName="rf_emmi_brand" schemaName="program">
+            <column name="emmi_brnd_cd" type="integer">
+                <constraints primaryKey="true" primaryKeyName="pk_rf_emmi_brand" nullable="false"/>
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emmi_brnd_dscrptn" type="nvarchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_chng_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="rf_emmi_source" author="Matt">
+
+        <createTable tableName="rf_emmi_source" schemaName="program">
+            <column name="emmi_src_cd" type="integer">
+                <constraints primaryKey="true" primaryKeyName="pk_rf_emmi_source" nullable="false"/>
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emmi_src_nm" type="nvarchar(50)"/>
+            <column name="last_chng_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="foreign_keys" author="Matt">
+
+        <addForeignKeyConstraint baseTableName="rf_emmi"
+                                 baseTableSchemaName="program"
+                                 baseColumnNames="emmi_brnd_cd"
+                                 constraintName="fk_rf_emmi_rf_emmi_brand"
+                                 referencedTableName="rf_emmi_brand"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="emmi_brnd_cd"/>
+        <addForeignKeyConstraint baseTableName="rf_emmi"
+                                 baseTableSchemaName="program"
+                                 baseColumnNames="emmi_src_cd"
+                                 constraintName="fk_rf_emmi_rf_emmi_source"
+                                 referencedTableName="rf_emmi_source"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="emmi_src_cd"/>
+        <addForeignKeyConstraint baseTableName="rf_emmi"
+                                 baseTableSchemaName="program"
+                                 baseColumnNames="emmi_tp_cd"
+                                 constraintName="fk_rf_emmi_rf_emmi_type"
+                                 referencedTableName="rf_emmi_type"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="emmi_tp_cd"/>
+
+    </changeSet>
+
+    <changeSet id="sample data" author="Matt" context="qa,dev,test">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_16/data/em-939/RF_EMMI_BRAND.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_emmi_brand"
+                  schemaName="program"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_16/data/em-939/RF_EMMI_TYPE.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_emmi_type"
+                  schemaName="program"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_16/data/em-939/RF_EMMI_SOURCE.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_emmi_source"
+                  schemaName="program"/>
+
+    </changeSet>
+
+    <changeSet id="test emmi programs" author="Matt" context="test">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_16/data/em-939/RF_EMMI.test.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_emmi"
+                  schemaName="program"/>
+
+    </changeSet>
+
+    <changeSet id="dev sample emmi programs" author="Matt" context="qa,dev">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_16/data/em-939/RF_EMMI.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_emmi"
+                  schemaName="program"/>
+
+    </changeSet>
+
+</databaseChangeLog>

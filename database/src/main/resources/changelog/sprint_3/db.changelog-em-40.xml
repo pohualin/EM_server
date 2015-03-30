@@ -73,17 +73,17 @@
                        columnNames="id, revision"
                        constraintName="pk_client_group_audit"/>        
     </changeSet>
-    
-    <changeSet id="create_reference_group" author="Vinay" context="dev">
+
+    <changeSet id="create_reference_group" author="Vinay" context="qa,dev,test">
         <insert tableName="reference_group">
             <column name="name">Region</column>
         </insert>
         <insert tableName="reference_group">
             <column name="name">Service Group</column>
         </insert>
-    </changeSet>                   
-    
-	<changeSet id="create_client_group_tag" author="Amrita" context="dev">
+    </changeSet>
+
+    <changeSet id="create_client_group_tag" author="Amrita">
 		<createTable tableName="client_group_tag">
 			<column autoIncrement="true" name="id" type="bigint"><constraints primaryKey="true"/> </column>
 			<column name="group_id" type="bigint"><constraints nullable="false"/></column>

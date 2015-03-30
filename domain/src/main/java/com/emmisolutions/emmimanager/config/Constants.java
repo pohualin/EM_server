@@ -11,6 +11,7 @@ public interface Constants {
     public static final String SPRING_PROFILE_H2 = "h2";
     public static final String SPRING_PROFILE_TEST = "test";
     public static final String SPRING_PROFILE_PRODUCTION = "prod";
+    public static final String SPRING_PROFILE_QA = "qa";
     public static final String SYSTEM_ACCOUNT = "system";
 
 }
