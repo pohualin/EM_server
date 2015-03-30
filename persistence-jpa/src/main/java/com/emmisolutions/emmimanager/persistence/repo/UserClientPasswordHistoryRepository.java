@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -14,5 +14,6 @@ public interface UserClientPasswordHistoryRepository extends
         JpaRepository<UserClientPasswordHistory, Long>,
         JpaSpecificationExecutor<UserClientPasswordHistory> {
 
-    public List<UserClientPasswordHistory> findByUserClientIdOrderByPasswordSavedTimeDesc(Long id);
+    public Page<UserClientPasswordHistory> findByUserClientIdOrderByCreatedDateDesc(
+            Pageable pageable, Long id);
 }

@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 
 import javax.annotation.Resource;
 
-import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
@@ -56,7 +55,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
     public void validateChangePasswordRequest() {
         UserClient userClient = makeNewRandomUserClient(null);
         userClient.setPassword("currentPassword1");
-        userClientPasswordService.updatePassword(userClient, true);
+        userClient = userClientPasswordService.updatePassword(userClient, true);
 
         ChangePasswordRequest request = new ChangePasswordRequest();
         try {
@@ -80,6 +79,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         }
 
         request.setLogin("badLogin");
+        request.setNewPassword("bad");
         try {
             userClientPasswordValidationService.validateRequest(request);
             fail("Can only be called by existed UserClient.");
@@ -104,6 +104,14 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         request.setNewPassword("currentPassword2");
         assertThat("Good password", userClientPasswordValidationService
                 .validateRequest(request).size(), is(0));
+
+        UserClientPasswordValidationError repeatError = new UserClientPasswordValidationError(
+                UserClientPasswordValidationService.Reason.DAYS_BETWEEN);
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+        assertThat("Repeated password",
+                userClientPasswordValidationService.validateRequest(request),
+                hasItem(repeatError));
     }
 
     @Test
@@ -149,7 +157,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
     }
 
     @Test
-    public void checkPasswordHistory() {
+    public void isPasswordNotRepeatsHistory() {
         UserClient userClient = makeNewRandomUserClient(null);
         Client client = userClient.getClient();
         ClientPasswordConfiguration configuration = makeNewRandomClientPasswordConfiguration(client);
@@ -160,16 +168,17 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
                         .encodePassword(userClient));
 
         assertThat("Password does not repeat",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        configuration, userClient, "password2"), is(true));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(configuration, userClient,
+                                "password2"), is(true));
 
         assertThat("Password repeats",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        configuration, userClient, "password1"), is(false));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(configuration, userClient,
+                                "password1"), is(false));
 
         UserClientPasswordHistory historyA = new UserClientPasswordHistory();
         historyA.setUserClient(userClient);
-        historyA.setPasswordSavedTime(LocalDateTime.now().minusDays(2));
         historyA.setPassword(userClient.getPassword());
         historyA.setSalt(userClient.getSalt());
         historyA = userClientPasswordHistoryService.save(historyA);
@@ -181,50 +190,90 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
 
         UserClientPasswordHistory historyB = new UserClientPasswordHistory();
         historyB.setUserClient(userClient);
-        historyB.setPasswordSavedTime(LocalDateTime.now().minusDays(1));
         historyB.setPassword(userClient.getPassword());
         historyB.setSalt(userClient.getSalt());
         historyB = userClientPasswordHistoryService.save(historyB);
 
         assertThat("Invalid request",
-                userClientPasswordValidationService.checkPasswordHistory(null,
-                        null, null), is(false));
-
-        assertThat("Invalid request",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        new ClientPasswordConfiguration(), null, null),
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(null, null, null),
                 is(false));
 
         assertThat("Invalid request",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        new ClientPasswordConfiguration(), new UserClient(),
-                        null), is(false));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(
+                                new ClientPasswordConfiguration(), null, null),
+                is(false));
+
+        assertThat("Invalid request",
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(
+                                new ClientPasswordConfiguration(),
+                                new UserClient(), null), is(false));
 
         assertThat("Password does not repeat",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        configuration, userClient, "password2"), is(true));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(configuration, userClient,
+                                "password2"), is(true));
 
         assertThat("Password repeats",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        configuration, userClient, "password1"), is(false));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(configuration, userClient,
+                                "password1"), is(false));
 
         assertThat("Password repeats",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        configuration, userClient, "currentPassword"),
-                is(false));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(configuration, userClient,
+                                "currentPassword"), is(false));
 
         configuration.setPasswordRepetitions(1);
         clientPasswordConfigurationService.save(configuration);
 
         assertThat("Password repeats",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        configuration, userClient, "currentPassword"),
-                is(false));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(configuration, userClient,
+                                "currentPassword"), is(false));
 
         assertThat("Password does not repeat",
-                userClientPasswordValidationService.checkPasswordHistory(
-                        configuration, userClient, "password1"), is(true));
+                userClientPasswordValidationService
+                        .isPasswordNotRepeatsHistory(configuration, userClient,
+                                "password1"), is(true));
 
+    }
+
+    @Test
+    public void isEligibleForPasswordChange() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        Client client = userClient.getClient();
+        ClientPasswordConfiguration configuration = makeNewRandomClientPasswordConfiguration(client);
+
+        assertThat("Not eligible for password change",
+                userClientPasswordValidationService
+                        .isEligibleForPasswordChange(null, null), is(false));
+
+        assertThat("Not eligible for password change",
+                userClientPasswordValidationService
+                        .isEligibleForPasswordChange(configuration, null),
+                is(false));
+
+        assertThat(
+                "Eligible for password change",
+                userClientPasswordValidationService
+                        .isEligibleForPasswordChange(configuration, userClient),
+                is(true));
+
+        userClient.setPassword("password");
+        userClient = userClientPersistence
+                .saveOrUpdate(userClientPasswordService
+                        .encodePassword(userClient));
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+
+        assertThat(
+                "Not eligible for password change",
+                userClientPasswordValidationService
+                        .isEligibleForPasswordChange(configuration, userClient),
+                is(false));
     }
 
     @Test
@@ -232,7 +281,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
 
         UserClient userClient = makeNewRandomUserClient(null);
         userClient.setPassword("currentPassword1");
-        userClientPasswordService.updatePassword(userClient, true);
+        userClient = userClientPasswordService.updatePassword(userClient, true);
 
         ExpiredPasswordChangeRequest request = new ExpiredPasswordChangeRequest();
         try {
@@ -254,8 +303,9 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
             fail("New password can not be null.");
         } catch (InvalidDataAccessApiUsageException e) {
         }
-        
+
         request.setLogin("badLogin");
+        request.setNewPassword("bad");
         try {
             userClientPasswordValidationService.validateRequest(request);
             fail("Can only be called by existed UserClient.");
@@ -280,6 +330,14 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         request.setNewPassword("currentPassword2");
         assertThat("Good password", userClientPasswordValidationService
                 .validateRequest(request).size(), is(0));
+
+        UserClientPasswordValidationError repeatError = new UserClientPasswordValidationError(
+                UserClientPasswordValidationService.Reason.DAYS_BETWEEN);
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+        assertThat("Repeated password",
+                userClientPasswordValidationService.validateRequest(request),
+                hasItem(repeatError));
     }
 
     @Test
@@ -289,9 +347,9 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         userClient.setEmail("apple@abc.com");
         userClientService.update(userClient);
         userClient.setPassword("currentPassword1");
-        userClientPasswordService.updatePassword(userClient, true);
-        String token = userClientPasswordService.forgotPassword(
-                "apple@abc.com").getPasswordResetToken();
+        userClient = userClientPasswordService.updatePassword(userClient, true);
+        userClient = userClientPasswordService.forgotPassword("apple@abc.com");
+        String token = userClient.getPasswordResetToken();
 
         ResetPasswordRequest request = new ResetPasswordRequest();
 
@@ -301,15 +359,15 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         } catch (InvalidDataAccessApiUsageException e) {
         }
 
-        
         request.setResetToken(token);
         try {
             userClientPasswordValidationService.validateRequest(request);
             fail("New password can not be null.");
         } catch (InvalidDataAccessApiUsageException e) {
         }
-        
+
         request.setResetToken("badToken");
+        request.setNewPassword("bad");
         try {
             userClientPasswordValidationService.validateRequest(request);
             fail("Can only be called by existed reset token.");
@@ -334,6 +392,14 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         request.setNewPassword("currentPassword2");
         assertThat("Good password", userClientPasswordValidationService
                 .validateRequest(request).size(), is(0));
+
+        UserClientPasswordValidationError repeatError = new UserClientPasswordValidationError(
+                UserClientPasswordValidationService.Reason.DAYS_BETWEEN);
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+        assertThat("Repeated password",
+                userClientPasswordValidationService.validateRequest(request),
+                hasItem(repeatError));
     }
 
     @Test
@@ -343,7 +409,7 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         userClient = userClientService.addActivationKey(new UserClient(
                 userClient.getId()));
         userClient.setPassword("currentPassword1");
-        userClientPasswordService.updatePassword(userClient, true);
+        userClient = userClientPasswordService.updatePassword(userClient, true);
 
         ActivationRequest request = new ActivationRequest();
         try {
@@ -360,12 +426,13 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         }
 
         request.setActivationToken("badToken");
+        request.setNewPassword("bad");
         try {
             userClientPasswordValidationService.validateRequest(request);
             fail("Can only be called by existed activation token.");
         } catch (InvalidDataAccessApiUsageException e) {
         }
-        
+
         request.setActivationToken(userClient.getActivationKey());
         UserClientPasswordValidationError policyError = new UserClientPasswordValidationError(
                 UserClientPasswordValidationService.Reason.POLICY);
@@ -384,6 +451,14 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         request.setNewPassword("currentPassword2");
         assertThat("Good password", userClientPasswordValidationService
                 .validateRequest(request).size(), is(0));
+
+        UserClientPasswordValidationError repeatError = new UserClientPasswordValidationError(
+                UserClientPasswordValidationService.Reason.DAYS_BETWEEN);
+        userClient = userClientPasswordService
+                .updatePasswordExpirationTime(userClient);
+        assertThat("Repeated password",
+                userClientPasswordValidationService.validateRequest(request),
+                hasItem(repeatError));
     }
 
 }

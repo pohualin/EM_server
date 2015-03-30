@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDateTime;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 
@@ -30,7 +29,7 @@ import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 @Entity
 @XmlRootElement(name = "user_client_password_history")
 @Table(name = "user_client_password_history", uniqueConstraints = @UniqueConstraint(columnNames = {
-        "user_client_id", "password_saved_time_utc" }, name = "uk_user_client_password_history"))
+        "user_client_id", "created_date" }, name = "uk_user_client_password_history"))
 public class UserClientPasswordHistory extends AbstractAuditingEntity implements
         Serializable {
     @Id
@@ -44,9 +43,6 @@ public class UserClientPasswordHistory extends AbstractAuditingEntity implements
     @ManyToOne
     @JoinColumn(name = "user_client_id", nullable = false)
     private UserClient userClient;
-
-    @Column(name = "password_saved_time_utc")
-    private LocalDateTime passwordSavedTime;
 
     @Column(length = 40, columnDefinition = "varchar(40)")
     @Size(min = 0, max = 40)
@@ -97,14 +93,6 @@ public class UserClientPasswordHistory extends AbstractAuditingEntity implements
 
     public void setUserClient(UserClient userClient) {
         this.userClient = userClient;
-    }
-
-    public LocalDateTime getPasswordSavedTime() {
-        return passwordSavedTime;
-    }
-
-    public void setPasswordSavedTime(LocalDateTime passwordSavedTime) {
-        this.passwordSavedTime = passwordSavedTime;
     }
 
     public String getPassword() {

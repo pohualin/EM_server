@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClientPasswordHistory;
 
@@ -36,5 +37,15 @@ public interface UserClientPasswordHistoryPersistence {
     public UserClientPasswordHistory saveOrUpdate(
             UserClientPasswordHistory userClientPasswordHistory);
 
-    public List<UserClientPasswordHistory> findByUserClientId(Long id);
+    /**
+     * Find a page of UserClientPasswordHistory by userClientId
+     * 
+     * @param pageable
+     *            to use
+     * @param id
+     *            to lookup
+     * @return a page of UserClientPasswordHistory
+     */
+    public Page<UserClientPasswordHistory> findByUserClientId(
+            Pageable pageable, Long id);
 }

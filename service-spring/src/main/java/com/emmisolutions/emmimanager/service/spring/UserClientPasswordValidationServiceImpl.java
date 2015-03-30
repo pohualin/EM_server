@@ -8,7 +8,11 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +73,12 @@ public class UserClientPasswordValidationServiceImpl implements
 
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
 
+        // Check if user is eligible to change password
+        if (!isEligibleForPasswordChange(configuration, existing)) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.DAYS_BETWEEN));
+        }
+
         // Check if password matches pattern
         if (!validatePasswordPattern(configuration,
                 changePasswordRequest.getNewPassword())) {
@@ -77,7 +87,7 @@ public class UserClientPasswordValidationServiceImpl implements
         }
 
         // Check if password repeats
-        if (!checkPasswordHistory(configuration, existing,
+        if (!isPasswordNotRepeatsHistory(configuration, existing,
                 changePasswordRequest.getNewPassword())) {
             errors.add(new UserClientPasswordValidationError(
                     UserClientPasswordValidationService.Reason.HISTORY));
@@ -113,6 +123,12 @@ public class UserClientPasswordValidationServiceImpl implements
 
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
 
+        // Check if user is eligible to change password
+        if (!isEligibleForPasswordChange(configuration, existing)) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.DAYS_BETWEEN));
+        }
+
         // Check if password matches pattern
         if (!validatePasswordPattern(configuration,
                 expiredPasswordChangeRequest.getNewPassword())) {
@@ -121,7 +137,7 @@ public class UserClientPasswordValidationServiceImpl implements
         }
 
         // Check if password repeats
-        if (!checkPasswordHistory(configuration, existing,
+        if (!isPasswordNotRepeatsHistory(configuration, existing,
                 expiredPasswordChangeRequest.getNewPassword())) {
             errors.add(new UserClientPasswordValidationError(
                     UserClientPasswordValidationService.Reason.HISTORY));
@@ -153,6 +169,12 @@ public class UserClientPasswordValidationServiceImpl implements
 
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
 
+        // Check if user is eligible to change password
+        if (!isEligibleForPasswordChange(configuration, existing)) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.DAYS_BETWEEN));
+        }
+
         // Check if password matches pattern
         if (!validatePasswordPattern(configuration,
                 resetPasswordRequest.getNewPassword())) {
@@ -161,7 +183,7 @@ public class UserClientPasswordValidationServiceImpl implements
         }
 
         // Check if password repeats
-        if (!checkPasswordHistory(configuration, existing,
+        if (!isPasswordNotRepeatsHistory(configuration, existing,
                 resetPasswordRequest.getNewPassword())) {
             errors.add(new UserClientPasswordValidationError(
                     UserClientPasswordValidationService.Reason.HISTORY));
@@ -193,6 +215,12 @@ public class UserClientPasswordValidationServiceImpl implements
 
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
 
+        // Check if user is eligible to change password
+        if (!isEligibleForPasswordChange(configuration, existing)) {
+            errors.add(new UserClientPasswordValidationError(
+                    UserClientPasswordValidationService.Reason.DAYS_BETWEEN));
+        }
+
         // Check if password matches pattern
         if (!validatePasswordPattern(configuration,
                 activationRequest.getNewPassword())) {
@@ -201,7 +229,7 @@ public class UserClientPasswordValidationServiceImpl implements
         }
 
         // Check if password repeats
-        if (!checkPasswordHistory(configuration, existing,
+        if (!isPasswordNotRepeatsHistory(configuration, existing,
                 activationRequest.getNewPassword())) {
             errors.add(new UserClientPasswordValidationError(
                     UserClientPasswordValidationService.Reason.HISTORY));
@@ -212,7 +240,7 @@ public class UserClientPasswordValidationServiceImpl implements
 
     @Override
     @Transactional(readOnly = true)
-    public boolean checkPasswordHistory(
+    public boolean isPasswordNotRepeatsHistory(
             ClientPasswordConfiguration configuration, UserClient existing,
             String password) {
         if (configuration == null || existing == null
@@ -220,22 +248,21 @@ public class UserClientPasswordValidationServiceImpl implements
             return false;
         }
 
-        List<UserClientPasswordHistory> histories = userClientPasswordHistoryService
-                .get(existing);
-        if (histories.size() == 0) {
+        List<UserClientPasswordHistory> historiesToCheck = new ArrayList<UserClientPasswordHistory>();
+        Page<UserClientPasswordHistory> histories = userClientPasswordHistoryService
+                .get(new PageRequest(0, configuration.getPasswordRepetitions()),
+                        existing);
+        if (!histories.hasContent()) {
             UserClientPasswordHistory current = new UserClientPasswordHistory();
             current.setPassword(existing.getPassword());
             current.setSalt(existing.getSalt());
-            histories.add(current);
-        }
-
-        if (histories.size() > configuration.getPasswordRepetitions()) {
-            histories = histories.subList(0,
-                    configuration.getPasswordRepetitions());
+            historiesToCheck.add(current);
+        } else {
+            historiesToCheck.addAll(histories.getContent());
         }
 
         // Return UserClientPasswordValidationError if new password repeats
-        for (UserClientPasswordHistory history : histories) {
+        for (UserClientPasswordHistory history : historiesToCheck) {
             if (passwordEncoder.matches(password, history.getPassword()
                     + history.getSalt())) {
                 return false;
@@ -243,6 +270,27 @@ public class UserClientPasswordValidationServiceImpl implements
         }
 
         return true;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isEligibleForPasswordChange(
+            ClientPasswordConfiguration configuration, UserClient existing) {
+        if (configuration == null || existing == null) {
+            return false;
+        }
+
+        if (existing.getPasswordSavedDateTime() == null) {
+            return true;
+        }
+
+        if (LocalDateTime.now(DateTimeZone.UTC)
+                .minusDays(configuration.getDaysBetweenPasswordChange())
+                .isAfter(existing.getPasswordSavedDateTime())) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

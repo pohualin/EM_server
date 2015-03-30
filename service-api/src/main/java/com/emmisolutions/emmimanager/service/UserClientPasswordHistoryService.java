@@ -2,6 +2,9 @@ package com.emmisolutions.emmimanager.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPasswordHistory;
 
@@ -16,14 +19,16 @@ public interface UserClientPasswordHistoryService {
     public void delete(UserClientPasswordHistory userClientPasswordHistory);
 
     /**
-     * Get the UserClientPasswordHistory for a UserClient
-     *
+     * Get a page of UserClientPasswordHistory by userClientId
+     * 
+     * @param pageable
+     *            to use
      * @param userClient
      *            to lookup
-     * @return an existing list of UserClientPasswordHistory
-     * 
+     * @return a page of UserClientPasswordHistory
      */
-    public List<UserClientPasswordHistory> get(UserClient userClient);
+    public Page<UserClientPasswordHistory> get(Pageable pageable,
+            UserClient userClient);
 
     /**
      * Reload UserClientPasswordHistory by id
@@ -44,12 +49,14 @@ public interface UserClientPasswordHistoryService {
      */
     public UserClientPasswordHistory save(
             UserClientPasswordHistory userClientPasswordHistory);
-    
+
     /**
      * Handle UserClientPasswordHistory for a given UserClient
      * 
      * @param userClient
-     *            to deal with
+     *            to handle
+     * @return a list of UserClientPasswordHistory
      */
-    public void handleUserClientPasswordHistory(UserClient userClient);
+    public List<UserClientPasswordHistory> handleUserClientPasswordHistory(
+            UserClient userClient);
 }

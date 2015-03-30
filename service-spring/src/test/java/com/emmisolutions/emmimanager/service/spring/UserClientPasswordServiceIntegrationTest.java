@@ -1,17 +1,13 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
-import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
-import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
-import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
-import com.emmisolutions.emmimanager.service.UserClientPasswordService;
-import com.emmisolutions.emmimanager.service.UserClientService;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import javax.annotation.Resource;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -20,16 +16,23 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 
-import javax.annotation.Resource;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
+import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordService;
+import com.emmisolutions.emmimanager.service.UserClientService;
 
 /**
  * Integration test for the AdminPasswordService
  */
-public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTest {
+public class UserClientPasswordServiceIntegrationTest extends
+        BaseIntegrationTest {
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
@@ -41,8 +44,8 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     UserClientService userClientService;
 
     /**
-     * Create a user, ensure login doesn't work, change the password,
-     * make sure login works but the credentials should be expired.
+     * Create a user, ensure login doesn't work, change the password, make sure
+     * login works but the credentials should be expired.
      */
     @Test(expected = CredentialsExpiredException.class)
     public void adminChangePassword() {
@@ -54,7 +57,8 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         } catch (BadCredentialsException bce) {
             userClient.setPassword(newPassword);
             userClientPasswordService.updatePassword(userClient, false);
-            assertThat("can login with the new user client", login(userClient.getLogin(), newPassword),
+            assertThat("can login with the new user client",
+                    login(userClient.getLogin(), newPassword),
                     is((User) userClient));
         }
     }
@@ -78,10 +82,9 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         login(userClient.getLogin(), null);
     }
 
-
     /**
-     * Calling expired password change shouldn't do anything when
-     * the user does not have expired credentials.
+     * Calling expired password change shouldn't do anything when the user does
+     * not have expired credentials.
      */
     @Test
     public void callChangeOnExpiredUserCredentials() {
@@ -97,24 +100,33 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
             fail("should not have been able to login with expired credentials");
         } catch (CredentialsExpiredException e) {
             // change the password which is expired
-            userClientPasswordService.changeExpiredPassword(new ExpiredPasswordChangeRequest() {{
-                setExistingPassword(pw);
-                setLogin(user.getLogin());
-                setNewPassword(newPassword);
-            }});
+            userClientPasswordService
+                    .changeExpiredPassword(new ExpiredPasswordChangeRequest() {
+                        {
+                            setExistingPassword(pw);
+                            setLogin(user.getLogin());
+                            setNewPassword(newPassword);
+                        }
+                    });
         }
         // make sure we can login
-        assertThat("can login with new password", login(user.getLogin(), newPassword), is(equalTo((User) user)));
+        assertThat("can login with new password",
+                login(user.getLogin(), newPassword), is(equalTo((User) user)));
         logout();
 
-        // try to change the password to something else using the old existing password
-        userClientPasswordService.changeExpiredPassword(new ExpiredPasswordChangeRequest() {{
-            setExistingPassword(pw);
-            setLogin(user.getLogin());
-            setNewPassword("something else");
-        }});
+        // try to change the password to something else using the old existing
+        // password
+        userClientPasswordService
+                .changeExpiredPassword(new ExpiredPasswordChangeRequest() {
+                    {
+                        setExistingPassword(pw);
+                        setLogin(user.getLogin());
+                        setNewPassword("something else");
+                    }
+                });
         // make sure the update didn't happen
-        assertThat("still can login with password we used earlier", login(user.getLogin(), newPassword), is(equalTo((User) user)));
+        assertThat("still can login with password we used earlier",
+                login(user.getLogin(), newPassword), is(equalTo((User) user)));
         logout();
 
     }
@@ -130,32 +142,44 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         userClientPasswordService.changeExpiredPassword(null);
 
         // empty login
-        userClientPasswordService.changeExpiredPassword(new ExpiredPasswordChangeRequest() {{
-            setExistingPassword(notEmpty);
-            setLogin(empty);
-            setNewPassword(notEmpty);
-        }});
+        userClientPasswordService
+                .changeExpiredPassword(new ExpiredPasswordChangeRequest() {
+                    {
+                        setExistingPassword(notEmpty);
+                        setLogin(empty);
+                        setNewPassword(notEmpty);
+                    }
+                });
 
         // empty existing password
-        userClientPasswordService.changeExpiredPassword(new ExpiredPasswordChangeRequest() {{
-            setExistingPassword(empty);
-            setLogin(notEmpty);
-            setNewPassword(notEmpty);
-        }});
+        userClientPasswordService
+                .changeExpiredPassword(new ExpiredPasswordChangeRequest() {
+                    {
+                        setExistingPassword(empty);
+                        setLogin(notEmpty);
+                        setNewPassword(notEmpty);
+                    }
+                });
 
         // empty new password
-        userClientPasswordService.changeExpiredPassword(new ExpiredPasswordChangeRequest() {{
-            setExistingPassword(notEmpty);
-            setLogin(notEmpty);
-            setNewPassword(empty);
-        }});
+        userClientPasswordService
+                .changeExpiredPassword(new ExpiredPasswordChangeRequest() {
+                    {
+                        setExistingPassword(notEmpty);
+                        setLogin(notEmpty);
+                        setNewPassword(empty);
+                    }
+                });
 
         // login not found
-        userClientPasswordService.changeExpiredPassword(new ExpiredPasswordChangeRequest() {{
-            setExistingPassword(notEmpty);
-            setLogin("no_way_this_exists");
-            setNewPassword(empty);
-        }});
+        userClientPasswordService
+                .changeExpiredPassword(new ExpiredPasswordChangeRequest() {
+                    {
+                        setExistingPassword(notEmpty);
+                        setLogin("no_way_this_exists");
+                        setNewPassword(empty);
+                    }
+                });
     }
 
     /**
@@ -165,40 +189,39 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     public void passwordReset() {
         String password = "password";
 
-        UserClient userClient = userClientPasswordService.addResetTokenTo(makeNewRandomUserClient(null));
+        UserClient userClient = userClientPasswordService
+                .addResetTokenTo(makeNewRandomUserClient(null));
 
-        assertThat("user does not have a validated email", userClient.isEmailValidated(), is(false));
+        assertThat("user does not have a validated email",
+                userClient.isEmailValidated(), is(false));
 
-        UserClient afterReset = userClientPasswordService.resetPassword(
-                new ResetPasswordRequest(userClient.getPasswordResetToken(), password));
+        UserClient afterReset = userClientPasswordService
+                .resetPassword(new ResetPasswordRequest(userClient
+                        .getPasswordResetToken(), password));
 
         assertThat("user has reset password",
-                afterReset.getPasswordResetToken(),
-                is(nullValue())
-        );
+                afterReset.getPasswordResetToken(), is(nullValue()));
 
-        assertThat("user now has an validated email", afterReset.isEmailValidated(), is(true));
+        assertThat("user now has an validated email",
+                afterReset.isEmailValidated(), is(true));
 
-        assertThat("user can now login", login(afterReset.getLogin(), password),
-                is((User) userClient));
+        assertThat("user can now login",
+                login(afterReset.getLogin(), password), is((User) userClient));
         logout();
     }
 
     /**
-     * When the user to be reset cannot be found, null
-     * should come back.
+     * When the user to be reset cannot be found, null should come back.
      */
     @Test
     public void badPasswordReset() {
         assertThat("user is not reset",
-                userClientPasswordService.resetPassword(null),
-                is(nullValue())
-        );
+                userClientPasswordService.resetPassword(null), is(nullValue()));
 
         assertThat("user is not reset",
-                userClientPasswordService.resetPassword(new ResetPasswordRequest()),
-                is(nullValue())
-        );
+                userClientPasswordService
+                        .resetPassword(new ResetPasswordRequest()),
+                is(nullValue()));
     }
 
     /**
@@ -207,8 +230,8 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     @Test
     public void resetToken() {
         UserClient userClient = makeNewRandomUserClient(null);
-        assertThat("reset token is created",
-                userClientPasswordService.addResetTokenTo(userClient).getPasswordResetToken(),
+        assertThat("reset token is created", userClientPasswordService
+                .addResetTokenTo(userClient).getPasswordResetToken(),
                 is(notNullValue()));
     }
 
@@ -221,30 +244,32 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     }
 
     /**
-     * Make sure a forgot password adds a reset key when
-     * the email corresponds to a user client
+     * Make sure a forgot password adds a reset key when the email corresponds
+     * to a user client
      */
     @Test
     public void forgotPassword() {
         Client client = makeNewRandomClient();
-        ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(client);
-        assertThat("allowed user self reset password is true", configuration.isPasswordReset(), is(true));
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(client);
+        assertThat("allowed user self reset password is true",
+                configuration.isPasswordReset(), is(true));
 
         UserClient userClient = makeNewRandomUserClient(client);
-        assertThat("reset token is created",
-                userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
+        assertThat("reset token is created", userClientPasswordService
+                .forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(notNullValue()));
 
         assertThat("reset token is not created",
-                userClientPasswordService.forgotPassword(null),
-                is(nullValue()));
+                userClientPasswordService.forgotPassword(null), is(nullValue()));
 
         configuration.setPasswordReset(false);
         configuration = clientPasswordConfigurationService.save(configuration);
-        assertThat("allowed user self reset password is false", configuration.isPasswordReset(), is(false));
+        assertThat("allowed user self reset password is false",
+                configuration.isPasswordReset(), is(false));
 
-        assertThat("reset token is not created",
-                userClientPasswordService.forgotPassword(userClient.getEmail()).getPasswordResetToken(),
+        assertThat("reset token is not created", userClientPasswordService
+                .forgotPassword(userClient.getEmail()).getPasswordResetToken(),
                 is(nullValue()));
 
         assertThat("reset token is not created",
@@ -254,16 +279,21 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     }
 
     /**
-     * Push the expiration time to the past and validate that reset password returns null
+     * Push the expiration time to the past and validate that reset password
+     * returns null
      */
     @Test
     public void expiredPasswordChange() {
-        UserClient userClient = userClientPasswordService.forgotPassword(makeNewRandomUserClient(null).getEmail());
+        UserClient userClient = userClientPasswordService
+                .forgotPassword(makeNewRandomUserClient(null).getEmail());
 
-        UserClient expiredClient = userClientPasswordService.expireResetToken(userClient);
+        UserClient expiredClient = userClientPasswordService
+                .expireResetToken(userClient);
 
         assertThat("should be expired",
-                userClientPasswordService.resetPassword(new ResetPasswordRequest(expiredClient.getPasswordResetToken(), "***")),
+                userClientPasswordService
+                        .resetPassword(new ResetPasswordRequest(expiredClient
+                                .getPasswordResetToken(), "***")),
                 is(nullValue()));
     }
 
@@ -272,19 +302,26 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
      */
     @Test
     public void expireResetToken() {
-        UserClient userClient = userClientPasswordService.forgotPassword(makeNewRandomUserClient(null).getEmail());
+        UserClient userClient = userClientPasswordService
+                .forgotPassword(makeNewRandomUserClient(null).getEmail());
         LocalDateTime now = LocalDateTime.now(DateTimeZone.UTC);
-        assertThat("reset token is created", userClient.getPasswordResetToken(), is(notNullValue()));
-        assertThat("reset timestamp is created", userClient.getPasswordResetExpirationDateTime(),
+        assertThat("reset token is created",
+                userClient.getPasswordResetToken(), is(notNullValue()));
+        assertThat("reset timestamp is created",
+                userClient.getPasswordResetExpirationDateTime(),
                 is(notNullValue()));
 
-        UserClient expiredClient = userClientPasswordService.expireResetToken(userClient);
+        UserClient expiredClient = userClientPasswordService
+                .expireResetToken(userClient);
         assertThat("reset token is the same",
                 expiredClient.getPasswordResetToken(),
                 is(userClient.getPasswordResetToken()));
-        assertThat("reset timestamp should still exist but should be behind the current time",
-                expiredClient.getPasswordResetExpirationDateTime()
-                        .isBefore(now.minusHours(UserClientPasswordService.RESET_TOKEN_HOURS_VALID)),
+        assertThat(
+                "reset timestamp should still exist but should be behind the current time",
+                expiredClient
+                        .getPasswordResetExpirationDateTime()
+                        .isBefore(
+                                now.minusHours(UserClientPasswordService.RESET_TOKEN_HOURS_VALID)),
                 is(true));
     }
 
@@ -292,7 +329,6 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     public void badExpireReset() {
         userClientPasswordService.expireResetToken(new UserClient());
     }
-
 
     /**
      * Happy path for finding password policy from a reset token
@@ -302,23 +338,26 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         ClientPasswordConfiguration existingPolicy = makeNewRandomClientPasswordConfiguration(null);
         // reset a user
         UserClient userClient = userClientPasswordService
-                .forgotPassword(makeNewRandomUserClient(existingPolicy.getClient()).getEmail());
+                .forgotPassword(makeNewRandomUserClient(
+                        existingPolicy.getClient()).getEmail());
 
-        ClientPasswordConfiguration policy =
-                userClientPasswordService.findPasswordPolicyUsingResetToken(userClient.getPasswordResetToken());
+        ClientPasswordConfiguration policy = userClientPasswordService
+                .findPasswordPolicyUsingResetToken(userClient
+                        .getPasswordResetToken());
         assertThat("existing policy was found", policy, is(existingPolicy));
     }
 
     /**
-     * This one should 'find' a password policy even though there
-     * is no user associated to the reset token
+     * This one should 'find' a password policy even though there is no user
+     * associated to the reset token
      */
     @Test
     public void passwordPolicyFromNullResetToken() {
-        ClientPasswordConfiguration policy =
-                userClientPasswordService.findPasswordPolicyUsingResetToken(null);
+        ClientPasswordConfiguration policy = userClientPasswordService
+                .findPasswordPolicyUsingResetToken(null);
         assertThat("a policy was found", policy, is(notNullValue()));
-        assertThat("the policy was created and not persistent", policy.getId(), is(nullValue()));
+        assertThat("the policy was created and not persistent", policy.getId(),
+                is(nullValue()));
     }
 
     /**
@@ -328,10 +367,13 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
     public void passwordPolicyFromActivationToken() {
         ClientPasswordConfiguration existingPolicy = makeNewRandomClientPasswordConfiguration(null);
         // activate a user
-        UserClient userClient = userClientService.addActivationKey(makeNewRandomUserClient(existingPolicy.getClient()));
+        UserClient userClient = userClientService
+                .addActivationKey(makeNewRandomUserClient(existingPolicy
+                        .getClient()));
 
-        ClientPasswordConfiguration policy =
-                userClientPasswordService.findPasswordPolicyUsingActivationToken(userClient.getActivationKey());
+        ClientPasswordConfiguration policy = userClientPasswordService
+                .findPasswordPolicyUsingActivationToken(userClient
+                        .getActivationKey());
         assertThat("existing policy was found", policy, is(existingPolicy));
     }
 
@@ -346,7 +388,7 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         assertThat("userClient with password expiration time",
                 userClient.getPasswordExpireationDateTime(), is(notNullValue()));
     }
-    
+
     @Test
     public void changePassword() {
         UserClient userClient = makeNewRandomUserClient(null);

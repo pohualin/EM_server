@@ -1,9 +1,10 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClientPasswordHistory;
@@ -41,9 +42,14 @@ public class UserClientPasswordHistoryPersistenceImpl implements
     }
 
     @Override
-    public List<UserClientPasswordHistory> findByUserClientId(Long id) {
+    public Page<UserClientPasswordHistory> findByUserClientId(
+            Pageable pageable, Long id) {
+        Pageable toUse = pageable;
+        if (toUse == null) {
+            toUse = new PageRequest(0, 20);
+        }
         return userClientPasswordHistoryRepository
-                .findByUserClientIdOrderByPasswordSavedTimeDesc(id);
+                .findByUserClientIdOrderByCreatedDateDesc(toUse, id);
     }
 
 }

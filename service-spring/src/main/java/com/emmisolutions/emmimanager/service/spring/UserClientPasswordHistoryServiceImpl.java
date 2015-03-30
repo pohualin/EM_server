@@ -3,12 +3,13 @@ package com.emmisolutions.emmimanager.service.spring;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -35,7 +36,7 @@ public class UserClientPasswordHistoryServiceImpl implements
     ClientPasswordConfigurationService clientPasswordConfigurationService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public void delete(UserClientPasswordHistory userClientPasswordHistory) {
         if (userClientPasswordHistory == null
                 || userClientPasswordHistory.getId() == null) {
@@ -47,18 +48,19 @@ public class UserClientPasswordHistoryServiceImpl implements
     }
 
     @Override
-    @Transactional
-    public List<UserClientPasswordHistory> get(UserClient userClient) {
+    @Transactional(readOnly = true)
+    public Page<UserClientPasswordHistory> get(Pageable pageable,
+            UserClient userClient) {
         if (userClient == null || userClient.getId() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "UserClient or userClientId cannot be null");
         }
-        return userClientPasswordHistoryPersistence
-                .findByUserClientId(userClient.getId());
+        return userClientPasswordHistoryPersistence.findByUserClientId(
+                pageable, userClient.getId());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserClientPasswordHistory reload(
             UserClientPasswordHistory userClientPasswordHistory) {
         if (userClientPasswordHistory == null
@@ -81,7 +83,9 @@ public class UserClientPasswordHistoryServiceImpl implements
     }
 
     @Override
-    public void handleUserClientPasswordHistory(UserClient userClient) {
+    @Transactional
+    public List<UserClientPasswordHistory> handleUserClientPasswordHistory(
+            UserClient userClient) {
         UserClient fromDb = userClientPersistence.reload(userClient);
         if (fromDb == null) {
             throw new InvalidDataAccessApiUsageException(
@@ -96,21 +100,20 @@ public class UserClientPasswordHistoryServiceImpl implements
         latest.setUserClient(fromDb);
         latest.setPassword(fromDb.getPassword());
         latest.setSalt(fromDb.getSalt());
-        latest.setPasswordSavedTime(fromDb.getPasswordSavedDateTime() != null ? fromDb
-                .getPasswordSavedDateTime() : LocalDateTime
-                .now(DateTimeZone.UTC));
         userClientPasswordHistoryPersistence.saveOrUpdate(latest);
 
-        List<UserClientPasswordHistory> histories = get(fromDb);
+        PageRequest pageRequest = new PageRequest(0,
+                configuration.getPasswordRepetitions());
+        Page<UserClientPasswordHistory> histories = get(pageRequest, fromDb);
         // purge oldest
-        if (histories.size() > configuration.getPasswordRepetitions()) {
-            List<UserClientPasswordHistory> toPurgeList = histories.subList(
-                    configuration.getPasswordRepetitions(), histories.size());
-            for (UserClientPasswordHistory toPurge : toPurgeList) {
+        while (histories.hasContent() && histories.hasNext()) {
+            histories = get(histories.nextPageable(), fromDb);
+            for (UserClientPasswordHistory toPurge : histories.getContent()) {
                 userClientPasswordHistoryPersistence.delete(toPurge.getId());
             }
         }
 
+        return histories.getContent();
     }
 
 }

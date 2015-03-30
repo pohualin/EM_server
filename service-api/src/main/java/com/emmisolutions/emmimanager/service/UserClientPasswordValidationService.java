@@ -71,8 +71,21 @@ public interface UserClientPasswordValidationService {
      *            to check
      * @return true if password is valid, false if not
      */
-    boolean checkPasswordHistory(ClientPasswordConfiguration confituration,
-            UserClient existing, String password);
+    boolean isPasswordNotRepeatsHistory(
+            ClientPasswordConfiguration confituration, UserClient existing,
+            String password);
+
+    /**
+     * See if last password changed was x days ago
+     * 
+     * @param configuration
+     *            to get x
+     * @param existing
+     *            to check
+     * @return true if eligible, false if not
+     */
+    boolean isEligibleForPasswordChange(
+            ClientPasswordConfiguration configuration, UserClient existing);
 
     /**
      * Check if password matches client password policy pattern
@@ -124,6 +137,6 @@ public interface UserClientPasswordValidationService {
 
     @XmlEnum
     public static enum Reason {
-        POLICY, HISTORY
+        POLICY, HISTORY, DAYS_BETWEEN
     }
 }
