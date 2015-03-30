@@ -21,7 +21,7 @@ import java.util.Arrays;
  */
 @Aspect
 @Component("ServiceLayerAutoLogger")
-@Profile({Constants.SPRING_PROFILE_DEVELOPMENT, Constants.SPRING_PROFILE_TEST})
+@Profile({Constants.SPRING_PROFILE_DEVELOPMENT})
 public class LoggingAspect {
 
     @Resource
