@@ -51,7 +51,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
     @Transactional
     public UserClientSecretQuestionResponse saveOrUpdate(
             UserClientSecretQuestionResponse questionResponse) {
-        if (questionResponse == null || 
+        if (questionResponse == null ||
                secretQuestionPersistence.reload(questionResponse.getSecretQuestion()) == null ||
                userClientPersistence.reload(questionResponse.getUserClient()) == null ||
                StringUtils.isBlank(questionResponse.getResponse())) {
