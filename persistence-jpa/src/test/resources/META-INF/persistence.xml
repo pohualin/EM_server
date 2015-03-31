@@ -21,6 +21,7 @@
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientPermission</class>
         <class>com.emmisolutions.emmimanager.model.user.client.UserClientPermissionGroup</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.UserClientPasswordHistory</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission</class>
