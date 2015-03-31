@@ -24,13 +24,6 @@ public interface UserClientSecretQuestionResponsePersistence {
     Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
     
     /**
-     * 
-     * @param userClient the user client
-     * @return list user client secret question response
-     */
-    List<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient);
-    
-    /**
      * Save or update the secret question response
      * @param questionResponse the user client secret question response
      * @return user client secret question response

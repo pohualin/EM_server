@@ -181,8 +181,8 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
 		if (resetToken != null) {
             UserClient userClient =
                     userClientPersistence.findByResetToken(resetToken);
-            List<UserClientSecretQuestionResponse> dbResponse= userClientSecretQuestionResponsePersistence
-                    .findByUserClient(userClient);
+            Page<UserClientSecretQuestionResponse> dbResponse= userClientSecretQuestionResponsePersistence
+                    .findByUserClient(userClient, new PageRequest(0, 10));
             
            return compareSecurityResponse(questionResponse, dbResponse);
         }
@@ -191,12 +191,12 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
 		}
 	}
 	
-	private boolean compareSecurityResponse(List<UserClientSecretQuestionResponse> questionResponse, List<UserClientSecretQuestionResponse> dbResponse){
+	private boolean compareSecurityResponse(List<UserClientSecretQuestionResponse> questionResponse, Page<UserClientSecretQuestionResponse> dbResponse){
 		int counter = 0;
 		boolean isResponseSame = false;
 		for(UserClientSecretQuestionResponse response : questionResponse){
 			Long questionId = response.getSecretQuestion().getId();
-			for(UserClientSecretQuestionResponse databaseResponse : dbResponse){
+			for(UserClientSecretQuestionResponse databaseResponse : dbResponse.getContent()){
 				if(databaseResponse.getSecretQuestion().getId()==questionId){
 					if(response.getResponse().replaceAll("\\s+", "").equalsIgnoreCase(databaseResponse.getResponse().replaceAll("\\s+", ""))){
 						counter ++;
