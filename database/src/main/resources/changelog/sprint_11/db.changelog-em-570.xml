@@ -188,4 +188,9 @@
         </createIndex>
 	</changeSet>
 
+	<changeSet id="update last_modified_by to nvarchar(255)" author="Paul">
+    	<modifyDataType tableName="ip_restrict_configuration" columnName="last_modified_by" newDataType="nvarchar(255)"/>
+    	<modifyDataType tableName="email_restrict_configuration" columnName="last_modified_by" newDataType="nvarchar(255)"/>
+    	<modifyDataType tableName="client_restrict_configuration" columnName="last_modified_by" newDataType="nvarchar(255)"/>
+    </changeSet>
 </databaseChangeLog>

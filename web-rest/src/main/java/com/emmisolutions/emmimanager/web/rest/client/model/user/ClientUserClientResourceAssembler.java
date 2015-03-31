@@ -43,7 +43,8 @@ public class ClientUserClientResourceAssembler implements
                 clientResourceAssembler.toResource(entity.getClient()),
                 null,
                 entity.isImpersonated(),
-                entity.getPasswordExpireationDateTime());
+                entity.getPasswordExpireationDateTime(),
+                entity.getPasswordSavedDateTime());
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withSelfRel());
         ret.add(UserClientResourceAssembler.createVerifyPasswordLink(entity));
         ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(entity.getId())).withRel("sendValidationEmail"));

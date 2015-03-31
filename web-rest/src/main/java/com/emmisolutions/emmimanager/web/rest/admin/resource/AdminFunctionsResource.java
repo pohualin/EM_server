@@ -1,9 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
+import com.emmisolutions.emmimanager.model.ProviderSpecialty;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderSpecialtyPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderSpecialtyResourceAssembler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,7 +34,7 @@ public class AdminFunctionsResource {
     ProviderService providerService;
 
     @Resource
-    ReferenceTagResourceAssembler referenceTagResourceAssembler;
+    ProviderSpecialtyResourceAssembler providerSpecialtyResourceAssembler;
 
     /**
      * GET to retrieve Reference Tags with Specialty type.
@@ -43,14 +46,14 @@ public class AdminFunctionsResource {
      */
     @RequestMapping(value = "/referenceTags", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_SUPER_ADMIN"})
-    public ResponseEntity<ReferenceTagPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
+    public ResponseEntity<ProviderSpecialtyPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
                                                        @SortDefault(sort = "id") Sort sort,
-                                                       PagedResourcesAssembler<ReferenceTag> assembler) {
+                                                       PagedResourcesAssembler<ProviderSpecialty> assembler) {
 
-        Page<ReferenceTag> tagPage = providerService.findAllSpecialties(pageable);
+        Page<ProviderSpecialty> specialtyPage = providerService.findAllSpecialties(pageable);
 
-        if (tagPage.hasContent()) {
-            return new ResponseEntity<>(new ReferenceTagPage(assembler.toResource(tagPage, referenceTagResourceAssembler), tagPage), HttpStatus.OK);
+        if (specialtyPage.hasContent()) {
+            return new ResponseEntity<>(new ProviderSpecialtyPage(assembler.toResource(specialtyPage, providerSpecialtyResourceAssembler), specialtyPage), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
