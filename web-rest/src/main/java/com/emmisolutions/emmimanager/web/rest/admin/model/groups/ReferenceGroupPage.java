@@ -52,4 +52,19 @@ public class ReferenceGroupPage extends PagedResource<ReferenceGroupResource> {
             ));
         return new Link(uriTemplate, link.getRel());
     }
+    
+    /**
+     * Link for active reference groups
+     * @return Link active reference data for groups and tags
+     */
+    public static Link createActiveReferenceGroupsDataLink() {
+        Link link = linkTo(methodOn(ReferenceGroupsResource.class).getActiveReferenceGroups(null, null, null)).withRel("activeReferenceGroups");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
+            ));
+        return new Link(uriTemplate, link.getRel());
+    }
 }

@@ -16,6 +16,15 @@ public interface ReferenceGroupPersistence {
      * @return Page<ReferenceGroup>
      */
     Page<ReferenceGroup> loadReferenceGroups(Pageable page);
+    
+    /**
+     * loads active reference groups
+     * 
+     * @param page
+     *            specification
+     * @return Page<ReferenceGroup>
+     */
+    Page<ReferenceGroup> loadActiveReferenceGroups(Pageable page);
 
     /**
      * Saved a given ReferenceGroup
