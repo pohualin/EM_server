@@ -93,6 +93,8 @@ public interface UserClientService {
     
     /**
      * Locked out userCLient with password reset token
+     * After user tried 3 attempts for the security questions
+     * User will locked out on the 4th and more attempts
      * 
      * @param resetToken user client password reset token
      * @return UserClient
