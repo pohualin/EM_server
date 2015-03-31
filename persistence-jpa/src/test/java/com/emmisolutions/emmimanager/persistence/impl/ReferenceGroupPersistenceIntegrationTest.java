@@ -38,6 +38,10 @@ public class ReferenceGroupPersistenceIntegrationTest extends BaseIntegrationTes
         assertThat("es is not present",
             referenceGroupPersistence.loadReferenceGroups(null).getTotalElements(),
             is(not(0l)));
+        
+        assertThat("es is not present",
+            referenceGroupPersistence.loadActiveReferenceGroups(null).getTotalElements(),
+            is(not(0l)));
     }
     
     @Test

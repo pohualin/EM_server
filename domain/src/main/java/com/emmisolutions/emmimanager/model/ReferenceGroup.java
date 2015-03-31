@@ -42,6 +42,8 @@ public class ReferenceGroup extends AbstractAuditingEntity implements Serializab
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "reference_group_type_id", nullable = false)
     private ReferenceGroupType type;
+    
+    private boolean active = true;
 
     /**
      * Reference Group id constructor
@@ -86,6 +88,14 @@ public class ReferenceGroup extends AbstractAuditingEntity implements Serializab
 
     public void setType(ReferenceGroupType type) {
         this.type = type;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override
