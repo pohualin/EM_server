@@ -19,6 +19,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="drop_old_indexes" author="Amrita">
+        <dropIndex tableName="provider" indexName="ix_provider_reference_tag_specialty"></dropIndex>
+        <dropForeignKeyConstraint baseTableName="provider" constraintName="fk_provider_reference_tag"></dropForeignKeyConstraint>
+    </changeSet>
+
     <changeSet id="update_provider_remove_old_column" author="Amrita">
         <dropColumn tableName="provider" columnName="reference_tag_specialty"/>
         <dropColumn tableName="provider_audit" columnName="reference_tag_specialty"/>
@@ -73,6 +78,9 @@
                   file="changelog/sprint_15/data.em-950/provider-specialties-updated.csv"
                   separator=";"
                   tableName="provider_specialty"/>
+        <createIndex indexName="ix_provider_provider_specialty" tableName="provider">
+            <column name="provider_specialty"  type="BIGINT"/>
+        </createIndex>
     </changeSet>
 
 </databaseChangeLog>
