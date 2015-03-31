@@ -2,11 +2,11 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
+import com.emmisolutions.emmimanager.model.ProviderSpecialty;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.ProviderSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ProviderSpecialtyRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,10 +28,16 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
     ProviderRepository providerRepository;
 
     @Resource
-    ReferenceTagRepository referenceTagRepository;
+    ProviderSpecialtyRepository providerSpecialtyRepository;
 
     @Resource
     ProviderSpecifications providerSpecifications;
+
+
+    @Override
+    public ProviderSpecialty saveSpecialty(ProviderSpecialty provider) {
+        return providerSpecialtyRepository.save(provider);
+    }
 
     @Override
     public Provider save(Provider provider) {
@@ -59,14 +65,13 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
     }
 
     @Override
-    public Page<ReferenceTag> findAllByGroupTypeName(Pageable page) {
+    public Page<ProviderSpecialty> findAllProviderSpecialties(Pageable page) {
         if (page == null) {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "name");
         }
-        return referenceTagRepository.findAllByGroupTypeName(SPECIALTY, page);
+        return providerSpecialtyRepository.findAll(page);
     }
-
     /**
      * remove the special characters replacing it with blank (" ") and change all to lower case
      *

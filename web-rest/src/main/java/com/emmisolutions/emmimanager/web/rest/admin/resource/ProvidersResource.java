@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -48,7 +47,7 @@ public class ProvidersResource {
     ProviderClientResourceAssembler providerClientResourceAssembler;
 
     @Resource
-    ReferenceTagResourceAssembler referenceTagResourceAssembler;
+    ProviderSpecialtyResourceAssembler providerSpecialtyResourceAssembler;
 
     /**
      * POST for creating a Provider
@@ -90,14 +89,14 @@ public class ProvidersResource {
      */
     @RequestMapping(value = "/referenceDataSpecialties", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<ReferenceTagPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
+    public ResponseEntity<ProviderSpecialtyPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
                                                        @SortDefault(sort = "id") Sort sort,
-                                                       PagedResourcesAssembler<ReferenceTag> assembler) {
+                                                       PagedResourcesAssembler<ProviderSpecialty> assembler) {
 
-        Page<ReferenceTag> tagPage = providerService.findAllSpecialties(pageable);
+        Page<ProviderSpecialty> specialtyPage = providerService.findAllSpecialties(pageable);
 
-        if (tagPage.hasContent()) {
-            return new ResponseEntity<>(new ReferenceTagPage(assembler.toResource(tagPage, referenceTagResourceAssembler), tagPage), HttpStatus.OK);
+        if (specialtyPage.hasContent()) {
+            return new ResponseEntity<>(new ProviderSpecialtyPage(assembler.toResource(specialtyPage, providerSpecialtyResourceAssembler), specialtyPage), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

@@ -60,6 +60,7 @@
         <class>com.emmisolutions.emmimanager.model.program.Program</class>
         <class>com.emmisolutions.emmimanager.model.program.Source</class>
         <class>com.emmisolutions.emmimanager.model.program.Type</class>
+        <class>com.emmisolutions.emmimanager.model.ProviderSpecialty</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
