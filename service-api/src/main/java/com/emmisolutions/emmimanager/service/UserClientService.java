@@ -89,6 +89,15 @@ public interface UserClientService {
      * @return handled userClient
      */
     UserClient handleLoginFailure(UserClient userClient);
+    
+    
+    /**
+     * Locked out userCLient with password reset token
+     * 
+     * @param resetToken user client password reset token
+     * @return UserClient
+     */
+    UserClient lockedOutUserWithResetToken(String resetToken);
 
 	/**
 	 * Reset userClient lock if it is locked and lock is expired

@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 
 import org.springframework.data.domain.Page;
@@ -17,16 +19,23 @@ public interface UserClientSecretQuestionResponseRepository extends JpaRepositor
 	  * 
 	  * @param id
 	  * @param pageable
-	  * @return page of user client secret question reponse
+	  * @return page of user client secret question response
 	  */
     Page<UserClientSecretQuestionResponse> findByUserClientId (Long id, Pageable pageable);
+    
+    /**
+	  * 
+	  * @param id
+	  * @return list of user client secret question response
+	  */
+   List<UserClientSecretQuestionResponse> findByUserClientId (Long id);
     
        
     /**
      * 
      * @param userClientId
      * @param questionId
-     * @return user client secret question reponse
+     * @return user client secret question response
      */
     UserClientSecretQuestionResponse findByUserClientIdAndSecretQuestionId(
             Long userClientId, Long questionId);

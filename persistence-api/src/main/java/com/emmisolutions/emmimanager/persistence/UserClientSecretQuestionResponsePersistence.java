@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 
@@ -20,6 +22,13 @@ public interface UserClientSecretQuestionResponsePersistence {
      * @return page user client secret question response
      */
     Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
+    
+    /**
+     * 
+     * @param userClient the user client
+     * @return list user client secret question response
+     */
+    List<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient);
     
     /**
      * Save or update the secret question response

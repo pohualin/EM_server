@@ -108,7 +108,12 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         return userClientSecretQuestionResponsePersistence.reload(questionResponse);
     }
 
-   
+    /**
+     * Find security question by user client
+     * @param userClient the user client
+     * @param pageable the pagination
+     * @return  Page of UserClientSecretQuestionResponse
+     */
     @Override
     @Transactional
     public Page<UserClientSecretQuestionResponse> findByUserClient(
@@ -139,8 +144,69 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         }
         inDb.setSecretQuestionCreated(userClient.isSecretQuestionCreated());
     	return userClientPersistence.saveOrUpdate(inDb);
-    } 
+    }
 
+    /**
+     * find user client with reset password token then find secret question for the found user  
+     * @param userClient the user client
+     * @return  UserClient
+     */
+	@Override
+	public Page<UserClientSecretQuestionResponse> findSecretQuestionToken(
+			String resetToken,Pageable pageable) {
+		
+		if (resetToken != null) {
+            UserClient userClient =
+                    userClientPersistence.findByResetToken(resetToken);
+            return userClientSecretQuestionResponsePersistence
+                    .findByUserClient(userClient, pageable);
+            
+		} 
+		else{
+			return null;
+		}
+ 
+	}
+
+	/**
+     * Validate user input security response with database response  
+     * @param resetToken the password reset token
+     * @param questionResponse list of user input response
+     * @return  boolean is input response match
+     */
+	@Override
+	public boolean validateSecurityResponse(
+			String resetToken,
+			List<UserClientSecretQuestionResponse> questionResponse) {
+		if (resetToken != null) {
+            UserClient userClient =
+                    userClientPersistence.findByResetToken(resetToken);
+            List<UserClientSecretQuestionResponse> dbResponse= userClientSecretQuestionResponsePersistence
+                    .findByUserClient(userClient);
+            
+           return compareSecurityResponse(questionResponse, dbResponse);
+        }
+     	else{
+			return false;
+		}
+	}
+	
+	private boolean compareSecurityResponse(List<UserClientSecretQuestionResponse> questionResponse, List<UserClientSecretQuestionResponse> dbResponse){
+		int counter = 0;
+		boolean isResponseSame = false;
+		for(UserClientSecretQuestionResponse response : questionResponse){
+			Long questionId = response.getSecretQuestion().getId();
+			for(UserClientSecretQuestionResponse databaseResponse : dbResponse){
+				if(databaseResponse.getSecretQuestion().getId()==questionId){
+					if(response.getResponse().replaceAll("\\s+", "").equalsIgnoreCase(databaseResponse.getResponse().replaceAll("\\s+", ""))){
+						counter ++;
+				    }
+				}
+			}
+		}
+		isResponseSame = (counter == 2) ? true : false;
+		return isResponseSame;
+	}
 
 }
 

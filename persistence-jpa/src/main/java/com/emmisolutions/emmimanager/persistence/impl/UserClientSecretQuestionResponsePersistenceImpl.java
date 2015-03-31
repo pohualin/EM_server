@@ -70,5 +70,11 @@ public class UserClientSecretQuestionResponsePersistenceImpl implements
         return userClientSecretQuestionResponseRepository.findOne(userClientSecretQuestion.getId());
     }
 
+	@Override
+	public List<UserClientSecretQuestionResponse> findByUserClient(
+			UserClient userClient) {
+		 return userClientSecretQuestionResponseRepository.findByUserClientId(userClient.getId());
+	}
+
    
 }

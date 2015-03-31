@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -196,7 +197,45 @@ public class UserClientSecretQuestionResponsesResource {
         
     }
     
+    /**
+     * Get the user client secret question with empty responses 
+     * @param token password reset token for user client
+     * @return secret questions with empty response
+     */
+    @RequestMapping(value = "/secret_questions/getSecretQuestionWithResetToken", method = RequestMethod.GET)
+    @PermitAll
+    public ResponseEntity<Page<SecretQuestion>> getSecretQuestionWithResetToken(
+    		@RequestParam(value = "token", required = false) String resetToken,
+    		PagedResourcesAssembler<UserClientSecretQuestionResponse> assembler) {
+       Page<UserClientSecretQuestionResponse> page = userClientSecretQuestionResponseService
+                .findSecretQuestionToken(resetToken, new PageRequest(0, 10));
+       if(page != null) {
+        	Pageable pageRequest=new PageRequest(0, 10, Sort.Direction.ASC, "id");
+        	List<SecretQuestion> question = new ArrayList<SecretQuestion>();
+            for(UserClientSecretQuestionResponse response : page){
+        		question.add(response.getSecretQuestion());
+           	}
+        	Page<SecretQuestion> emptyResponsePage = new PageImpl<SecretQuestion>(question,pageRequest,0);
+           	return new ResponseEntity<>(emptyResponsePage, HttpStatus.OK);
+        }else{
+          	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+       
+    }
     
-   
-
+    /**
+     * PUT for secret question response for a given user client to verify 
+     *
+     * @param userClientId user client id
+     * @param userClientSecretQuestionResponse secret question for verification
+     * @return
+     */
+    @RequestMapping(value = "/secret_questions/validateSecretResponses", method = RequestMethod.PUT)
+    @PermitAll
+    public ResponseEntity<Boolean> validateSecretResponses(
+    		@RequestParam(value = "token", required = false) String resetToken,
+    		@RequestBody List<UserClientSecretQuestionResponse> userClientSecretQuestionResponse) {
+    	  boolean responseSame = userClientSecretQuestionResponseService.validateSecurityResponse(resetToken, userClientSecretQuestionResponse);
+    	  return new ResponseEntity<>(responseSame, HttpStatus.OK);
+    }
 }
