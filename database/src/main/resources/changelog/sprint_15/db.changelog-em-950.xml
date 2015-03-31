@@ -19,7 +19,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="drop_old_indexes" author="Amrita">
+    <changeSet id="drop_old_indexes" author="Amrita" dbms="mssql">
         <dropIndex tableName="provider" indexName="ix_provider_reference_tag_specialty"></dropIndex>
         <dropForeignKeyConstraint baseTableName="provider" constraintName="fk_provider_reference_tag"></dropForeignKeyConstraint>
     </changeSet>
