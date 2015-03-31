@@ -8,7 +8,13 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.service.*;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordService;
+import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -46,6 +52,9 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
+    
+    @Resource
+    UserClientPasswordHistoryService userClientPasswordHistoryService;
 
     @Resource
     ClientRestrictConfigurationService clientRestrictConfigurationService;
@@ -154,6 +163,8 @@ public class UserClientServiceImpl implements UserClientService {
                     ret = userClientPasswordService
                             .updatePasswordExpirationTime(userClientPasswordService
                                     .encodePassword(unlockedUser));
+                    
+                    userClientPasswordHistoryService.handleUserClientPasswordHistory(ret);
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
                 }

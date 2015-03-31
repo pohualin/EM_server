@@ -326,4 +326,9 @@
     	<modifyDataType tableName="client_password_configuration" columnName="created_by" newDataType="nvarchar(255)"/>
     </changeSet>
 
+    <changeSet id="update last_modified_by to nvarchar(255)" author="Paul">
+    	<modifyDataType tableName="default_password_configuration" columnName="last_modified_by" newDataType="nvarchar(255)"/>
+    	<modifyDataType tableName="client_password_configuration" columnName="last_modified_by" newDataType="nvarchar(255)"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
+import com.emmisolutions.emmimanager.model.ProviderSpecialty;
 import com.emmisolutions.emmimanager.model.ReferenceTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,15 +38,17 @@ public interface ProviderPersistence {
     Page<Provider> list(Pageable page, ProviderSearchFilter searchFilter);
 
     /**
-     * Finds a page of specialty tags
-     *
-     * @param page to fetch
-     * @return a page of ReferenceTag objects
+     * Finds a page of provider specialties
+     * @param page of ProviderSpecialty
+     * @return
      */
-    Page<ReferenceTag> findAllByGroupTypeName(Pageable page);
+    Page<ProviderSpecialty> findAllProviderSpecialties(Pageable page);
 
     /**
-     * Name of specialty Type in database
+     * saves a given specialty
+     *
+     * @param provider
+     * @return
      */
-    String SPECIALTY = "SPECIALTY";
+    ProviderSpecialty saveSpecialty(ProviderSpecialty provider);
 }
