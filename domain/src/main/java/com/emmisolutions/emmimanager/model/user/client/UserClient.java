@@ -100,6 +100,9 @@ public class UserClient extends User {
     
     @Column(name = "password_expiration_time_utc")
     private LocalDateTime passwordExpirationDateTime;
+    
+    @Column(name = "password_saved_time_utc")
+    private LocalDateTime passwordSavedDateTime;
 
     @Column(name = "validation_expiration_time_utc")
     private LocalDateTime validationExpirationDateTime;
@@ -293,6 +296,14 @@ public class UserClient extends User {
     public void setPasswordExpireationDateTime(
             LocalDateTime passwordExpirationDateTime) {
         this.passwordExpirationDateTime = passwordExpirationDateTime;
+    }
+
+    public LocalDateTime getPasswordSavedDateTime() {
+        return passwordSavedDateTime;
+    }
+
+    public void setPasswordSavedDateTime(LocalDateTime passwordSavedDateTime) {
+        this.passwordSavedDateTime = passwordSavedDateTime;
     }
 
     public boolean isImpersonated() {

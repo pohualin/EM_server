@@ -1,9 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
-import com.emmisolutions.emmimanager.service.UserClientPasswordService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService.UserClientPasswordValidationError;
+import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResourceAssembler;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +37,10 @@ public class UserClientsActivationResource {
     UserClientService userClientService;
 
     @Resource
-    UserClientPasswordService userClientPasswordService;
+    UserClientPasswordValidationService userClientPasswordValidationService;
+    
+    @Resource
+    UserClientPasswordValidationErrorResourceAssembler userClientPasswordValidationErrorResourceAssembler;
 
 
     /**
@@ -41,16 +51,27 @@ public class UserClientsActivationResource {
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST)
     @PermitAll
-    public ResponseEntity<Void> activate(@RequestBody ActivationRequest activationRequest) {
+    public ResponseEntity<List<UserClientPasswordValidationErrorResource>> activate(
+            @RequestBody ActivationRequest activationRequest) {
 
-        if (userClientPasswordService.validateNewPassword(activationRequest)) {
-            UserClient userClient = userClientService.activate(activationRequest);
+        List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
+                .validateRequest(activationRequest);
+        if (errors.size() == 0) {
+            UserClient userClient = userClientService
+                    .activate(activationRequest);
             if (userClient != null) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.GONE);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<>();
+            for (UserClientPasswordValidationError error : errors) {
+                errorResources
+                        .add(userClientPasswordValidationErrorResourceAssembler
+                                .toResource(error));
+            }
+            return new ResponseEntity<>(errorResources,
+                    HttpStatus.NOT_ACCEPTABLE);
         }
 
     }

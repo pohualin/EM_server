@@ -1,27 +1,12 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.*;
+import java.util.Set;
 
 /**
  * A Team location.
@@ -69,7 +54,16 @@ public class TeamLocation extends AbstractAuditingEntity {
 	public TeamLocation() {
 	}
 
-	@Override
+    /**
+     * Construct with id
+     *
+     * @param teamLocationId the id
+     */
+    public TeamLocation(Long teamLocationId) {
+        this.id = teamLocationId;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

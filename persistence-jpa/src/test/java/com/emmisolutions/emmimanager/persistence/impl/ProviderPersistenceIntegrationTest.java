@@ -6,10 +6,7 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
+import com.emmisolutions.emmimanager.persistence.repo.*;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -33,9 +30,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 	ProviderRepository providerRepository;
 
 	@Resource
-	ReferenceTagRepository referenceTagRepository;
-
-	@Resource
 	ReferenceGroupRepository referenceGroupRepository;
 
 	@Resource
@@ -45,22 +39,14 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 	TeamPersistence teamPersistence;
 
     @Resource
-    ReferenceGroupTypeRepository referenceGroupTypeRepository;
+    ProviderSpecialtyRepository providerSpecialtyRepository;
 
-	private ReferenceTag getSpecialty(){
-		ReferenceTag specialty = new ReferenceTag();
-		ReferenceGroup group = new ReferenceGroup();
-		ReferenceGroupType type = new ReferenceGroupType();
-		type.setName(RandomStringUtils.randomAlphanumeric(11));
-		type= referenceGroupTypeRepository.save(type);
-		group.setName(RandomStringUtils.randomAlphanumeric(12));
-		group.setType(type);
-
-		specialty.setName(RandomStringUtils.randomAlphanumeric(13));
-		specialty.setGroup(group);
-        group.getTags().add(specialty);
-        referenceGroupRepository.save(group);
-		return specialty;
+	private ProviderSpecialty getSpecialty(){
+        ProviderSpecialty specialty = new ProviderSpecialty();
+        specialty.setName(RandomStringUtils.randomAlphanumeric(9));
+        ProviderSpecialty savedSpecialty = providerPersistence.saveSpecialty(specialty);
+        ProviderSpecialty reloadedSpecialty = providerSpecialtyRepository.findOne(savedSpecialty.getId());
+		return savedSpecialty;
 	}
 
 	/**
@@ -87,7 +73,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void findSpecialties(){
-        assertThat("Reference specialties come back", providerPersistence.findAllByGroupTypeName(null).getTotalElements(),
+        assertThat("Reference specialties come back", providerPersistence.findAllProviderSpecialties(null).getTotalElements(),
             is(not(0l)));
     }
 

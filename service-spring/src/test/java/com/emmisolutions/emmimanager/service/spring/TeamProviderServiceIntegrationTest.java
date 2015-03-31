@@ -3,10 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
-import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
-import com.emmisolutions.emmimanager.persistence.repo.TeamProviderRepository;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.service.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
@@ -41,18 +38,6 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
     UserAdminService userAdminService;
 
 	@Resource
-	ReferenceTagRepository referenceTagRepository;
-
-	@Resource
-	ReferenceGroupRepository referenceGroupRepository;
-
-	@Resource
-    ReferenceGroupTypeRepository referenceGroupTypeRepository;
-
-	@Resource
-	TeamProviderRepository teamProviderRepository;
-
-	@Resource
 	TeamProviderService teamProviderService;
 
 	@Resource
@@ -66,6 +51,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
 	TeamProviderTeamLocationService teamProviderTeamLocationService;
+
 	/**
 	 * Testing a provider save without a persistent team.
 	 */
@@ -128,18 +114,11 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 		return client;
 	}
 
-	private ReferenceTag getSpecialty(){
-		ReferenceTag specialty = new ReferenceTag();
-		ReferenceGroup group = new ReferenceGroup();
-		ReferenceGroupType type = new ReferenceGroupType();
-		type.setName(RandomStringUtils.randomAlphanumeric(12));
-		group.setName(RandomStringUtils.randomAlphanumeric(13));
-		group.setType(type);
-		specialty.setName(RandomStringUtils.randomAlphanumeric(14));
-		specialty.setGroup(group);
-        group.getTags().add(specialty);
-        referenceGroupRepository.save(group);
-		return specialty;
+	private ProviderSpecialty getSpecialty(){
+        ProviderSpecialty specialty = new ProviderSpecialty();
+        specialty.setName(RandomStringUtils.randomAlphanumeric(18));
+        ProviderSpecialty savedSpecialty = providerService.saveSpecialty(specialty);
+        return savedSpecialty;
 	}
 
 	/**
