@@ -36,7 +36,7 @@ public class UserClientPasswordHistoryServiceImpl implements
     ClientPasswordConfigurationService clientPasswordConfigurationService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void delete(UserClientPasswordHistory userClientPasswordHistory) {
         if (userClientPasswordHistory == null
                 || userClientPasswordHistory.getId() == null) {
