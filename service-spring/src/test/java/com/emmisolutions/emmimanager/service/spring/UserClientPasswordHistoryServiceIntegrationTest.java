@@ -61,9 +61,9 @@ public class UserClientPasswordHistoryServiceIntegrationTest extends
 
         UserClientPasswordHistory reload = new UserClientPasswordHistory(
                 history.getId());
-        reload = userClientPasswordHistoryService.reload(reload);
+        UserClientPasswordHistory reloaded = userClientPasswordHistoryService.reload(reload);
         assertThat("reload the same instance",
-                history.getId() == reload.getId(), is(true));
+                history.getId() == reloaded.getId(), is(true));
 
         Page<UserClientPasswordHistory> historiesWithNullPageable = userClientPasswordHistoryService
                 .get(null, new UserClient(userClient.getId()));
@@ -76,8 +76,8 @@ public class UserClientPasswordHistoryServiceIntegrationTest extends
                 hasItem(history));
 
         userClientPasswordHistoryService.delete(history);
-        reload = userClientPasswordHistoryService.reload(reload);
-        assertThat("nothing should be returned", reload, is(nullValue()));
+        UserClientPasswordHistory reloadAfterDelete = userClientPasswordHistoryService.reload(reload);
+        assertThat("nothing should be returned", reloadAfterDelete, is(nullValue()));
 
     }
 
