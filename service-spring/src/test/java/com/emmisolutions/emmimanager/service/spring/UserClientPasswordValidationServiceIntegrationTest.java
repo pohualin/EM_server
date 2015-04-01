@@ -331,13 +331,6 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         assertThat("Good password", userClientPasswordValidationService
                 .validateRequest(request).size(), is(0));
 
-        UserClientPasswordValidationError repeatError = new UserClientPasswordValidationError(
-                UserClientPasswordValidationService.Reason.DAYS_BETWEEN);
-        userClient = userClientPasswordService
-                .updatePasswordExpirationTime(userClient);
-        assertThat("Repeated password",
-                userClientPasswordValidationService.validateRequest(request),
-                hasItem(repeatError));
     }
 
     @Test
@@ -393,13 +386,6 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         assertThat("Good password", userClientPasswordValidationService
                 .validateRequest(request).size(), is(0));
 
-        UserClientPasswordValidationError repeatError = new UserClientPasswordValidationError(
-                UserClientPasswordValidationService.Reason.DAYS_BETWEEN);
-        userClient = userClientPasswordService
-                .updatePasswordExpirationTime(userClient);
-        assertThat("Repeated password",
-                userClientPasswordValidationService.validateRequest(request),
-                hasItem(repeatError));
     }
 
     @Test
@@ -452,13 +438,6 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
         assertThat("Good password", userClientPasswordValidationService
                 .validateRequest(request).size(), is(0));
 
-        UserClientPasswordValidationError repeatError = new UserClientPasswordValidationError(
-                UserClientPasswordValidationService.Reason.DAYS_BETWEEN);
-        userClient = userClientPasswordService
-                .updatePasswordExpirationTime(userClient);
-        assertThat("Repeated password",
-                userClientPasswordValidationService.validateRequest(request),
-                hasItem(repeatError));
     }
 
 }
