@@ -49,8 +49,11 @@ public class UserClientUserClientTeamRoleServiceImpl implements
             List<UserClientUserClientTeamRole> userClientUserClientTeamRoles) {
         Set<UserClientUserClientTeamRole> added = new HashSet<UserClientUserClientTeamRole>();
         for (UserClientUserClientTeamRole ucucr : userClientUserClientTeamRoles) {
-            added.add(userClientUserClientTeamRolePersistence
-                    .saveOrUpdate(ucucr));
+            ucucr.setUserClientTeamRole(userClientTeamRoleService.reload(ucucr.getUserClientTeamRole()));
+            ucucr.setTeam(teamService.reload(ucucr.getTeam()));
+            ucucr.setUserClient(userClientService.reload(ucucr.getUserClient()));
+            
+            added.add(userClientUserClientTeamRolePersistence.saveOrUpdate(ucucr));
         }
         return added;
     }
