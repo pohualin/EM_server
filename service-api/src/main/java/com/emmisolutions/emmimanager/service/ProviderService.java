@@ -2,11 +2,7 @@ package com.emmisolutions.emmimanager.service;
 
 import java.util.Set;
 
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
+import com.emmisolutions.emmimanager.model.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,12 +34,12 @@ public interface ProviderService {
     Provider update(Provider provider);
 
     /**
-     * Finds all specialties for provider reference data.
+     * Finds a page of provider specialties
      *
-     * @param pageable the page spec
-     * @return a Page of ReferenceTag objects
+     * @param pageable
+     * @return
      */
-    Page<ReferenceTag> findAllSpecialties(Pageable pageable);
+    Page<ProviderSpecialty> findAllSpecialties(Pageable pageable);
 
     /**
      * Finds all providers for given search filter
@@ -61,4 +57,13 @@ public interface ProviderService {
      * @return the saved provider
      */
     Provider create(Provider provider);
-}
+
+    /**
+     * saves a given specialty
+     *
+     * @param provider
+     * @return
+     */
+    ProviderSpecialty saveSpecialty(ProviderSpecialty provider);
+
+    }

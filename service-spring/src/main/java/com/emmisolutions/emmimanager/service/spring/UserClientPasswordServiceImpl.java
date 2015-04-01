@@ -3,11 +3,12 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+import com.emmisolutions.emmimanager.model.user.client.password.ChangePasswordRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
@@ -21,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Implementation of UserClientPasswordService
@@ -32,6 +31,9 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     @Resource
     private UserClientPersistence userClientPersistence;
+    
+    @Resource
+    private UserClientPasswordHistoryService userClientPasswordHistoryService;
 
     @Resource
     PasswordEncoder passwordEncoder;
@@ -78,10 +80,29 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 unlockedUser.setPasswordResetExpirationDateTime(null);
                 unlockedUser.setPasswordResetToken(null);
                 
-                return updatePasswordExpirationTime(encodePassword(unlockedUser));
+                UserClient passwordUpdatedUser = updatePasswordExpirationTime(encodePassword(unlockedUser));
+                
+                userClientPasswordHistoryService
+                        .handleUserClientPasswordHistory(passwordUpdatedUser);
+                
+                return passwordUpdatedUser;
             }
         }
         return null;
+    }
+    
+    @Override
+    public UserClient changePassword(ChangePasswordRequest changePasswordRequest) {
+        UserClient toUpdate = userClientPersistence
+                .fetchUserWillFullPermissions(changePasswordRequest.getLogin());
+        toUpdate.setPassword(changePasswordRequest.getNewPassword());
+        toUpdate = updatePassword(toUpdate, true);
+        toUpdate = updatePasswordExpirationTime(toUpdate);
+
+        userClientPasswordHistoryService
+                .handleUserClientPasswordHistory(toUpdate);
+        
+        return toUpdate;
     }
 
     @Override
@@ -95,7 +116,6 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
     @Override
     @Transactional
     public UserClient resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        UserClient ret = null;
         if (resetPasswordRequest != null) {
             UserClient userClient =
                     userClientPersistence.findByResetToken(resetPasswordRequest.getResetToken());
@@ -109,14 +129,20 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     unlockedUser.setPassword(resetPasswordRequest.getNewPassword());
                     unlockedUser.setCredentialsNonExpired(true);
                     unlockedUser.setEmailValidated(true);
-                    ret = updatePasswordExpirationTime(encodePassword(unlockedUser));
+                    
+                    UserClient passwordUpdatedUser = updatePasswordExpirationTime(encodePassword(unlockedUser));
+                    
+                    userClientPasswordHistoryService
+                            .handleUserClientPasswordHistory(passwordUpdatedUser);
+                    
+                    return passwordUpdatedUser;
                 } else {
                     // don't return this just update to remove the reset token
                     userClientPersistence.saveOrUpdate(userClient);
                 }
             }
         }
-        return ret;
+        return null;
     }
 
     @Override
@@ -166,7 +192,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 .minusHours(RESET_TOKEN_HOURS_VALID).minusYears(1));
         return userClientPersistence.saveOrUpdate(fromDb);
     }
-
+    
     @Override
     @Transactional(readOnly = true)
     public ClientPasswordConfiguration findPasswordPolicyUsingResetToken(String resetToken) {
@@ -195,90 +221,14 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     @Override
     @Transactional
-    public boolean validateNewPassword(
-            ExpiredPasswordChangeRequest expiredPasswordChangeRequest) {
-        UserClient userClient = userClientPersistence
-                .fetchUserWillFullPermissions(expiredPasswordChangeRequest
-                        .getLogin());
-        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
-        boolean valid = false;
-
-        if (configuration.getPasswordLength() > expiredPasswordChangeRequest
-                .getNewPassword().length()) {
-            valid = false;
-        } else {
-            valid = validatePassword(configuration,
-                    expiredPasswordChangeRequest.getNewPassword());
-        }
-        return valid;
-    }
-
-    @Override
-    @Transactional
-    public boolean validateNewPassword(ActivationRequest activationRequest) {
-        UserClient userClient = userClientPersistence
-                .findByActivationKey(activationRequest.getActivationToken());
-        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
-        boolean valid = false;
-
-        if (configuration.getPasswordLength() > activationRequest
-                .getNewPassword().length()) {
-            valid = false;
-        } else {
-            valid = validatePassword(configuration,
-                    activationRequest.getNewPassword());
-        }
-        return valid;
-    }
-
-    @Override
-    @Transactional
-    public boolean validateNewPassword(ResetPasswordRequest resetPasswordRequest) {
-        UserClient userClient = userClientPersistence
-                .findByResetToken(resetPasswordRequest.getResetToken());
-        ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
-        boolean valid = false;
-
-        if (configuration.getPasswordLength() > resetPasswordRequest
-                .getNewPassword().length()) {
-            valid = false;
-        } else {
-            valid = validatePassword(configuration,
-                    resetPasswordRequest.getNewPassword());
-        }
-        return valid;
-    }
-    
-    @Override
-    @Transactional
     public UserClient updatePasswordExpirationTime(UserClient userClient) {
         ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
         userClient.setPasswordExpireationDateTime(LocalDateTime.now(
                 DateTimeZone.UTC).plusDays(
                 configuration.getPasswordExpirationDays()));
+        userClient
+                .setPasswordSavedDateTime(LocalDateTime.now(DateTimeZone.UTC));
         return userClientPersistence.saveOrUpdate(userClient);
-    }
-
-    private boolean validatePassword(ClientPasswordConfiguration configuration,
-            String newPassword) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("^");
-        if (configuration.hasLowercaseLetters()) {
-            sb.append("(?=.*[a-z])");
-        }
-        if (configuration.hasUppercaseLetters()) {
-            sb.append("(?=.*[A-Z])");
-        }
-        if (configuration.hasNumbers()) {
-            sb.append("(?=.*[0-9])");
-        }
-        if (configuration.hasSpecialChars()) {
-            sb.append("(?=.*(_|[^\\w]))");
-        }
-        sb.append(".+$");
-        Pattern p = Pattern.compile(sb.toString());
-        Matcher m = p.matcher(newPassword);
-        return m.matches();
     }
 
 }

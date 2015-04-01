@@ -1,0 +1,4 @@
+language_id;key_path;message;created_by
+1;global.messages.error.lockPart1;Your account has been temporarily locked due to too many login attempts. You can try again ;system
+1;global.messages.error.lockPart2;, or contact Emmi Support at 866-294-3664 or support@emmisolutions.com.;system
+1;global.messages.error.lockExpired;Your account has been temporarily locked due to too many login attempts. Please try again.;system

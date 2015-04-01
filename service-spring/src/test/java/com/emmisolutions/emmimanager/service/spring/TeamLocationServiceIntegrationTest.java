@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
+import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
@@ -65,7 +66,7 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
 	TeamProviderTeamLocationService teamProviderTeamLocationService;
-	
+
 	/**
      * Create a Team associated to a new client, then add location to the team and those locations
      * should have to be associated to the client's team. Also hit the delete by client and location
@@ -264,18 +265,9 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         return location;
     }
     
-	private ReferenceTag getSpecialty(){
-		ReferenceTag specialty = new ReferenceTag();
-		ReferenceGroup group = new ReferenceGroup();
-		ReferenceGroupType type = new ReferenceGroupType();
-		type.setName("refGroupType");
-		group.setName("ref group");
-		group.setType(type);
-
-		specialty.setName("ENT");
-		specialty.setGroup(group);
-        group.getTags().add(specialty);
-        referenceGroupRepository.save(group);
-		return specialty;
+	private ProviderSpecialty getSpecialty(){
+        ProviderSpecialty specialty = new ProviderSpecialty();
+        specialty.setName(RandomStringUtils.randomAlphanumeric(18));
+        return providerService.saveSpecialty(specialty);
 	}
 }

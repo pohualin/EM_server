@@ -47,6 +47,9 @@ public class ReferenceGroupServiceIntegrationTest extends BaseIntegrationTest {
     public void load() {
         assertThat("Reference Groups are loaded",
             referenceGroupService.loadReferenceGroups(null).getTotalElements(), is(not(0l)));
+        
+        assertThat("Reference Groups are loaded",
+                referenceGroupService.loadActiveReferenceGroups(null).getTotalElements(), is(not(0l)));
     }
 
     /**
