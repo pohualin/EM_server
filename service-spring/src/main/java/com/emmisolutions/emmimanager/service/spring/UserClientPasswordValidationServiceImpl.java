@@ -123,12 +123,6 @@ public class UserClientPasswordValidationServiceImpl implements
 
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
 
-        // Check if user is eligible to change password
-        if (!isEligibleForPasswordChange(configuration, existing)) {
-            errors.add(new UserClientPasswordValidationError(
-                    UserClientPasswordValidationService.Reason.DAYS_BETWEEN));
-        }
-
         // Check if password matches pattern
         if (!validatePasswordPattern(configuration,
                 expiredPasswordChangeRequest.getNewPassword())) {
@@ -169,12 +163,6 @@ public class UserClientPasswordValidationServiceImpl implements
 
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
 
-        // Check if user is eligible to change password
-        if (!isEligibleForPasswordChange(configuration, existing)) {
-            errors.add(new UserClientPasswordValidationError(
-                    UserClientPasswordValidationService.Reason.DAYS_BETWEEN));
-        }
-
         // Check if password matches pattern
         if (!validatePasswordPattern(configuration,
                 resetPasswordRequest.getNewPassword())) {
@@ -214,12 +202,6 @@ public class UserClientPasswordValidationServiceImpl implements
                 .get(existing.getClient());
 
         List<UserClientPasswordValidationError> errors = new ArrayList<UserClientPasswordValidationError>();
-
-        // Check if user is eligible to change password
-        if (!isEligibleForPasswordChange(configuration, existing)) {
-            errors.add(new UserClientPasswordValidationError(
-                    UserClientPasswordValidationService.Reason.DAYS_BETWEEN));
-        }
 
         // Check if password matches pattern
         if (!validatePasswordPattern(configuration,
