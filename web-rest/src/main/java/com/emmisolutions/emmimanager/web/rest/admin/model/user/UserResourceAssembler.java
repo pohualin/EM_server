@@ -63,6 +63,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(LocationPage.createFullSearchLink());
         ret.add(LocationPage.createReferenceDataLink());
         ret.add(ReferenceGroupPage.createGroupReferenceDataLink());
+        ret.add(ReferenceGroupPage.createActiveReferenceGroupsDataLink());
         ret.add(TeamPage.createFullSearchLink());
         ret.add(linkTo(methodOn(TeamsResource.class).getReferenceData()).withRel("teamsReferenceData"));
         ret.add(ProviderPage.createProviderFullSearchLink());

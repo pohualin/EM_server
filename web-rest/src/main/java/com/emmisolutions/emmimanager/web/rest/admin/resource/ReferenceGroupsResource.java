@@ -134,6 +134,32 @@ public class ReferenceGroupsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+    
+    /**
+     * Load active reference groups
+     * 
+     * @param the
+     *            page spec
+     * @param sort
+     *            the sort spec
+     * @param assembler
+     *            to convert ReferenceGroup objects within the page
+     * @return the ReferenceGroupPage
+     */
+    @RequestMapping(value = "/activeReferenceGroups", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<ReferenceGroupPage> getActiveReferenceGroups(@PageableDefault(size = 50) Pageable pageable,
+                                                                    @SortDefault(sort = "id") Sort sort,
+                                                                    PagedResourcesAssembler<ReferenceGroup> assembler) {
+
+        Page<ReferenceGroup> groupPage = referenceGroupService.loadActiveReferenceGroups(pageable);
+
+        if (groupPage.hasContent()) {
+            return new ResponseEntity<>(new ReferenceGroupPage(assembler.toResource(groupPage, referenceGroupResourceAssembler), groupPage), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 
     /**
      * Get all tags for a group

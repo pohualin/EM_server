@@ -17,6 +17,15 @@ public interface ReferenceGroupService {
      * @return Page<ReferenceGroup>
      */
     Page<ReferenceGroup> loadReferenceGroups(Pageable page);
+    
+    /**
+     * load active reference groups
+     * 
+     * @param page
+     *            to use
+     * @return a page of active reference groups
+     */
+    Page<ReferenceGroup> loadActiveReferenceGroups(Pageable page);
 
     /**
      * updates a given reference group
