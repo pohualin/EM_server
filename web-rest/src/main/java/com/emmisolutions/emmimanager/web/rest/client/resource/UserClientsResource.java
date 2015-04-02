@@ -240,10 +240,10 @@ public class UserClientsResource {
     @RequestMapping(value = "/notNow/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<Void> notNow(@PathVariable("userClientId") Long userClientId) {
-        final int NOT_NOW_DELAY = 30;
+        final int NOT_NOW_DELAY = 2;
         UserClient loadedUserClient = userClientService.reload(new UserClient(userClientId));
         LocalDateTime dateTime = new LocalDateTime();
-        dateTime.plusDays(NOT_NOW_DELAY);
+        dateTime = dateTime.plusMinutes(NOT_NOW_DELAY);
         loadedUserClient.setNotNowExpirationTime(dateTime);
         userClientService.update(loadedUserClient);
         return new ResponseEntity<>(HttpStatus.OK);

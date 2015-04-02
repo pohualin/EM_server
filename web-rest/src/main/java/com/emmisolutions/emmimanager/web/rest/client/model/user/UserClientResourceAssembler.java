@@ -66,8 +66,11 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             teams.add(roleTeamResourceResourceAssembler.toResource(userClientUserClientTeamRole));
         }
 
+        boolean interruptFlow = false;
         LocalDateTime dateTime = new LocalDateTime();
-        boolean interruptFlow = dateTime.isAfter(user.getNotNowExpirationTime());
+        if(user.getNotNowExpirationTime()!=null) {
+            interruptFlow = dateTime.isAfter(user.getNotNowExpirationTime());
+        }
 
         UserClientResource ret = new UserClientResource(
                 user.getId(),
