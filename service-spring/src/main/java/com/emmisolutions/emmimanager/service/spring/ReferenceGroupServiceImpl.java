@@ -40,6 +40,12 @@ public class ReferenceGroupServiceImpl implements ReferenceGroupService {
 	public Page<ReferenceGroup> loadReferenceGroups(Pageable page) {
 		return referenceGroupPersistence.loadReferenceGroups(page);
 	}
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReferenceGroup> loadActiveReferenceGroups(Pageable page) {
+        return referenceGroupPersistence.loadActiveReferenceGroups(page);
+    }
 
 	@Override
     @Transactional

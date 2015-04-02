@@ -60,8 +60,8 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	private String email;
 
 	@ManyToOne
-	@JoinColumn(name = "reference_tag_specialty")
-	private ReferenceTag specialty;
+	@JoinColumn(name = "provider_specialty")
+	private ProviderSpecialty specialty;
 	
 	@NotNull
     @Size(max = 512)
@@ -147,11 +147,11 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 		this.active = active;
 	}
 
-	public ReferenceTag getSpecialty() {
+	public ProviderSpecialty getSpecialty() {
 		return specialty;
 	}
 
-	public void setSpecialty(ReferenceTag specialty) {
+	public void setSpecialty(ProviderSpecialty specialty) {
 		this.specialty = specialty;
 	}
 

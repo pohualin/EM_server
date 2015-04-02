@@ -1,1 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create user client password history table" author="Paul">
+    	<!-- Start user_client_password_history -->
+    	<createTable tableName="user_client_password_history">
+    		<column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_password_history"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="user_client_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="varchar(40)">
+                <constraints nullable="false" />
+            </column>
+            <column name="salt" type="varchar(32)">
+                <constraints nullable="false" />
+            </column>
+    	</createTable>
+		
+		<addForeignKeyConstraint baseTableName="user_client_password_history"
+                                 baseColumnNames="user_client_id"
+                                 constraintName="fk_user_client_password_history_user_client"
+                                 referencedTableName="user_client"
+                                 referencedColumnNames="id"/>
+		<createIndex indexName="ix_user_client_password_history_user_client"
+               tableName="user_client_password_history">
+            <column name="user_client_id" type="BIGINT"/>
+        </createIndex> 
+        
+        <addUniqueConstraint tableName="user_client_password_history" columnNames="user_client_id, created_date"
+                             constraintName="uk_user_client_password_history"/>
+        <!-- End user_client_password_history -->
+        
+        <!-- Start user_client_password_history_audit -->                 
+    	<createTable tableName="user_client_password_history_audit">
+    		<column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="user_client_id" type="bigint" />
+            <column name="password" type="varchar(40)" />
+            <column name="salt" type="varchar(32)" />
+    	</createTable>
+    	
+    	<addPrimaryKey tableName="user_client_password_history_audit" columnNames="id, revision"
+                       constraintName="pk_user_client_password_history_audit"/>
+		
+        <addForeignKeyConstraint baseTableName="user_client_password_history_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_user_client_password_history_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+		<createIndex indexName="ix_user_client_password_history_audit_revision"
+               tableName="user_client_password_history_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex>
+        <!-- End user_client_password_history_audit -->
+    </changeSet>
+    
+    <changeSet id="add password_saved_time to user_client" author="Paul">
+		 <addColumn tableName="user_client">
+            <column name="password_saved_time_utc" type="timestamp" />
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="password_saved_time_utc" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
