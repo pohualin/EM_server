@@ -14,7 +14,6 @@ public class ResetPasswordRequest {
     private List<UserClientSecretQuestionResponse> userClientSecretQuestionResponse;
 
     public ResetPasswordRequest() {
-    	 System.out.println("whrere arera e empty contr");
     }
 
     /**
