@@ -8,10 +8,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,13 +27,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResourceAssembler;
 import com.emmisolutions.emmimanager.model.SecretQuestion;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
-import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.SecretQuestionPage;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.SecretQuestionResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.SecretQuestionResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponsePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponseResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponseResourceAssembler;
@@ -55,12 +53,15 @@ public class UserClientSecretQuestionResponsesResource {
     @Resource
     UserClientSecretQuestionResponseResourceAssembler questionResponseAssembler;
     
+    @Resource
+    SecretQuestionResourceAssembler secretQuestionAssembler;
+    
    /**
-    * Get the list of secret question response 
+    * Get the page of secret question response 
     * @param pageable the pagination
     * @param sort sort by rank
     * @param assembler the assembler
-    * @return secret question response entity
+    * @return secret question entity
     */
     @RequestMapping(value = "/secret_questions/questions", method = RequestMethod.GET)
     public ResponseEntity<Page<SecretQuestion>> secretQuestions(
@@ -78,7 +79,6 @@ public class UserClientSecretQuestionResponsesResource {
         	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
    }
-
 
     /**
      * Get the user client secret question response with the secret question response id
@@ -204,19 +204,24 @@ public class UserClientSecretQuestionResponsesResource {
      */
     @RequestMapping(value = "/secret_questions/getSecretQuestionWithResetToken", method = RequestMethod.GET)
     @PermitAll
-    public ResponseEntity<Page<SecretQuestion>> getSecretQuestionWithResetToken(
+    public ResponseEntity<SecretQuestionPage> getSecretQuestionWithResetToken(
     		@RequestParam(value = "token", required = false) String resetToken,
-    		PagedResourcesAssembler<UserClientSecretQuestionResponse> assembler) {
+    		PagedResourcesAssembler<SecretQuestion> assembler) {
        Page<UserClientSecretQuestionResponse> page = userClientSecretQuestionResponseService
-                .findSecretQuestionToken(resetToken, new PageRequest(0, 10));
+                .findSecretQuestionToken(resetToken, new PageRequest(0, 10, Sort.Direction.ASC, "id"));
        if(page != null) {
-        	Pageable pageRequest=new PageRequest(0, 10, Sort.Direction.ASC, "id");
+    	   	Pageable pageRequest=new PageRequest(0, 10, Sort.Direction.ASC, "rank");
         	List<SecretQuestion> question = new ArrayList<SecretQuestion>();
             for(UserClientSecretQuestionResponse response : page){
         		question.add(response.getSecretQuestion());
            	}
         	Page<SecretQuestion> emptyResponsePage = new PageImpl<SecretQuestion>(question,pageRequest,0);
-           	return new ResponseEntity<>(emptyResponsePage, HttpStatus.OK);
+        	return new ResponseEntity<>(
+                        new SecretQuestionPage(
+                                assembler
+                                     .toResource(emptyResponsePage,
+                                    		 secretQuestionAssembler),
+                                    		 emptyResponsePage), HttpStatus.OK);
         }else{
           	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
