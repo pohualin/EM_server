@@ -232,8 +232,8 @@ public class UserClientServiceImpl implements UserClientService {
     	if (resetToken != null) {
             UserClient userClient =
                     userClientPersistence.findByResetToken(resetToken);
-           if(userClient != null){
-           ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
                 .get(userClient.getClient());
             // Lock the user after few attempts depending on how client setup
         	userClient.setAccountNonLocked(false);
@@ -244,10 +244,10 @@ public class UserClientServiceImpl implements UserClientService {
                         configuration.getLockoutReset()));
             }
             return userClientPersistence.saveOrUpdate(userClient);
-           }
         }
-    	return null;
-    	
+    	else{
+    	   	return null;
+    	}
         
     }
 
