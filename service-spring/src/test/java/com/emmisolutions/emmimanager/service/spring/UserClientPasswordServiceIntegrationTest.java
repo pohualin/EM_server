@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
@@ -7,6 +10,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ExpiredPasswordChangeRequest;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
+import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
@@ -165,6 +169,8 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         String password = "password";
 
         UserClient userClient = userClientPasswordService.addResetTokenTo(makeNewRandomUserClient(null));
+        
+        List<UserClientSecretQuestionResponse> userSecurityResponse = new ArrayList<UserClientSecretQuestionResponse> ();
 
         assertThat("user does not have a validated email", userClient.isEmailValidated(), is(false));
 
@@ -260,7 +266,6 @@ public class UserClientPasswordServiceIntegrationTest extends BaseIntegrationTes
         UserClient userClient = userClientPasswordService.forgotPassword(makeNewRandomUserClient(null).getEmail());
 
         UserClient expiredClient = userClientPasswordService.expireResetToken(userClient);
-
         assertThat("should be expired",
                 userClientPasswordService.resetPassword(new ResetPasswordRequest(expiredClient.getPasswordResetToken(), "***")),
                 is(nullValue()));
