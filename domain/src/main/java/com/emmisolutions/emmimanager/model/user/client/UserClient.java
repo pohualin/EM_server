@@ -116,6 +116,9 @@ public class UserClient extends User {
     @Column(name = "not_now_expiration_time_utc")
     private LocalDateTime notNowExpirationTime;
 
+    @Column(name = "interrupt_login_flow", nullable = false)
+    private boolean interruptLoginFlow;
+
     public UserClient() {
 
     }
@@ -344,5 +347,13 @@ public class UserClient extends User {
 
     public void setNotNowExpirationTime(LocalDateTime notNowExpirationTime) {
         this.notNowExpirationTime = notNowExpirationTime;
+    }
+
+    public boolean isInterruptLoginFlow() {
+        return interruptLoginFlow;
+    }
+
+    public void setInterruptLoginFlow(boolean interruptLoginFlow) {
+        this.interruptLoginFlow = interruptLoginFlow;
     }
 }

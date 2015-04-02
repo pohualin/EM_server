@@ -31,7 +31,8 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated, secretQuestionCreated;
+    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated,
+            secretQuestionCreated, interruptLoginFlow;
 
     private LocalDateTime passwordExpirationTime, notNowExpirationTime;
     
@@ -82,7 +83,8 @@ public class UserClientResource extends ResourceSupport {
                               List<String> permissions,
                               boolean impersonated,
                               LocalDateTime notNowExpirationTime,
-                              LocalDateTime passwordExpirationTime) {
+                              LocalDateTime passwordExpirationTime,
+                              boolean interruptLoginFlow) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -100,6 +102,7 @@ public class UserClientResource extends ResourceSupport {
         this.impersonated = impersonated;
         this.notNowExpirationTime = notNowExpirationTime;
         this.passwordExpirationTime = passwordExpirationTime;
+        this.interruptLoginFlow = interruptLoginFlow;
     }
 
     /**
@@ -144,5 +147,13 @@ public class UserClientResource extends ResourceSupport {
 
     public void setTeams(Set<TeamResource> teams) {
         this.teams = teams;
+    }
+
+    public boolean isInterruptLoginFlow() {
+        return interruptLoginFlow;
+    }
+
+    public void setInterruptLoginFlow(boolean interruptLoginFlow) {
+        this.interruptLoginFlow = interruptLoginFlow;
     }
 }

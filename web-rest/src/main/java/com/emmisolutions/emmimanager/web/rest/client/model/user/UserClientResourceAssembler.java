@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -65,6 +66,9 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             teams.add(roleTeamResourceResourceAssembler.toResource(userClientUserClientTeamRole));
         }
 
+        LocalDateTime dateTime = new LocalDateTime();
+        boolean interruptFlow = dateTime.isAfter(user.getNotNowExpirationTime());
+
         UserClientResource ret = new UserClientResource(
                 user.getId(),
                 user.getVersion(),
@@ -82,7 +86,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 perms,
                 user.isImpersonated(),
                 user.getNotNowExpirationTime(),
-                user.getPasswordExpireationDateTime());
+                user.getPasswordExpireationDateTime(),
+                interruptFlow);
 
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
 
