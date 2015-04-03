@@ -28,6 +28,11 @@ public class AuthorizationRequestPermissionEvaluator implements PermissionEvalua
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) targetDomainObject;
             return authorizationRequest.hasPermission(permission, authentication);
         }
+        if (targetDomainObject instanceof UserSecurityResponseForResetPasswordRequest){
+        	UserSecurityResponseForResetPasswordRequest resetPasswordSecurityResponses = 
+        			(UserSecurityResponseForResetPasswordRequest) targetDomainObject;
+        	return resetPasswordSecurityResponses.isSecurityReponseValid(permission, authentication);
+        }
         if (targetDomainObject instanceof IpRangeAuthorizationRequest){
             IpRangeAuthorizationRequest ipRangeAuthorizationRequest = (IpRangeAuthorizationRequest) targetDomainObject;
             if (authentication.getPrincipal() instanceof UserClient) {
