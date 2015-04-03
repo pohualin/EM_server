@@ -8,7 +8,6 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
-import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.*;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -50,9 +49,6 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserClientPasswordService userClientPasswordService;
 
-    @Resource
-    UserClientPersistence userClientPersistence;
-    
     /**
      * Create without client and login
      */
