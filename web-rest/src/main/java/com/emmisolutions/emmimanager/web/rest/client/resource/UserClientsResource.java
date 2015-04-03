@@ -260,16 +260,15 @@ public class UserClientsResource {
     /**
      * PUT reset password token to locked out an user 
      * @param token password reset token for user client
-     * @return String locked out timestamp
+     * @return LocalDateTime locked out timestamp
      */
     @RequestMapping(value = "/secret_questions/lockedOutUserWithResetToken", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<String> lockedOutUserWithResetToken(
+    public ResponseEntity<LocalDateTime> lockedOutUserWithResetToken(
     		@RequestParam(value = "token", required = false) String resetToken){
     	
        UserClient userClient = userClientService.lockedOutUserWithResetToken(resetToken);
-       String lockedOutTime = userClient.getLockExpirationDateTime().toString();
-       return new ResponseEntity<>(lockedOutTime, HttpStatus.OK);
+       return new ResponseEntity<>(userClient.getLockExpirationDateTime(), HttpStatus.OK);
      
     }
 
