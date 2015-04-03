@@ -112,6 +112,14 @@ public interface UserClientService {
 	 * @return a reseted UserClient
 	 */
 	UserClient resetUserClientLock(UserClient userClient);
+	
+	/**
+	 * Set credential to expire when password is expired
+	 * 
+	 * @param userClient to set
+	 * @return a credential expired userClient
+	 */
+	UserClient expireUserClientCredential(UserClient userClient);
 
     /**
      * return true if the email is valid
