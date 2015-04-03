@@ -323,4 +323,14 @@ public class UserClientServiceImpl implements UserClientService {
         return listOfValidEmailEndings;
     }
 
+    @Override
+    @Transactional()
+    public UserClient saveNotNowExpirationTime(Long userClientId){
+        UserClient loadedUserClient = this.reload(new UserClient(userClientId));
+        int NOT_NOW_DELAY = 2;
+        loadedUserClient.setNotNowExpirationTime(LocalDateTime.now(DateTimeZone.UTC).plusMinutes(NOT_NOW_DELAY));
+        this.update(loadedUserClient);
+        return loadedUserClient;
+    };
+
 }

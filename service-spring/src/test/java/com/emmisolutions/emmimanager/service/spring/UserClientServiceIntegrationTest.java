@@ -420,4 +420,21 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("email should be 'valid'", userClientService.validateEmailAddress(null), is(true));
         assertThat("email should be 'valid'", userClientService.validateEmailAddress(new UserClient()), is(true));
     }
+
+    /**
+     * test not now functionality
+     */
+    @Test
+    public void testNotNow(){
+        UserClient userClient = new UserClient();
+        userClient.setClient(makeNewRandomClient());
+        userClient.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
+        userClient.setLogin(RandomStringUtils.randomAlphabetic(50));
+        userClient.setEmail("tottally@randomEmail.com");
+        userClientService.create(userClient);
+        userClient = userClientService.saveNotNowExpirationTime(userClient.getId());
+        assertThat("userClient should have not not expiration date defined",
+                userClient.getNotNowExpirationTime(), notNullValue());
+    }
 }

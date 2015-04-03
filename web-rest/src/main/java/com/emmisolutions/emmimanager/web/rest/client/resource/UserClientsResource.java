@@ -15,6 +15,7 @@ import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClient
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
@@ -240,12 +241,7 @@ public class UserClientsResource {
     @RequestMapping(value = "/notNow/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<Void> notNow(@PathVariable("userClientId") Long userClientId) {
-        final int NOT_NOW_DELAY = 2;
-        UserClient loadedUserClient = userClientService.reload(new UserClient(userClientId));
-        LocalDateTime dateTime = new LocalDateTime();
-        dateTime = dateTime.plusMinutes(NOT_NOW_DELAY);
-        loadedUserClient.setNotNowExpirationTime(dateTime);
-        userClientService.update(loadedUserClient);
+        userClientService.saveNotNowExpirationTime(userClientId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     

@@ -13,13 +13,15 @@
             <column name="not_now_expiration_time_utc" type="timestamp"/>
         </addColumn>
     </changeSet>
-    <changeSet id="add interrupt_login_flow3" author="Kevin">
+    <changeSet id="add interrupt_login_flow4" author="Kevin">
         <addColumn tableName="user_client">
-            <column name="interrupt_login_flow" type="boolean" defaultValueBoolean="false"/>
+            <column name="interrupt_login_flow" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
 
         <addColumn tableName="user_client_audit">
-            <column name="interrupt_login_flow" type="boolean" defaultValueBoolean="false"/>
+            <column name="interrupt_login_flow" type="boolean"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
