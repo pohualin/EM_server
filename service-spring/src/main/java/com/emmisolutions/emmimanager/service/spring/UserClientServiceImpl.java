@@ -273,6 +273,13 @@ public class UserClientServiceImpl implements UserClientService {
         }
         return userClient;
     }
+    
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public UserClient expireUserClientCredential(UserClient userClient) {
+        userClient.setCredentialsNonExpired(false);
+        return userClientPersistence.saveOrUpdate(userClient);
+    }
 
     @Transactional(readOnly = true)
     public boolean validateEmailAddress(UserClient userClient) {

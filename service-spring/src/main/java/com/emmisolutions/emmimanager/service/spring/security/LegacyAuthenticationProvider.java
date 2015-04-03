@@ -99,10 +99,10 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             if (unlockedUser.getPasswordExpireationDateTime() != null
                     && LocalDateTime.now(DateTimeZone.UTC).isAfter(
                             unlockedUser.getPasswordExpireationDateTime())) {
-                unlockedUser.setCredentialsNonExpired(false);
+                userClientService.expireUserClientCredential(unlockedUser);
+            } else {
+                userClientPersistence.saveOrUpdate(unlockedUser);
             }
-            
-            userClientPersistence.saveOrUpdate(unlockedUser);
         }
     }
 
