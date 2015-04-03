@@ -8,7 +8,9 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.*;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -44,10 +46,13 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserAdminService userAdminService;
-
+    
     @Resource
     UserClientPasswordService userClientPasswordService;
 
+    @Resource
+    UserClientPersistence userClientPersistence;
+    
     /**
      * Create without client and login
      */
@@ -419,5 +424,14 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     public void testUnCommonUserClients(){
         assertThat("email should be 'valid'", userClientService.validateEmailAddress(null), is(true));
         assertThat("email should be 'valid'", userClientService.validateEmailAddress(new UserClient()), is(true));
+    }
+    
+    @Test
+    public void expireUserClientCredential(){
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("userClient credential is not expired", userClient.isCredentialsNonExpired(), is(true));
+        
+        userClient = userClientService.expireUserClientCredential(userClient);
+        assertThat("userClient credential is expired", userClient.isCredentialsNonExpired(), is(false));
     }
 }
