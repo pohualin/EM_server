@@ -152,6 +152,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
      * @return  UserClient
      */
 	@Override
+	@Transactional(readOnly = true)
 	public Page<UserClientSecretQuestionResponse> findSecretQuestionToken(
 			String resetToken,Pageable pageable) {
 		
@@ -175,6 +176,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
      * @return  boolean is input response match
      */
 	@Override
+	@Transactional(readOnly = true)
 	public boolean validateSecurityResponse(
 			String resetToken,
 			List<UserClientSecretQuestionResponse> questionResponse) {
