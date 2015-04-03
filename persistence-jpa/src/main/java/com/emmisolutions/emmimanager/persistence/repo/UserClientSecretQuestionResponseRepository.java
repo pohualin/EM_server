@@ -24,14 +24,6 @@ public interface UserClientSecretQuestionResponseRepository extends JpaRepositor
     Page<UserClientSecretQuestionResponse> findByUserClientId (Long id, Pageable pageable);
     
     /**
-	  * 
-	  * @param id
-	  * @return list of user client secret question response
-	  */
-   List<UserClientSecretQuestionResponse> findByUserClientId (Long id);
-    
-       
-    /**
      * 
      * @param userClientId
      * @param questionId
