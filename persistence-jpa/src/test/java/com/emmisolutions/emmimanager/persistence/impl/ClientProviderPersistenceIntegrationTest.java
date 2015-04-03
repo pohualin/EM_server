@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ProviderSpecialtyRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -30,7 +31,8 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
 
     @Resource
     ClientProviderPersistence clientProviderPersistence;
-
+    @Resource
+    ProviderSpecialtyRepository providerSpecialtyRepository;
     /**
      * This test ensures that we can add providers to clients then
      * find them after saving.
@@ -149,7 +151,11 @@ public class ClientProviderPersistenceIntegrationTest extends BaseIntegrationTes
         Provider provider = new Provider();
         provider.setFirstName("Client Provider Association");
         provider.setLastName(RandomStringUtils.randomAlphabetic(255));
-        provider.setSpecialty(new ReferenceTag(20));
+        ProviderSpecialty specialty = new ProviderSpecialty();
+        specialty.setName(RandomStringUtils.randomAlphanumeric(18));
+        ProviderSpecialty savedSpecialty = providerPersistence.saveSpecialty(specialty);
+
+        provider.setSpecialty(savedSpecialty);
         provider.setEmail("whatever@whatever.com");
         return providerPersistence.save(provider);
     }

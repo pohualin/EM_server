@@ -8,7 +8,13 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.service.*;
+import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
+import com.emmisolutions.emmimanager.service.UserClientPasswordService;
+import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -46,6 +52,9 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
+    
+    @Resource
+    UserClientPasswordHistoryService userClientPasswordHistoryService;
 
     @Resource
     ClientRestrictConfigurationService clientRestrictConfigurationService;
@@ -154,6 +163,8 @@ public class UserClientServiceImpl implements UserClientService {
                     ret = userClientPasswordService
                             .updatePasswordExpirationTime(userClientPasswordService
                                     .encodePassword(unlockedUser));
+                    
+                    userClientPasswordHistoryService.handleUserClientPasswordHistory(ret);
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
                 }
@@ -224,6 +235,31 @@ public class UserClientServiceImpl implements UserClientService {
         }
 
         return userClientPersistence.saveOrUpdate(toBeHandled);
+    }
+    
+    @Override
+    @Transactional
+    public UserClient lockedOutUserWithResetToken(String resetToken) {
+    	if (resetToken != null) {
+            UserClient userClient =
+                    userClientPersistence.findByResetToken(resetToken);
+
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(userClient.getClient());
+            // Lock the user after few attempts depending on how client setup
+        	userClient.setAccountNonLocked(false);
+            // Do not set a lock expiration when client do not use this feature
+            if (configuration.getLockoutReset() != 0) {
+            	userClient.setLockExpirationDateTime(LocalDateTime.now(
+                        DateTimeZone.UTC).plusMinutes(
+                        configuration.getLockoutReset()));
+            }
+            return userClientPersistence.saveOrUpdate(userClient);
+        }
+    	else{
+    	   	return null;
+    	}
+        
     }
 
     @Override
