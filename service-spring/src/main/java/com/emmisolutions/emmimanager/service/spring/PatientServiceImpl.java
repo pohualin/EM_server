@@ -34,7 +34,7 @@ public class PatientServiceImpl implements PatientService {
     @Transactional
     public Patient update(Patient patient) {
         if (patient == null || patient.getId() == null || patient.getVersion() == null) {
-            throw new IllegalArgumentException("patient Id and Version cannot be null.");
+            throw new InvalidDataAccessApiUsageException("patient Id and Version cannot be null.");
         }
         return patientPersistence.save(patient);
     }
