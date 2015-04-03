@@ -41,6 +41,14 @@ public class ClientFacingPublicApi extends ResourceSupport {
         add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
         add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null, null, null)).withRel("secretQuestions"));
         add(linkTo(methodOn(UserClientsResource.class).validateEmailToken(null)).withRel("validateEmailToken"));
+        Link getSecretQuestionWithResetToken = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).getSecretQuestionWithResetToken(null, null)).withRel("getSecretQuestionWithResetToken");
+        add(new Link(urlWithTokenParameter(getSecretQuestionWithResetToken), getSecretQuestionWithResetToken.getRel()));
+        
+        Link validateSecretQuestion = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).validateSecretResponses(null, null)).withRel("validateSecretResponses");
+        add(new Link(urlWithTokenParameter(validateSecretQuestion), validateSecretQuestion.getRel()));
+        
+        Link lockedOutUserByResetToken = linkTo(methodOn(UserClientsResource.class).lockedOutUserWithResetToken(null)).withRel("lockedOutUserByResetToken");
+        add(new Link(urlWithTokenParameter(lockedOutUserByResetToken), lockedOutUserByResetToken.getRel()));
     }
 
     private String urlWithTokenParameter(Link link){
@@ -49,7 +57,7 @@ public class ClientFacingPublicApi extends ResourceSupport {
                         new TemplateVariable("token", TemplateVariable.VariableType.REQUEST_PARAM)));
         return uriTemplate.toString();
     }
-
+    
     /**
      * Override to change the link property name for serialization
      *

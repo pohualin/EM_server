@@ -69,6 +69,5 @@ public class UserClientSecretQuestionResponsePersistenceImpl implements
         }
         return userClientSecretQuestionResponseRepository.findOne(userClientSecretQuestion.getId());
     }
-
-   
+  
 }

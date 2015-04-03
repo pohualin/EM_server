@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 

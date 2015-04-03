@@ -236,6 +236,31 @@ public class UserClientServiceImpl implements UserClientService {
 
         return userClientPersistence.saveOrUpdate(toBeHandled);
     }
+    
+    @Override
+    @Transactional
+    public UserClient lockedOutUserWithResetToken(String resetToken) {
+    	if (resetToken != null) {
+            UserClient userClient =
+                    userClientPersistence.findByResetToken(resetToken);
+
+        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                .get(userClient.getClient());
+            // Lock the user after few attempts depending on how client setup
+        	userClient.setAccountNonLocked(false);
+            // Do not set a lock expiration when client do not use this feature
+            if (configuration.getLockoutReset() != 0) {
+            	userClient.setLockExpirationDateTime(LocalDateTime.now(
+                        DateTimeZone.UTC).plusMinutes(
+                        configuration.getLockoutReset()));
+            }
+            return userClientPersistence.saveOrUpdate(userClient);
+        }
+    	else{
+    	   	return null;
+    	}
+        
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
