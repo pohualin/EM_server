@@ -7,12 +7,15 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.PatientService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -96,5 +99,26 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
         Patient toUpdate = new Patient();
         toUpdate.setId(1l);
         patientService.update(toUpdate);
+    }
+
+
+    /**
+     * Create successfully then find.
+     */
+    @Test
+    public void create() {
+
+        Patient patient = new Patient();
+        patient.setFirstName("to find");
+        patient.setLastName(RandomStringUtils.randomAlphabetic(20));
+        patient.setDateOfBirth(LocalDate.now());
+        patient.setClient(clientService.create(makeClient(RandomStringUtils.randomAlphabetic(15))));
+        Patient savedPatient = patientService.create(patient);
+        assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
+
+        Page<Patient> page = patientService.list(null, new PatientSearchFilter("toFind"));
+
+                Assert.assertThat("can find the client", patientService.list(null, new PatientSearchFilter("toFind")), hasItem(savedPatient));
+
     }
 }

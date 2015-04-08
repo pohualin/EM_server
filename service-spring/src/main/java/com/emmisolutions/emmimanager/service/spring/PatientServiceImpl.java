@@ -1,10 +1,15 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.PatientSearchFilter;
 import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.persistence.PatientPersistence;
 import com.emmisolutions.emmimanager.service.PatientService;
+import org.joda.time.LocalDate;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +29,10 @@ public class PatientServiceImpl implements PatientService {
     public Patient create(Patient patient) {
         if (patient == null) {
             throw new InvalidDataAccessApiUsageException("patient cannot be null");
+        }
+
+        if (patient.getDateOfBirth() != null && (patient.getDateOfBirth().isBefore(LocalDate.now().minusYears(125)))){
+            throw new InvalidDataAccessApiUsageException("patient cannot be more than 125 years old");
         }
         patient.setId(null);
         patient.setVersion(null);
@@ -47,5 +56,11 @@ public class PatientServiceImpl implements PatientService {
             return null;
         }
         return patientPersistence.reload(patient);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Patient> list(Pageable page,  PatientSearchFilter patientSearchFilter) {
+        return patientPersistence.list(page, patientSearchFilter);
     }
 }

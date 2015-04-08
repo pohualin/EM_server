@@ -2,15 +2,16 @@ package com.emmisolutions.emmimanager.model;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
+import org.aspectj.lang.annotation.Before;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Date;
@@ -43,6 +44,7 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     private String lastName;
 
     @Column(name = "date_of_birth")
+    @DateTimeFormat
     private LocalDate dateOfBirth;
 
     @NotNull

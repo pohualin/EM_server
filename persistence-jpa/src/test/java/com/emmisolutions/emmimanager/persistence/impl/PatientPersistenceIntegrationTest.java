@@ -32,7 +32,7 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
         patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
         patient.setLastName(RandomStringUtils.randomAlphabetic(20));
         patient.setDateOfBirth(LocalDate.now());
-        patient.setGender(Gender.FEMALE);
+        patient.setGender(Gender.Female);
         patient.setClient(clientPersistence.save(makeClient(RandomStringUtils.randomAlphabetic(15))));
         Patient savedPatient = patientPersistence.save(patient);
         assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
