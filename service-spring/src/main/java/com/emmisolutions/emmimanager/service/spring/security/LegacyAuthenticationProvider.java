@@ -94,7 +94,15 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
                 unlockedUser.setActivationKey(null);
                 unlockedUser.setActivationExpirationDateTime(null);
             }
-            userClientPersistence.saveOrUpdate(unlockedUser);
+            
+            // Set credential to expire if password expired
+            if (unlockedUser.getPasswordExpireationDateTime() != null
+                    && LocalDateTime.now(DateTimeZone.UTC).isAfter(
+                            unlockedUser.getPasswordExpireationDateTime())) {
+                userClientService.expireUserClientCredential(unlockedUser);
+            } else {
+                userClientPersistence.saveOrUpdate(unlockedUser);
+            }
         }
     }
 

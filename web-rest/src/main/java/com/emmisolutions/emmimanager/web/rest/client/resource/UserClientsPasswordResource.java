@@ -109,12 +109,13 @@ public class UserClientsPasswordResource {
      * @param resetPasswordRequest the activation request
      * @return OK or GONE or NOT_ACCEPTABLE
      */
-    @RequestMapping(value = "/password/reset", method = RequestMethod.PUT)
-    @PermitAll
+    @RequestMapping(value = "/password/reset", method = RequestMethod.PUT, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @PreAuthorize("hasPermission(@resetPasswordSecurityResponse, #resetPasswordRequest)")
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> resetPassword(
             @RequestBody ResetPasswordRequest resetPasswordRequest) {
-
-        List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
+    	
+    	List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
                 .validateRequest(resetPasswordRequest);
         if (errors.size() == 0) {
             UserClient userClient = userClientPasswordService
