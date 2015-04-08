@@ -117,7 +117,7 @@ public class UserClientSecretQuestionResponsesResource {
     public ResponseEntity<UserClientSecretQuestionResponseResource> saveOrUpdate(
             @PathVariable("userClientId") Long userClientId,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {
-       
+
     	userClientSecretQuestionResponse.setUserClient(new UserClient(userClientId));
         UserClientSecretQuestionResponse ucsqr = userClientSecretQuestionResponseService
                 .saveOrUpdate(userClientSecretQuestionResponse);
