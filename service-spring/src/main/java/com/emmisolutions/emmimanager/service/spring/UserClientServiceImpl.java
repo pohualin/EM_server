@@ -111,6 +111,8 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setAccountNonLocked(inDb.isAccountNonLocked());
         userClient.setPasswordResetToken(inDb.getPasswordResetToken());
         userClient.setPasswordResetExpirationDateTime(inDb.getPasswordResetExpirationDateTime());
+        userClient.setPasswordExpireationDateTime(inDb.getPasswordExpireationDateTime());
+        userClient.setPasswordSavedDateTime(inDb.getPasswordSavedDateTime());
         // validation should be false if the email address has changed, otherwise set it to whatever it was previously
         userClient.setEmailValidated(
                 StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
