@@ -26,7 +26,6 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(UserClientsPasswordResource.class).passwordPolicy(entity.getId())).withRel("passwordPolicy"));
         ret.add(linkTo(methodOn(PatientsResource.class).create(entity.getId(), null)).withRel("patient"));
-        ret.add(linkTo(methodOn(PatientsResource.class).getReferenceData()).withRel("patientReferenceData"));
         ret.add(linkTo(methodOn(EmailRestrictConfigurationsResource.class).list(entity.getId(), null, null, null)).withRel("emailRestrictConfigurations"));
         // ability to load a team for a client
         ret.add(new Link(
