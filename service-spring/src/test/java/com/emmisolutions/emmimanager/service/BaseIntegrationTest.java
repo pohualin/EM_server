@@ -116,6 +116,9 @@ public abstract class BaseIntegrationTest {
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
 
+    @Resource
+    PatientService patientService;
+
     @PostConstruct
     private void init(){
         authenticationProvider.setUserDetailsService(userDetailsService);
@@ -410,4 +413,12 @@ public abstract class BaseIntegrationTest {
         return clientPasswordConfigurationService.save(configuration);
     }
 
+    protected Patient makeNewRandomPatient() {
+        Patient patient = new Patient();
+        patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
+        patient.setLastName(RandomStringUtils.randomAlphabetic(20));
+        patient.setDateOfBirth(LocalDate.now());
+        patient.setClient(makeNewRandomClient());
+        return patientService.create(patient);
+    }
 }

@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.provider;
 
+import com.emmisolutions.emmimanager.model.Gender;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
@@ -19,7 +20,7 @@ public class ReferenceData extends ResourceSupport {
     @XmlElement(name = "statusFilter")
     @XmlElementWrapper(name = "statusFilters")
     private ProviderSearchFilter.StatusFilter[] statusFilters = ProviderSearchFilter.StatusFilter.values();
-    
+
     /**
      * Override to change the link property name for serialization
      *

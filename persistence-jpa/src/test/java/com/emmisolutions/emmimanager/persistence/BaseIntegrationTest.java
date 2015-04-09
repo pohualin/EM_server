@@ -65,11 +65,13 @@ public abstract class BaseIntegrationTest {
     @Resource
     UserClientPersistence userClientPersistence;
 
+    @Resource
+    PatientPersistence patientPersistence;
+
     /**
      * Login as a user
      *
-     * @param login
-     *            to login as
+     * @param login to login as
      */
     protected void login(String login) {
         SecurityContextHolder.getContext().setAuthentication(
@@ -105,9 +107,8 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Creates a brand new group
-     * 
-     * @param client
-     *            to use
+     *
+     * @param client to use
      * @return random group
      */
     protected Group makeNewRandomGroup(Client client) {
@@ -119,11 +120,9 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Create a list of tags with given group
-     * 
-     * @param group
-     *            to use
-     * @param count
-     *            to use
+     *
+     * @param group to use
+     * @param count to use
      * @return list of tags
      */
     protected List<Tag> makeNewRandomTags(Group group, int count) {
@@ -139,11 +138,9 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Create a new TeamTag
-     * 
-     * @param team
-     *            to use
-     * @param tag
-     *            to use
+     *
+     * @param team to use
+     * @param tag  to use
      * @return a new teamTag
      */
     protected TeamTag makeNewTeamTag(Team team, Tag tag) {
@@ -153,9 +150,8 @@ public abstract class BaseIntegrationTest {
 
     /**
      * Create a new random team
-     * 
-     * @param client
-     *            to use
+     *
+     * @param client to use
      * @return random team
      */
     protected Team makeNewRandomTeam(Client client) {
@@ -252,6 +248,15 @@ public abstract class BaseIntegrationTest {
         userAdmin.setFirstName(RandomStringUtils.randomAlphabetic(50));
         userAdmin.setLastName(RandomStringUtils.randomAlphabetic(50));
         return userAdminPersistence.saveOrUpdate(userAdmin);
+    }
+
+    protected Patient makeNewRandomPatient() {
+        Patient patient = new Patient();
+        patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
+        patient.setLastName(RandomStringUtils.randomAlphabetic(20));
+        patient.setDateOfBirth(LocalDate.now());
+        patient.setClient(makeNewRandomClient());
+        return patientPersistence.save(patient);
     }
 
 }
