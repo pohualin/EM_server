@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.client.model.client;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.EmailRestrictConfigurationsResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.PatientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import org.springframework.hateoas.*;
@@ -24,6 +25,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         }
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(UserClientsPasswordResource.class).passwordPolicy(entity.getId())).withRel("passwordPolicy"));
+        ret.add(linkTo(methodOn(PatientsResource.class).create(entity.getId(), null)).withRel("patient"));
         ret.add(linkTo(methodOn(EmailRestrictConfigurationsResource.class).list(entity.getId(), null, null, null)).withRel("emailRestrictConfigurations"));
         // ability to load a team for a client
         ret.add(new Link(
@@ -33,7 +35,32 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
                                 new TemplateVariable("teamId",
                                         TemplateVariable.VariableType.REQUEST_PARAM))), "team"));
 
-        ret.setEntity(entity);
+        ret.add(new Link(
+                new UriTemplate(
+                        linkTo(methodOn(PatientsResource.class).get(entity.getId(), null)).withSelfRel().getHref())
+                        .with(new TemplateVariables(
+                                new TemplateVariable("patientId",
+                                        TemplateVariable.VariableType.REQUEST_PARAM))), "patientById"));
+
+
+        ret.add(createPatientFullSearchLink(entity.getId()));
         return ret;
+    }
+
+
+    /**
+     * Link for provider search
+     *
+     * @return Link for provider search
+     */
+    public static Link createPatientFullSearchLink(Long clientId) {
+        Link link = linkTo(methodOn(PatientsResource.class).list(clientId, null, null, null, null)).withRel("patients");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(
+                new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
     }
 }

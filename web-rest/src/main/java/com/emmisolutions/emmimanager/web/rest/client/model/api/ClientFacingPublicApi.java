@@ -43,21 +43,22 @@ public class ClientFacingPublicApi extends ResourceSupport {
         add(linkTo(methodOn(UserClientsResource.class).validateEmailToken(null)).withRel("validateEmailToken"));
         Link getSecretQuestionWithResetToken = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).getSecretQuestionWithResetToken(null, null)).withRel("getSecretQuestionWithResetToken");
         add(new Link(urlWithTokenParameter(getSecretQuestionWithResetToken), getSecretQuestionWithResetToken.getRel()));
-        
+
         Link validateSecretQuestion = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).validateSecretResponses(null, null)).withRel("validateSecretResponses");
         add(new Link(urlWithTokenParameter(validateSecretQuestion), validateSecretQuestion.getRel()));
-        
+
         Link lockedOutUserByResetToken = linkTo(methodOn(UserClientsResource.class).lockedOutUserWithResetToken(null)).withRel("lockedOutUserByResetToken");
         add(new Link(urlWithTokenParameter(lockedOutUserByResetToken), lockedOutUserByResetToken.getRel()));
+        add(linkTo(methodOn(PatientsResource.class).getReferenceData()).withRel("patientReferenceData"));
     }
 
-    private String urlWithTokenParameter(Link link){
+    private String urlWithTokenParameter(Link link) {
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("token", TemplateVariable.VariableType.REQUEST_PARAM)));
         return uriTemplate.toString();
     }
-    
+
     /**
      * Override to change the link property name for serialization
      *
