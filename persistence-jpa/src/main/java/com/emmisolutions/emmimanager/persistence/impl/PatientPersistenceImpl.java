@@ -64,7 +64,7 @@ public class PatientPersistenceImpl implements PatientPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return patientRepository.findAll(where(patientSpecifications.hasNames(filter)), page);
+        return patientRepository.findAll(where(patientSpecifications.hasNames(filter)).and(patientSpecifications.belongsTo(filter)), page);
 
     }
 }

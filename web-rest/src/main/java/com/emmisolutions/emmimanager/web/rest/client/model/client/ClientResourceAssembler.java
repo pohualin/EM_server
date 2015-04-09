@@ -50,7 +50,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
                                         TemplateVariable.VariableType.REQUEST_PARAM))), "patientById"));
 
 
-        ret.add(createPatientFullSearchLink());
+        ret.add(createPatientFullSearchLink(entity.getId()));
         return ret;
     }
 
@@ -60,8 +60,8 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
      *
      * @return Link for provider search
      */
-    public static Link createPatientFullSearchLink() {
-        Link link = linkTo(methodOn(PatientsResource.class).list(null, null, null, null)).withRel("patients");
+    public static Link createPatientFullSearchLink(Long clientId) {
+        Link link = linkTo(methodOn(PatientsResource.class).list(clientId, null, null, null, null)).withRel("patients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(
                 new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

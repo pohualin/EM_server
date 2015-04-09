@@ -32,42 +32,20 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
     ClientService clientService;
 
     @Test
-    public void testPatientCreate() {
-        Patient patient = new Patient();
-        patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
-        patient.setLastName(RandomStringUtils.randomAlphabetic(20));
-        patient.setDateOfBirth(LocalDate.now());
-        patient.setClient(clientService.create(makeClient(RandomStringUtils.randomAlphabetic(15))));
-        Patient savedPatient = patientService.create(patient);
-        assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
+    public void testPatientCreateAndReload() {
+        assertThat("Patient was created", makeNewRandomPatient().getId(), is(notNullValue()));
+    }
 
-        Patient reloadedPatient = patientService.reload(savedPatient);
+    @Test
+    public void reloadPatient() {
+        Patient reloadedPatient = patientService.reload(makeNewRandomPatient());
         assertThat("Patient was reloaded", reloadedPatient.getId(), is(notNullValue()));
-
     }
-
-    private Client makeClient(String clientName) {
-        Client client = new Client();
-        client.setType(new ClientType(1l));
-        client.setContractStart(LocalDate.now());
-        client.setContractEnd(LocalDate.now().plusYears(1));
-        client.setName(clientName);
-        client.setContractOwner(new UserAdmin(1l, 0));
-        client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
-        return client;
-    }
-
 
     @Test
     public void testPatientUpdate() {
-        Patient patient = new Patient();
-        patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
-        patient.setLastName(RandomStringUtils.randomAlphabetic(20));
-        patient.setDateOfBirth(LocalDate.now());
-        patient.setClient(clientService.create(makeClient(RandomStringUtils.randomAlphabetic(15))));
-        Patient savedPatient = patientService.create(patient);
+        Patient savedPatient = makeNewRandomPatient();
         assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
-
         savedPatient.setFirstName("update patient name");
         Patient updatedPatient = patientService.update(savedPatient);
         assertThat("Patient was updated", updatedPatient.getId(), is(notNullValue()));
@@ -107,18 +85,17 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void create() {
-
-        Patient patient = new Patient();
-        patient.setFirstName("to find");
-        patient.setLastName(RandomStringUtils.randomAlphabetic(20));
-        patient.setDateOfBirth(LocalDate.now());
-        patient.setClient(clientService.create(makeClient(RandomStringUtils.randomAlphabetic(15))));
-        Patient savedPatient = patientService.create(patient);
+        Patient savedPatient = makeNewRandomPatient();
         assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
+        Assert.assertThat("can find the patient for that client", patientService.list(null, new PatientSearchFilter(savedPatient.getClient(), savedPatient.getFirstName())), hasItem(savedPatient));
 
-        Page<Patient> page = patientService.list(null, new PatientSearchFilter("toFind"));
+    }
 
-                Assert.assertThat("can find the client", patientService.list(null, new PatientSearchFilter("toFind")), hasItem(savedPatient));
-
+    @Test
+    public void testList() {
+        Patient patient = makeNewRandomPatient();
+        PatientSearchFilter filter = new PatientSearchFilter(patient.getClient(), patient.getFirstName());
+        Page<Patient> patientPage = patientService.list(null, filter);
+        assertThat("Page of Patients retrieved contains the searched item", patientPage, hasItem(patient));
     }
 }

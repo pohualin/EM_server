@@ -18,7 +18,7 @@
             <column name="last_name" type="nvarchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="normalized_name" type="nvarchar(255)">
+            <column name="normalized_name" type="nvarchar(510)">
                 <constraints nullable="false"/>
             </column>
             <column name="gender" type="varchar(25)"/>
@@ -27,13 +27,13 @@
                 <constraints nullable="false"/>
             </column>
             <column name="date_of_birth" type="timestamp"/>
-            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+            <column name="created_by" type="nvarchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_by" type="nvarchar(255)"/>
             <column name="last_modified_date" type="timestamp"/>
         </createTable>
 
@@ -66,6 +66,10 @@
 
         <createIndex indexName="ix_patient_client_id" tableName="patient">
             <column name="client_id"  type="BIGINT"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_audit_revision" tableName="patient_audit">
+            <column name="revision"  type="BIGINT"/>
         </createIndex>
 
     </changeSet>

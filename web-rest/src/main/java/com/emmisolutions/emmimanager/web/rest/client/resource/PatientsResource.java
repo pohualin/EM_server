@@ -55,7 +55,7 @@ public class PatientsResource {
     private Gender[] genders = Gender.values();
 
 
-    @RequestMapping(value = "/clients/{clientId}/patients", method = RequestMethod.POST, consumes = {
+    @RequestMapping(value = "/clients/{clientId}/patient", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     public ResponseEntity<PatientResource> create(@PathVariable("clientId") Long clientId, @RequestBody Patient patient) {
         patient.setClient(clientService.reload(new Client(clientId)));
@@ -73,7 +73,7 @@ public class PatientsResource {
         return new PatientReferenceData();
     }
 
-    @RequestMapping(value = "/clients/{clientId}/patients/", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/patient", method = RequestMethod.GET)
     public ResponseEntity<PatientResource> get(@PathVariable("clientId") Long clientId,
                                                @RequestParam(value = "patientId", required = false) Long patientId) {
         if (patientId != null) {
@@ -91,22 +91,21 @@ public class PatientsResource {
      * @param sort      sorting request
      * @param assembler used to create the PagedResources
      * @param name      filter
-     * @param status    a filter for providers
      * @return ProviderResource
      */
-    @RequestMapping(value = "/patients", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/patients", method = RequestMethod.GET)
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<PatientResourcePage> list(
+    public ResponseEntity<PatientResourcePage> list(@PathVariable("clientId") Long clientId,
             @PageableDefault(size = 10, sort = "lastName") Pageable page,
             @SortDefault(sort = "lastName") Sort sort,
             PagedResourcesAssembler<Patient> assembler,
             @RequestParam(value = "name", required = false) String name) {
 
-        PatientSearchFilter filter = new PatientSearchFilter(name);
+        PatientSearchFilter filter = new PatientSearchFilter(new Client(clientId),name);
 
         Page<Patient> patientsPage = patientService.list(page, filter);
 

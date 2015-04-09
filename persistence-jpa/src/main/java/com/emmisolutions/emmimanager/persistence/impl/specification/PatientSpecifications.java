@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,9 @@ public class PatientSpecifications {
 
     @Resource
     MatchingCriteriaBean matchCriteria;
+
+    @Resource
+    ClientPersistence clientPersistence;
 
     /**
      * Case insensitive name anywhere match
@@ -58,4 +62,27 @@ public class PatientSpecifications {
             }
         };
     }
+
+    /**
+     * Ensures that the patient belongs to a client
+     *
+     * @param filter to use to find the belongs to client
+     * @return the specification
+     */
+    public Specification<Patient> belongsTo(final PatientSearchFilter filter) {
+        return new Specification<Patient>() {
+            @Override
+            public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Client belongsToClient = null;
+                if (filter != null && filter.getClient() != null) {
+                    belongsToClient = clientPersistence.reload(filter.getClient().getId());
+                }
+                if (belongsToClient != null) {
+                    return cb.equal(root.get(Patient_.client), belongsToClient);
+                }
+                return null;
+            }
+        };
+    }
+
 }

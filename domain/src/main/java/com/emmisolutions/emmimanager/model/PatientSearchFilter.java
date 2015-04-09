@@ -19,13 +19,15 @@ public class PatientSearchFilter {
     @XmlElementWrapper(name = "names")
     private Set<String> names;
 
+    private Client client;
 
     /**
      * Creates a search filter using status and names
      *
      * @param names  the names to filter by
      */
-    public PatientSearchFilter(String... names) {
+    public PatientSearchFilter(Client client, String... names) {
+        this.setClient(client);
         if (names != null) {
             this.names = new HashSet<>();
             Collections.addAll(this.names, names);
@@ -36,10 +38,19 @@ public class PatientSearchFilter {
         return names;
     }
 
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
     @Override
     public String toString() {
-        return "PatientSearchFilter [names=" + names +  "]";
+        return "PatientSearchFilter{" +
+                "names=" + names +
+                ", client=" + client +
+                '}';
     }
-
 }
