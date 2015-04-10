@@ -8,6 +8,8 @@ import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -65,6 +67,13 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             teams.add(roleTeamResourceResourceAssembler.toResource(userClientUserClientTeamRole));
         }
 
+        boolean interruptFlow = false;
+
+        if(user.getNotNowExpirationTime()!=null) {
+            LocalDateTime dateTime = LocalDateTime.now(DateTimeZone.UTC);
+            interruptFlow = dateTime.isBefore(user.getNotNowExpirationTime());
+        }
+
         UserClientResource ret = new UserClientResource(
                 user.getId(),
                 user.getVersion(),
@@ -81,8 +90,9 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 clientResourceAssembler.toResource(user.getClient()),
                 perms,
                 user.isImpersonated(),
+                user.getNotNowExpirationTime(),
                 user.getPasswordExpireationDateTime(),
-                user.getPasswordSavedDateTime());
+                interruptFlow);
 
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
 
@@ -104,6 +114,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
+            ret.add(linkTo(methodOn(UserClientsResource.class).notNow(user.getId())).withRel("notNow"));
         } else {
             // impersonation users
             ret.add(new Link(

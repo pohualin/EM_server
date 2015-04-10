@@ -362,9 +362,10 @@ public class UserClientServiceImpl implements UserClientService {
     public UserClient saveNotNowExpirationTime(Long userClientId){
         UserClient loadedUserClient = this.reload(new UserClient(userClientId));
         int NOT_NOW_DELAY = 2;
-        loadedUserClient.setNotNowExpirationTime(LocalDateTime.now(DateTimeZone.UTC).plusMinutes(NOT_NOW_DELAY));
-        this.update(loadedUserClient);
+        LocalDateTime notNowExpirationTime = LocalDateTime.now(DateTimeZone.UTC).plusMinutes(NOT_NOW_DELAY);
+        loadedUserClient.setNotNowExpirationTime(notNowExpirationTime);
+        loadedUserClient = this.update(loadedUserClient);
         return loadedUserClient;
-    };
+    }
 
 }
