@@ -1,6 +1,7 @@
-package com.emmisolutions.emmimanager.web.rest.admin.model.team;
+package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import com.emmisolutions.emmimanager.web.rest.admin.model.salesforce.SalesForceSearchResponseResource;
+import com.emmisolutions.emmimanager.model.Gender;
+import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
@@ -11,18 +12,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * Common reference data for Team operations.
+ * Reference data for patient
  */
-@XmlRootElement(name = "reference-data")
-public class ReferenceData extends ResourceSupport {
+@XmlRootElement(name = "patient-reference-data")
+public class PatientReferenceData extends ResourceSupport {
 
-    /**
-     * Create a ReferenceData
-     */
-    public ReferenceData(){
-       add(SalesForceSearchResponseResource.createFindTeamLink());
-    }
-
+    @XmlElement(name = "genders")
+    @XmlElementWrapper(name = "genders")
+    private Gender[] genders = Gender.values();
 
     /**
      * Override to change the link property name for serialization

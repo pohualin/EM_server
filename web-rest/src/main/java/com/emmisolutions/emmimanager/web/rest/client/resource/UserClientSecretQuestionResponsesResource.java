@@ -118,8 +118,7 @@ public class UserClientSecretQuestionResponsesResource {
             @PathVariable("userClientId") Long userClientId,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {
 
-        UserClient savedUserClient = userClientService.reload(new UserClient(userClientId));
-    	userClientSecretQuestionResponse.setUserClient(savedUserClient);
+    	userClientSecretQuestionResponse.setUserClient(new UserClient(userClientId));
         UserClientSecretQuestionResponse ucsqr = userClientSecretQuestionResponseService
                 .saveOrUpdate(userClientSecretQuestionResponse);
 
