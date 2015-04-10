@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="remove_unique_constraint_on_location_name-em-1015" author="Amrita">
+		<dropUniqueConstraint tableName="location" constraintName="uk_location_normalized_name"/>
+    </changeSet>
+
+    <changeSet id="update_provider_specialties_list_em-1055" author="Amrita">
+        <update tableName="provider">
+            <column name="provider_specialty"> null </column>
+        </update>
+        <delete tableName="provider_specialty"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_17/data/provider-specialties-updated-em-1055.csv"
+                  separator=";"
+                  tableName="provider_specialty"/>
+    </changeSet>
+
+</databaseChangeLog>
