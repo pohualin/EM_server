@@ -44,6 +44,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
 
 
         ret.add(createPatientFullSearchLink(entity.getId()));
+        ret.setEntity(entity);
         return ret;
     }
 
