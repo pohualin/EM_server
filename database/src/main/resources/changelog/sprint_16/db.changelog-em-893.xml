@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create_patient_table" author="Amrita">
+        <createTable tableName="patient">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_patient_id"/>
+            </column>
+            <column name="first_name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="normalized_name" type="nvarchar(510)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="gender" type="varchar(25)"/>
+            <column name="version" type="INT"/>
+            <column name="client_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_of_birth" type="timestamp"/>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <createTable tableName="patient_audit">
+            <column name="id" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="client_id" type="BIGINT"/>
+            <column name="date_of_birth" type="timestamp"/>
+            <column name="first_name" type="nvarchar(255)"/>
+            <column name="last_name" type="nvarchar(255)"/>
+            <column name="gender" type="varchar(25)"/>
+        </createTable>
+
+        <addPrimaryKey tableName="patient_audit" columnNames="id, revision" constraintName="pk_patient_audit"/>
+
+        <addForeignKeyConstraint
+                baseTableName="patient"
+                baseColumnNames="client_id"
+                constraintName="fk_patient_client_client_id"
+                referencedTableName="client"
+                referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="patient_audit"
+                baseColumnNames="revision"
+                constraintName="fk_patient_audit_revision"
+                referencedTableName="revision_info"
+                referencedColumnNames="revision"/>
+
+        <createIndex indexName="ix_patient_client_id" tableName="patient">
+            <column name="client_id"  type="BIGINT"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_audit_revision" tableName="patient_audit">
+            <column name="revision"  type="BIGINT"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

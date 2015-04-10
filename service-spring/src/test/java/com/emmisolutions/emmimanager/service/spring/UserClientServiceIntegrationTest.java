@@ -44,7 +44,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     UserAdminService userAdminService;
-
+    
     @Resource
     UserClientPasswordService userClientPasswordService;
 
@@ -419,6 +419,15 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     public void testUnCommonUserClients(){
         assertThat("email should be 'valid'", userClientService.validateEmailAddress(null), is(true));
         assertThat("email should be 'valid'", userClientService.validateEmailAddress(new UserClient()), is(true));
+    }
+    
+    @Test
+    public void expireUserClientCredential(){
+        UserClient userClient = makeNewRandomUserClient(null);
+        assertThat("userClient credential is not expired", userClient.isCredentialsNonExpired(), is(true));
+        
+        userClient = userClientService.expireUserClientCredential(userClient);
+        assertThat("userClient credential is expired", userClient.isCredentialsNonExpired(), is(false));
     }
 
     /**

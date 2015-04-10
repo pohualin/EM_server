@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
+import java.util.List;
+
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
@@ -23,21 +25,37 @@ public interface UserClientSecretQuestionResponseService {
      */
    Page<SecretQuestion> list(Pageable pageable);
     
-   /**
-    * Reloads the question response 
-    * @param questionResponse the question response
-    * @return  UserClientSecretQuestionResponse
-    */
+    /**
+     * Reloads the question response 
+     * @param questionResponse the question response
+     * @return  UserClientSecretQuestionResponse
+     */
    UserClientSecretQuestionResponse reload(UserClientSecretQuestionResponse questionResponse);
     
     
+     /**
+      * find question response by user client 
+      * @param userClient the user client
+      * @param pageable  the pagination specification
+      * @return page of UserClientSecretQuestionResponse
+      */
+   Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
+   
     /**
-     * find question response by user client 
-     * @param userClient the user client
-     * @param pageable  the pagination specification
+     * find question response by reset password token 
+     * @param resetToken the reset password token
+     * @param pageable  the pagination specification 
      * @return page of UserClientSecretQuestionResponse
      */
-   Page<UserClientSecretQuestionResponse> findByUserClient (UserClient userClient, Pageable pageable);
+  Page<UserClientSecretQuestionResponse> findSecretQuestionToken (String resetToken, Pageable pageable);
+  
+   /**
+    * Validate user input security response with database response  
+    * @param resetToken the password reset token
+    * @param questionResponse list of user input response
+    * @return boolean is input response match or not
+    */
+  boolean validateSecurityResponse(String resetToken, List<UserClientSecretQuestionResponse> questionResponse);
     
      
     /**
@@ -50,7 +68,7 @@ public interface UserClientSecretQuestionResponseService {
    /**
     * Save or update user client for the secret question flag
     * @param userClient user client
-    * @return User client 
+    * @return UserClient a user client
     */
    UserClient saveOrUpdateUserClient(UserClient userClient);
    

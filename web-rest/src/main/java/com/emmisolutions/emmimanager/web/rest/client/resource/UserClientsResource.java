@@ -14,6 +14,7 @@ import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClient
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientValidationErrorResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -29,6 +30,7 @@ import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -267,6 +269,21 @@ public class UserClientsResource {
          }else{
               return new ResponseEntity<>(HttpStatus.GONE);
          }
+    }
+    
+    /**
+     * PUT reset password token to locked out an user 
+     * @param token password reset token for user client
+     * @return LocalDateTime locked out timestamp
+     */
+    @RequestMapping(value = "/secret_questions/lockedOutUserWithResetToken", method = RequestMethod.PUT)
+    @PermitAll
+    public ResponseEntity<LocalDateTime> lockedOutUserWithResetToken(
+    		@RequestParam(value = "token", required = false) String resetToken){
+    	
+       UserClient userClient = userClientService.lockedOutUserWithResetToken(resetToken);
+       return new ResponseEntity<>(userClient.getLockExpirationDateTime(), HttpStatus.OK);
+     
     }
 
 }

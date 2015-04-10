@@ -89,6 +89,17 @@ public interface UserClientService {
      * @return handled userClient
      */
     UserClient handleLoginFailure(UserClient userClient);
+    
+    
+    /**
+     * Locked out userCLient with password reset token
+     * After user tried 3 attempts for the security questions
+     * User will locked out on the 4th and more attempts
+     * 
+     * @param resetToken user client password reset token
+     * @return UserClient
+     */
+    UserClient lockedOutUserWithResetToken(String resetToken);
 
 	/**
 	 * Reset userClient lock if it is locked and lock is expired
@@ -101,6 +112,14 @@ public interface UserClientService {
 	 * @return a reseted UserClient
 	 */
 	UserClient resetUserClientLock(UserClient userClient);
+	
+	/**
+	 * Set credential to expire when password is expired
+	 * 
+	 * @param userClient to set
+	 * @return a credential expired userClient
+	 */
+	UserClient expireUserClientCredential(UserClient userClient);
 
     /**
      * return true if the email is valid
