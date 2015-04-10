@@ -183,23 +183,6 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         locationPersistence.save(location);
     }
     
-    @Test(expected = DataIntegrityViolationException.class)
-    public void duplicatedName() {
-        Location location = new Location();
-        location.setName("Location");
-        location.setCity("Valid City");
-        location.setPhone("555-555-5555");
-        location.setState(State.IL);
-        locationPersistence.save(location);
-        
-        location = new Location();
-        location.setName("Location");
-        location.setCity("Valid City");
-        location.setPhone("555-555-5555");
-        location.setState(State.IL);
-        locationPersistence.save(location);
-    }
-    
     @Test
     public void reloadNull(){
         assertThat("reloading null location should result in null", locationPersistence.reload(null), is(nullValue()));
