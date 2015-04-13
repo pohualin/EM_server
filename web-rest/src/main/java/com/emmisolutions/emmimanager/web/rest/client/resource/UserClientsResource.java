@@ -16,6 +16,7 @@ import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConfli
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
@@ -230,6 +231,19 @@ public class UserClientsResource {
     @PreAuthorize("hasPermission(@password, #password)")
     public ResponseEntity<Void> verifyPassword(@PathVariable("userClientId") Long userClientId,
                                                @RequestParam(value = "password", required = false) String password) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * PUT for a given user client verified with password
+     *
+     * @param userClientId
+     * @return
+     */
+    @RequestMapping(value = "/notNow/{userClientId}", method = RequestMethod.PUT)
+    @PreAuthorize("hasPermission(@user, #userClientId)")
+    public ResponseEntity<Void> notNow(@PathVariable("userClientId") Long userClientId) {
+        userClientService.saveNotNowExpirationTime(userClientId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     

@@ -9,7 +9,6 @@ import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.service.*;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -429,5 +428,22 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         
         userClient = userClientService.expireUserClientCredential(userClient);
         assertThat("userClient credential is expired", userClient.isCredentialsNonExpired(), is(false));
+    }
+
+    /**
+     * test not now functionality
+     */
+    @Test
+    public void testNotNow(){
+        UserClient userClient = new UserClient();
+        userClient.setClient(makeNewRandomClient());
+        userClient.setFirstName(RandomStringUtils.randomAlphabetic(50));
+        userClient.setLastName(RandomStringUtils.randomAlphabetic(50));
+        userClient.setLogin(RandomStringUtils.randomAlphabetic(50));
+        userClient.setEmail("tottally@randomEmail.com");
+        userClientService.create(userClient);
+        userClient = userClientService.saveNotNowExpirationTime(userClient.getId());
+        assertThat("userClient should have not not expiration date defined",
+                userClient.getNotNowExpirationTime(), notNullValue());
     }
 }
