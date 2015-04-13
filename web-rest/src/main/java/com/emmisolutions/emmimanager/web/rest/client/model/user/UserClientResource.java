@@ -34,7 +34,7 @@ public class UserClientResource extends ResourceSupport {
     private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated,
             secretQuestionCreated, interruptLoginFlow;
 
-    private LocalDateTime passwordExpirationTime, notNowExpirationTime;
+    private LocalDateTime passwordExpirationTime, passwordSavedTime, notNowExpirationTime;
     
     private ClientResource clientResource;
 
@@ -84,6 +84,7 @@ public class UserClientResource extends ResourceSupport {
                               boolean impersonated,
                               LocalDateTime notNowExpirationTime,
                               LocalDateTime passwordExpirationTime,
+                              LocalDateTime passwordSavedTime,
                               boolean interruptLoginFlow) {
         this.id = id;
         this.version = version;
@@ -102,6 +103,7 @@ public class UserClientResource extends ResourceSupport {
         this.impersonated = impersonated;
         this.notNowExpirationTime = notNowExpirationTime;
         this.passwordExpirationTime = passwordExpirationTime;
+        this.passwordSavedTime = passwordSavedTime;
         this.interruptLoginFlow = interruptLoginFlow;
     }
 

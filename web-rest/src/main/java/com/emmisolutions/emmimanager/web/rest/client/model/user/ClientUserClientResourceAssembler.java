@@ -45,6 +45,7 @@ public class ClientUserClientResourceAssembler implements
                 entity.isImpersonated(),
                 entity.getNotNowExpirationTime(),
                 entity.getPasswordExpireationDateTime(),
+                entity.getPasswordSavedDateTime(),
                 entity.isInterruptLoginFlow());
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withSelfRel());
         ret.add(UserClientResourceAssembler.createVerifyPasswordLink(entity));
