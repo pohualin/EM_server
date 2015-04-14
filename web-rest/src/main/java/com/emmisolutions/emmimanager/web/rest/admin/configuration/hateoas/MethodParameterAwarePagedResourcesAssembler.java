@@ -79,10 +79,10 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
     /**
      * Creates a resource from the page
      *
-     * @param page   to assemble
+     * @param page      to assemble
      * @param assembler to use
-     * @param link to use
-     * @param <R> resource
+     * @param link      to use
+     * @param <R>       resource
      * @return the paged resource
      */
     public <R extends ResourceSupport> PagedResources<R> toResource(Page<T> page, ResourceAssembler<T, R> assembler,
@@ -211,21 +211,26 @@ class MethodParameterAwarePagedResourcesAssembler<T> extends PagedResourcesAssem
         if (current != null) {
             foo(resources, current, uri, prefix + Link.REL_SELF);
         }
-        if (!firstPageIsInPrevious && page.getTotalPages() > 1) {
-            foo(resources, first, uri, prefix + Link.REL_FIRST);
+        // add previous link always, first link when the first page isn't already a page-xxx link
+        if (current != null && current.hasPrevious()) {
+            if (!firstPageIsInPrevious) {
+                foo(resources, first, uri, prefix + Link.REL_FIRST);
+            }
             foo(resources, previous, uri, prefix + Link.REL_PREVIOUS);
         }
+        // add the past five pages
         for (Pageable previous5Page : previous5Pages) {
             foo(resources, previous5Page, uri, prefix + (previous5Page.getPageNumber() + 1));
         }
+        // add the next five pages
         for (Pageable next5Page : next5Pages) {
             foo(resources, next5Page, uri, prefix + (next5Page.getPageNumber() + 1));
         }
-        // add the next link
+        // add the next link, if there is a next page
         if (page.hasNext()) {
             foo(resources, page.nextPageable(), uri, prefix + Link.REL_NEXT);
         }
-        // add last
+        // add last link when the links don't already have the last page as a page-xxx link
         if (!atLastPage && current != null) {
             Pageable toTheEnd = current;
             while (!atLastPage) {
