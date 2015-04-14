@@ -136,6 +136,13 @@ public interface UserClientService {
     int ACTIVATION_TOKEN_HOURS_VALID = 72;
 
     /**
+     * determine and save the not not snooze button expiration date
+     * @param userClientId user client to update
+     * @return user client
+     */
+    UserClient saveNotNowExpirationTime(Long userClientId);
+
+    /**
      * A conflicting UserClient
      */
     public class UserClientConflict {

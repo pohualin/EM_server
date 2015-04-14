@@ -31,9 +31,10 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated, secretQuestionCreated;
+    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated,
+            secretQuestionCreated, interruptLoginFlow;
 
-    private LocalDateTime passwordExpirationTime, passwordSavedTime;
+    private LocalDateTime passwordExpirationTime, passwordSavedTime, notNowExpirationTime;
     
     private ClientResource clientResource;
 
@@ -81,8 +82,10 @@ public class UserClientResource extends ResourceSupport {
                               ClientResource clientResource,
                               List<String> permissions,
                               boolean impersonated,
+                              LocalDateTime notNowExpirationTime,
                               LocalDateTime passwordExpirationTime,
-                              LocalDateTime passwordSavedTime) {
+                              LocalDateTime passwordSavedTime,
+                              boolean interruptLoginFlow) {
         this.id = id;
         this.version = version;
         this.login = login;
@@ -98,8 +101,10 @@ public class UserClientResource extends ResourceSupport {
         this.clientResource = clientResource;
         this.permissions = permissions;
         this.impersonated = impersonated;
+        this.notNowExpirationTime = notNowExpirationTime;
         this.passwordExpirationTime = passwordExpirationTime;
         this.passwordSavedTime = passwordSavedTime;
+        this.interruptLoginFlow = interruptLoginFlow;
     }
 
     /**
@@ -144,5 +149,13 @@ public class UserClientResource extends ResourceSupport {
 
     public void setTeams(Set<TeamResource> teams) {
         this.teams = teams;
+    }
+
+    public boolean isInterruptLoginFlow() {
+        return interruptLoginFlow;
+    }
+
+    public void setInterruptLoginFlow(boolean interruptLoginFlow) {
+        this.interruptLoginFlow = interruptLoginFlow;
     }
 }

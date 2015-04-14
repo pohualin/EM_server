@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add not now expiration time" author="Kevin">
+        <addColumn tableName="user_client">
+            <column name="not_now_expiration_time_utc" type="timestamp"/>
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="not_now_expiration_time_utc" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="add interrupt_login_flow4" author="Kevin">
+        <addColumn tableName="user_client">
+            <column name="interrupt_login_flow" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="user_client_audit">
+            <column name="interrupt_login_flow" type="boolean"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
