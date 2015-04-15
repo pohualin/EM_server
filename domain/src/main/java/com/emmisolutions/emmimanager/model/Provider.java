@@ -2,20 +2,15 @@ package com.emmisolutions.emmimanager.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.annotation.PostConstruct;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
@@ -54,6 +49,9 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@Pattern(regexp = "[A-Za-z '-(),.]*", message = "Name can only contain letters, spaces, and the following characters: - '")
 	private String middleName;
 
+    @Transient
+    private String fullName;
+
 	@Email
 	@Size(min = 0, max = 100)
 	@Column(length = 100)
@@ -62,7 +60,8 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "provider_specialty")
 	private ProviderSpecialty specialty;
-	
+
+
 	@NotNull
     @Size(max = 512)
     @Column(name="normalized_name", length = 512, nullable = false)
@@ -155,7 +154,32 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 		this.specialty = specialty;
 	}
 
-	@Override
+    @XmlAttribute(name = "fullName")
+    public String getFullName() {
+        if (fullName == null){
+            setFullNameFromParts();
+        }
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    private void setFullNameFromParts(){
+        // set full name
+        StringBuilder sb = new StringBuilder();
+        sb.append(getFirstName());
+        if (StringUtils.isNotBlank(getMiddleName())){
+            sb.append(' ');
+            sb.append(getMiddleName());
+        }
+        sb.append(' ');
+        sb.append(getLastName());
+        setFullName(sb.toString());
+    }
+
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
