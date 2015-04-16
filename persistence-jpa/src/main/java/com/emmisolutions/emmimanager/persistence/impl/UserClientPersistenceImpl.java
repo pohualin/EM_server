@@ -46,7 +46,6 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         user.setEmail(StringUtils.stripToNull(user.getEmail()));
         user.setEmailValidated(user.isEmailValidated());
         user.setNotNowExpirationTime(user.getNotNowExpirationTime());
-        user.setInterruptLoginFlow(user.isInterruptLoginFlow());
         return userClientRepository.save(user);
     }
 

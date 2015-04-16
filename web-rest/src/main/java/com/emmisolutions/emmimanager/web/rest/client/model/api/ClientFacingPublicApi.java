@@ -3,13 +3,11 @@ package com.emmisolutions.emmimanager.web.rest.client.model.api;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.hateoas.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -44,7 +42,7 @@ public class ClientFacingPublicApi extends ResourceSupport {
         Link getSecretQuestionWithResetToken = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).getSecretQuestionWithResetToken(null, null)).withRel("getSecretQuestionWithResetToken");
         add(new Link(urlWithTokenParameter(getSecretQuestionWithResetToken), getSecretQuestionWithResetToken.getRel()));
 
-        Link validateSecretQuestion = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).validateSecretResponses(null, null)).withRel("validateSecretResponses");
+        Link validateSecretQuestion = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).validateSecretResponses(null, null)).withRel("validateSecurityResponse");
         add(new Link(urlWithTokenParameter(validateSecretQuestion), validateSecretQuestion.getRel()));
 
         Link lockedOutUserByResetToken = linkTo(methodOn(UserClientsResource.class).lockedOutUserWithResetToken(null)).withRel("lockedOutUserByResetToken");
