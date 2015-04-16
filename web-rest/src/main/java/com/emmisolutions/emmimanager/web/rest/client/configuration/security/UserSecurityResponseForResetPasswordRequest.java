@@ -2,9 +2,8 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
 
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
+import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
-
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -15,23 +14,31 @@ import javax.annotation.Resource;
 @Component("resetPasswordSecurityResponse")
 public class UserSecurityResponseForResetPasswordRequest {
 
-	@Resource
+    @Resource
     UserClientSecretQuestionResponseService userClientSecretQuestionResponseService;
-	
-     /**
+
+    /**
      * Check if questions and response are authenticated
      *
-     * @param resetPasswordObject ResetPasswordRequest object
-     * @param authentication the authenticated user
+     * @param resetPassword to check to see if security questions are valid
      * @return true if questions and responses are valid, false if it doesn't
      */
-    public boolean isSecurityReponseValid(Object resetPasswordObject, Authentication authentication) {
+    public boolean isSecurityResponseValid(ResetPasswordRequest resetPassword) {
         boolean isValid = false;
-        ResetPasswordRequest resetPassword = (ResetPasswordRequest) resetPasswordObject;
-                
-        if ((resetPasswordObject != null) && 
-            (resetPassword.getUserClientSecretQuestionResponse() != null)) {
-             isValid = userClientSecretQuestionResponseService.validateSecurityResponse(resetPassword.getResetToken(), resetPassword.getUserClientSecretQuestionResponse());
+        if (resetPassword != null) {
+            if ( resetPassword.getUserClientSecretQuestionResponse() != null) {
+                for (UserClientSecretQuestionResponse userClientSecretQuestionResponse :
+                        resetPassword.getUserClientSecretQuestionResponse()) {
+                    isValid = userClientSecretQuestionResponseService.validateSecurityResponse(
+                            resetPassword.getResetToken(), userClientSecretQuestionResponse);
+                    if (!isValid) {
+                        break;
+                    }
+                }
+            } else {
+                isValid = userClientSecretQuestionResponseService.validateSecurityResponse(
+                        resetPassword.getResetToken(), null);
+            }
         }
         return isValid;
     }

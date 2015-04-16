@@ -95,6 +95,8 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.getPasswordSavedDateTime(),
                 interruptFlow);
 
+        ret.setSecurityQuestionsNotRequiredForReset(user.isSecurityQuestionsNotRequiredForReset());
+
         ret.add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
 
         if (!CollectionUtils.isEmpty(teams)){

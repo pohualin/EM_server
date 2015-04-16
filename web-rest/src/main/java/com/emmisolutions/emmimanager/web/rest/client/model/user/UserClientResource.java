@@ -31,8 +31,15 @@ public class UserClientResource extends ResourceSupport {
 
     private String email;
 
-    private boolean active, accountNonExpired, accountNonLocked, credentialsNonExpired, impersonated, emailValidated,
-            secretQuestionCreated, interruptLoginFlow;
+    private boolean active;
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean impersonated;
+    private boolean emailValidated;
+    private boolean secretQuestionCreated;
+    private boolean interruptLoginFlow;
+    private boolean securityQuestionsNotRequiredForReset;
 
     private LocalDateTime passwordExpirationTime, passwordSavedTime, notNowExpirationTime;
     
@@ -157,5 +164,13 @@ public class UserClientResource extends ResourceSupport {
 
     public void setInterruptLoginFlow(boolean interruptLoginFlow) {
         this.interruptLoginFlow = interruptLoginFlow;
+    }
+
+    public boolean isSecurityQuestionsNotRequiredForReset() {
+        return securityQuestionsNotRequiredForReset;
+    }
+
+    public void setSecurityQuestionsNotRequiredForReset(boolean securityQuestionsNotRequiredForReset) {
+        this.securityQuestionsNotRequiredForReset = securityQuestionsNotRequiredForReset;
     }
 }

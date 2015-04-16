@@ -31,7 +31,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
     @Resource
     private UserClientPersistence userClientPersistence;
-    
+
     @Resource
     private UserClientPasswordHistoryService userClientPasswordHistoryService;
 
@@ -52,6 +52,8 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         // unlock a user that is locked
         UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);
         unlockedUser.setCredentialsNonExpired(setCredentialNonExpired);
+        unlockedUser.setSecurityQuestionsNotRequiredForReset(false);
+
         unlockedUser.setPassword(user.getPassword());
         // set the expiration length based upon the user never logging in
         unlockedUser.setPasswordResetExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
@@ -79,18 +81,19 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 unlockedUser.setCredentialsNonExpired(true);
                 unlockedUser.setPasswordResetExpirationDateTime(null);
                 unlockedUser.setPasswordResetToken(null);
-                
+                unlockedUser.setSecurityQuestionsNotRequiredForReset(false);
+
                 UserClient passwordUpdatedUser = updatePasswordExpirationTime(encodePassword(unlockedUser));
-                
+
                 userClientPasswordHistoryService
                         .handleUserClientPasswordHistory(passwordUpdatedUser);
-                
+
                 return passwordUpdatedUser;
             }
         }
         return null;
     }
-    
+
     @Override
     public UserClient changePassword(ChangePasswordRequest changePasswordRequest) {
         UserClient toUpdate = userClientPersistence
@@ -101,7 +104,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
 
         userClientPasswordHistoryService
                 .handleUserClientPasswordHistory(toUpdate);
-        
+
         return toUpdate;
     }
 
@@ -129,12 +132,13 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                     unlockedUser.setPassword(resetPasswordRequest.getNewPassword());
                     unlockedUser.setCredentialsNonExpired(true);
                     unlockedUser.setEmailValidated(true);
-                    
+                    unlockedUser.setSecurityQuestionsNotRequiredForReset(false);
+
                     UserClient passwordUpdatedUser = updatePasswordExpirationTime(encodePassword(unlockedUser));
-                    
+
                     userClientPasswordHistoryService
                             .handleUserClientPasswordHistory(passwordUpdatedUser);
-                    
+                    // return the updated user due to successful update
                     return passwordUpdatedUser;
                 } else {
                     // don't return this just update to remove the reset token
@@ -148,6 +152,10 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
     @Override
     @Transactional
     public UserClient addResetTokenTo(UserClient userClient) {
+        return addResetTokenTo(userClient, true);
+    }
+
+    private UserClient addResetTokenTo(UserClient userClient, boolean securityQuestionsNotRequired) {
         UserClient fromDb = userClientPersistence.reload(userClient);
         if (fromDb == null) {
             throw new InvalidDataAccessApiUsageException(
@@ -158,6 +166,9 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
                 .plusHours(RESET_TOKEN_HOURS_VALID));
         fromDb.setPasswordResetToken(passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
                 .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
+        // do not require security questions to be answered when an admin is updating the password
+        fromDb.setSecurityQuestionsNotRequiredForReset(securityQuestionsNotRequired);
+
         return userClientPersistence.saveOrUpdate(fromDb);
     }
 
@@ -169,7 +180,7 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
             if (userClient != null) {
                 ClientPasswordConfiguration configuration = findClientPasswordConfiguration(userClient);
                 if (configuration.isPasswordReset()) {
-                    return addResetTokenTo(userClient);
+                    return addResetTokenTo(userClient, false);
                 } else {
                     userClient.setPasswordResetToken(null);
                     return userClient;
@@ -190,9 +201,10 @@ public class UserClientPasswordServiceImpl implements UserClientPasswordService 
         // set the timestamp back a year or so
         fromDb.setPasswordResetExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC)
                 .minusHours(RESET_TOKEN_HOURS_VALID).minusYears(1));
+        fromDb.setSecurityQuestionsNotRequiredForReset(false);
         return userClientPersistence.saveOrUpdate(fromDb);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public ClientPasswordConfiguration findPasswordPolicyUsingResetToken(String resetToken) {
