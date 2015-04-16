@@ -1,21 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import javax.annotation.Resource;
-
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
-import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.User;
@@ -27,6 +11,18 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Integration test for the AdminPasswordService
@@ -195,12 +191,18 @@ public class UserClientPasswordServiceIntegrationTest extends
         assertThat("user does not have a validated email",
                 userClient.isEmailValidated(), is(false));
 
+        assertThat("user does not have to validate security questions",
+                userClient.isSecurityQuestionsNotRequiredForReset(), is(true));
+
         UserClient afterReset = userClientPasswordService
                 .resetPassword(new ResetPasswordRequest(userClient
                         .getPasswordResetToken(), password));
 
         assertThat("user has reset password",
                 afterReset.getPasswordResetToken(), is(nullValue()));
+
+        assertThat("user should now have to validate security questions",
+                afterReset.isSecurityQuestionsNotRequiredForReset(), is(false));
 
         assertThat("user now has an validated email",
                 afterReset.isEmailValidated(), is(true));

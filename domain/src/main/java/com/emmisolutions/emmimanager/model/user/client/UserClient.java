@@ -4,8 +4,6 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
 import org.joda.time.LocalDateTime;
@@ -119,8 +117,8 @@ public class UserClient extends User {
     @Column(name = "not_now_expiration_time_utc")
     private LocalDateTime notNowExpirationTime;
 
-    @Column(name = "interrupt_login_flow", nullable = false)
-    private boolean interruptLoginFlow;
+    @Column(name = "security_questions_not_required_for_reset", nullable = false)
+    private boolean securityQuestionsNotRequiredForReset;
 
     public UserClient() {
 
@@ -360,11 +358,11 @@ public class UserClient extends User {
         this.notNowExpirationTime = notNowExpirationTime;
     }
 
-    public boolean isInterruptLoginFlow() {
-        return interruptLoginFlow;
+    public boolean isSecurityQuestionsNotRequiredForReset() {
+        return securityQuestionsNotRequiredForReset;
     }
 
-    public void setInterruptLoginFlow(boolean interruptLoginFlow) {
-        this.interruptLoginFlow = interruptLoginFlow;
+    public void setSecurityQuestionsNotRequiredForReset(boolean securityQuestionsNotRequiredForReset) {
+        this.securityQuestionsNotRequiredForReset = securityQuestionsNotRequiredForReset;
     }
 }

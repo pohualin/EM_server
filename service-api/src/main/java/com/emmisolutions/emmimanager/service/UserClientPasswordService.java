@@ -17,9 +17,9 @@ public interface UserClientPasswordService {
     int RESET_TOKEN_HOURS_VALID = 24;
 
     /**
-     * Update the UserClient password and expire it at the same time.
+     * Update the UserClient password.
      *
-     * @param user the user to be updated
+     * @param user           the user to be updated
      * @param setCredentialNonExpire to set
      * @return the updated UserClient
      */
@@ -32,12 +32,12 @@ public interface UserClientPasswordService {
      * @return the updated user client
      */
     UserClient changeExpiredPassword(ExpiredPasswordChangeRequest expiredPasswordChangeRequest);
-    
+
     /**
-     * Update an UserClinet with sent in new password
-     * 
-     * @param changePasswordRequest
-     * @return
+     * Update an UserClient with sent in new password
+     *
+     * @param changePasswordRequest to change the password
+     * @return the updated user client
      */
     UserClient changePassword(ChangePasswordRequest changePasswordRequest);
 
@@ -47,7 +47,7 @@ public interface UserClientPasswordService {
      * @param userClient to find the password
      * @return UserClient with both password and salt populated
      */
-    public UserClient encodePassword(UserClient userClient);
+    UserClient encodePassword(UserClient userClient);
 
     /**
      * Update a user's password with a reset password request
@@ -82,7 +82,7 @@ public interface UserClientPasswordService {
      * @return the updated UserClient
      */
     UserClient expireResetToken(UserClient userClient);
-    
+
     /**
      * Finds a password configuration for a particular reset token
      * or returns the default password configuration
@@ -100,13 +100,12 @@ public interface UserClientPasswordService {
      * @return a password configuration for the token, never null
      */
     ClientPasswordConfiguration findPasswordPolicyUsingActivationToken(String resetToken);
-    
+
     /**
      * Set password expiration time to userClient
-     * 
-     * @param userClient
-     *            to set
+     *
+     * @param userClient to set
      * @return an userClient with password expiration time set
      */
-    public UserClient updatePasswordExpirationTime(UserClient userClient);
+    UserClient updatePasswordExpirationTime(UserClient userClient);
 }
