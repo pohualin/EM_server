@@ -1,15 +1,12 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import java.util.List;
-
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.persistence.SecretQuestionPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientSecretQuestionResponsePersistence;
-import com.emmisolutions.emmimanager.persistence.repo.UserClientSecretQuestionResponseRepository;
 import com.emmisolutions.emmimanager.persistence.repo.SecretQuestionRepository;
-
+import com.emmisolutions.emmimanager.persistence.repo.UserClientSecretQuestionResponseRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,14 +38,11 @@ public class UserClientSecretQuestionResponsePersistenceImpl implements
 
     @Override
     public Page<UserClientSecretQuestionResponse> findByUserClient(UserClient userClient, Pageable pageable) {
-        Pageable pageToFetch;
-        if (pageable == null) {
-            pageToFetch = new PageRequest(0, 10, Sort.Direction.ASC, "id");
-        } else {
-            pageToFetch = pageable;
+        if (userClient == null ) {
+            return null;
         }
-        return userClientSecretQuestionResponseRepository.findByUserClientId(userClient.getId(), pageToFetch);
-       
+        return userClientSecretQuestionResponseRepository.findByUserClientId(userClient.getId(), pageable == null ?
+                new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
     }
 
     @Override
