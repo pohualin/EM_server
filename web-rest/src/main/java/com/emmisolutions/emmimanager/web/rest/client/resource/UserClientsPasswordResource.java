@@ -15,9 +15,9 @@ import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
-import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResourceAssembler;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,8 +51,9 @@ public class UserClientsPasswordResource {
     @Resource
     UserClientPasswordValidationService userClientPasswordValidationService;
 
-    @Resource
-    UserClientPasswordValidationErrorResourceAssembler userClientPasswordValidationErrorResourceAssembler;
+    @Resource(name = "userClientPasswordValidationErrorResourceAssembler")
+    ResourceAssembler<UserClientPasswordValidationError, UserClientPasswordValidationErrorResource>
+            userClientPasswordValidationErrorResourceAssembler;
 
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
@@ -181,12 +182,13 @@ public class UserClientsPasswordResource {
     /**
      * GET to find password policy using a reset token
      *
-     * @param token to lookup the password policy
+     * @param resetToken to lookup the password policy
      * @return OK or GONE
      */
     @RequestMapping(value = "/password/policy/reset", method = RequestMethod.GET)
     @PermitAll
-    public ResponseEntity<ClientPasswordConfiguration> resetPasswordPolicy(@RequestParam(value = "token", required = false) String resetToken) {
+    public ResponseEntity<ClientPasswordConfiguration> resetPasswordPolicy(
+            @RequestParam(value = "token", required = false) String resetToken) {
         ClientPasswordConfiguration clientPasswordConfiguration =
                 userClientPasswordService.findPasswordPolicyUsingResetToken(resetToken);
         if (clientPasswordConfiguration != null) {
@@ -198,12 +200,15 @@ public class UserClientsPasswordResource {
     /**
      * GET to find password policy using an activation token
      *
-     * @param token to lookup the password policy
-     * @return OK or GONE
+     * @param activationToken to lookup the password policy
+     * @return OK (200): containing ClientPasswordConfiguration
+     * <p/>
+     * GONE (204): when there isn't one
      */
     @RequestMapping(value = "/password/policy/activation", method = RequestMethod.GET)
     @PermitAll
-    public ResponseEntity<ClientPasswordConfiguration> activatePasswordPolicy(@RequestParam(value = "token", required = false) String activationToken) {
+    public ResponseEntity<ClientPasswordConfiguration> activatePasswordPolicy(
+            @RequestParam(value = "token", required = false) String activationToken) {
         ClientPasswordConfiguration clientPasswordConfiguration =
                 userClientPasswordService.findPasswordPolicyUsingActivationToken(activationToken);
         if (clientPasswordConfiguration != null) {
@@ -216,7 +221,9 @@ public class UserClientsPasswordResource {
      * Load the password policy for an expired user client by id
      *
      * @param clientId to load the policy
-     * @return the policy
+     * @return OK (200): containing the ClientPasswordConfiguration
+     * <p/>
+     * NO_CONTENT (204): when there isn't a configuration (shouldn't happen)
      */
     @RequestMapping(value = "/password/policy/expired/{clientId}", method = RequestMethod.GET)
     @PermitAll
@@ -235,7 +242,7 @@ public class UserClientsPasswordResource {
      * PUT to create a forgot password email
      *
      * @param forgotPassword the forget request
-     * @return OK
+     * @return OK (200): no matter what
      */
     @RequestMapping(value = "/password/forgot", method = RequestMethod.PUT)
     @PermitAll
