@@ -116,8 +116,6 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setSecretQuestionCreated(inDb.isSecretQuestionCreated());
         userClient.setValidationExpirationDateTime(inDb.getValidationExpirationDateTime());
         userClient.setLoginFailureCount(inDb.getLoginFailureCount());
-        userClient.setLockExpirationDateTime(inDb.getLockExpirationDateTime());
-        userClient.setNotNowExpirationTime(inDb.getNotNowExpirationTime());
 
         return userClientPersistence.saveOrUpdate(userClient);
     }
