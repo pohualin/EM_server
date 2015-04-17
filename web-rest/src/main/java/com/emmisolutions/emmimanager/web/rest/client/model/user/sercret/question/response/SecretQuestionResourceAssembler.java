@@ -20,7 +20,7 @@ public class SecretQuestionResourceAssembler implements
     public SecretQuestionResource toResource(
             SecretQuestion entity) {
         SecretQuestionResource ret = new SecretQuestionResource();
-        ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null, null, null)).withSelfRel());
+        ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null)).withSelfRel());
         ret.setEntity(entity);
         return ret;
     }

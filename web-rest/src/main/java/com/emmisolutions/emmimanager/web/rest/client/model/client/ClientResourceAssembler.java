@@ -55,7 +55,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
      * @return Link for provider search
      */
     public static Link createPatientFullSearchLink(Long clientId) {
-        Link link = linkTo(methodOn(PatientsResource.class).list(clientId, null, null, null, null)).withRel("patients");
+        Link link = linkTo(methodOn(PatientsResource.class).list(clientId, null, null, null)).withRel("patients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(
                 new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

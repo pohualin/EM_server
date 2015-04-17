@@ -1,7 +1,6 @@
-package com.emmisolutions.emmimanager.web.rest.client.resource;
+package com.emmisolutions.emmimanager.web.rest.client.model.patient;
 
 import com.emmisolutions.emmimanager.model.Gender;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
