@@ -2,7 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.client.model.client;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.EmailRestrictConfigurationsResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.UserEmailRestrictConfigurationsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.PatientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
@@ -26,7 +26,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(UserClientsPasswordResource.class).passwordPolicy(entity.getId())).withRel("passwordPolicy"));
         ret.add(linkTo(methodOn(PatientsResource.class).create(entity.getId(), null)).withRel("patient"));
-        ret.add(linkTo(methodOn(EmailRestrictConfigurationsResource.class).list(entity.getId(), null, null, null)).withRel("emailRestrictConfigurations"));
+        ret.add(linkTo(methodOn(UserEmailRestrictConfigurationsResource.class).list(entity.getId(), null, null, null)).withRel("emailRestrictConfigurations"));
         // ability to load a team for a client
         ret.add(new Link(
                 new UriTemplate(
