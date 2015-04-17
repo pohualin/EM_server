@@ -93,14 +93,17 @@ public class UserClientServiceImpl implements UserClientService {
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
+
         // do not allow for security related fields to be changed on update
         userClient.setClient(inDb.getClient());
         userClient.setPassword(inDb.getPassword());
         userClient.setSalt(inDb.getSalt());
         userClient.setActivationKey(inDb.getActivationKey());
         userClient.setActivated(inDb.isActivated());
+        userClient.setSecurityQuestionsNotRequiredForReset(inDb.isSecurityQuestionsNotRequiredForReset());
         userClient.setCredentialsNonExpired(inDb.isCredentialsNonExpired());
         userClient.setAccountNonExpired(inDb.isAccountNonExpired());
+        userClient.setActivationExpirationDateTime(inDb.getActivationExpirationDateTime());
         userClient.setAccountNonLocked(inDb.isAccountNonLocked());
         userClient.setPasswordResetToken(inDb.getPasswordResetToken());
         userClient.setPasswordResetExpirationDateTime(inDb.getPasswordResetExpirationDateTime());
@@ -111,6 +114,9 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setEmailValidated(
                 StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
         userClient.setSecretQuestionCreated(inDb.isSecretQuestionCreated());
+        userClient.setValidationExpirationDateTime(inDb.getValidationExpirationDateTime());
+        userClient.setLoginFailureCount(inDb.getLoginFailureCount());
+
         return userClientPersistence.saveOrUpdate(userClient);
     }
 

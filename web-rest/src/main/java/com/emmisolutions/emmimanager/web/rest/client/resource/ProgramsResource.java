@@ -9,6 +9,7 @@ import com.emmisolutions.emmimanager.service.ProgramService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
 import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.ProgramResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.ProgramResourcePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.location.TeamLocationResource;
@@ -116,7 +117,7 @@ public class ProgramsResource {
             @ApiImplicitParam(name = "sort", defaultValue = "location.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = TEAM_PROVIDER_ID_REQUEST_PARAM, value = "the team provider to narrow by", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<TeamLocationResourcePage> locations(
+    public ResponseEntity<? extends PagedResource<TeamLocationResource>> locations(
             @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
             @RequestParam(value = TEAM_PROVIDER_ID_REQUEST_PARAM, required = false) Long teamProviderId,
