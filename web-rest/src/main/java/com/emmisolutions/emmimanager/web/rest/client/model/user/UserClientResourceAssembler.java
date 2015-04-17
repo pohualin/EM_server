@@ -114,7 +114,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             Link updateUserClientSecretQuestion = linkTo(methodOn(UserClientsResource.class).updateUserClient(user.getId(), null)).withRel("updateUserClientSecretQuestionFlag");
             ret.add(new Link(createUriTemplate("secretQuestionsCreated", updateUserClientSecretQuestion), updateUserClientSecretQuestion.getRel()));
 
-            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null)).withRel("secretQuestionAsteriskResponses"));
+            ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null, null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
             ret.add(linkTo(methodOn(UserClientsResource.class).notNow(user.getId())).withRel("notNow"));
@@ -132,7 +132,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
     }
 
     public static Link createVerifyPasswordLink(UserClient user){
-        Link verifyPasswordLink = linkTo(methodOn(UserClientsResource.class).verifyPassword(user.getId(), null)).withRel("verifyPassword");
+        Link verifyPasswordLink = linkTo(methodOn(UserClientsResource.class).verifyPassword( null)).withRel("verifyPassword");
         UriTemplate verifyPasswordUriTemplate = new UriTemplate(verifyPasswordLink.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("password",
