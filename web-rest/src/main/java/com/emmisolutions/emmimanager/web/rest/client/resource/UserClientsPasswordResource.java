@@ -1,8 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -18,10 +15,9 @@ import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.ForgotPassword;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
-import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResourceAssembler;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +28,8 @@ import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -49,12 +47,13 @@ public class UserClientsPasswordResource {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
-    
+
     @Resource
     UserClientPasswordValidationService userClientPasswordValidationService;
-    
-    @Resource
-    UserClientPasswordValidationErrorResourceAssembler userClientPasswordValidationErrorResourceAssembler;
+
+    @Resource(name = "userClientPasswordValidationErrorResourceAssembler")
+    ResourceAssembler<UserClientPasswordValidationError, UserClientPasswordValidationErrorResource>
+            userClientPasswordValidationErrorResourceAssembler;
 
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
@@ -64,10 +63,10 @@ public class UserClientsPasswordResource {
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
-    
-    @Resource(name="clientTokenBasedRememberMeServices")
+
+    @Resource(name = "clientTokenBasedRememberMeServices")
     RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
-    
+
     /**
      * Updates the password to the password on the user
      *
@@ -104,18 +103,23 @@ public class UserClientsPasswordResource {
     }
 
     /**
-     * PUT to reset a user's password
+     * PUT to reset a user's password. This method is secured by the user
+     * having to know the security questions.
      *
      * @param resetPasswordRequest the activation request
-     * @return OK or GONE or NOT_ACCEPTABLE
+     * @return OK (200) - password reset successful;
+     * GONE (410) - reset was invalid;
+     * NOT_ACCEPTABLE (406) - problem with password;
+     * NOT_AUTHORIZED (403) - user didn't enter the security question answers correctly
+     * @see com.emmisolutions.emmimanager.web.rest.client.configuration.security.UserSecurityResponseForResetPasswordRequest#isSecurityResponseValid(ResetPasswordRequest)
      */
     @RequestMapping(value = "/password/reset", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PreAuthorize("hasPermission(@resetPasswordSecurityResponse, #resetPasswordRequest)")
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> resetPassword(
             @RequestBody ResetPasswordRequest resetPasswordRequest) {
-    	
-    	List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
+
+        List<UserClientPasswordValidationError> errors = userClientPasswordValidationService
                 .validateRequest(resetPasswordRequest);
         if (errors.size() == 0) {
             UserClient userClient = userClientPasswordService
@@ -136,17 +140,16 @@ public class UserClientsPasswordResource {
                     HttpStatus.NOT_ACCEPTABLE);
         }
     }
-    
+
     /**
      * Update password for existing UserClient
-     * 
-     * @param changePasswordRequest
-     *            to save new password
+     *
+     * @param changePasswordRequest to save new password
      * @return OK if everything went through NOT_ACCEPTABLE if either old
-     *         password does not match or new password pattern does not meet
+     * password does not match or new password pattern does not meet
      */
     @RequestMapping(value = "/password/change", method = RequestMethod.POST, consumes = {
-            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PreAuthorize("hasPermission(@password, #changePasswordRequest.existingPassword)")
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> changePassword(
             HttpServletRequest request, HttpServletResponse response,
@@ -179,12 +182,13 @@ public class UserClientsPasswordResource {
     /**
      * GET to find password policy using a reset token
      *
-     * @param token to lookup the password policy
+     * @param resetToken to lookup the password policy
      * @return OK or GONE
      */
     @RequestMapping(value = "/password/policy/reset", method = RequestMethod.GET)
     @PermitAll
-    public ResponseEntity<ClientPasswordConfiguration> resetPasswordPolicy(@RequestParam(value = "token", required = false) String resetToken) {
+    public ResponseEntity<ClientPasswordConfiguration> resetPasswordPolicy(
+            @RequestParam(value = "token", required = false) String resetToken) {
         ClientPasswordConfiguration clientPasswordConfiguration =
                 userClientPasswordService.findPasswordPolicyUsingResetToken(resetToken);
         if (clientPasswordConfiguration != null) {
@@ -196,12 +200,15 @@ public class UserClientsPasswordResource {
     /**
      * GET to find password policy using an activation token
      *
-     * @param token to lookup the password policy
-     * @return OK or GONE
+     * @param activationToken to lookup the password policy
+     * @return OK (200): containing ClientPasswordConfiguration
+     * <p/>
+     * GONE (204): when there isn't one
      */
     @RequestMapping(value = "/password/policy/activation", method = RequestMethod.GET)
     @PermitAll
-    public ResponseEntity<ClientPasswordConfiguration> activatePasswordPolicy(@RequestParam(value = "token", required = false) String activationToken) {
+    public ResponseEntity<ClientPasswordConfiguration> activatePasswordPolicy(
+            @RequestParam(value = "token", required = false) String activationToken) {
         ClientPasswordConfiguration clientPasswordConfiguration =
                 userClientPasswordService.findPasswordPolicyUsingActivationToken(activationToken);
         if (clientPasswordConfiguration != null) {
@@ -214,7 +221,9 @@ public class UserClientsPasswordResource {
      * Load the password policy for an expired user client by id
      *
      * @param clientId to load the policy
-     * @return the policy
+     * @return OK (200): containing the ClientPasswordConfiguration
+     * <p/>
+     * NO_CONTENT (204): when there isn't a configuration (shouldn't happen)
      */
     @RequestMapping(value = "/password/policy/expired/{clientId}", method = RequestMethod.GET)
     @PermitAll
@@ -233,7 +242,7 @@ public class UserClientsPasswordResource {
      * PUT to create a forgot password email
      *
      * @param forgotPassword the forget request
-     * @return OK
+     * @return OK (200): no matter what
      */
     @RequestMapping(value = "/password/forgot", method = RequestMethod.PUT)
     @PermitAll
@@ -245,9 +254,10 @@ public class UserClientsPasswordResource {
             userClient.setEmailValidated(false);
             userClient.setEmail(forgotPassword.getEmail());
         }
-        if (userClient.isEmailValidated()) {
+        if (userClient.isEmailValidated() && userClient.isSecretQuestionCreated()) {
+            // user has a validated email and has answered security questions
             if (StringUtils.isNotBlank(userClient.getPasswordResetToken())) {
-                // has a validated email
+                // user has a token created
                 String resetRef =
                         UriComponentsBuilder.fromHttpUrl(
                                 linkTo(methodOn(UserClientsPasswordResource.class)
@@ -257,12 +267,11 @@ public class UserClientsPasswordResource {
                                                 userClient.getPasswordResetToken()))
                                 .build(false)
                                 .toUriString();
-                // send account reset email
                 mailService.sendPasswordResetEmail(userClient, resetRef);
             } else {
+                // user does not have a token (due to password reset not being enabled)
                 mailService.sendPasswordResetNotEnabled(userClient);
             }
-
         } else {
             // send invalid account reset email
             mailService.sendInvalidAccountPasswordResetEmail(userClient);
