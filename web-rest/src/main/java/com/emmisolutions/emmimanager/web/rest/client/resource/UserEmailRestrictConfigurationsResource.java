@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.EmailRestrictConfigurationPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.EmailRestrictConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.EmailRestrictConfigurationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.data.web.SortDefault;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +39,7 @@ public class UserEmailRestrictConfigurationsResource {
     EmailRestrictConfigurationService emailRestrictConfigurationService;
 
     @Resource
-    EmailRestrictConfigurationResourceAssembler emailRestrictConfigurationAssembler;
+    ResourceAssembler<EmailRestrictConfiguration, EmailRestrictConfigurationResource> emailRestrictConfigurationAssembler;
 
     /**
      * Get a page of EmailRestrictConfiguration for a Client
@@ -50,7 +52,7 @@ public class UserEmailRestrictConfigurationsResource {
      *            to use
      * @param assembler
      *            to use
-     * @return an EmailRestrictConfigurationPage
+     * @return ResponseEntity OK or NO_CONTENT
      */
     @RequestMapping(value = "/client/{id}/email_restrict_configurations", method = RequestMethod.GET)
     @ApiImplicitParams(value = {
