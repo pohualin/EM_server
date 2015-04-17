@@ -254,8 +254,8 @@ public class UserClientsPasswordResource {
             userClient.setEmailValidated(false);
             userClient.setEmail(forgotPassword.getEmail());
         }
-        if (userClient.isEmailValidated() && userClient.isSecretQuestionCreated()) {
-            // user has a validated email and has answered security questions
+        if (userClient.isEmailValidated() && userClient.isSecretQuestionCreated() && userClient.isActive()) {
+            // user is active, has a validated email and has answered security questions
             if (StringUtils.isNotBlank(userClient.getPasswordResetToken())) {
                 // user has a token created
                 String resetRef =
