@@ -1,6 +1,6 @@
 Developer Guide
 =================================
-This guide describes the steps needed to setup the server project in eclipse.
+This guide describes the steps needed to setup the server project for development.
 
 Importing projects from Eclipse
 =================================
@@ -8,8 +8,8 @@ Importing projects from Eclipse
 * Use the Import -> Git -> Projects from Git. 
 * Once you all the client and server repos to the list, you can select each one of them and pull down the client and server projects.
 
-Enabling Annotation Precompiler
-=================================
+Enabling Annotation Pre-compiler
+======================================
 
 * Open up Project properties on the domain project.
 * Open up Java Compiler option.
@@ -17,8 +17,22 @@ Enabling Annotation Precompiler
 * Click on Factory Path under Annotation Processing and ‘Add External jars’ and select the jar for jpa model gen (The jar is 
 generally located under C:\Users\<your id>\.m2\repositories\org\hibernate\hibernate-jpamodelgen\4.3.6.Final\hibernate-jpamodelgen-4.3.6.Final.jar
 
-Deploying server side code to root 
-====================================
+Install Server Software
+==============================
+You'll need to get some stuff.
+
+On Mac OSX:
+
+- Install [homebrew] (http://brew.sh): a package manager for OSX
+- Install [Java JDK 1.7+] (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- Download the [Emmi Solutions SSL Certificate] (https://build1.emmisolutions.com).
+- Install SSL certificate into the Java VM trust store (e.g. keytool -import -file downloaded_certificate.cer -keystore $JDK_HOME/jre/lib/security/cacerts).
+- Install tomcat via `brew install tomcat`. Optionally, install tomcat native via `brew install tomcat-native`.
+- Install maven via `brew install maven`.
+
+
+Deploying server side code to root
+======================================
 
 By default tomcat wants to deploy the war to web-rest path. To deploy it at the root, follow the steps below
 
@@ -27,8 +41,8 @@ By default tomcat wants to deploy the war to web-rest path. To deploy it at the 
 * Set the Path variable to /
 * Leave document base as web-rest
  
-Running the application 
-=======================
+Running the application
+===============================
 The application can run with an in memory database or with a real database. We use Postgres for local development. The liquibase scripts create the database objects on startup. 
 The server uses Spring profiles to determine which mode to run in. Here is how we set the spring profile.
 
@@ -68,6 +82,4 @@ Postgres setup
 * Give the postgres user rights to create: `GRANT CREATE ON DATABASE emmimanager to postgres`
 * If you create the user with a password, you will need to edit: server\web-rest\src\main\webapp\META-INF\context.xml to specify the password.
 * If you create a user with a different name or point to a different port, the JNDI datasource in context.xml (EmmiManagerDS) will need to be edited to match your database configuration.
-
-
  
