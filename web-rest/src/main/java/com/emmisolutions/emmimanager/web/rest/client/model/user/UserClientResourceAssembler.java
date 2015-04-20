@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.EmailRestrictConfigurationsResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsPasswordResource;
@@ -114,7 +113,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
             
             Link updateUserClientSecretQuestion = linkTo(methodOn(UserClientsResource.class).updateUserClient(user.getId(), null)).withRel("updateUserClientSecretQuestionFlag");
             ret.add(new Link(createUriTemplate("secretQuestionsCreated", updateUserClientSecretQuestion), updateUserClientSecretQuestion.getRel()));
-            ret.add(linkTo(methodOn(EmailRestrictConfigurationsResource.class).list(ret.getClientResource().getEntity().getId(), null, null, null)).withRel("emailRestrictConfigurations"));
+
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionAsteriskResponse(user.getId(), null, null)).withRel("secretQuestionAsteriskResponses"));
             ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(user.getId())).withRel("sendValidationEmail"));
             ret.add(linkTo(methodOn(UserClientsPasswordResource.class).changePassword(null, null, null)).withRel("changePassword"));
