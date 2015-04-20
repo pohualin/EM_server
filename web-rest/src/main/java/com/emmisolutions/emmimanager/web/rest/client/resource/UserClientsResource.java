@@ -7,16 +7,10 @@ import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflic
 import com.emmisolutions.emmimanager.service.UserClientValidationEmailService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.model.ValidationToken;
-import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserClientValidationErrorResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.client.model.user.ClientUserConflictResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
-
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.ResourceAssembler;
@@ -30,7 +24,6 @@ import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -53,15 +46,17 @@ public class UserClientsResource {
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<UserClient, UserClientResource> userResourceAssembler;
 
-    @Resource
-    UserClientResourceAssembler userClientResourceAssembler;
+    @Resource(name = "userClientResourceAssembler")
+    ResourceAssembler<UserClient, UserClientResource>
+            userClientResourceAssembler;
 
-    @Resource
-    ClientUserConflictResourceAssembler conflictsResourceAssembler;
+    @Resource(name = "clientUserConflictResourceAssembler")
+    ResourceAssembler<List<UserClientService.UserClientConflict>, UserClientResource>
+            conflictsResourceAssembler;
 
-    @Resource
-    ClientUserClientResourceAssembler clientUserClientResourceAssembler;
-    
+    @Resource(name = "clientUserClientResourceAssembler")
+    ResourceAssembler<UserClient, UserClientResource> clientUserClientResourceAssembler;
+
     @Resource
     UserClientSecretQuestionResponseService userClientSecretQuestionResponseService;
 
@@ -71,8 +66,9 @@ public class UserClientsResource {
     @Resource
     UserClientService userClientService;
 
-    @Resource
-    ClientUserClientValidationErrorResourceAssembler clientUserClientValidationErrorResourceAssembler;
+    @Resource(name = "clientUserClientValidationErrorResourceAssembler")
+    ResourceAssembler<UserClientService.UserClientValidationError, UserClientResource>
+            clientUserClientValidationErrorResourceAssembler;
 
     @Resource
     UserClientValidationEmailService userClientValidationEmailService;
@@ -86,33 +82,14 @@ public class UserClientsResource {
     private static final String VALIDATION_CLIENT_APPLICATION_URI = "#/validateEmail/%s";
 
     /**
-     * This is an example method that demonstrates how to set up authorization
-     * for client and team specific permissions.
-     *
-     * @param clientId the Client id
-     * @param teamId   the Team id
-     * @return AUTHORIZED if the logged in user is authorized
-     */
-    @RequestMapping(value = "/auth-test/{clientId}/{teamId}/{userId}", method = RequestMethod.GET)
-    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or "
-            + "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA') or "
-            + "hasPermission(@password, #pw) or "
-            + "hasPermission(@user, #userId)")
-    public ResponseEntity<String> authorized(@PathVariable Long clientId,
-                                             @PathVariable Long teamId, @PathVariable Long userId,
-                                             @RequestParam(required = false) String pw) {
-        return new ResponseEntity<>("AUTHORIZED for client: " + clientId
-                + ", team: " + teamId + ", user: " + userId + ", pw: " + pw,
-                HttpStatus.OK);
-    }
-
-    /**
      * send validation email
      *
      * @param userId user to get for email personalization
-     * @return OK if everything worked
+     * @return OK (200): if everything worked
+     * <p/>
+     * GONE (410): if the validation token is expired or invalid
      */
-    @RequestMapping(value = "/{userId}/sendEmail", method = RequestMethod.POST)
+    @RequestMapping(value = "/user_client/{userId}/send_email", method = RequestMethod.POST)
     @PreAuthorize("hasPermission(@user, #userId)")
     public ResponseEntity<Void> sendValidationEmail(@PathVariable Long userId) {
         // update the validation token, invalidating others
@@ -138,7 +115,9 @@ public class UserClientsResource {
      * validate email token
      *
      * @param validationToken token to validate
-     * @return OK if everything worked
+     * @return OK (200): if everything worked
+     * <p/>
+     * GONE (410): if the email token is not valid
      */
     @RequestMapping(value = "/validate/", method = RequestMethod.PUT)
     @PermitAll
@@ -153,7 +132,7 @@ public class UserClientsResource {
     /**
      * GET to retrieve authenticated user.
      *
-     * @return UserClientResource when authorized or 401 if the user is not
+     * @return OK (200): containing UserClientResource when authorized or 401 if the user is not
      * authorized.
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
@@ -167,11 +146,16 @@ public class UserClientsResource {
     /**
      * PUT for updates to a given user client
      *
-     * @param userClientId
-     * @param userClient
-     * @return
+     * @param userClientId to update
+     * @param userClient   the updated user client
+     * @return OK (200): containing the newly updated UserClientResource
+     * <p/>
+     * NOT_ACCEPTABLE (406): containing the UserClients that are conflicting with the inbound request. This
+     * happens when there are conflicts with the save (same login, email or email mask doesn't match)
+     * <p/>
+     * INTERNAL_SERVER_ERROR (500): when the save doesn't return an updated client.
      */
-    @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user_client/{userClientId}", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId") Long userClientId,
                                                                @RequestBody UserClient userClient,
@@ -179,7 +163,6 @@ public class UserClientsResource {
                                                                HttpServletResponse response) {
 
         userClient.setId(userClientId);
-
         if (StringUtils.isNotBlank(userClient.getEmail())
                 && !userClientService.validateEmailAddress(userClient)) {
             UserClientService.UserClientValidationError validationError = new UserClientService.UserClientValidationError(
@@ -211,79 +194,89 @@ public class UserClientsResource {
     /**
      * GET for a given user client
      *
-     * @param userClientId
-     * @return
+     * @param userClientId the user client to secure
+     * @return OK (200): that has the UserClientResource
      */
-    @RequestMapping(value = "/getById/{userClientId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user_client/{userClientId}", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> getById(@PathVariable("userClientId") Long userClientId) {
-        return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
+        return new ResponseEntity<>(
+                clientUserClientResourceAssembler.toResource(
+                        userDetailsService.get(new UserClient(userClientId))), HttpStatus.OK);
     }
 
     /**
      * GET for a given user client verified with password
      *
-     * @param userClientId
-     * @param password
-     * @return
+     * @param password to check
+     * @return OK (200) if the password checks out, FORBIDDEN (403) if it is wrong
      */
-    @RequestMapping(value = "/verifyPassword/{userClientId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user_client/verify_password", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@password, #password)")
-    public ResponseEntity<Void> verifyPassword(@PathVariable("userClientId") Long userClientId,
-                                               @RequestParam(value = "password", required = false) String password) {
+    public ResponseEntity<Void> verifyPassword(@RequestParam(value = "password", required = false) String password) {
+
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     /**
      * PUT for a given user client verified with password
      *
-     * @param userClientId
-     * @return
+     * @param userClientId to secure
+     * @return OK (200) always
      */
-    @RequestMapping(value = "/notNow/{userClientId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user_client/{userClientId}/not_now", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<Void> notNow(@PathVariable("userClientId") Long userClientId) {
+
         userClientService.saveNotNowExpirationTime(userClientId);
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
-    
+
     /**
      * PUT for secret question flag to a given user client
      *
-     * @param userClientId user client id
+     * @param userClientId           user client id
      * @param secretQuestionsCreated secret question has created or not
      * @return
      */
-    @RequestMapping(value = "/user_client/{userClientId}/updateUserClient", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user_client/{userClientId}/secret_questions_created", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
     public ResponseEntity<UserClientResource> updateUserClient(
-    		@PathVariable("userClientId") Long userClientId,
-    		@RequestParam(value = "secretQuestionsCreated", required = false) Boolean secretQuestionsCreated) {
+            @PathVariable("userClientId") Long userClientId,
+            @RequestParam(value = "secretQuestionsCreated", required = false) Boolean secretQuestionsCreated) {
 
-    	UserClient userClient = new UserClient(userClientId);
-    	userClient.setSecretQuestionCreated(secretQuestionsCreated);
-    	userClient = userClientSecretQuestionResponseService.saveOrUpdateUserClient(userClient);
+        UserClient userClient = new UserClient(userClientId);
+        userClient.setSecretQuestionCreated(secretQuestionsCreated);
+        userClient = userClientSecretQuestionResponseService.saveOrUpdateUserClient(userClient);
 
-    	 if (userClient != null) {
-             return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userClient), HttpStatus.OK);
-         }else{
-              return new ResponseEntity<>(HttpStatus.GONE);
-         }
+        if (userClient != null) {
+            return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(userClient), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.GONE);
+        }
+
     }
-    
+
     /**
-     * PUT reset password token to locked out an user 
+     * PUT lock the user who has the passed reset token
+     *
      * @param token password reset token for user client
      * @return LocalDateTime locked out timestamp
      */
-    @RequestMapping(value = "/secret_questions/lockedOutUserWithResetToken", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user_client/lock_out_user/with_reset_token", method = RequestMethod.PUT)
     @PermitAll
-    public ResponseEntity<LocalDateTime> lockedOutUserWithResetToken(
-    		@RequestParam(value = "token", required = false) String resetToken){
-    	
-       UserClient userClient = userClientService.lockedOutUserWithResetToken(resetToken);
-       return new ResponseEntity<>(userClient.getLockExpirationDateTime(), HttpStatus.OK);
-     
+    public ResponseEntity<LocalDateTime> lockOutUserWithResetToken(
+            @RequestParam(value = "token", required = false) String resetToken) {
+
+        UserClient userClient = userClientService.lockedOutUserWithResetToken(resetToken);
+        if (userClient != null && userClient.getLockExpirationDateTime() != null) {
+            return new ResponseEntity<>(userClient.getLockExpirationDateTime(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
     }
 
 }

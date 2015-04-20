@@ -1,10 +1,11 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.PatientSearchFilter;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.PatientService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ReferenceData;
+import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientReferenceData;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourcePage;
@@ -12,26 +13,15 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -51,43 +41,39 @@ public class PatientsResource {
     @Resource
     PatientResourceAssembler patientResourceAssembler;
 
-    @XmlElement(name = "genders")
-    @XmlElementWrapper(name = "genders")
-    private Gender[] genders = Gender.values();
-
     /**
      * POST for creating a patient for a given client
      *
-     * @param clientId
-     * @param patient
-     * @return
+     * @param clientId the client id
+     * @param patient  to create
+     * @return OK (200): when created
      */
     @RequestMapping(value = "/clients/{clientId}/patient", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER')")
     public ResponseEntity<PatientResource> create(@PathVariable("clientId") Long clientId, @RequestBody Patient patient) {
         patient.setClient(clientService.reload(new Client(clientId)));
-        return new ResponseEntity<PatientResource>(patientResourceAssembler.toResource(patientService.create(patient)), HttpStatus.OK);
+        return new ResponseEntity<>(patientResourceAssembler.toResource(patientService.create(patient)), HttpStatus.OK);
     }
-
 
     /**
      * GET to Retrieve reference data for patients.
      *
-     * @return
+     * @return PatientReferenceData
      */
     @RequestMapping(value = "/patients/ref", method = RequestMethod.GET)
     public PatientReferenceData getReferenceData() {
-
         return new PatientReferenceData();
     }
 
     /**
      * GET for a patient with the passed in ID
      *
-     * @param clientId
-     * @param patientId
-     * @return
+     * @param clientId for security, ensures logged in user has rights to the client
+     * @param patientId to retrieve
+     * @return OK (200): containing  PatientResource
+     *
+     * GONE (410): when there isn't a patent
      */
     @RequestMapping(value = "/clients/{clientId}/patient", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER')")
@@ -96,7 +82,7 @@ public class PatientsResource {
         if (patientId != null) {
             Patient toLoad = new Patient();
             toLoad.setId(patientId);
-            return new ResponseEntity<PatientResource>(patientResourceAssembler.toResource(patientService.reload(toLoad)), HttpStatus.OK);
+            return new ResponseEntity<>(patientResourceAssembler.toResource(patientService.reload(toLoad)), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.GONE);
     }
@@ -104,12 +90,13 @@ public class PatientsResource {
     /**
      * GET for searching for patients
      *
-     * @param clientId
-     * @param page
-     * @param sort
-     * @param assembler
-     * @param name
-     * @return
+     * @param clientId  for security, ensures logged in user has rights to search the client
+     * @param page  the page specifcation
+     * @param assembler to create PatientResource objects
+     * @param name of the patient to search for
+     * @return OK (200): containing a PatientResourcePage
+     *
+     * NO_CONTENT (204): when there are no matches
      */
     @RequestMapping(value = "/clients/{clientId}/patients", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER')")
@@ -120,14 +107,16 @@ public class PatientsResource {
     })
     public ResponseEntity<PatientResourcePage> list(@PathVariable("clientId") Long clientId,
                                                     @PageableDefault(size = 10, sort = "lastName") Pageable page,
-                                                    @SortDefault(sort = "lastName") Sort sort,
                                                     PagedResourcesAssembler<Patient> assembler,
                                                     @RequestParam(value = "name", required = false) String name) {
 
         PatientSearchFilter filter = new PatientSearchFilter(new Client(clientId), name);
         Page<Patient> patientsPage = patientService.list(page, filter);
         if (patientsPage.hasContent()) {
-            return new ResponseEntity<>(new PatientResourcePage(assembler.toResource(patientsPage, patientResourceAssembler), patientsPage, filter), HttpStatus.OK);
+            return new ResponseEntity<>(
+                    new PatientResourcePage(assembler
+                            .toResource(patientsPage, patientResourceAssembler), patientsPage, filter),
+                    HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
