@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.clientlocation.ClientLocationResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientprovider.ClientProviderFinderResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientprovider.ClientProviderResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientprovider.ClientProviderResourceAssembler;
@@ -194,10 +193,7 @@ public class ClientProvidersResource {
     }
     
     /**
-     * GET to find all possible providers for a client without the ClientProviderss associated to this client.
-     * The object will come back with a link
-     * if it is currently associated to the passed client. If it is not currently in use at the passed client,
-     * the link will be null.
+     * GET to find all possible providers not using client for a client.
      * 
      * @param clientId the client
      * @param pageable the page to request
@@ -205,7 +201,7 @@ public class ClientProvidersResource {
      * @param assembler used to create the PagedResources
      * @param status the status to filter
      * @param name the name to filter
-     * @return Page of ClientLocationResource objects or NO_CONTENT
+     * @return Page of ClientProviderResource objects or NO_CONTENT
      */
     @RequestMapping(value = "/clients/{clientId}/providers/not_using_client/associate", method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible providers not using client that can be associated to a client")
