@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequ
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -64,6 +65,14 @@ public interface UserClientService {
      * @return the activated UserClient
      */
     UserClient activate(ActivationRequest activationRequest);
+
+    /**
+     * Check if activation token is valid
+     * @param activationRequest used to validate activation token
+     * @return true if token is valid
+     */
+    @Transactional
+    boolean validateActivationToken(ActivationRequest activationRequest);
 
     /**
      * Adds an activation key to the passed user client
