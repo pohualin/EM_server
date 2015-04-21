@@ -89,7 +89,7 @@ public class ClientProviderResourcePage extends PagedResource<ClientProviderReso
      * @param client the client
      * @return the link
      */
-    public static Link createAssociationWLink(Client client) {
+    public static Link createPossibleProvidersNotUseingGivenClientLink(Client client) {
         Link link = linkTo(methodOn(ClientProvidersResource.class).possibleWithoutClientProviders(client.getId(), null, null, null, null, null)).withRel("possibleProvidersWithoutCL");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
