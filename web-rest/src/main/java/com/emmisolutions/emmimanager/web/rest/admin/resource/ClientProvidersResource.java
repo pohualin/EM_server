@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ProviderService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.clientlocation.ClientLocationResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientprovider.ClientProviderFinderResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientprovider.ClientProviderResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientprovider.ClientProviderResourceAssembler;
@@ -14,6 +15,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamResourceAssem
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -187,6 +190,52 @@ public class ClientProvidersResource {
                 ret.add(clientProviderResourceAssembler.toResource(clientProvider));
             }
             return new ResponseEntity<>(ret, HttpStatus.CREATED);
+        }
+    }
+    
+    /**
+     * GET to find all possible providers for a client without the ClientProviderss associated to this client.
+     * The object will come back with a link
+     * if it is currently associated to the passed client. If it is not currently in use at the passed client,
+     * the link will be null.
+     * 
+     * @param clientId the client
+     * @param pageable the page to request
+     * @param sort sorting
+     * @param assembler used to create the PagedResources
+     * @param status the status to filter
+     * @param name the name to filter
+     * @return Page of ClientLocationResource objects or NO_CONTENT
+     */
+    @RequestMapping(value = "/clients/{clientId}/providers/associateWithoutCL", method = RequestMethod.GET)
+    @ApiOperation(value = "finds all possible providers that can be associated to a client")
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
+    public ResponseEntity<ClientProviderResourcePage> possibleWithoutClientProviders(
+            @PathVariable Long clientId,
+            @PageableDefault(size = 10, sort = "lastName", direction = Sort.Direction.ASC) Pageable pageable,
+            Sort sort, PagedResourcesAssembler<ClientProvider> assembler,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "name", required = false) String name) {
+
+        ProviderSearchFilter filter = new ProviderSearchFilter(
+                fromStringOrActive(status), name);
+        filter.setNotUsingThisClient(new Client(clientId));
+
+        Page<ClientProvider> clientProviderPage = clientProviderService
+                .findPossibleProvidersToAdd(new Client(clientId), filter,
+                        pageable);
+
+        if (clientProviderPage.hasContent()) {
+            return new ResponseEntity<>(new ClientProviderResourcePage(
+                    assembler.toResource(clientProviderPage,
+                            clientProviderFinderResourceAssembler),
+                    clientProviderPage, filter), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
