@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
@@ -40,6 +41,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ProviderSpecialtyRepository providerSpecialtyRepository;
+    
+    @Resource
+    ClientProviderRepository clientProviderRepository;
 
 	private ProviderSpecialty getSpecialty(){
         ProviderSpecialty specialty = new ProviderSpecialty();
@@ -176,5 +180,19 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		Page<Provider> providerPageFive = providerPersistence.list(page, searchFilterFive);
 		assertThat("Provider was found", providerPageFive.getContent().size(), is(1));
 		assertThat("Provider was found", providerPageFive.getContent().iterator().next().getLastName(), is("Hart"));
+ 	}
+ 	
+ 	@Test
+ 	public void possibleProviderWithoutClientProvider(){
+ 	    Client client = makeNewRandomClient();
+ 	    Provider provider = makeNewRandomProvider();
+ 	    ClientProvider clientProvider = new ClientProvider(client, provider);
+ 	    clientProvider = clientProviderRepository.save(clientProvider);
+ 	    
+ 	    Client clientB = makeNewRandomClient();
+ 	    ProviderSearchFilter filter = new ProviderSearchFilter(provider.getLastName());
+ 	    filter.setNotUsingThisClient(clientB);
+ 	    Page<Provider> possibles = providerPersistence.list(null, filter);
+ 	    assertThat("Possible contains provider.", possibles, hasItem(provider));
  	}
 }

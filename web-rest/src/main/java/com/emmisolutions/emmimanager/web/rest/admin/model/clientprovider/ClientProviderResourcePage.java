@@ -4,7 +4,9 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientLocationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientProvidersResource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
 import org.springframework.util.CollectionUtils;
@@ -12,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +80,24 @@ public class ClientProviderResourcePage extends PagedResource<ClientProviderReso
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                 new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                 new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+    
+    /**
+     * Creates a link loading associations not at a client
+     *
+     * @param client the client
+     * @return the link
+     */
+    public static Link createPossibleProvidersNotUsingGivenClientLink(Client client) {
+        Link link = linkTo(methodOn(ClientProvidersResource.class).possibleProvidersNotUsingClient(client.getId(), null, null, null, null, null)).withRel("possibleProvidersNotUsingClient");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 
