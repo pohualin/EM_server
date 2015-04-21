@@ -56,6 +56,7 @@ public class ClientResourceAssembler implements
         ret.add(ClientProviderResourcePage
                 .createCurrentProvidersSearchLink(entity));
         ret.add(ClientProviderResourcePage.createAssociationLink(entity));
+        ret.add(ClientProviderResourcePage.createPossibleProvidersNotUsingGivenClientLink(entity));
         ret.add(ProviderPage.createProviderReferenceDataLink());
         ret.add(UserClientRoleResourcePage.createFullSearchLink(entity));
         ret.add(linkTo(methodOn(ClientRolesAdminResource.class).reference())
