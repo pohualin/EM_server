@@ -207,14 +207,14 @@ public class ClientProvidersResource {
      * @param name the name to filter
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
-    @RequestMapping(value = "/clients/{clientId}/providers/associate_not_using_client", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/providers/not_using_client/associate", method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible providers not using client that can be associated to a client")
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
-    public ResponseEntity<ClientProviderResourcePage> possibleWithoutClientProviders(
+    public ResponseEntity<ClientProviderResourcePage> possibleProvidersNotUsingClient(
             @PathVariable Long clientId,
             @PageableDefault(size = 10, sort = "lastName", direction = Sort.Direction.ASC) Pageable pageable,
             Sort sort, PagedResourcesAssembler<ClientProvider> assembler,
