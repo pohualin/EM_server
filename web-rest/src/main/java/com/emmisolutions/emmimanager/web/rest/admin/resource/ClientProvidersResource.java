@@ -207,8 +207,8 @@ public class ClientProvidersResource {
      * @param name the name to filter
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
-    @RequestMapping(value = "/clients/{clientId}/providers/associateWithoutCL", method = RequestMethod.GET)
-    @ApiOperation(value = "finds all possible providers that can be associated to a client")
+    @RequestMapping(value = "/clients/{clientId}/providers/associate_not_using_client", method = RequestMethod.GET)
+    @ApiOperation(value = "finds all possible providers not using client that can be associated to a client")
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
