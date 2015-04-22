@@ -176,7 +176,6 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    @Transactional
     public boolean validateActivationToken(ActivationRequest activationRequest) {
         if (activationRequest != null) {
             UserClient userClient = userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
