@@ -32,6 +32,7 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         				entity.getId(), null, null, null)).withRel(
                         "emailRestrictConfigurations"); 
         ret.add(new Link(createUriTemplateWithSort("page", emailRestrictConfigurations), emailRestrictConfigurations.getRel()));
+        
         // ability to load a team for a client
         ret.add(new Link(
                 new UriTemplate(
