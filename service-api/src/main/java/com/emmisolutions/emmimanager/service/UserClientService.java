@@ -71,7 +71,6 @@ public interface UserClientService {
      * @param activationRequest used to validate activation token
      * @return true if token is valid
      */
-    @Transactional
     boolean validateActivationToken(ActivationRequest activationRequest);
 
     /**
