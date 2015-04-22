@@ -73,6 +73,6 @@ public class UserClientLoginError extends ResourceSupport {
 
     @XmlEnum
     public static enum Reason {
-        BAD, LOCK, EXPIRED
+        BAD, LOCK, EXPIRED, EXPIRED_CANT_CHANGE
     }
 }
