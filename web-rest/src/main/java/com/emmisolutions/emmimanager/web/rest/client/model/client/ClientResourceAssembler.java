@@ -26,7 +26,12 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(UserClientsPasswordResource.class).passwordPolicy(entity.getId())).withRel("passwordPolicy"));
         ret.add(linkTo(methodOn(PatientsResource.class).create(entity.getId(), null)).withRel("patient"));
-        ret.add(linkTo(methodOn(UserEmailRestrictConfigurationsResource.class).list(entity.getId(), null, null, null)).withRel("emailRestrictConfigurations"));
+        
+        Link emailRestrictConfigurations = linkTo(
+        		methodOn(UserEmailRestrictConfigurationsResource.class).list(
+        				entity.getId(), null, null, null)).withRel(
+                        "emailRestrictConfigurations"); 
+        ret.add(new Link(createUriTemplateWithSort("page", emailRestrictConfigurations), emailRestrictConfigurations.getRel()));
         // ability to load a team for a client
         ret.add(new Link(
                 new UriTemplate(
@@ -63,5 +68,15 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
+    }
+    
+    private UriTemplate createUriTemplateWithSort(String requestParameterName, Link linkName ){
+    	UriTemplate uriTemplate = new UriTemplate(linkName.getHref())
+    			.with(new TemplateVariables(
+                    new TemplateVariable(requestParameterName,
+                    		TemplateVariable.VariableType.REQUEST_PARAM),
+                    new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                    new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+    	return uriTemplate;
     }
 }
