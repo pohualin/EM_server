@@ -182,8 +182,6 @@ public class UserClientServiceImpl implements UserClientService {
             UserClient userClient = userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
             if (userClient != null) {
                 LocalDateTime expiration = userClient.getActivationExpirationDateTime();
-                userClient.setActivationKey(null);
-                userClient.setActivationExpirationDateTime(null);
                 return isValid(expiration);
             }
         }

@@ -31,7 +31,6 @@ public class ClientFacingPublicApi extends ResourceSupport {
         add(linkTo(methodOn(UserClientsPasswordResource.class)
                 .changeExpiredPassword(null)).withRel("expiredPassword"));
         add(linkTo(methodOn(UserClientsActivationResource.class).activate(null)).withRel("activate"));
-        add(linkTo(methodOn(UserClientsActivationResource.class).validateActivationToken(null)).withRel("validateActivationToken"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).resetPassword(null)).withRel("resetPassword"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).forgotPassword(null)).withRel("forgotPassword"));
         Link resetPasswordPolicy = linkTo(methodOn(UserClientsPasswordResource.class)
