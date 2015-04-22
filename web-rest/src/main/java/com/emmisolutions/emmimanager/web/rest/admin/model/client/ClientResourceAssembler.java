@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.client;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import com.emmisolutions.emmimanager.web.rest.client.resource.PatientsResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.hateoas.TemplateVariable;
@@ -77,6 +78,12 @@ public class ClientResourceAssembler implements
                 "restrictConfiguration"));
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
+        ret.add(new Link(
+                new UriTemplate(
+                        linkTo(methodOn(PatientsResource.class).get(entity.getId(), null)).withSelfRel().getHref())
+                        .with(new TemplateVariables(
+                                new TemplateVariable("patientId",
+                                        TemplateVariable.VariableType.REQUEST_PARAM))), "patient"));
         ret.setEntity(entity);
         return ret;
     }
