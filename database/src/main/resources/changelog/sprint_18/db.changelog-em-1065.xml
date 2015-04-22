@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="add user client team permission group" author="Paul">
+    	<createTable tableName="user_client_team_permission_group">
+            <column name="group_name" type="nvarchar(100)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_client_team_permission_group"/>
+            </column>
+            <column name="rank" type="int">
+            	<constraints nullable="false" />
+            </column>
+        </createTable>
+        
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_18/data/em-1065/client-team-permission-groups.csv"
+                  separator=";"
+                  tableName="user_client_team_permission_group"/>
+                  
+		<loadData encoding="UTF-8"
+                  file="changelog/sprint_18/data/em-1065/strings.csv"
+                  separator=";"
+                  tableName="strings"/>
+                  
+        <addColumn tableName="user_client_team_permission">
+    		<column name="group_name" type="nvarchar(100)">
+    		</column>
+    	</addColumn>
+    </changeSet>
+    
+    <changeSet id="update user client team permission enum" author="Paul">
+    	<insert tableName="user_client_team_permission">
+    		<column name="name">PERM_CLIENT_TEAM_PATIENT_LIST</column>
+    		<column name="group_name">PERM_CLIENT_TEAM_EMMIMANAGER</column>
+    		<column name="rank">4</column>
+    	</insert>
+    	
+    	<update tableName="user_client_team_permission">
+    		<column name="group_name">PERM_CLIENT_TEAM_EMMIMANAGER</column>
+    		<column name="rank">3</column>
+    		<where>name = 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM'</where>
+    	</update>
+    	
+    	<update tableName="user_client_team_permission">
+    		<column name="group_name">PERM_CLIENT_TEAM_MANAGE_USERS_AND_ROLES</column>
+    		<column name="rank">2</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA'</where>
+    	</update>
+    	
+    	<update tableName="user_client_team_permission">
+    		<column name="group_name">PERM_CLIENT_TEAM_MANAGE_USERS_AND_ROLES</column>
+    		<column name="rank">1</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_ROLE'</where>
+    	</update>
+    
+    	<delete tableName="user_client_team_role_user_client_team_permission">
+    		<where>permission_name in (
+	    		'PERM_CLIENT_TEAM_ADD_USER',
+	    		'PERM_CLIENT_TEAM_REMOVE_USER'
+    		)</where>
+    	</delete>
+    	
+    	<delete tableName="user_client_reference_team_role_permission">
+    		<where>name in (
+	    		'PERM_CLIENT_TEAM_ADD_USER',
+	    		'PERM_CLIENT_TEAM_REMOVE_USER'
+    		)</where>
+    	</delete>
+
+    	<delete tableName="user_client_team_permission">
+    		<where>name in (
+	    		'PERM_CLIENT_TEAM_ADD_USER',
+	    		'PERM_CLIENT_TEAM_REMOVE_USER'
+    		)</where>
+    	</delete>
+    </changeSet>
+    
+    <changeSet id="update existing translation" author="Paul">
+    	<update tableName="strings">
+    		<column name="message">Manage Client Roles</column>
+    		<where>key_path = 'PERM_CLIENT_TEAM_MODIFY_USER_ROLE'</where>
+    	</update>
+    	<update tableName="strings">
+    		<column name="message">Manage Users</column>
+    		<where>key_path = 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA'</where>
+    	</update>
+    	<update tableName="strings">
+    		<column name="message">Schedule Programs</column>
+    		<where>key_path = 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM'</where>
+    	</update>
+    </changeSet>
+    
+</databaseChangeLog>
