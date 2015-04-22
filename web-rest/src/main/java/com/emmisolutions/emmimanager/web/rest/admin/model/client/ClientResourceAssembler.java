@@ -64,6 +64,7 @@ public class ClientResourceAssembler implements
                 "restrictConfiguration"));
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
+        ret.setEntity(entity);
         return ret;
     }
 
