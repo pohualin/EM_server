@@ -3,13 +3,11 @@ package com.emmisolutions.emmimanager.web.rest.client.model.api;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.springframework.hateoas.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -30,25 +28,30 @@ public class ClientFacingPublicApi extends ResourceSupport {
         add(linkTo(methodOn(UserClientsResource.class).authenticated()).withRel("authenticated"));
         add(new Link(self.getHref() + "/authenticate", "authenticate"));
         add(new Link(self.getHref() + "/logout", "logout"));
-        add(linkTo(methodOn(UserClientsPasswordResource.class).changeExpiredPassword(null)).withRel("expiredPassword"));
+        add(linkTo(methodOn(UserClientsPasswordResource.class)
+                .changeExpiredPassword(null)).withRel("expiredPassword"));
         add(linkTo(methodOn(UserClientsActivationResource.class).activate(null)).withRel("activate"));
         add(linkTo(methodOn(UserClientsActivationResource.class).validateActivationToken(null)).withRel("validateActivationToken"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).resetPassword(null)).withRel("resetPassword"));
         add(linkTo(methodOn(UserClientsPasswordResource.class).forgotPassword(null)).withRel("forgotPassword"));
-        Link resetPasswordPolicy = linkTo(methodOn(UserClientsPasswordResource.class).resetPasswordPolicy(null)).withRel("resetPasswordPolicy");
+        Link resetPasswordPolicy = linkTo(methodOn(UserClientsPasswordResource.class)
+                .resetPasswordPolicy(null)).withRel("resetPasswordPolicy");
         add(new Link(urlWithTokenParameter(resetPasswordPolicy), resetPasswordPolicy.getRel()));
-        Link activationPasswordPolicy = linkTo(methodOn(UserClientsPasswordResource.class).activatePasswordPolicy(null)).withRel("activationPasswordPolicy");
+        Link activationPasswordPolicy = linkTo(methodOn(UserClientsPasswordResource.class)
+                .activatePasswordPolicy(null)).withRel("activationPasswordPolicy");
         add(new Link(urlWithTokenParameter(activationPasswordPolicy), activationPasswordPolicy.getRel()));
         add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
-        add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null, null, null)).withRel("secretQuestions"));
+        add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class)
+                .secretQuestions(null)).withRel("secretQuestions"));
         add(linkTo(methodOn(UserClientsResource.class).validateEmailToken(null)).withRel("validateEmailToken"));
-        Link getSecretQuestionWithResetToken = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).getSecretQuestionWithResetToken(null, null)).withRel("getSecretQuestionWithResetToken");
+        Link getSecretQuestionWithResetToken = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class)
+                .getSecretQuestionWithResetToken(null, null, null)).withRel("getSecretQuestionWithResetToken");
         add(new Link(urlWithTokenParameter(getSecretQuestionWithResetToken), getSecretQuestionWithResetToken.getRel()));
-
-        Link validateSecretQuestion = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).validateSecretResponses(null, null)).withRel("validateSecretResponses");
+        Link validateSecretQuestion = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class)
+                .validateSecretResponses(null, null)).withRel("validateSecurityResponse");
         add(new Link(urlWithTokenParameter(validateSecretQuestion), validateSecretQuestion.getRel()));
-
-        Link lockedOutUserByResetToken = linkTo(methodOn(UserClientsResource.class).lockedOutUserWithResetToken(null)).withRel("lockedOutUserByResetToken");
+        Link lockedOutUserByResetToken = linkTo(methodOn(UserClientsResource.class)
+                .lockOutUserWithResetToken(null)).withRel("lockOutUserWithResetToken");
         add(new Link(urlWithTokenParameter(lockedOutUserByResetToken), lockedOutUserByResetToken.getRel()));
         add(linkTo(methodOn(PatientsResource.class).getReferenceData()).withRel("patientReferenceData"));
     }

@@ -59,7 +59,9 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return providerRepository.findAll(where(providerSpecifications.hasNames(filter))
+        return providerRepository.findAll(where(
+            providerSpecifications.notUsedBy(filter))
+            .and(providerSpecifications.hasNames(filter))
             .and(providerSpecifications.isInStatus(filter)), page);
 
     }

@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -28,10 +29,11 @@ public class AuthorizationRequestPermissionEvaluator implements PermissionEvalua
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) targetDomainObject;
             return authorizationRequest.hasPermission(permission, authentication);
         }
-        if (targetDomainObject instanceof UserSecurityResponseForResetPasswordRequest){
+        if (targetDomainObject instanceof UserSecurityResponseForResetPasswordRequest &&
+                permission instanceof ResetPasswordRequest){
         	UserSecurityResponseForResetPasswordRequest resetPasswordSecurityResponses = 
         			(UserSecurityResponseForResetPasswordRequest) targetDomainObject;
-        	return resetPasswordSecurityResponses.isSecurityReponseValid(permission, authentication);
+        	return resetPasswordSecurityResponses.isSecurityResponseValid((ResetPasswordRequest) permission);
         }
         if (targetDomainObject instanceof IpRangeAuthorizationRequest){
             IpRangeAuthorizationRequest ipRangeAuthorizationRequest = (IpRangeAuthorizationRequest) targetDomainObject;

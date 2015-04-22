@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    
+    <changeSet id="Update translate values" author="Paul">
+    	<update tableName="strings">
+    		<column name="message">Name</column>
+    		<where>key_path = 'client_view_page.information.name'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Type</column>
+    		<where>key_path = 'client_view_page.information.type'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Region</column>
+    		<where>key_path = 'client_view_page.information.region'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Tier</column>
+    		<where>key_path = 'client_view_page.information.tier'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Contract Owner</column>
+    		<where>key_path = 'client_view_page.information.contract.owner'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Contract Start</column>
+    		<where>key_path = 'client_view_page.information.contract.start'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Contract End</column>
+    		<where>key_path = 'client_view_page.information.contract.end'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Salesforce Account</column>
+    		<where>key_path = 'client_view_page.information.salesforce'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Name</column>
+    		<where>key_path = 'team_view_page.information.name'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Description</column>
+    		<where>key_path = 'team_view_page.information.description'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Salesforce Account</column>
+    		<where>key_path = 'team_view_page.information.salesforce'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Phone</column>
+    		<where>key_path = 'team_view_page.information.phone'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Fax</column>
+    		<where>key_path = 'team_view_page.information.fax'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">This client will be deactivated.</column>
+    		<where>key_path = 'client_edit_page.deactivate_dialog.content'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">This team will be deactivated.</column>
+    		<where>key_path = 'team_edit_page.deactivate_dialog.content'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Cancel</column>
+    		<where>key_path = 'client_edit_page.deactivate_dialog.cancel_button'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">This team will be deactivated.</column>
+    		<where>key_path = 'team_edit_page.deactivate_dialog.cancel_button'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Are you sure?</column>
+    		<where>key_path = 'client_edit_page.deactivate_dialog.title'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Are you sure?</column>
+    		<where>key_path = 'team_edit_page.deactivate_dialog.cancel_button'</where>
+    	</update>
+    </changeSet>
+    
+</databaseChangeLog>

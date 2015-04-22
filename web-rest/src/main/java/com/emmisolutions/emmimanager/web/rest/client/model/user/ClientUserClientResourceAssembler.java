@@ -4,7 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsResource;
-import org.springframework.hateoas.*;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -46,7 +46,7 @@ public class ClientUserClientResourceAssembler implements
                 entity.getNotNowExpirationTime(),
                 entity.getPasswordExpireationDateTime(),
                 entity.getPasswordSavedDateTime(),
-                entity.isInterruptLoginFlow());
+                false);
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withSelfRel());
         ret.add(UserClientResourceAssembler.createVerifyPasswordLink(entity));
         ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(entity.getId())).withRel("sendValidationEmail"));

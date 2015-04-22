@@ -1,16 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService;
-import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService.UserClientPasswordValidationError;
+import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
-import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResourceAssembler;
-
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -38,16 +36,20 @@ public class UserClientsActivationResource {
 
     @Resource
     UserClientPasswordValidationService userClientPasswordValidationService;
-    
-    @Resource
-    UserClientPasswordValidationErrorResourceAssembler userClientPasswordValidationErrorResourceAssembler;
 
+    @Resource(name = "userClientPasswordValidationErrorResourceAssembler")
+    ResourceAssembler<UserClientPasswordValidationError, UserClientPasswordValidationErrorResource>
+            userClientPasswordValidationErrorResourceAssembler;
 
     /**
      * POST to activate a user
      *
      * @param activationRequest the activation request
-     * @return OK
+     * @return OK (200): when the activation is successful
+     * <p/>
+     * GONE (410): when the user client isn't found
+     * <p/>
+     * NOT_ACCEPTABLE (406): when there are errors during activation, (e.g. bad password, existing password, etc)
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST)
     @PermitAll

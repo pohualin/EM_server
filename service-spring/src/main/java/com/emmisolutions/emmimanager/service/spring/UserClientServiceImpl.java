@@ -8,13 +8,7 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
-import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
-import com.emmisolutions.emmimanager.service.UserClientPasswordService;
-import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.*;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -106,17 +100,23 @@ public class UserClientServiceImpl implements UserClientService {
         userClient.setSalt(inDb.getSalt());
         userClient.setActivationKey(inDb.getActivationKey());
         userClient.setActivated(inDb.isActivated());
+        userClient.setSecurityQuestionsNotRequiredForReset(inDb.isSecurityQuestionsNotRequiredForReset());
         userClient.setCredentialsNonExpired(inDb.isCredentialsNonExpired());
         userClient.setAccountNonExpired(inDb.isAccountNonExpired());
+        userClient.setActivationExpirationDateTime(inDb.getActivationExpirationDateTime());
         userClient.setAccountNonLocked(inDb.isAccountNonLocked());
         userClient.setPasswordResetToken(inDb.getPasswordResetToken());
         userClient.setPasswordResetExpirationDateTime(inDb.getPasswordResetExpirationDateTime());
         userClient.setPasswordExpireationDateTime(inDb.getPasswordExpireationDateTime());
         userClient.setPasswordSavedDateTime(inDb.getPasswordSavedDateTime());
+        userClient.setSecurityQuestionsNotRequiredForReset(inDb.isSecurityQuestionsNotRequiredForReset());
         // validation should be false if the email address has changed, otherwise set it to whatever it was previously
         userClient.setEmailValidated(
                 StringUtils.equalsIgnoreCase(userClient.getEmail(), inDb.getEmail()) && inDb.isEmailValidated());
         userClient.setSecretQuestionCreated(inDb.isSecretQuestionCreated());
+        userClient.setValidationExpirationDateTime(inDb.getValidationExpirationDateTime());
+        userClient.setLoginFailureCount(inDb.getLoginFailureCount());
+
         return userClientPersistence.saveOrUpdate(userClient);
     }
 
