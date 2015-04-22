@@ -68,7 +68,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Resource(name = "clientUserDetailsService")
     private UserDetailsService clientUserDetailsService;
-    
+
     @Resource
     Environment env;
 
@@ -233,9 +233,9 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi-client/activate").permitAll()
                     .antMatchers("/webapi-client/validate/").permitAll()
                     .antMatchers("/webapi-client/validate_activation_token").permitAll()
-                    .antMatchers("/webapi-client/secret_questions/getSecretQuestionWithResetToken").permitAll()
-                    .antMatchers("/webapi-client/secret_questions/validateSecretResponses").permitAll()
-                    .antMatchers("/webapi-client/secret_questions/lockedOutUserWithResetToken").permitAll()
+                    .antMatchers("/webapi-client/secret_questions/using_reset_token").permitAll()
+                    .antMatchers("/webapi-client/secret_questions/is_response_correct").permitAll()
+                    .antMatchers("/webapi-client/user_client/lock_out_user/with_reset_token").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()
                     .antMatchers("/webapi-client/**").authenticated()
