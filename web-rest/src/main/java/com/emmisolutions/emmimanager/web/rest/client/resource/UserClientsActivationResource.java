@@ -77,4 +77,22 @@ public class UserClientsActivationResource {
         }
 
     }
+
+    /**
+     * GET to validate an activation token
+     *
+     * @param activationRequest the activation request
+     * @return OK or GONE
+     */
+    @RequestMapping(value = "/activate", method = RequestMethod.GET)
+    @PermitAll
+    public ResponseEntity<Void> validateActivationToken(
+            @RequestBody ActivationRequest activationRequest) {
+
+        if (userClientService.validateActivationToken(activationRequest)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.GONE);
+        }
+    }
 }
