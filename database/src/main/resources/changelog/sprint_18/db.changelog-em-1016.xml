@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="Update tags and rename Specialty template group" author="Amrita">
+
+        <update tableName="reference_group">
+            <column name="name">Service Lines</column>
+            <where>name = 'Specialty'</where>
+        </update>
+
+        <delete tableName="reference_tag">
+            <where>group_id = (SELECT ID FROM REFERENCE_GROUP WHERE name = 'Service Lines')</where>
+        </delete>
+
+        <sql><![CDATA[
+            INSERT INTO reference_tag (group_id, name, created_by)
+                SELECT
+                  (SELECT id
+                   FROM reference_group r
+                   WHERE r.name = 'Service Lines') AS group_id,
+                  new_tags.reference_tag,
+                  'system' as created_by
+                FROM (
+                       SELECT 'Allergy & Immunology' AS reference_tag
+                       UNION ALL SELECT 'Anesthesiology'
+                       UNION ALL SELECT 'Bariatrics'
+                       UNION ALL SELECT 'Cardiac Electrophysiology'
+                       UNION ALL SELECT 'Cardiac Rehab'
+                       UNION ALL SELECT 'Cardiovascular Surgery'
+                       UNION ALL SELECT 'Colon & Rectal Surgery'
+                       UNION ALL SELECT 'Critical Care Medicine'
+                       UNION ALL SELECT 'Dermatology'
+                       UNION ALL SELECT 'Emergency Medicine'
+                       UNION ALL SELECT 'Employee Wellness'
+                       UNION ALL SELECT 'Endocrinology, Diabetes & Metabolism'
+                       UNION ALL SELECT 'Gastroenterology'
+                       UNION ALL SELECT 'General Cardiology'
+                       UNION ALL SELECT 'General Surgery'
+                       UNION ALL SELECT 'Gynecologic Oncology'
+                       UNION ALL SELECT 'Gynecology'
+                       UNION ALL SELECT 'Hematology'
+                       UNION ALL SELECT 'Hospice & Palliative Medicine'
+                       UNION ALL SELECT 'In-Patient'
+                       UNION ALL SELECT 'Interventional Cardiology'
+                       UNION ALL SELECT 'Interventional Radiology'
+                       UNION ALL SELECT 'Medical Oncology'
+                       UNION ALL SELECT 'Nephrology'
+                       UNION ALL SELECT 'Neurology & Stroke'
+                       UNION ALL SELECT 'Obstetrics'
+                       UNION ALL SELECT 'Ophthalmology'
+                       UNION ALL SELECT 'Oral Surgery'
+                       UNION ALL SELECT 'Orthopaedic Surgery'
+                       UNION ALL SELECT 'Otolaryngology'
+                       UNION ALL SELECT 'Pain Medicine'
+                       UNION ALL SELECT 'Coumadin/Anti-coag'
+                       UNION ALL SELECT 'Physical Medicine & Rehabilitation'
+                       UNION ALL SELECT 'Plastic & Reconstructive Surgery'
+                       UNION ALL SELECT 'Podiatry'
+                       UNION ALL SELECT 'Primary Care (IM & FM)'
+                       UNION ALL SELECT 'Psychiatry'
+                       UNION ALL SELECT 'Pulmonary Disease'
+                       UNION ALL SELECT 'Radiation Oncology'
+                       UNION ALL SELECT 'Radiology'
+                       UNION ALL SELECT 'Rheumatology'
+                       UNION ALL SELECT 'Sleep Medicine'
+                       UNION ALL SELECT 'Thoracic Surgery'
+                       UNION ALL SELECT 'Transplant Surgery'
+                       UNION ALL SELECT 'Urology'
+                       UNION ALL SELECT 'Vascular'
+                     ) AS new_tags;
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>
