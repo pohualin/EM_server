@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +19,8 @@ public class ProviderSearchFilter {
     @XmlElement(name = "name")
     @XmlElementWrapper(name = "names")
     private Set<String> names;
+    
+    private Client notUsingThisClient;
 
     private StatusFilter status;
 
@@ -59,6 +62,14 @@ public class ProviderSearchFilter {
 
     public StatusFilter getStatus() {
         return status;
+    }
+
+    public Client getNotUsingThisClient() {
+        return notUsingThisClient;
+    }
+
+    public void setNotUsingThisClient(Client notUsingThisClient) {
+        this.notUsingThisClient = notUsingThisClient;
     }
 
     /**

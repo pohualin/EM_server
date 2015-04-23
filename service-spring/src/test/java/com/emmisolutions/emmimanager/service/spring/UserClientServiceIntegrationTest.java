@@ -9,12 +9,14 @@ import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.service.*;
+import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
@@ -47,6 +49,9 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     
     @Resource
     UserClientPasswordService userClientPasswordService;
+
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     /**
      * Create without client and login
@@ -445,5 +450,49 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClient = userClientService.saveNotNowExpirationTime(userClient.getId());
         assertThat("userClient should have not not expiration date defined",
                 userClient.getNotNowExpirationTime(), notNullValue());
+    }
+
+    /**
+     * test validateActivationToken is valid
+     */
+    @Test
+    public void testValidateActivationTokenIsValid(){
+        boolean isValid = userClientService.validateActivationToken(
+                new ActivationRequest(userClientService.addActivationKey(makeNewRandomUserClient(null))
+                        .getActivationKey(), null));
+        assertThat("token is valid", isValid, is(true));
+    }
+
+    /**
+     * test validateActivationToken is invalid
+     */
+    @Test
+    public void testValidateActivationTokenIsInvalid(){
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC).minusDays(1));
+        userClient.setActivationKey(passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
+                        .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
+        ActivationRequest activationRequest = new ActivationRequest(userClient.getActivationKey(), null);
+        boolean isValid = userClientService.validateActivationToken(activationRequest);
+
+        assertThat("token is invalid", isValid, is(false));
+    }
+
+    /**
+     * return false if activation request is null
+     */
+    @Test
+    public void testValidateActivationTokenNullRequest(){
+        boolean isValid = userClientService.validateActivationToken(null);
+        assertThat("return false for null activation request", isValid, is(false));
+    }
+
+    /**
+     * return false if user client is null
+     */
+    @Test
+    public void testValidateActivationTokenNullUserClient(){
+        boolean isValid = userClientService.validateActivationToken(new ActivationRequest("invalidToken",null));
+        assertThat("return false for null user client", isValid, is(false));
     }
 }

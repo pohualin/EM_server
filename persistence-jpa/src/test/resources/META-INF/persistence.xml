@@ -25,6 +25,7 @@
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission</class>
+        <class>com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionGroup</class>
         <class>com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRole</class>
         <class>com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRoleType</class>
         <class>com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRolePermission</class>
