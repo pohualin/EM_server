@@ -11,6 +11,8 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.team.UserClientTeamRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.AdminPatientsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
 import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +66,7 @@ public class ClientResourceAssembler implements
                 "restrictConfiguration"));
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
+        ret.add(linkTo(methodOn(AdminPatientsResource.class).create(entity.getId(), null)).withRel("patient"));
         ret.setEntity(entity);
         return ret;
     }
