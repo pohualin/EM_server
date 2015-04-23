@@ -26,7 +26,16 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
         ClientResource ret = new ClientResource();
         ret.add(linkTo(methodOn(UserClientsPasswordResource.class).passwordPolicy(entity.getId())).withRel("passwordPolicy"));
         ret.add(linkTo(methodOn(PatientsResource.class).create(entity.getId(), null)).withRel("patient"));
-        ret.add(linkTo(methodOn(UserEmailRestrictConfigurationsResource.class).list(entity.getId(), null, null, null)).withRel("emailRestrictConfigurations"));
+        
+        ret.add(new Link(
+        		new UriTemplate(
+        				linkTo(methodOn(UserEmailRestrictConfigurationsResource.class).list(
+        		            entity.getId(), null, null, null)).withSelfRel().getHref())
+        					.with(new TemplateVariables(
+        					          new TemplateVariable("page",TemplateVariable.VariableType.REQUEST_PARAM),
+        							  new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+        							  new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED))), "emailRestrictConfigurations"));
+              
         // ability to load a team for a client
         ret.add(new Link(
                 new UriTemplate(
@@ -64,4 +73,5 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
+   
 }

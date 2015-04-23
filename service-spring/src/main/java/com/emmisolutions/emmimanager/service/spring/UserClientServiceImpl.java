@@ -46,7 +46,7 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     UserClientPasswordService userClientPasswordService;
-    
+
     @Resource
     UserClientPasswordHistoryService userClientPasswordHistoryService;
 
@@ -165,7 +165,7 @@ public class UserClientServiceImpl implements UserClientService {
                     ret = userClientPasswordService
                             .updatePasswordExpirationTime(userClientPasswordService
                                     .encodePassword(unlockedUser));
-                    
+
                     userClientPasswordHistoryService.handleUserClientPasswordHistory(ret);
                 } else {
                     userClientPersistence.saveOrUpdate(userClient);
@@ -173,6 +173,18 @@ public class UserClientServiceImpl implements UserClientService {
             }
         }
         return ret;
+    }
+
+    @Override
+    public boolean validateActivationToken(ActivationRequest activationRequest) {
+        if (activationRequest != null) {
+            UserClient userClient = userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
+            if (userClient != null) {
+                LocalDateTime expiration = userClient.getActivationExpirationDateTime();
+                return isValid(expiration);
+            }
+        }
+        return false;
     }
 
     private boolean isValid(LocalDateTime expiration) {
@@ -238,30 +250,29 @@ public class UserClientServiceImpl implements UserClientService {
 
         return userClientPersistence.saveOrUpdate(toBeHandled);
     }
-    
+
     @Override
     @Transactional
     public UserClient lockedOutUserWithResetToken(String resetToken) {
-    	if (resetToken != null) {
+        if (resetToken != null) {
             UserClient userClient =
                     userClientPersistence.findByResetToken(resetToken);
 
-        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
-                .get(userClient.getClient());
+            ClientPasswordConfiguration configuration = clientPasswordConfigurationService
+                    .get(userClient.getClient());
             // Lock the user after few attempts depending on how client setup
-        	userClient.setAccountNonLocked(false);
+            userClient.setAccountNonLocked(false);
             // Do not set a lock expiration when client do not use this feature
             if (configuration.getLockoutReset() != 0) {
-            	userClient.setLockExpirationDateTime(LocalDateTime.now(
+                userClient.setLockExpirationDateTime(LocalDateTime.now(
                         DateTimeZone.UTC).plusMinutes(
                         configuration.getLockoutReset()));
             }
             return userClientPersistence.saveOrUpdate(userClient);
+        } else {
+            return null;
         }
-    	else{
-    	   	return null;
-    	}
-        
+
     }
 
     @Override
@@ -275,7 +286,7 @@ public class UserClientServiceImpl implements UserClientService {
         }
         return userClient;
     }
-    
+
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserClient expireUserClientCredential(UserClient userClient) {
@@ -286,12 +297,12 @@ public class UserClientServiceImpl implements UserClientService {
     @Transactional(readOnly = true)
     public boolean validateEmailAddress(UserClient userClient) {
 
-        if (userClient == null || StringUtils.isBlank(userClient.getEmail())){
+        if (userClient == null || StringUtils.isBlank(userClient.getEmail())) {
             return true;
         }
         Client toUseForLookup;
 
-        if (userClient.getClient() != null){
+        if (userClient.getClient() != null) {
             // load from the passed in user client
             toUseForLookup = userClient.getClient();
         } else {
@@ -299,7 +310,7 @@ public class UserClientServiceImpl implements UserClientService {
             UserClient fromDb = reload(userClient);
             toUseForLookup = fromDb != null ? fromDb.getClient() : null;
         }
-        if (toUseForLookup == null){
+        if (toUseForLookup == null) {
             // still couldn't find a client, bomb out
             return true;
         }
@@ -359,7 +370,7 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Override
     @Transactional()
-    public UserClient saveNotNowExpirationTime(Long userClientId){
+    public UserClient saveNotNowExpirationTime(Long userClientId) {
         UserClient loadedUserClient = this.reload(new UserClient(userClientId));
         int NOT_NOW_DELAY = 2;
         LocalDateTime notNowExpirationTime = LocalDateTime.now(DateTimeZone.UTC).plusMinutes(NOT_NOW_DELAY);

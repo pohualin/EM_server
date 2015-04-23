@@ -68,7 +68,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Resource(name = "clientUserDetailsService")
     private UserDetailsService clientUserDetailsService;
-    
+
     @Resource
     Environment env;
 
