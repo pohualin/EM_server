@@ -270,7 +270,7 @@ public class UserClientsPasswordResource {
                                 .toUriString();
                 mailService.sendPasswordResetEmail(userClient, resetRef);
             } else {
-                // user does not have a token (due to password reset not being enabled)
+                // user was found but is not setup for password reset
                 mailService.sendPasswordResetNotEnabled(userClient);
             }
         } else {

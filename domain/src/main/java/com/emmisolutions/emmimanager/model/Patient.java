@@ -43,6 +43,7 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @NotNull
     @Column(name = "date_of_birth")
     @DateTimeFormat
     private LocalDate dateOfBirth;

@@ -1,15 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.client;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceAssembler;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
-import org.springframework.stereotype.Component;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientlocation.ClientLocationResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.clientprovider.ClientProviderResourcePage;
@@ -20,15 +10,14 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.team.UserClientTeamRoleResourcePage;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientPasswordConfigurationsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientRestrictConfigurationsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientRolesAdminResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamRolesAdminResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.EmailRestrictConfigurationsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.GroupsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.IpRestrictConfigurationsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.AdminPatientsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
+import org.springframework.hateoas.*;
+import org.springframework.stereotype.Component;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Responsible for creating a ClientResource (which has links) from a Client
@@ -77,6 +66,7 @@ public class ClientResourceAssembler implements
                 "restrictConfiguration"));
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
+        ret.add(linkTo(methodOn(AdminPatientsResource.class).create(entity.getId(), null)).withRel("patient"));
         ret.setEntity(entity);
         return ret;
     }
