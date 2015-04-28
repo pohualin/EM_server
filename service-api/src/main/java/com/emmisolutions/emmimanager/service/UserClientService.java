@@ -68,10 +68,10 @@ public interface UserClientService {
 
     /**
      * Check if activation token is valid
-     * @param activationRequest used to validate activation token
+     * @param activationToken used to validate activation token
      * @return true if token is valid
      */
-    boolean validateActivationToken(ActivationRequest activationRequest);
+    boolean validateActivationToken(String activationToken);
 
     /**
      * Adds an activation key to the passed user client

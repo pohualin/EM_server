@@ -101,4 +101,25 @@
     	</update>
     </changeSet>
     
+    <changeSet id="Update team edit page translate values" author="Paul">
+    	<update tableName="strings">
+    		<column name="message">Name</column>
+    		<where>key_path = 'team_edit_page.information.name'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Description</column>
+    		<where>key_path = 'team_edit_page.information.description'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Phone</column>
+    		<where>key_path = 'team_edit_page.information.phone'</where>
+    	</update>
+    	
+    	<update tableName="strings">
+    		<column name="message">Fax</column>
+    		<where>key_path = 'team_edit_page.information.fax'</where>
+    	</update>
+   	</changeSet>
 </databaseChangeLog>
