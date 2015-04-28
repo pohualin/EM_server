@@ -176,9 +176,9 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    public boolean validateActivationToken(ActivationRequest activationRequest) {
-        if (activationRequest != null) {
-            UserClient userClient = userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
+    public boolean validateActivationToken(String activationToken) {
+        if (activationToken != null) {
+            UserClient userClient = userClientPersistence.findByActivationKey(activationToken);
             if (userClient != null) {
                 LocalDateTime expiration = userClient.getActivationExpirationDateTime();
                 return isValid(expiration);
