@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
+import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,15 +82,14 @@ public class UserClientsActivationResource {
     /**
      * GET to validate an activation token
      *
-     * @param activationRequest the activation request
+     * @param activationToken the activation token to validate
      * @return OK or GONE
      */
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
     @PermitAll
     public ResponseEntity<Void> validateActivationToken(
-            @RequestBody ActivationRequest activationRequest) {
-
-        if (userClientService.validateActivationToken(activationRequest)) {
+            @QueryParam("activationToken") String activationToken) {
+        if (userClientService.validateActivationToken(activationToken)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.GONE);

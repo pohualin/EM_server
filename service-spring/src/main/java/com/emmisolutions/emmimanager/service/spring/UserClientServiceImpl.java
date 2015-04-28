@@ -176,9 +176,9 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    public boolean validateActivationToken(ActivationRequest activationRequest) {
-        if (activationRequest != null) {
-            UserClient userClient = userClientPersistence.findByActivationKey(activationRequest.getActivationToken());
+    public boolean validateActivationToken(String activationToken) {
+        if (activationToken != null) {
+            UserClient userClient = userClientPersistence.findByActivationKey(activationToken);
             if (userClient != null) {
                 LocalDateTime expiration = userClient.getActivationExpirationDateTime();
                 return isValid(expiration);
@@ -372,8 +372,8 @@ public class UserClientServiceImpl implements UserClientService {
     @Transactional()
     public UserClient saveNotNowExpirationTime(Long userClientId) {
         UserClient loadedUserClient = this.reload(new UserClient(userClientId));
-        int NOT_NOW_DELAY = 2;
-        LocalDateTime notNowExpirationTime = LocalDateTime.now(DateTimeZone.UTC).plusMinutes(NOT_NOW_DELAY);
+        int NOT_NOW_DELAY = 30;
+        LocalDateTime notNowExpirationTime = LocalDateTime.now(DateTimeZone.UTC).plusDays(NOT_NOW_DELAY);
         loadedUserClient.setNotNowExpirationTime(notNowExpirationTime);
         loadedUserClient = this.update(loadedUserClient);
         return loadedUserClient;
