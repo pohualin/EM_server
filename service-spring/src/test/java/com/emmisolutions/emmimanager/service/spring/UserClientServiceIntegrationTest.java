@@ -458,8 +458,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void testValidateActivationTokenIsValid(){
         boolean isValid = userClientService.validateActivationToken(
-                new ActivationRequest(userClientService.addActivationKey(makeNewRandomUserClient(null))
-                        .getActivationKey(), null));
+                userClientService.addActivationKey(makeNewRandomUserClient(null)).getActivationKey());
         assertThat("token is valid", isValid, is(true));
     }
 
@@ -472,8 +471,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         userClient.setActivationExpirationDateTime(LocalDateTime.now(DateTimeZone.UTC).minusDays(1));
         userClient.setActivationKey(passwordEncoder.encode(RandomStringUtils.randomAlphanumeric(40))
                         .substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
-        ActivationRequest activationRequest = new ActivationRequest(userClient.getActivationKey(), null);
-        boolean isValid = userClientService.validateActivationToken(activationRequest);
+        boolean isValid = userClientService.validateActivationToken(userClient.getActivationKey());
 
         assertThat("token is invalid", isValid, is(false));
     }
@@ -492,7 +490,7 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void testValidateActivationTokenNullUserClient(){
-        boolean isValid = userClientService.validateActivationToken(new ActivationRequest("invalidToken",null));
+        boolean isValid = userClientService.validateActivationToken("invalidToken");
         assertThat("return false for null user client", isValid, is(false));
     }
 }
