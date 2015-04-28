@@ -36,6 +36,15 @@ public class TeamTagSpecifications {
                         return cb.isNull(root.get(TeamTag_.id));
                     }
 
+                    if (searchFilter.getClient() != null) {
+                        // restrict to a client
+                        cb.and(cb.or(tagPredicate.toArray(new Predicate[tagPredicate.size()])),
+                                root.get(TeamTag_.team).in(goodTeams),
+                                cb.equal(root.join(TeamTag_.team).join(Team_.client).get(Client_.id),
+                                        searchFilter.getClient().getId())
+                        );
+                    }
+
                     // no client on the filter
                     return cb.and(cb.or(tagPredicate.toArray(new Predicate[tagPredicate.size()])),
                             root.get(TeamTag_.team).in(goodTeams));
