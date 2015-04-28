@@ -147,6 +147,7 @@ public class UserClientsResource {
      * PUT for updates to a given user client
      *
      * @param userClientId to update
+     * @param password to verify permission by password
      * @param userClient   the updated user client
      * @return OK (200): containing the newly updated UserClientResource
      * <p/>
@@ -156,8 +157,10 @@ public class UserClientsResource {
      * INTERNAL_SERVER_ERROR (500): when the save doesn't return an updated client.
      */
     @RequestMapping(value = "/user_client/{userClientId}", method = RequestMethod.PUT)
-    @PreAuthorize("hasPermission(@user, #userClientId)")
-    public ResponseEntity<UserClientResource> updateUserClient(@PathVariable("userClientId") Long userClientId,
+    @PreAuthorize("hasPermission(@user, #userClientId) and " +
+            "hasPermission(@password, #password)")
+    public ResponseEntity<UserClientResource> updateUserClientEmail(@PathVariable("userClientId") Long userClientId,
+                                                               @RequestParam(value = "password", required = false) String password,
                                                                @RequestBody UserClient userClient,
                                                                HttpServletRequest request,
                                                                HttpServletResponse response) {
