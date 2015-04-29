@@ -50,7 +50,7 @@ public class ClientUserClientResourceAssembler implements
         ret.add(linkTo(methodOn(UserClientsResource.class).getById(entity.getId())).withSelfRel());
         ret.add(UserClientResourceAssembler.createVerifyPasswordLink(entity));
         ret.add(linkTo(methodOn(UserClientsResource.class).sendValidationEmail(entity.getId())).withRel("sendValidationEmail"));
-
+        ret.add(UserClientResourceAssembler.updateUserClientLink(entity));
         return ret;
     }
 }
