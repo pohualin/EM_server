@@ -93,7 +93,9 @@ public class TeamTagServiceImpl implements TeamTagService {
         Set<Tag> newTagSet = new HashSet<>();
         for (Tag tag : tagSet) {
             tag = tagPersistence.reload(new Tag(tag.getId()));
-            newTagSet.add(tag);
+            if (tag != null) {
+                newTagSet.add(tag);
+            }
         }
         teamTagSearchFilter.setTagSet(newTagSet);
         return teamTagPersistence.findTeamsWithTag(pageable, teamTagSearchFilter);
