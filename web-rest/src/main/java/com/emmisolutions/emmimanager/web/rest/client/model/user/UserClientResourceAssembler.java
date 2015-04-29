@@ -106,6 +106,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
         if (!user.isImpersonated()) {
             // non-impersonation users only
             ret.add(linkTo(methodOn(UserClientsResource.class).getById(user.getId())).withSelfRel());
+            ret.add(updateUserClientLink(user));
             ret.add(createVerifyPasswordLink(user));
             
             Link link = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestionResponses(user.getId(), null, null, null)).withRel("secretQuestionResponses");
@@ -148,7 +149,14 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
     	return uriTemplate;
     }
 
-    
+    public static Link updateUserClientLink(UserClient user){
+        Link verifyPasswordLink = linkTo(methodOn(UserClientsResource.class).updateUserClientEmail(user.getId(), null, null, null, null)).withRel("userClientEmail");
+        UriTemplate verifyPasswordUriTemplate = new UriTemplate(verifyPasswordLink.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("password",
+                                TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(verifyPasswordUriTemplate, verifyPasswordLink.getRel());
+    }
     
 
 }
