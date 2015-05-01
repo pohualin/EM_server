@@ -139,7 +139,11 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         boolean isValid = false;
         if(userClient != null){
             LocalDateTime expiration = userClient.getPasswordResetExpirationDateTime();
-            isValid = LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
+            if(expiration ==null ){
+                isValid = true;
+            }else {
+                isValid = LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
+            }
         }
         if (userClient != null && isValid) {
             if (userClient.isSecurityQuestionsNotRequiredForReset()) {

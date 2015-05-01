@@ -199,11 +199,26 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
     }
 
     /**
+     * return true if expiration is null
+     */
+    @Test
+    public void testExpirationNull() {
+        String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2CAAY";
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPasswordResetToken(resetToken);
+        userClient.setPasswordResetExpirationDateTime(null);
+        userClient.setSecurityQuestionsNotRequiredForReset(true);
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("The response should validate to true because there is no expiration date",
+                userClientSecretQuestionResponseService.validateSecurityResponse(resetToken, null), is(true));
+    }
+
+    /**
      * Make sure that if the token is expired we throw exception
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void throwExceptionIfTokenIsExpired() {
-        String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2CAAA";
+        String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2CAAX";
         UserClient userClient = makeNewRandomUserClient(null);
         userClient.setPasswordResetToken(resetToken);
         userClient.setPasswordResetExpirationDateTime(LocalDateTime.now().minusDays(1));
