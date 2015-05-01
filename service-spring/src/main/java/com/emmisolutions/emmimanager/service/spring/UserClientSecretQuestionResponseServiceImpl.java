@@ -9,6 +9,8 @@ import com.emmisolutions.emmimanager.persistence.UserClientSecretQuestionRespons
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -134,7 +136,12 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         boolean ret = false;
         UserClient userClient =
                 userClientPersistence.findByResetToken(resetToken);
-        if (userClient != null) {
+        boolean isValid = false;
+        if(userClient != null){
+            LocalDateTime expiration = userClient.getPasswordResetExpirationDateTime();
+            isValid = LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
+        }
+        if (userClient != null && isValid) {
             if (userClient.isSecurityQuestionsNotRequiredForReset()) {
                 // security questions not required for this user
                 ret = true;
@@ -156,7 +163,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
             }
         } else {
             throw new InvalidDataAccessApiUsageException(
-                    "This method is only to be used with existing reset token");
+                    "This method is only to be used with existing valid reset token");
         }
 
         return ret;
