@@ -10,6 +10,7 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -160,6 +161,7 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2C555";
         UserClient userClient = makeNewRandomUserClient(null);
         userClient.setPasswordResetToken(resetToken);
+        userClient.setPasswordResetExpirationDateTime(LocalDateTime.now().plusDays(1));
         userClient.setSecurityQuestionsNotRequiredForReset(true);
         userClientPersistence.saveOrUpdate(userClient);
         assertThat("The response should validate to true because the security questions are not required",
@@ -174,10 +176,54 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2CAAA";
         UserClient userClient = makeNewRandomUserClient(null);
         userClient.setPasswordResetToken(resetToken);
+        userClient.setPasswordResetExpirationDateTime(LocalDateTime.now().plusDays(1));
         userClient.setSecurityQuestionsNotRequiredForReset(false);
         userClientPersistence.saveOrUpdate(userClient);
         assertThat("The response should validate to false because we passed no response in",
                 userClientSecretQuestionResponseService.validateSecurityResponse(resetToken, null), is(false));
+    }
+
+    /**
+     * Make sure that if the token is not expired we dont throw exception
+     */
+    @Test
+    public void dontThrowExceptionIfTokenIsNotExpired() {
+        String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2CAAZ";
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPasswordResetToken(resetToken);
+        userClient.setPasswordResetExpirationDateTime(LocalDateTime.now().plusDays(1));
+        userClient.setSecurityQuestionsNotRequiredForReset(true);
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("The response should validate to true because token is not expired",
+                userClientSecretQuestionResponseService.validateSecurityResponse(resetToken, null), is(true));
+    }
+
+    /**
+     * return true if expiration is null
+     */
+    @Test
+    public void testExpirationNull() {
+        String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2CAAY";
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPasswordResetToken(resetToken);
+        userClient.setPasswordResetExpirationDateTime(null);
+        userClient.setSecurityQuestionsNotRequiredForReset(true);
+        userClientPersistence.saveOrUpdate(userClient);
+        assertThat("The response should validate to true because there is no expiration date",
+                userClientSecretQuestionResponseService.validateSecurityResponse(resetToken, null), is(true));
+    }
+
+    /**
+     * Make sure that if the token is expired we throw exception
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void throwExceptionIfTokenIsExpired() {
+        String resetToken = "B473E2147988F8D67B62457B115A6EB7B8F2CAAX";
+        UserClient userClient = makeNewRandomUserClient(null);
+        userClient.setPasswordResetToken(resetToken);
+        userClient.setPasswordResetExpirationDateTime(LocalDateTime.now().minusDays(1));
+        userClientPersistence.saveOrUpdate(userClient);
+        userClientSecretQuestionResponseService.validateSecurityResponse(resetToken, null);
     }
 
     /**
@@ -198,6 +244,7 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         Client client = makeNewRandomClient();
         UserClient userClient = makeNewRandomUserClient(client);
         userClient.setPasswordResetToken(resetToken);
+        userClient.setPasswordResetExpirationDateTime(LocalDateTime.now().plusDays(1));
         UserClient userAfterSave = userClientPersistence.saveOrUpdate(userClient);
 
         assertThat("secret question created true", userAfterSave.isSecretQuestionCreated(), is(false));
