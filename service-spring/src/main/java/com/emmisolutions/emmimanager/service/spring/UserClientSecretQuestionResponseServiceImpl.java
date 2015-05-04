@@ -137,13 +137,8 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
         UserClient userClient =
                 userClientPersistence.findByResetToken(resetToken);
         boolean isValid = false;
-        if(userClient != null){
-            LocalDateTime expiration = userClient.getPasswordResetExpirationDateTime();
-            if(expiration ==null ){
-                isValid = true;
-            }else {
-                isValid = LocalDateTime.now(DateTimeZone.UTC).isBefore(expiration);
-            }
+        if(userClient != null && (userClient.getPasswordResetExpirationDateTime() == null || LocalDateTime.now(DateTimeZone.UTC).isBefore(userClient.getPasswordResetExpirationDateTime()))){
+            isValid = true;
         }
         if (userClient != null && isValid) {
             if (userClient.isSecurityQuestionsNotRequiredForReset()) {
