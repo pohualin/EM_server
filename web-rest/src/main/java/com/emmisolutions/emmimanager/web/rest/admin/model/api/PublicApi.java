@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,6 +32,9 @@ public class PublicApi extends ResourceSupport {
 
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
+
+    @XmlAttribute
+    Boolean production;
 
     @Value("${cas.server.logout.url:https://devcas1.emmisolutions.com/cas/logout}")
     private String casServerLogoutUrl;
@@ -58,6 +62,9 @@ public class PublicApi extends ResourceSupport {
         if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
             // add location to redirect to after logout
             me.add(new Link(casServerLogoutUrl, "redirectOnLogout"));
+        }
+        if (env.acceptsProfiles(SPRING_PROFILE_PRODUCTION)){
+            me.production = true;
         }
         me.add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
         return me;

@@ -58,10 +58,7 @@ public class TeamTagsResource {
      * GET to search for TeamTags
      *
      * @param pageable  paged request
-     * @param sort      sorting request
-     * @param status    to filter by
      * @param assembler used to create the PagedResources
-     * @param names     to filter by
      * @param teamId    current teamId
      * @return ClientPage or NO_CONTENT
      */
@@ -74,11 +71,8 @@ public class TeamTagsResource {
     })
     public ResponseEntity<TeamTagPage> list(
             @PathVariable("teamId") Long teamId,
-            @PageableDefault(size = 10) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
-            @RequestParam(value = "status", required = false) String status,
-            PagedResourcesAssembler<TeamTag> assembler,
-            @RequestParam(value = "name", required = false) String names) {
+            @PageableDefault(size = 10, sort = "id") Pageable pageable,
+            PagedResourcesAssembler<TeamTag> assembler) {
 
         Team toFind = new Team();
         toFind.setId(teamId);
