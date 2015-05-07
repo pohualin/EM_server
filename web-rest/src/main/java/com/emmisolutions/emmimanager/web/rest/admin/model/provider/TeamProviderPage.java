@@ -50,7 +50,6 @@ public class TeamProviderPage extends PagedResource<TeamProviderResource> {
     public TeamProviderPage(PagedResources<TeamProviderResource> providerResources, Page<TeamProvider> teamProviderPage, ProviderSearchFilter filter) {
         pageDefaults(providerResources, teamProviderPage);
         addFilterToLinks(filter);
-
     }
 
     /**
@@ -67,7 +66,8 @@ public class TeamProviderPage extends PagedResource<TeamProviderResource> {
     }
 
     public static Link createTeamProviderTeamLocationLink(TeamProvider teamProvider) {
-        Link link = linkTo(methodOn(TeamProvidersResource.class).createTeamProviderTeamLocation(null, teamProvider.getId())).withRel("teamProviderTeamLocation");
+        Link link = linkTo(methodOn(TeamProvidersResource.class)
+                .createTeamProviderTeamLocation(null, teamProvider.getId())).withRel("teamProviderTeamLocation");
         UriTemplate uriTemplate = new UriTemplate(link.getHref());
         return new Link(uriTemplate, link.getRel());
     }
@@ -80,7 +80,7 @@ public class TeamProviderPage extends PagedResource<TeamProviderResource> {
      * @see com.emmisolutions.emmimanager.web.rest.admin.resource.TeamProvidersResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
     public static Link createAssociationLink(Team team) {
-        Link link = linkTo(methodOn(TeamProvidersResource.class).possible(team.getId(), null, null, null, null, null)).withRel("possibleProviders");
+        Link link = linkTo(methodOn(TeamProvidersResource.class).possible(team.getId(), null, null, null, null)).withRel("possibleProviders");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
