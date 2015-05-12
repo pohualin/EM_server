@@ -86,4 +86,34 @@
                              constraintName="uk_user_client_team_role_normalized_name"/>
     </changeSet>
     
+    <changeSet id="add normalized_name to user_client_reference_role" author="Paul">
+        <addColumn tableName="user_client_reference_role">
+            <column name="normalized_name" type="nvarchar(255)" />
+        </addColumn>
+        
+        <sql>
+        	<![CDATA[
+        		update user_client_reference_role
+				set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/',''),' ','') )))
+				where normalized_name is null
+        	]]>
+        </sql>
+        <addNotNullConstraint tableName="user_client_reference_role" columnName="normalized_name" columnDataType="nvarchar(255)"/>
+    </changeSet>
+    
+    <changeSet id="add normalized_name to user_client_reference_team_role" author="Paul">
+        <addColumn tableName="user_client_reference_team_role">
+            <column name="normalized_name" type="nvarchar(255)" />
+        </addColumn>
+        
+        <sql>
+        	<![CDATA[
+        		update user_client_reference_team_role
+				set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/',''),' ','') )))
+				where normalized_name is null
+        	]]>
+        </sql>
+        <addNotNullConstraint tableName="user_client_reference_team_role" columnName="normalized_name" columnDataType="nvarchar(255)"/>
+    </changeSet>
+    
 </databaseChangeLog>
