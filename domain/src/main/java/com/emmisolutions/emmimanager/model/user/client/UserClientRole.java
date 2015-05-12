@@ -2,14 +2,16 @@ package com.emmisolutions.emmimanager.model.user.client;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ReferenceGroupType;
 import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRoleType;
+
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -22,7 +24,7 @@ import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 @Audited
 @Table(name = "user_client_role",
     uniqueConstraints =
-    @UniqueConstraint(columnNames = {"client_id", "name"}, name = "uk_user_client_role_name"))
+    @UniqueConstraint(columnNames = {"client_id", "normalized_name"}, name = "uk_user_client_role_normalized_name"))
 public class UserClientRole extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -34,6 +36,12 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
     @Column(length = 255, columnDefinition = "nvarchar(255)", nullable = false)
     @Size(min = 0, max = 255)
     private String name;
+    
+    @NotNull
+    @Column(name = "normalized_name", length = 255, columnDefinition = "nvarchar(255)", nullable = false)
+    @NotAudited
+    @Size(min = 0, max = 255)
+    private String normalizedName;
 
     @ManyToOne
     @JoinColumn(name = "user_client_reference_role_type_id", columnDefinition = "bigint")
@@ -107,6 +115,14 @@ public class UserClientRole extends AbstractAuditingEntity implements Serializab
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
     }
 
     public Integer getVersion() {

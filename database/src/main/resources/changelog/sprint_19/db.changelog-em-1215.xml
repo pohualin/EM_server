@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="add normalized_name to user_client_role" author="Paul">
+        <addColumn tableName="user_client_role">
+            <column name="normalized_name" type="nvarchar(255)" />
+        </addColumn>
+        
+        <sql>
+        	<![CDATA[
+        		update user_client_role
+				set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/',''),' ','') )))
+				where normalized_name is null
+        	]]>
+        </sql>
+        <addNotNullConstraint tableName="user_client_role" columnName="normalized_name" columnDataType="nvarchar(255)"/>
+        
+        <sql><![CDATA[
+		    DELETE from user_client_role_user_client_permission where role_id in (
+			SELECT id FROM user_client_role ucr inner join 
+			(
+				SELECT client_id, normalized_name, count(*) as c FROM user_client_role 
+				group by client_id, normalized_name 
+				having count(*) > 1
+			) AS DUP ON ucr.client_id = DUP.client_id and ucr.normalized_name = DUP.normalized_name)
+	    ]]></sql>
+        
+        <sql><![CDATA[
+		    DELETE from user_client_role where id in (
+			SELECT id FROM user_client_role ucr inner join 
+			(
+				SELECT client_id, normalized_name, count(*) as c FROM user_client_role 
+				group by client_id, normalized_name 
+				having count(*) > 1
+			) AS DUP ON ucr.client_id = DUP.client_id and ucr.normalized_name = DUP.normalized_name)
+	    ]]></sql>
+	    
+        <addUniqueConstraint tableName="user_client_role" columnNames="client_id, normalized_name"
+                             constraintName="uk_user_client_role_normalized_name"/>
+    </changeSet>
+    
+    <changeSet id="add normalized_name to user_client_team_role" author="Paul">
+        <addColumn tableName="user_client_team_role">
+            <column name="normalized_name" type="nvarchar(255)" />
+        </addColumn>
+        
+        <sql>
+        	<![CDATA[
+        		update user_client_team_role
+				set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name,'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/',''),' ','') )))
+				where normalized_name is null
+        	]]>
+        </sql>
+        <addNotNullConstraint tableName="user_client_team_role" columnName="normalized_name" columnDataType="nvarchar(255)"/>
+        
+        <sql><![CDATA[
+		    DELETE from user_client_team_role_user_client_team_permission where role_id in (
+			SELECT id FROM user_client_team_role uctr inner join 
+			(
+				SELECT client_id, normalized_name, count(*) as c FROM user_client_team_role 
+				group by client_id, normalized_name 
+				having count(*) > 1
+			) AS DUP ON uctr.client_id = DUP.client_id and uctr.normalized_name = DUP.normalized_name)
+	    ]]></sql>
+        
+        <sql><![CDATA[
+		    DELETE from user_client_team_role where id in (
+			SELECT id FROM user_client_team_role uctr inner join 
+			(
+				SELECT client_id, normalized_name, count(*) as c FROM user_client_team_role 
+				group by client_id, normalized_name 
+				having count(*) > 1
+			) AS DUP ON uctr.client_id = DUP.client_id and uctr.normalized_name = DUP.normalized_name)
+	    ]]></sql>
+	    
+	    <dropUniqueConstraint tableName="user_client_team_role" 
+	    					 constraintName="uk_user_client_team_role_name"/>
+	    
+        <addUniqueConstraint tableName="user_client_team_role" columnNames="client_id, normalized_name"
+                             constraintName="uk_user_client_team_role_normalized_name"/>
+    </changeSet>
+    
+</databaseChangeLog>

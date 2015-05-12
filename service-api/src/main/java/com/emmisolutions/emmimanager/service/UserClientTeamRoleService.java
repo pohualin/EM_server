@@ -76,4 +76,13 @@ public interface UserClientTeamRoleService {
      */
     Set<UserClientTeamPermission> loadPossiblePermissions();
 
+    /**
+     * Return an existing UserClientTeamRole but not self with given name and
+     * client
+     * 
+     * @param userClientTeamRole
+     *            to find
+     * @return an existing UserClientTeamRole but not self
+     */
+    UserClientTeamRole findByNormalizedName(UserClientTeamRole userClientTeamRole);
 }

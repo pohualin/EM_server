@@ -65,4 +65,12 @@ public interface UserClientRolePersistence {
      * @return Set of UserClientPermission or empty Set never null
      */
     Set<UserClientPermission> permissionsFor(UserClientRole userClientRole);
+    
+    /**
+     * Find existing UserClientRole with given name and client
+     * 
+     * @param userClientRole to find
+     * @return an existing UserClientRole
+     */
+    UserClientRole findByNormalizedName(UserClientRole userClientRole);
 }

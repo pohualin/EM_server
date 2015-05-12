@@ -58,5 +58,12 @@ public interface UserClientTeamRolePersistence {
      * @return Set of UserClientTeamPermission or empty Set never null
      */
     Set<UserClientTeamPermission> permissionsFor(UserClientTeamRole userClientTeamRole);
-
+    
+    /**
+     * Find existing UserClientTeamRole with given name and client
+     * 
+     * @param userClientTeamRole to find
+     * @return an existing UserClientTeamRole
+     */
+    UserClientTeamRole findByNormalizedName(UserClientTeamRole userClientTeamRole);
 }

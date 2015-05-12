@@ -76,5 +76,14 @@ public interface UserClientRoleService {
      * @return the set of permissions
      */
     Set<UserClientPermission> loadPossiblePermissions();
+    
+    /**
+     * Return an existing UserClientRole but not self with given name and client
+     * 
+     * @param userClientRole
+     *            to find
+     * @return an existing UserClientRole but not self
+     */
+    UserClientRole findByNormalizedName(UserClientRole userClientRole);
 
 }

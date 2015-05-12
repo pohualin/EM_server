@@ -6,11 +6,14 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRoleType;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
+
 import org.junit.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,6 +76,16 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
     public void badSave(){
         userClientTeamRolePersistence.save(null);
     }
+    
+    /**
+     * Save should fail with duplicate name
+     */
+    @Test(expected = DataIntegrityViolationException.class)
+    public void badSaveWithDuplicateName(){
+        UserClientTeamRole first = makeNewRandomUserClientTeamRole(null);
+        UserClientTeamRole second = new UserClientTeamRole(first.getName(), first.getClient(), null);
+        userClientTeamRolePersistence.save(second);
+    }
 
     /**
      * Load all possible permissions
@@ -96,6 +109,24 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
     @Test
     public void loadPermissions(){
         assertThat("empty permissions of null client role", userClientTeamRolePersistence.permissionsFor(new UserClientTeamRole()).isEmpty(), is(true));
+    }
+    
+    @Test
+    public void findByNorminalizedNameAndClient() {
+        UserClientTeamRole first = makeNewRandomUserClientTeamRole(null);
+        UserClientTeamRole toFind = new UserClientTeamRole();
+        toFind.setClient(first.getClient());
+        toFind.setName(first.getName());
+        assertThat("Found the one we made",
+                userClientTeamRolePersistence.findByNormalizedName(toFind),
+                is(first));
+
+        UserClientTeamRole another = new UserClientTeamRole();
+        another.setClient(makeNewRandomClient());
+        another.setName(first.getName());
+        assertThat("Should not find anything",
+                userClientTeamRolePersistence.findByNormalizedName(another),
+                is(nullValue()));
     }
 
 }

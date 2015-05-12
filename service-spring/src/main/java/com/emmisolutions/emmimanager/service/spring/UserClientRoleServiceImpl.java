@@ -93,4 +93,20 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
         return userClientRolePersistence.loadPossiblePermissions();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public UserClientRole findByNormalizedName(UserClientRole userClientRole) {
+        if (userClientRole == null || userClientRole.getClient() == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "UserClientRole can neither be null nor have an id and must have a client attached");
+        }
+        userClientRole.setClient(clientService.reload(userClientRole
+                .getClient()));
+        UserClientRole found = userClientRolePersistence.findByNormalizedName(userClientRole);
+        if(found != null && found.getId() == userClientRole.getId()){
+            return null;
+        }
+        return found;
+    }
+
 }
