@@ -1,8 +1,11 @@
 package com.emmisolutions.emmimanager.model.program;
 
 import org.hibernate.envers.Audited;
+import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
@@ -22,6 +25,9 @@ public class Program {
 
     @Column(name = "emmi_nm_mxd")
     private String name;
+
+    @Column(name = "emmi_descrpn")
+    private String description;
 
     @Column(name = "emmi_flnm")
     private String fileName;
@@ -50,6 +56,24 @@ public class Program {
     @ManyToOne
     @JoinColumn(name = "emmi_src_cd")
     private Source source;
+
+    @OneToMany(mappedBy = "program")
+    private Set<ProgramSpecialty> programSpecialty;
+
+    @Column(name = "release_dt")
+    private LocalDateTime releaseDate;
+
+    public Program() {
+    }
+
+    /**
+     * Construct a Program with its id
+     *
+     * @param id the id
+     */
+    public Program(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId() {
         return id;
@@ -137,5 +161,43 @@ public class Program {
 
     public void setSource(Source source) {
         this.source = source;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDateTime releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+
+    public Set<ProgramSpecialty> getProgramSpecialty() {
+        return programSpecialty;
+    }
+
+    public void setProgramSpecialty(Set<ProgramSpecialty> programSpecialty) {
+        this.programSpecialty = programSpecialty;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Program program = (Program) o;
+        return Objects.equals(id, program.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

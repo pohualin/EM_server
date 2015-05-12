@@ -6,8 +6,8 @@ import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
 import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
 
-import static com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource.TEAM_LOCATION_ID_REQUEST_PARAM;
-import static com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource.TEAM_PROVIDER_ID_REQUEST_PARAM;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource.*;
+import static org.springframework.hateoas.TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -28,20 +28,26 @@ public class TeamResourceAssembler
                 .withRel("schedulePrograms"));
 
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
-                .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null))
-                .withRel("programs").getHref()), "programs"));
+                .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null, null))
+                .withRel("programs").getHref()).with(
+                new TemplateVariables(new TemplateVariable(SPECIALTY_ID_REQUEST_PARAM,
+                        REQUEST_PARAM_CONTINUED))), "programs"));
+
+        ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
+                .specialties(entity.getClient().getId(), entity.getId(), null, null))
+                .withRel("specialties").getHref()), "specialties"));
 
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
                 .locations(entity.getClient().getId(), entity.getId(), null, null, null))
                 .withRel("locations").getHref()).with(
                 new TemplateVariables(new TemplateVariable(TEAM_PROVIDER_ID_REQUEST_PARAM,
-                        TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED))), "locations"));
+                        REQUEST_PARAM_CONTINUED))), "locations"));
 
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
                 .providers(entity.getClient().getId(), entity.getId(), null, null, null))
                 .withRel("providers").getHref()).with(
                 new TemplateVariables(new TemplateVariable(TEAM_LOCATION_ID_REQUEST_PARAM,
-                        TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED))), "providers"));
+                        REQUEST_PARAM_CONTINUED))), "providers"));
 
         return ret;
     }
