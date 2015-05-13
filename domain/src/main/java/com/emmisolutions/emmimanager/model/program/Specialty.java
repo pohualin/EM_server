@@ -11,23 +11,33 @@ import java.util.Objects;
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 /**
- * A Program Type
+ * A program specialty.
  */
 @Entity
-@Table(name = "rf_emmi_type", schema = "program")
+@Table(name = "rf_specialty_new", schema = "program")
 @Audited(targetAuditMode = NOT_AUDITED)
-public class Type {
+public class Specialty {
 
     @Id
-    @Column(name = "emmi_tp_cd")
+    @Column(name = "specialty_cd")
     private Integer id;
 
-    @Column(name = "emmi_tp_nm")
+    private boolean active;
+
+    @Column(name = "specialty_clnt_nm")
     private String name;
 
-    private Integer weight;
+    public Specialty() {
+    }
 
-    private boolean active;
+    /**
+     * Specialty with the id/code set
+     *
+     * @param id the id
+     */
+    public Specialty(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId() {
         return id;
@@ -35,14 +45,6 @@ public class Type {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean isActive() {
@@ -53,20 +55,20 @@ public class Type {
         this.active = active;
     }
 
-    public Integer getWeight() {
-        return weight;
+    public String getName() {
+        return name;
     }
 
-    public void setWeight(Integer weight) {
-        this.weight = weight;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Type type = (Type) o;
-        return Objects.equals(id, type.id);
+        Specialty specialty = (Specialty) o;
+        return Objects.equals(id, specialty.id);
     }
 
     @Override

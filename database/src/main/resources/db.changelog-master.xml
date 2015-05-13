@@ -200,4 +200,6 @@
     
     <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-1215.xml"/>
 
+    <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-897.xml"/>
+
 </databaseChangeLog>
