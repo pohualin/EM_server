@@ -3,7 +3,9 @@ package com.emmisolutions.emmimanager.model.user.client.team.reference;
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +13,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +34,12 @@ public class UserClientReferenceTeamRole extends AbstractAuditingEntity implemen
 	@Size(max = 255)
 	@Column(length = 255, nullable = false, columnDefinition = "nvarchar(255)")
 	private String name;
+	
+	@NotNull
+    @Size(max = 255)
+    @Column(name="normalized_name", length = 255, nullable = false, columnDefinition = "nvarchar(255)")
+	@NotAudited
+    private String normalizedName;
 
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userClientReferenceTeamRole")
@@ -63,7 +72,15 @@ public class UserClientReferenceTeamRole extends AbstractAuditingEntity implemen
 		this.name = name;
 	}
 
-	public UserClientReferenceTeamRoleType getType() {
+	public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
+    }
+
+    public UserClientReferenceTeamRoleType getType() {
 		return type;
 	}
 

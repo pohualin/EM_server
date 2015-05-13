@@ -138,4 +138,24 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Reference Roles are loaded",
             userClientRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
     }
+    
+    /**
+     * Test findByNormalizedName
+     */
+    @Test
+    public void findByNormalizedName(){
+        UserClientRole first = makeNewRandomUserClientRole(null);
+        Client client = first.getClient();
+        
+        UserClientRole second = new UserClientRole();
+        second.setName(first.getName());
+        second.setClient(client);
+        assertThat("Should find one match", userClientRoleService.hasDuplicateName(second), is(true));
+        
+        UserClientRole third = new UserClientRole();
+        third.setId(first.getId());
+        third.setName(first.getName());
+        third.setClient(client);
+        assertThat("Should ignore self", userClientRoleService.hasDuplicateName(third), is(false));
+    }
 }
