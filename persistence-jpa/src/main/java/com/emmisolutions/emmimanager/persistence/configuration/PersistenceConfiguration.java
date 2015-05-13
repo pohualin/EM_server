@@ -203,14 +203,16 @@ public class PersistenceConfiguration {
     public DataSource getTestingDataSource(Environment env) {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("org.h2.Driver");
-        ds.setUrl("jdbc:h2:mem:EmmiManager;DB_CLOSE_DELAY=-1");
+        String dbName = env.acceptsProfiles(SPRING_PROFILE_TEST, SPRING_PROFILE_H2_IN_MEMORY) ?
+                    "mem:EmmiManager" : "./database/target/h2_runtime/EmmiManager";
+        ds.setUrl("jdbc:h2:" + dbName + ";DB_CLOSE_DELAY=-1");
         ds.setUsername("sa");
         ds.setPassword("");
         if (env.acceptsProfiles(SPRING_PROFILE_H2)) {
             try {
                 Server server = Server.createTcpServer().start();
-                LOGGER.info("In memory database server started and connection is open.");
-                LOGGER.info("Connection URL: jdbc:h2:{}/mem:EmmiManager", server.getURL());
+                LOGGER.info("Database server started and connection is open.");
+                LOGGER.info("Connection URL: jdbc:h2:{}/{}", server.getURL(), dbName);
             } catch (SQLException e) {
                 LOGGER.error("Problem connecting to in memory database", e);
             }
