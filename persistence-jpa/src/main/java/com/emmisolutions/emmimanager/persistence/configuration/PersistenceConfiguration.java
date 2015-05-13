@@ -3,7 +3,10 @@ package com.emmisolutions.emmimanager.persistence.configuration;
 import com.emmisolutions.emmimanager.config.Constants;
 import com.emmisolutions.emmimanager.persistence.logging.LoggingAspect;
 import liquibase.integration.spring.SpringLiquibase;
+import org.h2.tools.Server;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -29,6 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import static com.emmisolutions.emmimanager.config.Constants.*;
@@ -49,6 +53,8 @@ import static org.hibernate.cfg.Environment.SHOW_SQL;
 })
 @EnableJpaAuditing(auditorAwareRef = "springDataAuditor")
 public class PersistenceConfiguration {
+
+    private transient final Logger LOGGER = LoggerFactory.getLogger(PersistenceConfiguration.class);
 
     @Value("${hibernate.dialect:org.hibernate.dialect.H2Dialect}")
     private String dialect;
@@ -194,12 +200,21 @@ public class PersistenceConfiguration {
      */
     @Bean
     @Profile({SPRING_PROFILE_TEST, SPRING_PROFILE_H2})
-    public DataSource getTestingDataSource() {
+    public DataSource getTestingDataSource(Environment env) {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("org.h2.Driver");
         ds.setUrl("jdbc:h2:mem:EmmiManager;DB_CLOSE_DELAY=-1");
         ds.setUsername("sa");
         ds.setPassword("");
+        if (env.acceptsProfiles(SPRING_PROFILE_H2)) {
+            try {
+                Server server = Server.createTcpServer().start();
+                LOGGER.info("In memory database server started and connection is open.");
+                LOGGER.info("Connection URL: jdbc:h2:{}/mem:EmmiManager", server.getURL());
+            } catch (SQLException e) {
+                LOGGER.error("Problem connecting to in memory database", e);
+            }
+        }
         return ds;
     }
 
