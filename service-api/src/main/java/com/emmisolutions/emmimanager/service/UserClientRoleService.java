@@ -78,12 +78,12 @@ public interface UserClientRoleService {
     Set<UserClientPermission> loadPossiblePermissions();
     
     /**
-     * Return an existing UserClientRole but not self with given name and client
+     * Check if the passed in name is already used within a given client
      * 
      * @param userClientRole
-     *            to find
-     * @return an existing UserClientRole but not self
+     *            to check
+     * @return true if it is a duplicate name, false if it is not
      */
-    UserClientRole findByNormalizedName(UserClientRole userClientRole);
+    boolean hasDuplicateName(UserClientRole userClientRole);
 
 }

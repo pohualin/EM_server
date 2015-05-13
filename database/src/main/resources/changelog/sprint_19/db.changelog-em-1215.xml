@@ -22,17 +22,8 @@
         <addNotNullConstraint tableName="user_client_role" columnName="normalized_name" columnDataType="nvarchar(255)"/>
         
         <sql><![CDATA[
-		    DELETE from user_client_role_user_client_permission where role_id in (
-			SELECT id FROM user_client_role ucr inner join 
-			(
-				SELECT client_id, normalized_name, count(*) as c FROM user_client_role 
-				group by client_id, normalized_name 
-				having count(*) > 1
-			) AS DUP ON ucr.client_id = DUP.client_id and ucr.normalized_name = DUP.normalized_name)
-	    ]]></sql>
-        
-        <sql><![CDATA[
-		    DELETE from user_client_role where id in (
+		    UPDATE user_client_role SET name=CONCAT(name, ' ', id), normalized_name=CONCAT(normalized_name, id) 
+		    where id in (
 			SELECT id FROM user_client_role ucr inner join 
 			(
 				SELECT client_id, normalized_name, count(*) as c FROM user_client_role 
@@ -60,17 +51,8 @@
         <addNotNullConstraint tableName="user_client_team_role" columnName="normalized_name" columnDataType="nvarchar(255)"/>
         
         <sql><![CDATA[
-		    DELETE from user_client_team_role_user_client_team_permission where role_id in (
-			SELECT id FROM user_client_team_role uctr inner join 
-			(
-				SELECT client_id, normalized_name, count(*) as c FROM user_client_team_role 
-				group by client_id, normalized_name 
-				having count(*) > 1
-			) AS DUP ON uctr.client_id = DUP.client_id and uctr.normalized_name = DUP.normalized_name)
-	    ]]></sql>
-        
-        <sql><![CDATA[
-		    DELETE from user_client_team_role where id in (
+		    UPDATE user_client_team_role SET name=CONCAT(name, ' ', id), normalized_name=CONCAT(normalized_name, id) 
+		    where id in (
 			SELECT id FROM user_client_team_role uctr inner join 
 			(
 				SELECT client_id, normalized_name, count(*) as c FROM user_client_team_role 

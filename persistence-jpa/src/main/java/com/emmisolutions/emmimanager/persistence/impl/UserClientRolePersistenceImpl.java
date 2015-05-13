@@ -96,12 +96,18 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
     }
 
     @Override
-    public UserClientRole findByNormalizedName(UserClientRole userClientRole) {
+    public UserClientRole findDuplicateByName(UserClientRole userClientRole) {
         String toSearch = matchCriteria
                 .normalizedName(userClientRole.getName());
         if (StringUtils.isNotBlank(toSearch)) {
-            return userClientRoleRepository.findByNormalizedNameAndClient(
-                    toSearch, userClientRole.getClient());
+            UserClientRole dup = userClientRoleRepository
+                    .findByNormalizedNameAndClient(toSearch,
+                            userClientRole.getClient());
+            if (dup != null && dup.getId() == userClientRole.getId()) {
+                return null;
+            } else {
+                return dup;
+            }
         } else {
             return null;
         }

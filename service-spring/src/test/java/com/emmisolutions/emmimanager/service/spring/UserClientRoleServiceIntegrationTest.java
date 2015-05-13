@@ -150,12 +150,12 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
         UserClientRole second = new UserClientRole();
         second.setName(first.getName());
         second.setClient(client);
-        assertThat("Should find one match", userClientRoleService.findByNormalizedName(second), is(first));
+        assertThat("Should find one match", userClientRoleService.hasDuplicateName(second), is(true));
         
         UserClientRole third = new UserClientRole();
         third.setId(first.getId());
         third.setName(first.getName());
         third.setClient(client);
-        assertThat("Should ignore self", userClientRoleService.findByNormalizedName(third), is(nullValue()));
+        assertThat("Should ignore self", userClientRoleService.hasDuplicateName(third), is(false));
     }
 }

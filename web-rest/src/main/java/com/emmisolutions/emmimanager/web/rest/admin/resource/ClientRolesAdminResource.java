@@ -101,7 +101,7 @@ public class ClientRolesAdminResource {
     @ApiOperation(value = "create a role on a client")
     public ResponseEntity<UserClientRoleResource> createRoleOn(@PathVariable Long clientId, @RequestBody UserClientRole userClientRole) {
         userClientRole.setClient(new Client(clientId));
-        if (userClientRoleService.findByNormalizedName(userClientRole) == null) {
+        if (!userClientRoleService.hasDuplicateName(userClientRole)) {
             UserClientRole saved = userClientRoleService.create(userClientRole);
             if (saved != null) {
                 return new ResponseEntity<>(userClientRoleResourceAssembler.toResource(saved), HttpStatus.CREATED);
@@ -143,7 +143,7 @@ public class ClientRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientRole userClientRole) {
-        if (userClientRoleService.findByNormalizedName(userClientRole) == null) {
+        if (!userClientRoleService.hasDuplicateName(userClientRole)) {
             UserClientRole ret = userClientRoleService.update(userClientRole);
             if (ret != null) {
                 return new ResponseEntity<>(

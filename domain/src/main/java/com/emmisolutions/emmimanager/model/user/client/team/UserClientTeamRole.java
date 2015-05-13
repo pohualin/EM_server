@@ -9,6 +9,7 @@ import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -35,6 +36,7 @@ public class UserClientTeamRole extends AbstractAuditingEntity implements Serial
     @NotNull
     @Column(length = 255, columnDefinition = "nvarchar(255)", nullable = false)
     @Size(min = 0, max = 255)
+    @Pattern(regexp = "[\\-A-Za-z0-9 '=_;:`@#&,.!()/]*", message = "Name can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( ) /")
     private String name;
     
     @NotNull

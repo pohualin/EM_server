@@ -118,14 +118,14 @@ public class UserClientTeamRolePersistenceIntegrationTest extends BaseIntegratio
         toFind.setClient(first.getClient());
         toFind.setName(first.getName());
         assertThat("Found the one we made",
-                userClientTeamRolePersistence.findByNormalizedName(toFind),
+                userClientTeamRolePersistence.findDuplicateByName(toFind),
                 is(first));
 
         UserClientTeamRole another = new UserClientTeamRole();
         another.setClient(makeNewRandomClient());
         another.setName(first.getName());
         assertThat("Should not find anything",
-                userClientTeamRolePersistence.findByNormalizedName(another),
+                userClientTeamRolePersistence.findDuplicateByName(another),
                 is(nullValue()));
     }
 

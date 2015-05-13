@@ -142,13 +142,13 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
         UserClientTeamRole second = new UserClientTeamRole();
         second.setName(first.getName());
         second.setClient(client);
-        assertThat("Should find one match", userClientTeamRoleService.findByNormalizedName(second), is(first));
+        assertThat("Should find one match", userClientTeamRoleService.hasDuplicateName(second), is(true));
         
         UserClientTeamRole third = new UserClientTeamRole();
         third.setId(first.getId());
         third.setName(first.getName());
         third.setClient(client);
-        assertThat("Should ignore self", userClientTeamRoleService.findByNormalizedName(third), is(nullValue()));
+        assertThat("Should ignore self", userClientTeamRoleService.hasDuplicateName(third), is(false));
     }
     
 }

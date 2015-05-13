@@ -91,12 +91,19 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
     }
     
     @Override
-    public UserClientTeamRole findByNormalizedName(UserClientTeamRole userClientTeamRole) {
-        String toSearch = matchCriteria
-                .normalizedName(userClientTeamRole.getName());
+    public UserClientTeamRole findDuplicateByName(
+            UserClientTeamRole userClientTeamRole) {
+        String toSearch = matchCriteria.normalizedName(userClientTeamRole
+                .getName());
         if (StringUtils.isNotBlank(toSearch)) {
-            return userClientTeamRoleRepository.findByNormalizedNameAndClient(
-                    toSearch, userClientTeamRole.getClient());
+            UserClientTeamRole dup = userClientTeamRoleRepository
+                    .findByNormalizedNameAndClient(toSearch,
+                            userClientTeamRole.getClient());
+            if (dup != null && dup.getId() == userClientTeamRole.getId()) {
+                return null;
+            } else {
+                return dup;
+            }
         } else {
             return null;
         }

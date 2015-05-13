@@ -95,17 +95,17 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
 
     @Override
     @Transactional(readOnly = true)
-    public UserClientTeamRole findByNormalizedName(UserClientTeamRole userClientTeamRole) {
+    public boolean hasDuplicateName(UserClientTeamRole userClientTeamRole) {
+        boolean hasDuplicate = false;
         if (userClientTeamRole == null || userClientTeamRole.getClient() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "UserClientTeamRole can neither be null nor have an id and must have a client attached");
         }
         userClientTeamRole.setClient(clientService.reload(userClientTeamRole
                 .getClient()));
-        UserClientTeamRole found = userClientTeamRolePersistence.findByNormalizedName(userClientTeamRole);
-        if(found != null && found.getId() == userClientTeamRole.getId()){
-            return null;
+        if(userClientTeamRolePersistence.findDuplicateByName(userClientTeamRole) != null){
+            hasDuplicate = true;
         }
-        return found;
+        return hasDuplicate;
     }    
 }

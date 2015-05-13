@@ -60,10 +60,10 @@ public interface UserClientTeamRolePersistence {
     Set<UserClientTeamPermission> permissionsFor(UserClientTeamRole userClientTeamRole);
     
     /**
-     * Find existing UserClientTeamRole with given name and client
+     * Find existing UserClientTeamRole not self with given name and client
      * 
      * @param userClientTeamRole to find
      * @return an existing UserClientTeamRole
      */
-    UserClientTeamRole findByNormalizedName(UserClientTeamRole userClientTeamRole);
+    UserClientTeamRole findDuplicateByName(UserClientTeamRole userClientTeamRole);
 }
