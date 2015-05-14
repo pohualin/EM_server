@@ -138,5 +138,6 @@ public class PatientsResource {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             return new ResponseEntity<>(patientResourceAssembler.toResource(updatedPatient), HttpStatus.OK);
-        } }
+        }
+    }
 }
