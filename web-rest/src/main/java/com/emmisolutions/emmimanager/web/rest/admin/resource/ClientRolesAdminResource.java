@@ -14,6 +14,8 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.reference.
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -98,11 +101,15 @@ public class ClientRolesAdminResource {
     @ApiOperation(value = "create a role on a client")
     public ResponseEntity<UserClientRoleResource> createRoleOn(@PathVariable Long clientId, @RequestBody UserClientRole userClientRole) {
         userClientRole.setClient(new Client(clientId));
-        UserClientRole saved = userClientRoleService.create(userClientRole);
-        if (saved != null) {
-            return new ResponseEntity<>(userClientRoleResourceAssembler.toResource(saved), HttpStatus.CREATED);
+        if (!userClientRoleService.hasDuplicateName(userClientRole)) {
+            UserClientRole saved = userClientRoleService.create(userClientRole);
+            if (saved != null) {
+                return new ResponseEntity<>(userClientRoleResourceAssembler.toResource(saved), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -136,12 +143,16 @@ public class ClientRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientRole userClientRole) {
-        UserClientRole ret = userClientRoleService.update(userClientRole);
-        if (ret != null) {
-            return new ResponseEntity<>(
-                userClientRoleResourceAssembler.toResource(ret), HttpStatus.OK);
+        if (!userClientRoleService.hasDuplicateName(userClientRole)) {
+            UserClientRole ret = userClientRoleService.update(userClientRole);
+            if (ret != null) {
+                return new ResponseEntity<>(
+                    userClientRoleResourceAssembler.toResource(ret), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 

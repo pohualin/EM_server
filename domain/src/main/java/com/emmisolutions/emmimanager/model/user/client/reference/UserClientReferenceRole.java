@@ -31,6 +31,11 @@ public class UserClientReferenceRole extends AbstractAuditingEntity implements S
 	@Size(max = 255)
 	@Column(length = 255, nullable = false, columnDefinition = "nvarchar(255)")
 	private String name;
+	
+	@NotNull
+    @Size(max = 255)
+    @Column(name="normalized_name", length = 255, nullable = false, columnDefinition = "nvarchar(255)")
+    private String normalizedName;
 
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userClientReferenceRole")
@@ -63,7 +68,15 @@ public class UserClientReferenceRole extends AbstractAuditingEntity implements S
 		this.name = name;
 	}
 
-	public UserClientReferenceRoleType getType() {
+	public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
+    }
+
+    public UserClientReferenceRoleType getType() {
 		return type;
 	}
 
