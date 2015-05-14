@@ -94,11 +94,15 @@ public class ClientTeamRolesAdminResource {
     @ApiOperation(value = "create a role on a client")
     public ResponseEntity<UserClientTeamRoleResource> createRoleOn(@PathVariable Long clientId, @RequestBody UserClientTeamRole userClientTeamRole) {
         userClientTeamRole.setClient(new Client(clientId));
-        UserClientTeamRole saved = userClientTeamRoleService.create(userClientTeamRole);
-        if (saved != null) {
-            return new ResponseEntity<>(userClientTeamRoleResourceAssembler.toResource(saved), HttpStatus.CREATED);
+        if (!userClientTeamRoleService.hasDuplicateName(userClientTeamRole)) {
+            UserClientTeamRole saved = userClientTeamRoleService.create(userClientTeamRole);
+            if (saved != null) {
+                return new ResponseEntity<>(userClientTeamRoleResourceAssembler.toResource(saved), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -132,12 +136,16 @@ public class ClientTeamRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientTeamRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientTeamRole userClientTeamRole) {
-        UserClientTeamRole ret = userClientTeamRoleService.update(userClientTeamRole);
-        if (ret != null) {
-            return new ResponseEntity<>(
-                userClientTeamRoleResourceAssembler.toResource(ret), HttpStatus.OK);
+        if (!userClientTeamRoleService.hasDuplicateName(userClientTeamRole)) {
+            UserClientTeamRole ret = userClientTeamRoleService.update(userClientTeamRole);
+            if (ret != null) {
+                return new ResponseEntity<>(
+                    userClientTeamRoleResourceAssembler.toResource(ret), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -197,10 +205,9 @@ public class ClientTeamRolesAdminResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<UserClientTeamReferenceRolePage> referenceRoles(@PageableDefault(size = 50) Pageable pageable,
-                                                                          @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<UserClientTeamReferenceRolePage> referenceRoles(@PageableDefault(size = 50, sort = "name") Pageable pageable,
                                                                           PagedResourcesAssembler<UserClientReferenceTeamRole> assembler) {
         Page<UserClientReferenceTeamRole> referenceRolePage = userClientTeamRoleService.loadReferenceRoles(pageable);
         if (referenceRolePage.hasContent()) {

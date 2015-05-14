@@ -5,13 +5,14 @@ package com.emmisolutions.emmimanager.config;
  */
 public interface Constants {
 
-    public static final String SPRING_PROFILE_DEVELOPMENT = "dev";
-    public static final String SPRING_PROFILE_JNDI_PERSISTENCE = "jndi";
-    public static final String SPRING_PROFILE_CAS = "cas";
-    public static final String SPRING_PROFILE_H2 = "h2";
-    public static final String SPRING_PROFILE_TEST = "test";
-    public static final String SPRING_PROFILE_PRODUCTION = "prod";
-    public static final String SPRING_PROFILE_QA = "qa";
-    public static final String SYSTEM_ACCOUNT = "system";
+    String SPRING_PROFILE_DEVELOPMENT = "dev";
+    String SPRING_PROFILE_JNDI_PERSISTENCE = "jndi";
+    String SPRING_PROFILE_CAS = "cas";
+    String SPRING_PROFILE_H2 = "h2";
+    String SPRING_PROFILE_H2_IN_MEMORY = "h2m";
+    String SPRING_PROFILE_TEST = "test";
+    String SPRING_PROFILE_PRODUCTION = "prod";
+    String SPRING_PROFILE_QA = "qa";
+    String SYSTEM_ACCOUNT = "system";
 
 }

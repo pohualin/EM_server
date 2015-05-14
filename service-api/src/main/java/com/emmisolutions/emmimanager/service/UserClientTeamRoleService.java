@@ -76,4 +76,11 @@ public interface UserClientTeamRoleService {
      */
     Set<UserClientTeamPermission> loadPossiblePermissions();
 
+    /**
+     * Check if the passed in name is already used within a given client
+     * 
+     * @param userClientTeamRole to check
+     * @return true if it is a duplicate name, false if it is not
+     */
+    boolean hasDuplicateName(UserClientTeamRole userClientTeamRole);
 }

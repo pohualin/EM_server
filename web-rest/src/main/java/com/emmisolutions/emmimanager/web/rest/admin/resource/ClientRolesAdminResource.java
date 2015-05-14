@@ -98,11 +98,15 @@ public class ClientRolesAdminResource {
     @ApiOperation(value = "create a role on a client")
     public ResponseEntity<UserClientRoleResource> createRoleOn(@PathVariable Long clientId, @RequestBody UserClientRole userClientRole) {
         userClientRole.setClient(new Client(clientId));
-        UserClientRole saved = userClientRoleService.create(userClientRole);
-        if (saved != null) {
-            return new ResponseEntity<>(userClientRoleResourceAssembler.toResource(saved), HttpStatus.CREATED);
+        if (!userClientRoleService.hasDuplicateName(userClientRole)) {
+            UserClientRole saved = userClientRoleService.create(userClientRole);
+            if (saved != null) {
+                return new ResponseEntity<>(userClientRoleResourceAssembler.toResource(saved), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -136,12 +140,16 @@ public class ClientRolesAdminResource {
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiOperation(value = "update one client role by id")
     public ResponseEntity<UserClientRoleResource> updateRole(@PathVariable Long id, @RequestBody UserClientRole userClientRole) {
-        UserClientRole ret = userClientRoleService.update(userClientRole);
-        if (ret != null) {
-            return new ResponseEntity<>(
-                userClientRoleResourceAssembler.toResource(ret), HttpStatus.OK);
+        if (!userClientRoleService.hasDuplicateName(userClientRole)) {
+            UserClientRole ret = userClientRoleService.update(userClientRole);
+            if (ret != null) {
+                return new ResponseEntity<>(
+                    userClientRoleResourceAssembler.toResource(ret), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -201,10 +209,9 @@ public class ClientRolesAdminResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<UserClientReferenceRolePage> referenceRoles(@PageableDefault(size = 50) Pageable pageable,
-                                                                      @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<UserClientReferenceRolePage> referenceRoles(@PageableDefault(size = 50, sort = "name") Pageable pageable,
                                                                       PagedResourcesAssembler<UserClientReferenceRole> assembler) {
         Page<UserClientReferenceRole> referenceRolePage = userClientRoleService.loadReferenceRoles(pageable);
         if (referenceRolePage.hasContent()) {

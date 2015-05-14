@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +22,12 @@ public interface UserClientTeamRoleRepository extends JpaRepository<UserClientTe
      */
     Page<UserClientTeamRole> findByClientId(long clientId, Pageable page);
 
-
+    /**
+     * Find an existing UserClientTeamRole with given normalized name and client
+     * 
+     * @param normalizedName to find
+     * @param client to use
+     * @return an existing UserClientTeamRole
+     */
+    UserClientTeamRole findByNormalizedNameAndClient(String normalizedName, Client client);
 }
