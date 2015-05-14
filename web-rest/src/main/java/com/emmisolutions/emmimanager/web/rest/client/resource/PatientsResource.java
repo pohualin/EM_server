@@ -122,4 +122,14 @@ public class PatientsResource {
         }
     }
 
+    @RequestMapping(value = "/clients/{clientId}/patient", method = RequestMethod.PUT)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER')")
+    public ResponseEntity<PatientResource> update(@RequestBody Patient patient,  @PathVariable("clientId") Long clientId){
+        Patient updatedPatient = patientService.update(patient);
+        if (updatedPatient == null){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(patientResourceAssembler.toResource(updatedPatient), HttpStatus.OK);
+        }
+    }
 }
