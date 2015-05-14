@@ -122,4 +122,22 @@ public class PatientsResource {
         }
     }
 
+    /**
+     * PUT for updating a patient
+     *
+     * @param patient to update
+     * @param clientId for security, ensures logged in user has rights to search the client
+     * @return OK (200): containing PatientResource
+     * INTERNAL_SERVER_ERROR (500): when the update doesn't return an updated patient.
+     */
+    @RequestMapping(value = "/clients/{clientId}/patient", method = RequestMethod.PUT)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER')")
+    public ResponseEntity<PatientResource> update(@RequestBody Patient patient,  @PathVariable("clientId") Long clientId){
+        Patient updatedPatient = patientService.update(patient);
+        if (updatedPatient == null){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(patientResourceAssembler.toResource(updatedPatient), HttpStatus.OK);
+        }
+    }
 }
