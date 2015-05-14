@@ -37,7 +37,7 @@ public class UserClientReferenceRolePage extends PagedResource<UserClientReferen
      * @see com.emmisolutions.emmimanager.web.rest.admin.resource.ClientRolesAdminResource#referenceRoles(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler)
      */
     public static Link createReferenceRolesLink() {
-        Link link = linkTo(methodOn(ClientRolesAdminResource.class).referenceRoles(null, null, null)).withRel("roles");
+        Link link = linkTo(methodOn(ClientRolesAdminResource.class).referenceRoles(null, null)).withRel("roles");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

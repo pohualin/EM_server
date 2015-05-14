@@ -14,8 +14,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.reference.
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
-
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
-
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -212,10 +209,9 @@ public class ClientRolesAdminResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<UserClientReferenceRolePage> referenceRoles(@PageableDefault(size = 50) Pageable pageable,
-                                                                      @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<UserClientReferenceRolePage> referenceRoles(@PageableDefault(size = 50, sort = "name") Pageable pageable,
                                                                       PagedResourcesAssembler<UserClientReferenceRole> assembler) {
         Page<UserClientReferenceRole> referenceRolePage = userClientRoleService.loadReferenceRoles(pageable);
         if (referenceRolePage.hasContent()) {

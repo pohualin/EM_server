@@ -205,10 +205,9 @@ public class ClientTeamRolesAdminResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<UserClientTeamReferenceRolePage> referenceRoles(@PageableDefault(size = 50) Pageable pageable,
-                                                                          @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<UserClientTeamReferenceRolePage> referenceRoles(@PageableDefault(size = 50, sort = "name") Pageable pageable,
                                                                           PagedResourcesAssembler<UserClientReferenceTeamRole> assembler) {
         Page<UserClientReferenceTeamRole> referenceRolePage = userClientTeamRoleService.loadReferenceRoles(pageable);
         if (referenceRolePage.hasContent()) {
