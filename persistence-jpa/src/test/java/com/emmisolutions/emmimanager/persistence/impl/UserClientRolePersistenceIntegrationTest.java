@@ -123,6 +123,11 @@ public class UserClientRolePersistenceIntegrationTest extends BaseIntegrationTes
                 userClientRolePersistence.findDuplicateByName(toFind),
                 is(first));
 
+        toFind.setId(first.getId());
+        assertThat("if the first one coming in has the same id, shouldn't find it",
+                userClientRolePersistence.findDuplicateByName(toFind),
+                is(nullValue()));
+
         UserClientRole another = new UserClientRole();
         another.setClient(makeNewRandomClient());
         another.setName(first.getName());

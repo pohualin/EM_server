@@ -96,17 +96,13 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     @Override
     @Transactional(readOnly = true)
     public boolean hasDuplicateName(UserClientRole userClientRole) {
-        boolean hasDuplicate = false;
         if (userClientRole == null || userClientRole.getClient() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "UserClientRole can neither be null nor have an id and must have a client attached");
         }
         userClientRole.setClient(clientService.reload(userClientRole
                 .getClient()));
-        if(userClientRolePersistence.findDuplicateByName(userClientRole) != null){
-            hasDuplicate = true;
-        }
-        return hasDuplicate;
+        return userClientRolePersistence.findDuplicateByName(userClientRole) != null;
     }
 
 }
