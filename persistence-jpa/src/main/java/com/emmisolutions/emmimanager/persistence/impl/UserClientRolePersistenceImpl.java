@@ -102,7 +102,8 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
                 UserClientRole sameNameAndClientInDb = userClientRoleRepository
                         .findByNormalizedNameAndClient(toSearch,
                                 userClientRole.getClient());
-                if (userClientRole.equals(sameNameAndClientInDb)) {
+                if (!userClientRole.equals(sameNameAndClientInDb)) {
+                    // if the object passed in is the same as the one in the db, not a dupe
                     duplicate = sameNameAndClientInDb;
                 }
             }
