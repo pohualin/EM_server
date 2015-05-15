@@ -10,11 +10,9 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +42,6 @@ public class UserClientUserClientRolesResource {
      *
      * @param userClientId to use
      * @param pageable     to use
-     * @param sort         to use
      * @param assembler    to use
      * @return UserClientUserClientRolePage
      */
@@ -54,11 +51,10 @@ public class UserClientUserClientRolesResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")})
+            @ApiImplicitParam(name = "sort", defaultValue = "userClientRole.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")})
     public ResponseEntity<UserClientUserClientRolePage> getUserClientUserClientRoles(
             @PathVariable(value = "userClientId") Long userClientId,
-            @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
+            @PageableDefault(size = 10, sort = "userClientRole.name", direction = Direction.ASC) Pageable pageable,
             PagedResourcesAssembler<UserClientUserClientRole> assembler) {
         Page<UserClientUserClientRole> page = userClientUserClientRoleService
                 .findByUserClient(new UserClient(userClientId), pageable);
