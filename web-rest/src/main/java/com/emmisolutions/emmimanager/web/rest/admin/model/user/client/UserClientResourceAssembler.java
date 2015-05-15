@@ -26,7 +26,7 @@ public class UserClientResourceAssembler implements
         ret.add(linkTo(
                 methodOn(UserClientUserClientRolesResource.class)
                         .getUserClientUserClientRoles(entity.getId(), null,
-                                null, null)).withRel("userClientRoles"));
+                                null)).withRel("userClientRoles"));
         ret.add(UserClientUserClientTeamRoleResourceAssembler
                 .createPossibleTeamsLink(entity));
         ret.add(UserClientUserClientTeamRoleResourceAssembler
