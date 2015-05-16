@@ -1,4 +1,5 @@
-<Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2_ID">
+<Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2_ID" antiResourceLocking="true"
+         unloadDelay="10000">
 
 
     <Manager pathname="" />

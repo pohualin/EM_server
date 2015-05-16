@@ -7,7 +7,6 @@ import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamPermissionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamRoleRepository;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -89,24 +87,24 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
         }
         return userClientTeamPermissionRepository.findAllByUserClientTeamRolesId(userClientRole.getId());
     }
-    
+
     @Override
-    public UserClientTeamRole findDuplicateByName(
-            UserClientTeamRole userClientTeamRole) {
-        String toSearch = matchCriteria.normalizedName(userClientTeamRole
-                .getName());
-        if (StringUtils.isNotBlank(toSearch)) {
-            UserClientTeamRole dup = userClientTeamRoleRepository
-                    .findByNormalizedNameAndClient(toSearch,
-                            userClientTeamRole.getClient());
-            if (dup != null && dup.getId() == userClientTeamRole.getId()) {
-                return null;
-            } else {
-                return dup;
+    public UserClientTeamRole findDuplicateByName(UserClientTeamRole userClientTeamRole) {
+        UserClientTeamRole duplicate = null;
+        if (userClientTeamRole != null) {
+            String toSearch = matchCriteria
+                    .normalizedName(userClientTeamRole.getName());
+            if (StringUtils.isNotBlank(toSearch)) {
+                UserClientTeamRole sameNameAndClientInDb = userClientTeamRoleRepository
+                        .findByNormalizedNameAndClient(toSearch,
+                                userClientTeamRole.getClient());
+                if (!userClientTeamRole.equals(sameNameAndClientInDb)) {
+                    // if the object passed in is the same as the one in the db, not a dupe
+                    duplicate = sameNameAndClientInDb;
+                }
             }
-        } else {
-            return null;
         }
+        return duplicate;
     }
 
 }
