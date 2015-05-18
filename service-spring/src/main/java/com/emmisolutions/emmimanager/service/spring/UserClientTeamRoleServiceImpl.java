@@ -1,13 +1,16 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRole;
 import com.emmisolutions.emmimanager.persistence.UserClientReferenceTeamRolePersistence;
+import com.emmisolutions.emmimanager.persistence.UserClientRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
+
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.Set;
 
 /**
@@ -28,6 +32,9 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
 
     @Resource
     ClientService clientService;
+    
+    @Resource
+    UserClientRolePersistence userClientRolePersistence;
 
     @Resource
     UserClientReferenceTeamRolePersistence referenceGroupPersistence;
@@ -96,16 +103,21 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
     @Override
     @Transactional(readOnly = true)
     public boolean hasDuplicateName(UserClientTeamRole userClientTeamRole) {
-        boolean hasDuplicate = false;
         if (userClientTeamRole == null || userClientTeamRole.getClient() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "UserClientTeamRole can neither be null nor have an id and must have a client attached");
         }
         userClientTeamRole.setClient(clientService.reload(userClientTeamRole
                 .getClient()));
-        if(userClientTeamRolePersistence.findDuplicateByName(userClientTeamRole) != null){
-            hasDuplicate = true;
+        if(userClientTeamRolePersistence.findDuplicateByName(userClientTeamRole) == null){
+            // Check the same name is not used in client role
+            UserClientRole userClientRole = new UserClientRole();
+            userClientRole.setName(userClientTeamRole.getName());
+            userClientRole.setClient(userClientTeamRole.getClient());
+            if(userClientRolePersistence.findDuplicateByName(userClientRole) == null){
+                return false;
+            }
         }
-        return hasDuplicate;
+        return true;
     }    
 }
