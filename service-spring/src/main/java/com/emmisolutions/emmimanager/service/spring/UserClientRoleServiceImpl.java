@@ -103,24 +103,22 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     @Override
     @Transactional(readOnly = true)
     public boolean hasDuplicateName(UserClientRole userClientRole) {
-        boolean hasDuplicate = false;
         if (userClientRole == null || userClientRole.getClient() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "UserClientRole can neither be null nor have an id and must have a client attached");
         }
         userClientRole.setClient(clientService.reload(userClientRole
                 .getClient()));
-        if(userClientRolePersistence.findDuplicateByName(userClientRole) != null){
-            hasDuplicate = true;
+        if(userClientRolePersistence.findDuplicateByName(userClientRole) == null){
+            // Check the same name is not used in team role
+            UserClientTeamRole userClientTeamRole = new UserClientTeamRole();
+            userClientTeamRole.setName(userClientRole.getName());
+            userClientTeamRole.setClient(userClientRole.getClient());
+            if(userClientTeamRolePersistence.findDuplicateByName(userClientTeamRole) == null){
+                return false; 
+            }
         }
-        
-        UserClientTeamRole userClientTeamRole = new UserClientTeamRole();
-        userClientTeamRole.setName(userClientRole.getName());
-        userClientTeamRole.setClient(userClientRole.getClient());
-        if(userClientTeamRolePersistence.findDuplicateByName(userClientTeamRole) != null){
-            hasDuplicate = true;
-        }
-        return hasDuplicate;
+        return true;
     }
 
 }
