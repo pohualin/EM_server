@@ -76,5 +76,14 @@ public interface UserClientRoleService {
      * @return the set of permissions
      */
     Set<UserClientPermission> loadPossiblePermissions();
+    
+    /**
+     * Check if the passed in name is already used within a given client
+     * 
+     * @param userClientRole
+     *            to check
+     * @return true if it is a duplicate name, false if it is not
+     */
+    boolean hasDuplicateName(UserClientRole userClientRole);
 
 }

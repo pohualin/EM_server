@@ -4,8 +4,10 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.persistence.UserClientReferenceRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientRolePersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientPermissionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientRoleRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -32,6 +34,9 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
     @Resource
     UserClientPermissionRepository userClientPermissionRepository;
 
+    @Resource
+    MatchingCriteriaBean matchCriteria;
+
     @Override
     public Page<UserClientRole> find(long clientId, Pageable page) {
         return userClientRoleRepository.findByClientId(clientId, page);
@@ -47,6 +52,8 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
             throw new InvalidDataAccessApiUsageException(
                     "UserClientRole cannot be null");
         }
+        userClientRole.setNormalizedName(matchCriteria
+                .normalizedName(userClientRole.getName()));
         // reload the type because the version may have changed
         userClientRole.setType(userClientReferenceRolePersistence
                 .reload(userClientRole.getType()));
@@ -83,6 +90,25 @@ public class UserClientRolePersistenceImpl implements UserClientRolePersistence 
         }
         return userClientPermissionRepository
                 .findAllByUserClientRolesId(userClientRole.getId());
+    }
+
+    @Override
+    public UserClientRole findDuplicateByName(UserClientRole userClientRole) {
+        UserClientRole duplicate = null;
+        if (userClientRole != null) {
+            String toSearch = matchCriteria
+                    .normalizedName(userClientRole.getName());
+            if (StringUtils.isNotBlank(toSearch)) {
+                UserClientRole sameNameAndClientInDb = userClientRoleRepository
+                        .findByNormalizedNameAndClient(toSearch,
+                                userClientRole.getClient());
+                if (!userClientRole.equals(sameNameAndClientInDb)) {
+                    // if the object passed in is the same as the one in the db, not a dupe
+                    duplicate = sameNameAndClientInDb;
+                }
+            }
+        }
+        return duplicate;
     }
 
 }

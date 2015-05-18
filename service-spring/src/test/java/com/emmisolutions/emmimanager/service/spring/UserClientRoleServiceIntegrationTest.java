@@ -5,12 +5,15 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRoleType;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
+
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -137,5 +140,31 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
     public void load() {
         assertThat("Reference Roles are loaded",
             userClientRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
+    }
+    
+    /**
+     * Test findByNormalizedName
+     */
+    @Test
+    public void findByNormalizedName(){
+        UserClientRole first = makeNewRandomUserClientRole(null);
+        Client client = first.getClient();
+        
+        UserClientRole second = new UserClientRole();
+        second.setName(first.getName());
+        second.setClient(client);
+        assertThat("Should find one match", userClientRoleService.hasDuplicateName(second), is(true));
+        
+        UserClientRole third = new UserClientRole();
+        third.setId(first.getId());
+        third.setName(first.getName());
+        third.setClient(client);
+        assertThat("Should ignore self", userClientRoleService.hasDuplicateName(third), is(false));
+        
+        UserClientTeamRole teamRole = makeNewRandomUserClientTeamRole(client);
+        UserClientRole fourth = new UserClientRole();
+        fourth.setName(teamRole.getName());
+        fourth.setClient(client);
+        assertThat("Should find duplicate", userClientRoleService.hasDuplicateName(fourth), is(true));
     }
 }

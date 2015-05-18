@@ -5,6 +5,8 @@ import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.program.Program;
+import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
+import com.emmisolutions.emmimanager.model.program.Specialty;
 import com.emmisolutions.emmimanager.service.ProgramService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
@@ -16,6 +18,8 @@ import com.emmisolutions.emmimanager.web.rest.client.model.program.location.Team
 import com.emmisolutions.emmimanager.web.rest.client.model.program.location.TeamLocationResourcePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.provider.TeamProviderResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.provider.TeamProviderResourcePage;
+import com.emmisolutions.emmimanager.web.rest.client.model.program.specialty.SpecialtyResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.program.specialty.SpecialtyResourcePage;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.*;
@@ -25,11 +29,13 @@ import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -63,6 +69,11 @@ public class ProgramsResource {
     @Resource(name = "clientTeamProviderResourceAssembler")
     ResourceAssembler<TeamProvider, TeamProviderResource> teamProviderResourceResourceAssembler;
 
+    @Resource(name = "specialtyResourceAssembler")
+    ResourceAssembler<Specialty, SpecialtyResource> specialtyResourceAssembler;
+
+    public static final String SPECIALTY_ID_REQUEST_PARAM = "s";
+
     /**
      * Find possible programs that can be scheduled for a team
      *
@@ -78,19 +89,48 @@ public class ProgramsResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = SPECIALTY_ID_REQUEST_PARAM, value = "the specialty id to narrow by", dataType = "integer", paramType = "query")
     })
     public ProgramResourcePage possiblePrograms(
             @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
-            @PageableDefault(size = 10, sort = "name") Pageable pageable,
-            PagedResourcesAssembler<Program> assembler) {
+            @PageableDefault(size = 10, sort = {"type.weight", "name"}) Pageable pageable,
+            PagedResourcesAssembler<Program> assembler,
+            @RequestParam(value = SPECIALTY_ID_REQUEST_PARAM, required = false) Set<Integer> specialtyIds) {
 
-        Page<Program> programPage = programService.find(pageable);
+        ProgramSearchFilter programSearchFilter = new ProgramSearchFilter();
+        if (!CollectionUtils.isEmpty(specialtyIds)) {
+            for (Integer specialtyId : specialtyIds) {
+                programSearchFilter.addSpecialty(new Specialty(specialtyId));
+            }
+        }
+        Page<Program> programPage = programService.find(programSearchFilter, pageable);
 
-        return new ProgramResourcePage(
+        return new ProgramResourcePage(programSearchFilter,
                 assembler.toResource(programPage, programResourceResourceAssembler),
                 programPage);
+    }
+
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/specialties", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public SpecialtyResourcePage specialties(
+            @PathVariable("clientId") Long clientId,
+            @PathVariable("teamId") Long teamId,
+            @PageableDefault(size = 10, sort = "id") Pageable pageable,
+            PagedResourcesAssembler<Specialty> assembler){
+
+        Page<Specialty> specialtyPage = programService.findSpecialties(pageable);
+
+        return new SpecialtyResourcePage(
+                assembler.toResource(specialtyPage, specialtyResourceAssembler),
+                specialtyPage);
     }
 
     /**

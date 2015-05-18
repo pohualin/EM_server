@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="update name of emmi super user role" author="Matt">
+        <update tableName="user_admin_role">
+            <column name="name" value="Emmi Administrator"/>
+            <where>name = 'Emmi Super User'</where>
+        </update>
+    </changeSet>
+    
+    <changeSet id="update name of client super user role" author="Matt">
+        <update tableName="user_client_reference_role">
+            <column name="name" value="Administrator"/>
+            <column name="normalized_name" value="administrator"/>
+            <where>name = 'Super User'</where>
+        </update>
+
+        <update tableName="strings">
+            <column name="message" value="Administrator (all permissions)"/>
+            <where>key_path = 'PERM_CLIENT_SUPER_USER'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

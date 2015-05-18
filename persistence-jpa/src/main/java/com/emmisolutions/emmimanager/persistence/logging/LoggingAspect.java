@@ -39,7 +39,7 @@ public class LoggingAspect {
     @AfterThrowing(pointcut = "loggingPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         Logger log = getLogger(joinPoint);
-        if (env.acceptsProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)) {
+        if (log.isDebugEnabled() && !env.acceptsProfiles(Constants.SPRING_PROFILE_TEST)) {
             log.error("Exception in {}() with cause = {}", joinPoint.getSignature().getName(), e.getCause(), e);
         }
     }

@@ -54,8 +54,6 @@ public class UserClientUserClientTeamRolesResource {
      *            to lookup
      * @param pageable
      *            to use
-     * @param sort
-     *            to use
      * @param assembler
      *            to assemble resource
      * @param userClientTeamRoleId
@@ -71,8 +69,7 @@ public class UserClientUserClientTeamRolesResource {
             @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
     public ResponseEntity<UserClientUserClientTeamRoleResourcePage> getUserClientUserClientTeamRoles(
             @PathVariable(value = "userClientId") Long userClientId,
-            @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
+            @PageableDefault(size = 10, sort = "userClientTeamRole.name", direction = Direction.ASC) Pageable pageable,
             PagedResourcesAssembler<UserClientUserClientTeamRole> assembler,
             @RequestParam(value = "userClientTeamRoleId", required = false) Long userClientTeamRoleId) {
         Page<UserClientUserClientTeamRole> page = userClientUserClientTeamRoleService
@@ -181,7 +178,6 @@ public class UserClientUserClientTeamRolesResource {
     public ResponseEntity<UserClientUserClientTeamRoleResourcePage> possible(
             @PathVariable Long userClientId,
             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
-            @SortDefault(sort = "name") Sort sort,
             PagedResourcesAssembler<UserClientUserClientTeamRole> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "term", required = false) String term,
