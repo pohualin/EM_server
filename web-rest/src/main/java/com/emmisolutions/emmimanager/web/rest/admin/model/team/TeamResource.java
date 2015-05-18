@@ -61,6 +61,7 @@ public class TeamResource extends BaseResource<Team> {
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("teamTagsType", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));

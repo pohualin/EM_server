@@ -66,6 +66,8 @@
         <class>com.emmisolutions.emmimanager.model.Gender</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.program.Specialty</class>
+        <class>com.emmisolutions.emmimanager.model.program.ProgramSpecialty</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>

@@ -93,4 +93,19 @@ public class UserClientTeamRoleServiceImpl implements UserClientTeamRoleService 
         return referenceGroupPersistence.loadReferenceTeamRoles(page);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean hasDuplicateName(UserClientTeamRole userClientTeamRole) {
+        boolean hasDuplicate = false;
+        if (userClientTeamRole == null || userClientTeamRole.getClient() == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "UserClientTeamRole can neither be null nor have an id and must have a client attached");
+        }
+        userClientTeamRole.setClient(clientService.reload(userClientTeamRole
+                .getClient()));
+        if(userClientTeamRolePersistence.findDuplicateByName(userClientTeamRole) != null){
+            hasDuplicate = true;
+        }
+        return hasDuplicate;
+    }    
 }

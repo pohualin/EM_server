@@ -62,8 +62,6 @@ public class TeamProvidersResource {
      *
      * @param page      paged request
      * @param assembler used to create the PagedResources
-     * @param name      a name filter
-     * @param status    the status
      * @param teamId    for this team
      * @return ProviderResource
      */
@@ -72,9 +70,7 @@ public class TeamProvidersResource {
     public ResponseEntity<TeamProviderPage> list(
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = {"provider.lastName"}, direction = Sort.Direction.ASC) Pageable page,
-            @RequestParam(value = "status", required = false) String status,
-            PagedResourcesAssembler<TeamProvider> assembler,
-            @RequestParam(value = "name", required = false) String name) {
+            PagedResourcesAssembler<TeamProvider> assembler) {
 
         Team tofind = new Team();
         tofind.setId(teamId);
@@ -130,10 +126,7 @@ public class TeamProvidersResource {
      *
      * @param teamProviderId the team provider id
      * @param pageable       paged request
-     * @param sort           sorting request
-     * @param status         to filter by
      * @param assembler      used to create the PagedResources
-     * @param names          to filter by
      * @return TeamLocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/teamProvider/{teamProviderId}/teamLocations", method = RequestMethod.GET)
@@ -146,10 +139,7 @@ public class TeamProvidersResource {
     public ResponseEntity<TeamProviderTeamLocationPage> findTeamLocationsByTeamProvider(
             @PathVariable("teamProviderId") Long teamProviderId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort,
-            @RequestParam(value = "status", required = false) String status,
-            PagedResourcesAssembler<TeamProviderTeamLocation> assembler,
-            @RequestParam(value = "name", required = false) String names) {
+            PagedResourcesAssembler<TeamProviderTeamLocation> assembler) {
 
         TeamProvider teamProvider = new TeamProvider();
         teamProvider.setId(teamProviderId);
@@ -191,7 +181,6 @@ public class TeamProvidersResource {
      *
      * @param teamId    the team
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagesResources
      * @param status    filter
      * @param name      filter
@@ -209,7 +198,7 @@ public class TeamProvidersResource {
     public ResponseEntity<TeamProviderPage> possible(
             @PathVariable Long teamId,
             @PageableDefault(size = 10, sort = {"lastName"}, direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<TeamProvider> assembler,
+            PagedResourcesAssembler<TeamProvider> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "name", required = false) String name) {
 

@@ -27,7 +27,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
 
         ret.add(ProviderPage.createProviderReferenceDataLink().withRel("providerReferenceData"));
         ret.add(ProviderPage.createProviderLink(entity.getClient().getId(), entity.getId()).withRel("provider"));
-        
+       
         ret.add(linkTo(methodOn(ClientTeamEmailConfigurationsResource.class).findClientTeamEmailConfig(entity.getClient().getId(), entity.getId(), null, null)).withRel("teamEmailConfig"));
 
         ret.add(addPageSizeAndSort(

@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
@@ -48,5 +49,18 @@ public class Source {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Source source = (Source) o;
+        return Objects.equals(id, source.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

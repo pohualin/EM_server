@@ -54,10 +54,7 @@ public class TeamLocationsResource {
      *
      * @param teamId    the team id
      * @param pageable  paged request
-     * @param sort      sorting request
-     * @param status    to filter by
      * @param assembler used to create the PagedResources
-     * @param names     to filter by
      * @return TeamLocationPage or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/locations", method = RequestMethod.GET)
@@ -65,15 +62,12 @@ public class TeamLocationsResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+        @ApiImplicitParam(name = "sort", defaultValue = "location.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamLocationPage> list(
         @PathVariable("teamId") Long teamId,
         @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
-        Sort sort,
-        @RequestParam(value = "status", required = false) String status,
-        PagedResourcesAssembler<TeamLocation> assembler,
-        @RequestParam(value = "name", required = false) String names) {
+        PagedResourcesAssembler<TeamLocation> assembler) {
 
         Team toFind = new Team();
         toFind.setId(teamId);
