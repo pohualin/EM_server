@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    <changeSet id="add team level email configuration tables" author="wlee">
+
+        <!-- TABLES -->
+        <createTable tableName="default_team_email_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_default_team_email_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="description" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="default_value" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="rank" type="int"/>
+        </createTable>
+        
+        <!-- TABLES -->
+        <createTable tableName="default_team_email_configuration_audit">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="description" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+             <column name="default_value" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="rank" type="int"/>
+        </createTable> 
+
+        <addPrimaryKey tableName="default_team_email_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_default_team_email_configuration_audit"/>
+
+        <createTable tableName="client_team_email_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_team_email_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="team_email_configuration_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="rank" type="int"/>
+            <column name="client_team_id" type="bigint"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="client_team_email_configuration_audit">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="nvarchar(50)" defaultValue="system">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+           <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="last_modified_by" type="nvarchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="team_email_configuration_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="rank" type="int"/>
+            <column name="client_team_id" type="bigint"/>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+        
+        <addPrimaryKey tableName="client_team_email_configuration_audit" columnNames="id, revision" 
+                       constraintName="pk_client_team_email_configuration_audit"/>
+
+        <!-- UKs -->
+        <addUniqueConstraint tableName="default_team_email_configuration" columnNames="id, description"
+                             constraintName="uk_default_team_email_configuration"/>
+        <addUniqueConstraint tableName="client_team_email_configuration" columnNames="id, team_email_configuration_id, client_id, client_team_id"
+                             constraintName="uk_client_team_email_configuration"/>
+
+        <!-- FKs -->
+        <addForeignKeyConstraint baseTableName="client_team_email_configuration"
+                                 baseColumnNames="team_email_configuration_id"
+                                 constraintName="fk_team_email_configuration_id"
+                                 referencedTableName="default_team_email_configuration"
+                                 referencedColumnNames="id"/>
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_19/data/em-932/team-email-configuration.csv"
+                  separator=";"
+                  tableName="default_team_email_configuration"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,104 @@
+package com.emmisolutions.emmimanager.service.spring;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import javax.annotation.Resource;
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
+import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
+
+/**
+ * An integration test for ClientTeamEmailConfigurationServiceImpl
+ */
+public class ClientTeamEmailConfigurationServiceIntegrationTest extends
+        BaseIntegrationTest {
+
+    @Resource
+    ClientTeamEmailConfigurationService clientTeamEmailConfigurationService;
+    
+    @Resource
+    DefaultClientTeamEmailConfigurationPersistence defaultClientTeamEmailConfigurationPersistence;
+
+    /**
+     * Test CRUD
+     */
+    @Test
+    public void testCreateReloadUpdate() {
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        
+        Page<DefaultClientTeamEmailConfiguration> defaultEmailConfigList =  defaultClientTeamEmailConfigurationPersistence.findActive(new PageRequest(0, 10));
+        
+        DefaultClientTeamEmailConfiguration defaultEmailConfig = defaultEmailConfigList.getContent().get(0);
+        DefaultClientTeamEmailConfiguration defaultEmailConfigTwo = defaultEmailConfigList.getContent().get(1);
+
+        ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
+        emailConfig.setTeamEmailConfigurationId(defaultEmailConfig.getId());
+        emailConfig.setDescription(defaultEmailConfig.getDescription());
+        emailConfig.setClient(client);
+        emailConfig.setTeam(team);
+        
+        ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
+        emailConfigTwo.setTeamEmailConfigurationId(defaultEmailConfigTwo.getId());
+        emailConfigTwo.setDescription(defaultEmailConfigTwo.getDescription());
+        emailConfigTwo.setClient(client);
+        emailConfigTwo.setTeam(team);
+        
+        List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
+        emailConfigList.add(emailConfig);
+        emailConfigList.add(emailConfigTwo);
+        
+        ClientTeamEmailConfiguration emailConfigSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfig);
+        ClientTeamEmailConfiguration emailConfigTwoSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfigTwo);
+             
+             
+        Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByClientIdAndTeamId(client.getId(), team.getId(), null);
+        
+        assertThat("should contain configuration",
+        		listOfEmailConfig.getContent(), hasItem(emailConfigSaved));
+        
+        assertThat("should contain configuration",
+        		listOfEmailConfig.getContent(), hasItem(emailConfigTwoSaved));
+        
+              
+       /* emailConfig = clientTeamEmailConfigurationService.save(emailConfigList);
+
+        assertThat("emailConfig saved with id", emailConfig.getId(),
+                is(notNullValue()));
+
+        //ClientTeamEmailConfiguration reloadEmailConfig = clientTeamEmailConfigurationService.
+          //      .reload(new ClientTeamEmailConfiguration(emailConfig.getId()));
+
+        assertThat("should reload the same email configuration",
+                reloadEmailConfig.getId(), is(emailConfig.getId()));
+
+        ClientTeamEmailConfiguration updateEmailConfig = reloadEmailConfig;
+        
+       
+
+        assertThat("should update the existing email configuration",
+                updateEmailConfig.getId(), is(reloadEmailConfig.getId()));*/
+       
+
+        
+    }
+    
+}

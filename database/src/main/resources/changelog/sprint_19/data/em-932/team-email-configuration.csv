@@ -1,0 +1,3 @@
+description;rank;default_value
+Collect email;1;1
+Require email;2;0
