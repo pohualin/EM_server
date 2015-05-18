@@ -78,13 +78,9 @@ public class ClientTeamEmailConfigurationServiceImpl implements
 	        }
 		  
 		  Page<ClientTeamEmailConfiguration> teamEmailConfigDB = clientTeamEmailConfigurationPersistence.find(clientId, teamId, pageable);
-		  System.out.println(" anything in the db +++++++++" + teamEmailConfigDB.hasContent());
-		  System.out.println(" anything in the db +++++++++" + teamEmailConfigDB.getContent().size());
 		  if(!teamEmailConfigDB.hasContent()){
-			  System.out.println(" no contente if statement");
 			  Client reloadClient = clientPersistence.reload(clientId);
 		      Team reloadTeam = teamPersistence.reload(teamId);
-			  
 			  List<ClientTeamEmailConfiguration> list = new ArrayList<ClientTeamEmailConfiguration> ();
 			  Page<DefaultClientTeamEmailConfiguration> deafaultClientEmail= defaultClientTeamEmailConfigurationPersistence.findActive(pageable);
 			  for(DefaultClientTeamEmailConfiguration defaultConfig : deafaultClientEmail){
@@ -96,8 +92,7 @@ public class ClientTeamEmailConfigurationServiceImpl implements
 				  teamEmailConfig.setClient(reloadClient);
 				  teamEmailConfig.setTeam(reloadTeam);
 				  list.add(teamEmailConfig);
-				  System.out.println(" this is the database config: " + defaultConfig.getDescription() + " ID: " + defaultConfig.getId() + "rank" + defaultConfig.getRank());
-			  }
+		  }
 			  return new PageImpl<ClientTeamEmailConfiguration>(list);
 		  }
 		  else{

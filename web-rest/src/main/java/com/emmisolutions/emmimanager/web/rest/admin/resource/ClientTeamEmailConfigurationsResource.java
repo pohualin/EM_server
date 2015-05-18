@@ -74,10 +74,8 @@ public class ClientTeamEmailConfigurationsResource {
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = "rank") Pageable pageable,
             PagedResourcesAssembler<ClientTeamEmailConfiguration> assembler) {
-        System.out.println("here is the findClientTeamEmailConfig clientId: " + clientId + " teamId: " + teamId);
-    	Page<ClientTeamEmailConfiguration> page = clientTeamEmailConfigurationService
+        Page<ClientTeamEmailConfiguration> page = clientTeamEmailConfigurationService
                 .findByClientIdAndTeamId(clientId, teamId, pageable);
-    	System.out.println("anything in the page: " + page.getSize() + "contente" + page.getContent().toString());
     	if (page.hasContent()) {
     	 return new ResponseEntity<>(new ClientTeamEmailConfigurationPage(
                  assembler.toResource(page,
@@ -112,12 +110,9 @@ public class ClientTeamEmailConfigurationsResource {
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = "rank") Pageable pageable,
             @RequestBody ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
-    	System.out.println("here is the findClientTeamEmailConfig clientId: " + clientId + " teamId: " + teamId);
-    	System.out.println("here is the findClientTeamEmailConfig clientTeamEmailConfiguration: " + clientTeamEmailConfiguration);
-    	Team team = new Team(teamId);
-    	Client client = new Client(clientId);
-    	clientTeamEmailConfiguration.setClient(client);
-    	clientTeamEmailConfiguration.setTeam(team);
+    	
+    	clientTeamEmailConfiguration.setClient(new Client(clientId));
+    	clientTeamEmailConfiguration.setTeam(new Team(teamId));
     	ClientTeamEmailConfiguration emailConfiguration = clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
                
         if (emailConfiguration != null) {

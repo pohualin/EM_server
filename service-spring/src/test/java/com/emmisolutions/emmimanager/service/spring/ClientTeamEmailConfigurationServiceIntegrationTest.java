@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
@@ -72,33 +73,29 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
              
         Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByClientIdAndTeamId(client.getId(), team.getId(), null);
         
-        assertThat("should contain configuration",
+        ClientTeamEmailConfiguration reloadEmailConfig = clientTeamEmailConfigurationService.reload(listOfEmailConfig.getContent().get(0).getId());
+        
+        
+        assertThat("should contain email configuration",
         		listOfEmailConfig.getContent(), hasItem(emailConfigSaved));
         
-        assertThat("should contain configuration",
+        assertThat("should contain eamil configuration",
         		listOfEmailConfig.getContent(), hasItem(emailConfigTwoSaved));
+        				
+        assertThat("reload the same instance email configuration",
+        		reloadEmailConfig.getId(), is(emailConfigSaved.getId()));
         
-              
-       /* emailConfig = clientTeamEmailConfigurationService.save(emailConfigList);
-
-        assertThat("emailConfig saved with id", emailConfig.getId(),
-                is(notNullValue()));
-
-        //ClientTeamEmailConfiguration reloadEmailConfig = clientTeamEmailConfigurationService.
-          //      .reload(new ClientTeamEmailConfiguration(emailConfig.getId()));
-
-        assertThat("should reload the same email configuration",
-                reloadEmailConfig.getId(), is(emailConfig.getId()));
-
-        ClientTeamEmailConfiguration updateEmailConfig = reloadEmailConfig;
         
-       
-
-        assertThat("should update the existing email configuration",
-                updateEmailConfig.getId(), is(reloadEmailConfig.getId()));*/
-       
-
-        
+          
+    }
+    
+    /**
+     * Test bad Reload
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testNegativeReloadNullId() {
+    	clientTeamEmailConfigurationService
+                .reload(null);
     }
     
 }

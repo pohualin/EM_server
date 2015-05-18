@@ -79,43 +79,8 @@ public class ClientTeamEmailConfigurationPersistenceIntegrationTest extends
         
         assertThat("should reload the same configuration",
                 configurationSave.getId() == configurationReload.getId(), is(true));
-               
-        
-        // configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
-        //configuration.setEmailEnding("emmisolutions.com");
-       /* configuration = emailRestrictConfigurationPersistence
-                .saveOrUpdate(configuration);
-
-        EmailRestrictConfiguration configurationA = new EmailRestrictConfiguration();
-        configurationA.setClient(client);
-        configurationA.setDescription(RandomStringUtils.randomAlphabetic(255));
-        configurationA.setEmailEnding("emmisolutions.net");
-        configurationA = emailRestrictConfigurationPersistence
-                .saveOrUpdate(configuration);
-
-        Page<EmailRestrictConfiguration> listOfEmailConfig = emailRestrictConfigurationPersistence
-                .list(new PageRequest(0, 10), client.getId());
-
-        assertThat("should contain configuration",
-                listOfEmailConfig.getContent(), hasItem(configuration));
-        assertThat("should contain configurationA",
-                listOfEmailConfig.getContent(), hasItem(configurationA));
-
-        Page<EmailRestrictConfiguration> listOfEmailConfigA = emailRestrictConfigurationPersistence
-                .list(null, client.getId());
-
-        assertThat("should contain configuration",
-                listOfEmailConfigA.getContent(), hasItem(configuration));
-        assertThat("should contain configurationA",
-                listOfEmailConfigA.getContent(), hasItem(configurationA));
-
-        Page<EmailRestrictConfiguration> listOfEmailConfigB = emailRestrictConfigurationPersistence
-                .list(new PageRequest(0, 10), null);
-
-        assertThat("should contain configuration",
-                listOfEmailConfigB.getContent(), hasItem(configuration));
-        assertThat("should contain configurationA",
-                listOfEmailConfigB.getContent(), hasItem(configurationA));*/
+     
+    
     }
     
 }

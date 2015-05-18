@@ -17,7 +17,7 @@ public interface ClientTeamEmailConfigurationService {
      * Save or Update a ClientTeamEmailConfiguration
      * 
      * @param clientTeamEmailConfiguration
-     *            to insert
+     *            to save or update
      * @return a associated ClientTeamEmailConfiguration
      */
     public ClientTeamEmailConfiguration saveOrUpdate(
