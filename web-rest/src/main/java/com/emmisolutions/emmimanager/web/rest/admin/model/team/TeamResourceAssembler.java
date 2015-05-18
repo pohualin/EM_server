@@ -3,10 +3,13 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.team;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamEmailConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamEmailConfigurationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamLocationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamProvidersResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamTagsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamsResource;
+
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +30,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
 	     ret.add(linkTo(methodOn(TeamsResource.class).getTeam(entity.getClient().getId(), entity.getId())).withSelfRel());
          ret.add(ProviderPage.createProviderReferenceDataLink().withRel("providerReferenceData"));
          ret.add(ProviderPage.createProviderLink(entity.getClient().getId(), entity.getId()).withRel("provider"));
+         ret.add(linkTo(methodOn(ClientTeamEmailConfigurationsResource.class).findClientTeamEmailConfig(entity.getClient().getId(), entity.getId(), null, null)).withRel("teamEmailConfig"));
          ret.add(linkTo(methodOn(TeamTagsResource.class).list(entity.getId(), null, null, null, null, null)).withRel("tags"));
          ret.add(TeamLocationPage.createFullSearchLink(entity));
          ret.add(linkTo(methodOn(TeamProvidersResource.class).list(entity.getId(), null, null, null, null)).withRel("teamProviders"));
