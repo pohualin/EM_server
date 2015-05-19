@@ -110,10 +110,10 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void contractUserFetch(){
-        UserAdmin contractOwner = userAdminPersistence.reload("contract_owner");
+        UserAdmin emmiSuperUser = userAdminPersistence.reload("emmi_super_user");
         Page<UserAdmin> ret = clientService.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
-        assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
+        assertThat("contract_owner should be in the page", ret.getContent(), hasItem(emmiSuperUser));
     }
 
     private Client makeClient(String clientName){
