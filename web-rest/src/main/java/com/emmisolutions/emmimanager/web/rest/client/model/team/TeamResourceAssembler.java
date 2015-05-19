@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.team;
 
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.web.rest.client.resource.PatientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
 import org.springframework.hateoas.*;
@@ -49,6 +50,9 @@ public class TeamResourceAssembler
                 new TemplateVariables(new TemplateVariable(TEAM_LOCATION_ID_REQUEST_PARAM,
                         REQUEST_PARAM_CONTINUED))), "providers"));
 
+        ret.add(createPatientFullSearchLink(entity));
+        ret.add(linkTo(methodOn(PatientsResource.class).create(entity.getClient().getId(), entity.getId(), null)).withRel("patient"));
+
         return ret;
     }
 
@@ -61,4 +65,22 @@ public class TeamResourceAssembler
                         new TemplateVariable("sort",
                                 TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
     }
+
+
+    /**
+     * Link for patient search
+     *
+     * @return Link for patient search
+     */
+    public static Link createPatientFullSearchLink(Team team) {
+        Link link = linkTo(methodOn(PatientsResource.class).list(team.getClient().getId(), null, null, null, team.getId())).withRel("patients");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(
+                new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+
 }

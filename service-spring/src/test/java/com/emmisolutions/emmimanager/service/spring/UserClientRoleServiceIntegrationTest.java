@@ -5,12 +5,15 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRoleType;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
+
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -157,5 +160,11 @@ public class UserClientRoleServiceIntegrationTest extends BaseIntegrationTest {
         third.setName(first.getName());
         third.setClient(client);
         assertThat("Should ignore self", userClientRoleService.hasDuplicateName(third), is(false));
+        
+        UserClientTeamRole teamRole = makeNewRandomUserClientTeamRole(client);
+        UserClientRole fourth = new UserClientRole();
+        fourth.setName(teamRole.getName());
+        fourth.setClient(client);
+        assertThat("Should find duplicate", userClientRoleService.hasDuplicateName(fourth), is(true));
     }
 }
