@@ -24,7 +24,7 @@ public class TeamResourceAssembler
         TeamResource ret = new TeamResource();
         ret.setEntity(entity);
         ret.add(linkTo(methodOn(SchedulesResource.class)
-                .schedule(entity.getClient().getId(), entity.getId(), null, null, null))
+                .scheduled(entity.getClient().getId(), entity.getId(), null, null))
                 .withRel("schedulePrograms"));
 
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
