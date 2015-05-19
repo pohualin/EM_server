@@ -27,7 +27,7 @@
                         newDataType="varchar(40)"/>
     </changeSet>
 
-    <changeSet id="create emmi super user" author="Matt">
+    <changeSet id="create emmi super user" author="Matt" context="dev,test">
         <insert tableName="users">
             <column name="login" value="emmi_super_user"/>
             <column name="first_name" value="Emmi"/>
@@ -40,7 +40,7 @@
         </insert>
     </changeSet>
 
-    <changeSet id="grant emmi super user the correct role" author="Matt">
+    <changeSet id="grant emmi super user the correct role" author="Matt" context="dev,test">
         <sql><![CDATA[
             INSERT INTO user_admin_user_admin_role (users_id, user_admin_role_id)
               SELECT
