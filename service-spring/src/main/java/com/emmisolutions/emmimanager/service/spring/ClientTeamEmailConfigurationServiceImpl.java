@@ -90,16 +90,5 @@ public class ClientTeamEmailConfigurationServiceImpl implements
 	               
 	}
 
-	@Override
-	@Transactional
-	public ClientTeamEmailConfiguration reload(
-			Long clientTeamEmailConfigurationId) {
-		 if (clientTeamEmailConfigurationId == null) {
-	            throw new InvalidDataAccessApiUsageException(
-	                    "clientTeamEmailConfiguration Id can not be null.");
-	        }
-	        return clientTeamEmailConfigurationPersistence
-	                .reload(clientTeamEmailConfigurationId);
-	}
 
 }

@@ -20,14 +20,4 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientTeamEmailConfigurationResource extends BaseResource<ClientTeamEmailConfiguration> {
 
-    private ClientTeamEmailConfiguration entity;
-
-    public ClientTeamEmailConfiguration getEntity() {
-        return entity;
-    }
-
-    public void setEntity(ClientTeamEmailConfiguration entity) {
-        this.entity = entity;
-    }
-
 }

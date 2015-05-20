@@ -41,14 +41,5 @@ public interface ClientTeamEmailConfigurationService {
             Team team,
             Pageable pageable);
 
- 
-     /**
-     * Reload ClientTeamEmailConfiguration
-     * 
-     * @param clientTeamConfigurationId
-     *            to reload
-     * @return ClientTeamEmailConfiguration reloaded
-     */
-    public ClientTeamEmailConfiguration reload(
-    		Long clientTeamConfigurationId);
+     
 }

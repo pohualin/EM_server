@@ -89,19 +89,12 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
              
         Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByTeam(team, null);
         
-        ClientTeamEmailConfiguration reloadEmailConfig = clientTeamEmailConfigurationService.reload(listOfEmailConfig.getContent().get(0).getId());
-        
-        
         assertThat("should contain email configuration",
         		listOfEmailConfig.getContent(), hasItem(emailConfigSaved));
         
         assertThat("should contain eamil configuration",
         		listOfEmailConfig.getContent(), hasItem(emailConfigTwoSaved));
         				
-        assertThat("reload the same instance email configuration",
-        		reloadEmailConfig.getId(), is(emailConfigSaved.getId()));
-        
-        
           
     }
     
@@ -150,29 +143,15 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             ClientTeamEmailConfiguration emailConfigSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfig);
             ClientTeamEmailConfiguration emailConfigTwoSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfigTwo);
             
-            ClientTeamEmailConfiguration reloadEmailConfig = clientTeamEmailConfigurationService.reload(listOfEmailConfig.getContent().get(0).getId());
-  
             assertThat("should contain email configuration",
             		listOfEmailConfig.getContent(), hasItem(emailConfigSaved));
             
             assertThat("should contain eamil configuration",
             		listOfEmailConfig.getContent(), hasItem(emailConfigTwoSaved));
-            				
-            assertThat("reload the same instance email configuration",
-            		emailConfigSaved, is(reloadEmailConfig));
-            
+        				
+         
         }
  
-    }
-    
-    
-    /**
-     * Test bad Reload
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeReloadNullId() {
-    	clientTeamEmailConfigurationService
-                .reload(null);
     }
     
     /**

@@ -2,7 +2,9 @@ package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+
 import com.emmisolutions.emmimanager.model.configuration.team.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -137,4 +139,5 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
         ClientTeamEmailConfiguration that = (ClientTeamEmailConfiguration) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }
+	
 }
