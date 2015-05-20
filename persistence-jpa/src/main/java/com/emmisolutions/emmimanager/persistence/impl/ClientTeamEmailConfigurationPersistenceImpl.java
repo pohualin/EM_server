@@ -24,12 +24,12 @@ public class ClientTeamEmailConfigurationPersistenceImpl implements
     ClientTeamEmailConfigurationRepository clientTeamEmailConfigurationRepository;
 
 	@Override
-	public Page<ClientTeamEmailConfiguration> find(Long clientId, Long teamId,
+	public Page<ClientTeamEmailConfiguration> find(Long teamId,
 			Pageable page) {
 		if (page == null) {
             page = new PageRequest(0, 10);
         }
-		return clientTeamEmailConfigurationRepository.findByClientIdAndTeamId(clientId, teamId, page);
+		return clientTeamEmailConfigurationRepository.findByTeamId(teamId, page);
 	}
 
 	@Override
@@ -40,6 +40,9 @@ public class ClientTeamEmailConfigurationPersistenceImpl implements
 
 	@Override
 	public ClientTeamEmailConfiguration reload(Long id) {
+		 if (id == null) {
+	            return null;
+	    }
 		return clientTeamEmailConfigurationRepository.findOne(id);
 	}
 

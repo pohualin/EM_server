@@ -37,30 +37,6 @@ public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest exten
     }
 
     /**
-     * Test negative reload
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadReload() {
-        assertThat("bad reload return null",
-        		defaultTeamEmailConfigurationPersistence.reload(null),
-                is(nullValue()));
-    }
-
-    /**
-     * Test positive reload
-     */
-    @Test
-    public void testReload() {
-        assertThat("reload works",
-        		defaultTeamEmailConfigurationPersistence.reload(1l),
-                is(notNullValue()));
-
-        assertThat("reload nothing works",
-        		defaultTeamEmailConfigurationPersistence.reload(3l),
-                is(nullValue()));
-    }
-
-    /**
      * Test positive save
      */
     @Test
@@ -68,7 +44,6 @@ public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest exten
     	Page<DefaultClientTeamEmailConfiguration>  systemDefault = defaultTeamEmailConfigurationPersistence
                 .findActive(null);
         systemDefault.getContent().get(1).setActive(true);;
-        defaultTeamEmailConfigurationPersistence.reload(systemDefault.getContent().get(1).getId());
         assertThat("system default should be false", systemDefault.getContent().get(1).isActive(),
                 is(true));
     }

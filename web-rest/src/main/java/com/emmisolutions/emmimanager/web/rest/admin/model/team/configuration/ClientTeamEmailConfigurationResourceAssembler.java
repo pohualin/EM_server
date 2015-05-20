@@ -22,9 +22,7 @@ public class ClientTeamEmailConfigurationResourceAssembler
 	public ClientTeamEmailConfigurationResource toResource(
 			ClientTeamEmailConfiguration entity) {
    		ClientTeamEmailConfigurationResource ret = new ClientTeamEmailConfigurationResource();
-  		   		
-        ret.add(linkTo(
-                methodOn(ClientTeamEmailConfigurationsResource.class).findClientTeamEmailConfig(entity.getClient().getId(), entity.getTeam().getId(), null, null)).withSelfRel());
+  		
         ret.setEntity(entity);
         return ret;
 	}

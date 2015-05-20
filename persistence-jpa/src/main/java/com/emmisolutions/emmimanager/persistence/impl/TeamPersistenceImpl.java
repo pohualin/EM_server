@@ -70,12 +70,4 @@ public class TeamPersistenceImpl implements TeamPersistence {
         }
         return team;
     }
-
-	@Override
-	public Team reload(Long id) {
-		if (id == null) {
-            return null;
-        }
-		return teamRepository.findOne(id);
-	}
 }

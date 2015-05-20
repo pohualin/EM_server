@@ -34,14 +34,6 @@ public interface TeamPersistence {
      * @return the team or null
      */
     Team reload(Team team);
-    
-    /**
-     * Loads a team
-     *
-     * @param id to load
-     * @return the team or null
-     */
-    Team reload(Long id);
 
     /**
      * Returns a team by normalized name and Client ID

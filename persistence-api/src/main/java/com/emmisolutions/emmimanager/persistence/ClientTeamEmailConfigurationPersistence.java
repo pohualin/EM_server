@@ -14,12 +14,11 @@ public interface ClientTeamEmailConfigurationPersistence {
     /**
      * Find a page of client team email configuration
      *
-     * @param clientId for which to find the email configuration
      * @param teamId for which to find the email configuration
      * @param page pagination specification
      * @return a page of ClientTeamEmailConfiguration objects
      */
-    Page<ClientTeamEmailConfiguration> find(Long clientId, Long teamId, Pageable page);
+    Page<ClientTeamEmailConfiguration> find(Long teamId, Pageable page);
 
     /**
      * Create/Update a client team email configuration

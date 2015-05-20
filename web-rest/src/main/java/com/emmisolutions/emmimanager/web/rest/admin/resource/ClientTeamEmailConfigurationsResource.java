@@ -56,26 +56,25 @@ public class ClientTeamEmailConfigurationsResource {
     /**
      * Find client team email configuration if there are any
      *
-     * @param clientId  for the email configuration
      * @param teamId    for the email configuration
      * @param pageable  which page to fetch
      * @param assembler makes a page for ClientTeamEmailConfiguration
      * @return a ClientTeamEmailConfiguration response entity
      */
-    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/email_configuration", method = RequestMethod.GET)
+    @RequestMapping(value = "/teams/{teamId}/email_configuration", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "rank,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<ClientTeamEmailConfigurationPage> findClientTeamEmailConfig(
-            @PathVariable("clientId") Long clientId,
+    public ResponseEntity<ClientTeamEmailConfigurationPage> findTeamEmailConfig(
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = "rank") Pageable pageable,
             PagedResourcesAssembler<ClientTeamEmailConfiguration> assembler) {
+    	
         Page<ClientTeamEmailConfiguration> page = clientTeamEmailConfigurationService
-                .findByClientIdAndTeamId(clientId, teamId, pageable);
+                .findByTeam(new Team(teamId), pageable);
     	if (page.hasContent()) {
     	 return new ResponseEntity<>(new ClientTeamEmailConfigurationPage(
                  assembler.toResource(page,
@@ -92,26 +91,18 @@ public class ClientTeamEmailConfigurationsResource {
     /**
      * Save or update client team email configuration 
      *
-     * @param clientId  for the email configuration
      * @param teamId    for the email configuration
      * @param pageable  which page to fetch
      * @param  clientTeamEmailConfiguration the user client team configuration that needs to save or update
      * @return a ClientTeamEmailConfiguration response entity
      */
-    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/email_configuration", method = RequestMethod.POST)
+    @RequestMapping(value = "/teams/{teamId}/email_configuration", method = RequestMethod.POST)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "rank,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
-    })
     public ResponseEntity<ClientTeamEmailConfigurationResource> saveOrUpdate(
-            @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = "rank") Pageable pageable,
             @RequestBody ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
     	
-    	clientTeamEmailConfiguration.setClient(new Client(clientId));
     	clientTeamEmailConfiguration.setTeam(new Team(teamId));
     	ClientTeamEmailConfiguration emailConfiguration = clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
                
@@ -123,10 +114,7 @@ public class ClientTeamEmailConfigurationsResource {
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    	
-    	
- 	
-    	
+
     }
 
 }

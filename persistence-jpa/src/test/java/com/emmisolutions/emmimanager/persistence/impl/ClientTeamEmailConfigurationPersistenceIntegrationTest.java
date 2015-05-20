@@ -50,23 +50,23 @@ public class ClientTeamEmailConfigurationPersistenceIntegrationTest extends
 
 
         ClientTeamEmailConfiguration configuration = new ClientTeamEmailConfiguration();
-        configuration.setTeamEmailConfigurationId(defaultEmailConfig.getId());
         configuration.setDescription(defaultEmailConfig.getDescription());
-        configuration.setClient(client);
         configuration.setTeam(team);
+        configuration.setCreatedBy("system");
+        configuration.setType(defaultEmailConfig.getType());
         
         ClientTeamEmailConfiguration configurationTwo = new ClientTeamEmailConfiguration();
-        configurationTwo.setTeamEmailConfigurationId(defaultEmailConfigTwo.getId());
         configurationTwo.setDescription(defaultEmailConfigTwo.getDescription());
-        configurationTwo.setClient(client);
         configurationTwo.setTeam(team);
+        configurationTwo.setCreatedBy("system");
+        configurationTwo.setType(defaultEmailConfigTwo.getType());
         
         
         ClientTeamEmailConfiguration configurationSave = clientTeamEmailConfigurationPersistence.save(configuration);
         ClientTeamEmailConfiguration configurationSaveTwo = clientTeamEmailConfigurationPersistence.save(configurationTwo);
         
         Page<ClientTeamEmailConfiguration> listOfEmailConfig = clientTeamEmailConfigurationPersistence.
-        		find(client.getId(), team.getId(), null);
+        		find(team.getId(), null);
               
 
         assertThat("should contain configuration",
@@ -78,7 +78,7 @@ public class ClientTeamEmailConfigurationPersistenceIntegrationTest extends
         ClientTeamEmailConfiguration configurationReload = clientTeamEmailConfigurationPersistence.reload(configurationSave.getId());
         
         assertThat("should reload the same configuration",
-                configurationSave.getId() == configurationReload.getId(), is(true));
+                configurationSave, is(configurationReload));
      
     
     }

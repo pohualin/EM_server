@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.Team;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,8 +37,8 @@ public interface ClientTeamEmailConfigurationService {
      *            to use
      * @return a Page of existing clientTeamEmailConfiguration
      */
-    public Page<ClientTeamEmailConfiguration> findByClientIdAndTeamId(
-            Long clientId, Long teamId,
+    public Page<ClientTeamEmailConfiguration> findByTeam(
+            Team team,
             Pageable pageable);
 
  

@@ -48,9 +48,6 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
     @Resource
     TeamService teamService;
     
-    @Resource
-    ClientService clientService;
-
     /**
      * Test CRUD
      */
@@ -65,16 +62,22 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
         DefaultClientTeamEmailConfiguration defaultEmailConfigTwo = defaultEmailConfigList.getContent().get(1);
 
         ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
-        emailConfig.setTeamEmailConfigurationId(defaultEmailConfig.getId());
         emailConfig.setDescription(defaultEmailConfig.getDescription());
-        emailConfig.setClient(client);
         emailConfig.setTeam(team);
+        emailConfig.setCreatedBy("system");
+        emailConfig.setRank(defaultEmailConfig.getRank());
+        emailConfig.setType(defaultEmailConfig.getType());
+        emailConfig.setDescription(defaultEmailConfig.getDescription());
+        emailConfig.setEmail_config(defaultEmailConfig.isDefaultValue());
         
         ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
-        emailConfigTwo.setTeamEmailConfigurationId(defaultEmailConfigTwo.getId());
         emailConfigTwo.setDescription(defaultEmailConfigTwo.getDescription());
-        emailConfigTwo.setClient(client);
         emailConfigTwo.setTeam(team);
+        emailConfigTwo.setCreatedBy("system");
+        emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
+        emailConfigTwo.setType(defaultEmailConfigTwo.getType());
+        emailConfigTwo.setDescription(defaultEmailConfigTwo.getDescription());
+        emailConfigTwo.setEmail_config(defaultEmailConfigTwo.isDefaultValue());
         
         List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
         emailConfigList.add(emailConfig);
@@ -84,7 +87,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
         ClientTeamEmailConfiguration emailConfigTwoSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfigTwo);
              
              
-        Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByClientIdAndTeamId(client.getId(), team.getId(), null);
+        Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByTeam(team, null);
         
         ClientTeamEmailConfiguration reloadEmailConfig = clientTeamEmailConfigurationService.reload(listOfEmailConfig.getContent().get(0).getId());
         
@@ -107,28 +110,16 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
      */
     @Test
     public void testFind() {
-        Client client = new Client();
-        client.setTier(new ClientTier(2l));
-        client.setContractEnd(LocalDate.now().plusYears(1));
-        client.setContractStart(LocalDate.now());
-        client.setRegion(new ClientRegion(1l));
-        client.setName("Emmi Testing Email Configuration");
-        client.setType(new ClientType(2l));
-        client.setActive(true);
-        client.setContractOwner(makeNewRandomUserAdmin());
-        client.setSalesForceAccount(new SalesForce(RandomStringUtils
-                .randomAlphanumeric(18)));
-        clientService.create(client);
+    	Client client = makeNewRandomClient();
         Team team = makeNewRandomTeam(client);
                 
-        Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByClientIdAndTeamId(client.getId(), team.getId(), null);
+        Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByTeam(team, null);
         
         assertThat("should not contain email configuration",
         		listOfEmailConfig.getContent().size() < 1, is(false));
         
         if(!listOfEmailConfig.hasContent()){
-        	Client reloadClient = clientService.reload(client);
-            Team reloadTeam = teamService.reload(team);
+        	Team reloadTeam = teamService.reload(team);
             List<ClientTeamEmailConfiguration> list = new ArrayList<ClientTeamEmailConfiguration> ();
             
             Page<DefaultClientTeamEmailConfiguration> defaultEmailConfigList =  defaultClientTeamEmailConfigurationPersistence.findActive(new PageRequest(0, 10));
@@ -137,16 +128,20 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             DefaultClientTeamEmailConfiguration defaultEmailConfigTwo = defaultEmailConfigList.getContent().get(1);
 
             ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
-            emailConfig.setTeamEmailConfigurationId(defaultEmailConfig.getId());
             emailConfig.setDescription(defaultEmailConfig.getDescription());
-            emailConfig.setClient(client);
-            emailConfig.setTeam(team);
+            emailConfig.setTeam(reloadTeam);
+            emailConfig.setCreatedBy("system");
+            emailConfig.setRank(defaultEmailConfig.getRank());
+            emailConfig.setType(defaultEmailConfig.getType());
+            emailConfig.setEmail_config(defaultEmailConfig.isDefaultValue());
             
             ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
-            emailConfigTwo.setTeamEmailConfigurationId(defaultEmailConfigTwo.getId());
             emailConfigTwo.setDescription(defaultEmailConfigTwo.getDescription());
-            emailConfigTwo.setClient(reloadClient);
             emailConfigTwo.setTeam(reloadTeam);
+            emailConfigTwo.setCreatedBy("system");
+            emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
+            emailConfigTwo.setType(defaultEmailConfigTwo.getType());
+            emailConfigTwo.setEmail_config(defaultEmailConfigTwo.isDefaultValue());
             
             List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
             emailConfigList.add(emailConfig);
@@ -156,8 +151,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             ClientTeamEmailConfiguration emailConfigTwoSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfigTwo);
             
             ClientTeamEmailConfiguration reloadEmailConfig = clientTeamEmailConfigurationService.reload(listOfEmailConfig.getContent().get(0).getId());
-            
-            
+  
             assertThat("should contain email configuration",
             		listOfEmailConfig.getContent(), hasItem(emailConfigSaved));
             
@@ -165,7 +159,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             		listOfEmailConfig.getContent(), hasItem(emailConfigTwoSaved));
             				
             assertThat("reload the same instance email configuration",
-            		reloadEmailConfig.getId(), is(emailConfigSaved.getId()));
+            		emailConfigSaved, is(reloadEmailConfig));
             
         }
  
@@ -195,7 +189,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeFindNull() {
-    	clientTeamEmailConfigurationService.findByClientIdAndTeamId(null, null, null);
+    	clientTeamEmailConfigurationService.findByTeam(new Team(), null);
     }
     
     

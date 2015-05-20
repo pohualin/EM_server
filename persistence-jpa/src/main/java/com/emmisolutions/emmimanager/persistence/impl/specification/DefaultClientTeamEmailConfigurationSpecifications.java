@@ -27,7 +27,7 @@ public class DefaultClientTeamEmailConfigurationSpecifications{
             @Override
             public Predicate toPredicate(Root<DefaultClientTeamEmailConfiguration> root,
                     CriteriaQuery<?> query, CriteriaBuilder cb) {
-                return cb.equal(root.get(DefaultClientTeamEmailConfiguration_.active), true);
+            	return cb.isTrue(root.get(DefaultClientTeamEmailConfiguration_.active));
             }
         };
     }

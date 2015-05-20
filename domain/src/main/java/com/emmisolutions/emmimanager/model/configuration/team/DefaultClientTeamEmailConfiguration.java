@@ -15,11 +15,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.envers.Audited;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 
 /**
- * A client.
+ * The default team email configuration.
  */
-@Audited
 @Entity
 @Table(name = "default_team_email_configuration")
 @XmlRootElement(name = "default_team_email_configuration")
@@ -40,6 +40,10 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @NotNull
     @Column(columnDefinition = "nvarchar(255)", nullable = false)
     private String description;
+    
+    @NotNull
+    @Column(columnDefinition = "nvarchar(50)", nullable = false)
+    private String type;
     
     @Column(name ="rank", columnDefinition = "integer")
 	private Integer rank;
@@ -111,6 +115,32 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+    
+    public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	@Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        DefaultClientTeamEmailConfiguration that = (DefaultClientTeamEmailConfiguration) o;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
+    }
+	
+	@Override
+    public String toString() {
+        return "DefaultClientTeamEmailConfiguration{" + "id=" + id
+                + ", type=" + type +
+                ", description=" + description + " ,defaultValue=" +
+                defaultValue +  '}';
     }
 
       

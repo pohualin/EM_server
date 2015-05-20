@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration;
 
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.web.rest.admin.model.BaseResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.Link;
@@ -16,21 +18,9 @@ import java.util.List;
  */
 @XmlRootElement(name = "client-team-email-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientTeamEmailConfigurationResource extends ResourceSupport {
+public class ClientTeamEmailConfigurationResource extends BaseResource<ClientTeamEmailConfiguration> {
 
     private ClientTeamEmailConfiguration entity;
-
-    /**
-     * Override to change the link property name for serialization
-     *
-     * @return links
-     */
-    @XmlElement(name = "link")
-    @XmlElementWrapper(name = "links")
-    @JsonProperty("link")
-    public List<Link> getLinks() {
-        return super.getLinks();
-    }
 
     public ClientTeamEmailConfiguration getEntity() {
         return entity;

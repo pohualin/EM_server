@@ -36,14 +36,8 @@ public class ClientTeamEmailConfigurationServiceImpl implements
     TeamService teamService;
 
     @Resource
-    ClientService clientService;
-    
-    @Resource
     TeamPersistence teamPersistence;
 
-    @Resource
-    ClientPersistence clientPersistence;
-    
     @Resource
     DefaultClientTeamEmailConfigurationPersistence defaultClientTeamEmailConfigurationPersistence;
 
@@ -59,9 +53,7 @@ public class ClientTeamEmailConfigurationServiceImpl implements
                     "ClientTeamEmailConfiguration can not be null.");
         }
    		
-   		Client reloadClient = clientService.reload(clientTeamEmailConfiguration.getClient());
-        Team reloadTeam = teamService.reload(clientTeamEmailConfiguration.getTeam());
-        clientTeamEmailConfiguration.setClient(reloadClient);
+   		Team reloadTeam = teamService.reload(clientTeamEmailConfiguration.getTeam());
         clientTeamEmailConfiguration.setTeam(reloadTeam);
    		clientTeamEmailConfigurationPersistence.save(clientTeamEmailConfiguration);
         return clientTeamEmailConfigurationPersistence.save(clientTeamEmailConfiguration);
@@ -69,27 +61,25 @@ public class ClientTeamEmailConfigurationServiceImpl implements
 
 	@Override
 	@Transactional
-	public Page<ClientTeamEmailConfiguration> findByClientIdAndTeamId(
-			Long clientId, Long teamId, Pageable pageable) {
-		  if (clientId == null || teamId == null) {
+	public Page<ClientTeamEmailConfiguration> findByTeam(
+			Team team, Pageable pageable) {
+		  if (team.getId() == null) {
 	            throw new InvalidDataAccessApiUsageException(
-	                    "Client and Team cannot be null"
+	                    "Team cannot be null"
 	                    + "to find ClientTeamEmailConfiguration");
 	        }
 		  
-		  Page<ClientTeamEmailConfiguration> teamEmailConfigDB = clientTeamEmailConfigurationPersistence.find(clientId, teamId, pageable);
+		  Page<ClientTeamEmailConfiguration> teamEmailConfigDB = clientTeamEmailConfigurationPersistence.find(team.getId(), pageable);
 		  if(!teamEmailConfigDB.hasContent()){
-			  Client reloadClient = clientPersistence.reload(clientId);
-		      Team reloadTeam = teamPersistence.reload(teamId);
+			  Team reloadTeam = teamPersistence.reload(team);
 			  List<ClientTeamEmailConfiguration> list = new ArrayList<ClientTeamEmailConfiguration> ();
 			  Page<DefaultClientTeamEmailConfiguration> deafaultClientEmail= defaultClientTeamEmailConfigurationPersistence.findActive(pageable);
 			  for(DefaultClientTeamEmailConfiguration defaultConfig : deafaultClientEmail){
 				  ClientTeamEmailConfiguration teamEmailConfig = new ClientTeamEmailConfiguration();
 				  teamEmailConfig.setDescription(defaultConfig.getDescription());
-				  teamEmailConfig.setTeamEmailConfigurationId(defaultConfig.getId());
+				  teamEmailConfig.setType(defaultConfig.getType());
 				  teamEmailConfig.setRank(defaultConfig.getRank());
-				  teamEmailConfig.setValue(defaultConfig.isDefaultValue());
-				  teamEmailConfig.setClient(reloadClient);
+				  teamEmailConfig.setEmail_config(defaultConfig.isDefaultValue());
 				  teamEmailConfig.setTeam(reloadTeam);
 				  list.add(teamEmailConfig);
 		  }

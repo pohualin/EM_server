@@ -18,14 +18,12 @@ public interface ClientTeamEmailConfigurationRepository extends
      * Find a page of ClientTeamEmailConfiguration with given userClientId and
      * userClientTeamRoleId
      * 
-     * @param clientId
-     *            to use
      * @param teamId
      *            to use
      * @param pageable
      *            to use
      * @return a page of ClientTeamEmailConfiguration
      */
-    public Page<ClientTeamEmailConfiguration> findByClientIdAndTeamId(
-            Long clientId, Long teamId, Pageable pageable);
+    public Page<ClientTeamEmailConfiguration> findByTeamId(
+            Long teamId, Pageable pageable);
 }
