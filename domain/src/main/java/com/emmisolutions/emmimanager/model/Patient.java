@@ -19,7 +19,7 @@ import java.util.Date;
 /**
  * A patient.
  */
-@Table(name = "patient")
+@Table(name = "client_patient")
 @Audited
 @XmlRootElement(name = "patient")
 @Entity
