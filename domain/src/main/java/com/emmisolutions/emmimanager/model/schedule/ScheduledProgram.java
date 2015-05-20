@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model.schedule;
 
+import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Team;
@@ -27,14 +28,18 @@ import java.util.Objects;
                 @Index(name = "ix_scheduled_program_team_id", columnList = "team_id")
         }
 )
-public class ScheduledProgram {
+public class ScheduledProgram extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "bigint")
     private Long id;
 
+    @Version
+    private Integer version;
+
     @NotNull
-    @DammChecksum(message = "Damm checksum failed")
+    @DammChecksum(message = "Invalid code (checksum)")
     @Pattern(regexp = "2\\d{10}", message = "must start with a 2 and be 11 numbers in total")
     @Column(name = "access_code", length = 11, nullable = false, columnDefinition = "nvarchar(11)")
     private String accessCode;
@@ -47,17 +52,20 @@ public class ScheduledProgram {
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "patient_id", nullable = false, columnDefinition = "bigint")
+    @JoinColumn(name = "patient_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_patient"))
     private Patient patient;
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "team_id", nullable = false, columnDefinition = "bigint")
+    @JoinColumn(name = "team_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_client_team"))
     private Team team;
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "location_id", nullable = false, columnDefinition = "bigint")
+    @JoinColumn(name = "location_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_location"))
     private Location location;
 
     @NotNull
@@ -133,4 +141,11 @@ public class ScheduledProgram {
         return Objects.hash(id);
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 }

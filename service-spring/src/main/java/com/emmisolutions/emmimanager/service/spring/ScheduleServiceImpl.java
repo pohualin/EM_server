@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,10 +39,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
         ScheduledProgram savedScheduledProgram = null;
         if (toBeScheduled != null) {
-            toBeScheduled.setLocation(locationPersistence.reload(toBeScheduled.getLocation()));
+
             toBeScheduled.setTeam(teamPersistence.reload(toBeScheduled.getTeam()));
             toBeScheduled.setPatient(patientPersistence.reload(toBeScheduled.getPatient()));
+            if (toBeScheduled.getTeam() == null ||
+                    toBeScheduled.getTeam().getClient() == null ||
+                    toBeScheduled.getPatient() == null ||
+                    !toBeScheduled.getTeam().getClient().equals(toBeScheduled.getPatient().getClient())){
+                throw new InvalidDataAccessApiUsageException("Cannot schedule program for patient and team on different clients.");
+            }
+            toBeScheduled.setLocation(locationPersistence.reload(toBeScheduled.getLocation()));
             toBeScheduled.setAccessCode(accessCodeGenerator.next());
+
             savedScheduledProgram = schedulePersistence.save(toBeScheduled);
         }
         return savedScheduledProgram;

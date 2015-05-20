@@ -29,7 +29,7 @@ public class DammChecksumConstraintValidator implements ConstraintValidator<Damm
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return StringUtils.isNotEmpty(value) && calculateCheckSumDigit(value) == 0;
+        return StringUtils.isNumeric(value) && calculateCheckSumDigit(value) == 0;
     }
 
     private int calculateCheckSumDigit(String number) {

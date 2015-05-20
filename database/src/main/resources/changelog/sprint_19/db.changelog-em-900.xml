@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create scheduled program tables" author="Matt">
+        <createTable tableName="scheduled_program">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_scheduled_program"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"
+                    defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="access_code" type="nvarchar(11)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="view_by_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="program_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="team_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="scheduled_program_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="access_code" type="nvarchar(11)"/>
+            <column name="view_by_date" type="timestamp"/>
+            <column name="location_id" type="bigint"/>
+            <column name="patient_id" type="bigint"/>
+            <column name="program_id" type="integer"/>
+            <column name="team_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="scheduled_program_audit" columnNames="id, revision"
+                       constraintName="pk_scheduled_program_audit"/>
+    </changeSet>
+
+    <changeSet id="scheduled program foreign keys" author="Matt">
+        <addForeignKeyConstraint baseTableName="scheduled_program"
+                                 baseColumnNames="location_id"
+                                 constraintName="fk_scheduled_program_location"
+                                 referencedTableName="location"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="scheduled_program"
+                                 baseColumnNames="patient_id"
+                                 constraintName="fk_scheduled_program_patient"
+                                 referencedTableName="client_patient"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="scheduled_program"
+                                 baseColumnNames="program_id"
+                                 constraintName="fk_scheduled_program_rf_emmi"
+                                 referencedTableName="rf_emmi"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="emmi_cd"/>
+        <addForeignKeyConstraint baseTableName="scheduled_program"
+                                 baseColumnNames="team_id"
+                                 constraintName="fk_scheduled_program_client_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="scheduled_program_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_scheduled_program_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="scheduled program indices" author="Matt">
+        <createIndex tableName="scheduled_program"
+                     indexName="ix_scheduled_program_program_id">
+            <column name="program_id"/>
+        </createIndex>
+        <createIndex tableName="scheduled_program"
+                     indexName="ix_scheduled_program_patient_id">
+            <column name="patient_id"/>
+        </createIndex>
+        <createIndex tableName="scheduled_program"
+                     indexName="ix_scheduled_program_team_id">
+            <column name="team_id"/>
+        </createIndex>
+        <createIndex tableName="scheduled_program" unique="true"
+                     indexName="ak_scheduled_program_access_code">
+            <column name="access_code"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

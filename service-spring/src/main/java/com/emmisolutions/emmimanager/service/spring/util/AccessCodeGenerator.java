@@ -25,15 +25,15 @@ public class AccessCodeGenerator {
         return findUniqueCode();
     }
 
-    private String findUniqueCode(){
-        String ret = generateRandomCode();
-        while (!schedulePersistence.isAccessCodeUnique(ret)){
+    private String findUniqueCode() {
+        String ret;
+        do {
             ret = generateRandomCode();
-        }
+        } while (!schedulePersistence.isAccessCodeUnique(ret));
         return ret;
     }
 
-    private String generateRandomCode(){
+    private String generateRandomCode() {
         return checksum.generateCheckSum(String.format("2%09d", random.nextInt(999999999)));
     }
 }
