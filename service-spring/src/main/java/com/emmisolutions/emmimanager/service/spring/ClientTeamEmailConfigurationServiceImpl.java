@@ -55,8 +55,7 @@ public class ClientTeamEmailConfigurationServiceImpl implements
    		
    		Team reloadTeam = teamService.reload(clientTeamEmailConfiguration.getTeam());
         clientTeamEmailConfiguration.setTeam(reloadTeam);
-   		clientTeamEmailConfigurationPersistence.save(clientTeamEmailConfiguration);
-        return clientTeamEmailConfigurationPersistence.save(clientTeamEmailConfiguration);
+   		return clientTeamEmailConfigurationPersistence.save(clientTeamEmailConfiguration);
    	}
 
 	@Override
