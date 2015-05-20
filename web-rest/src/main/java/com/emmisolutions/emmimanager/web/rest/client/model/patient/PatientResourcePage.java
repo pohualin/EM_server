@@ -26,7 +26,7 @@ public class PatientResourcePage extends PagedResource<PatientResource> {
     }
 
     /**
-     * contructor for Patient resource page
+     * constructor for Patient resource page
      * @param pagedPatientResources
      * @param patientPage
      */
