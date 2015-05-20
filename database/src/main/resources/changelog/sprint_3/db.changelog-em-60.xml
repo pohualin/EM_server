@@ -7,7 +7,7 @@
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
     
-    <changeSet id="insert_ref_groups_tags" author="Amrita" context="dev">
+    <changeSet id="insert_ref_groups_tags" author="Amrita">
 		<insert tableName="reference_group">
             <column name="name">REF GROUP ONE</column>
         </insert>
