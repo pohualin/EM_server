@@ -136,6 +136,11 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     }
 	
 	@Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+	
+	@Override
     public String toString() {
         return "DefaultClientTeamEmailConfiguration{" + "id=" + id
                 + ", type=" + type +
