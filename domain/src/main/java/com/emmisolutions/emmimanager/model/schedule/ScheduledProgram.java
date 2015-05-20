@@ -4,10 +4,9 @@ import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.constraint.DammChecksum;
 import com.emmisolutions.emmimanager.model.program.Program;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDateTime;
+import org.joda.time.LocalDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -39,8 +38,7 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     private Integer version;
 
     @NotNull
-    @DammChecksum(message = "Invalid code (checksum)")
-    @Pattern(regexp = "2\\d{10}", message = "must start with a 2 and be 11 numbers in total")
+    @Pattern(regexp = "\\d{11}", message = "must be 11 numbers in total")
     @Column(name = "access_code", length = 11, nullable = false, columnDefinition = "nvarchar(11)")
     private String accessCode;
 
@@ -69,8 +67,8 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     private Location location;
 
     @NotNull
-    @Column(name = "view_by_date", nullable = false, columnDefinition = "timestamp")
-    private LocalDateTime viewByDate;
+    @Column(name = "view_by_date_utc", nullable = false, columnDefinition = "date")
+    private LocalDate viewByDate;
 
     public Long getId() {
         return id;
@@ -104,11 +102,11 @@ public class ScheduledProgram extends AbstractAuditingEntity {
         this.patient = patient;
     }
 
-    public LocalDateTime getViewByDate() {
+    public LocalDate getViewByDate() {
         return viewByDate;
     }
 
-    public void setViewByDate(LocalDateTime viewByDate) {
+    public void setViewByDate(LocalDate viewByDate) {
         this.viewByDate = viewByDate;
     }
 

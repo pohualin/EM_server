@@ -95,7 +95,6 @@ public class SchedulesResource {
                                                              @PathVariable("teamId") Long teamId,
                                                              @RequestBody ScheduledProgram toBeScheduled) {
 
-
         // caller has permission to schedule programs for the client and team
         Team securedTeam = new Team(teamId);
         securedTeam.setClient(new Client(clientId));
@@ -106,7 +105,6 @@ public class SchedulesResource {
         if (scheduledProgram != null) {
             return new ResponseEntity<>(programResourceResourceAssembler.toResource(scheduledProgram), OK);
         }
-
 
         return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
     }

@@ -5,7 +5,8 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ProgramPersistence;
 import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -35,7 +36,7 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
 
         scheduledProgram.setAccessCode("23759604346");
-        scheduledProgram.setViewByDate(LocalDateTime.now());
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
         scheduledProgram.setLocation(makeNewRandomLocation());
         scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));
@@ -44,6 +45,11 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("save happens successfully",
                 schedulePersistence.save(scheduledProgram).getId(),
                 is(notNullValue()));
+
+        assertThat("access code should not be unique",
+                schedulePersistence.isAccessCodeUnique(scheduledProgram.getAccessCode()),
+                is(false));
+
     }
 
     /**
@@ -55,7 +61,7 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
 
         scheduledProgram.setAccessCode("5A");
-        scheduledProgram.setViewByDate(LocalDateTime.now());
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
         scheduledProgram.setLocation(makeNewRandomLocation());
         scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));

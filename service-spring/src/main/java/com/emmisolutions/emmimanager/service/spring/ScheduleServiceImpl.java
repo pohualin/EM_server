@@ -7,6 +7,8 @@ import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
         ScheduledProgram savedScheduledProgram = null;
         if (toBeScheduled != null) {
-
+            if (toBeScheduled.getViewByDate() == null ||
+                    toBeScheduled.getViewByDate().isBefore(LocalDate.now(DateTimeZone.UTC))) {
+                throw new InvalidDataAccessApiUsageException("view-by-date (UTC) >= current date. Current UTC date is: " + LocalDate.now(DateTimeZone.UTC).toString());
+            }
             toBeScheduled.setTeam(teamPersistence.reload(toBeScheduled.getTeam()));
             toBeScheduled.setPatient(patientPersistence.reload(toBeScheduled.getPatient()));
             if (toBeScheduled.getTeam() == null ||

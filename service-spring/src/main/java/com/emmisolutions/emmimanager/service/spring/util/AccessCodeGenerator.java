@@ -21,6 +21,11 @@ public class AccessCodeGenerator {
     @Resource
     SchedulePersistence schedulePersistence;
 
+    /**
+     * Finds the next access code that will not break the db
+     *
+     * @return String an 11 digit code with a Damm checksum
+     */
     public String next() {
         return findUniqueCode();
     }

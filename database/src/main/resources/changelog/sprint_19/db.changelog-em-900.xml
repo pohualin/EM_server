@@ -26,7 +26,7 @@
             <column name="access_code" type="nvarchar(11)">
                 <constraints nullable="false"/>
             </column>
-            <column name="view_by_date" type="timestamp">
+            <column name="view_by_date_utc" type="date">
                 <constraints nullable="false"/>
             </column>
             <column name="location_id" type="bigint">
@@ -52,7 +52,7 @@
             </column>
             <column name="revision_type" type="tinyint"/>
             <column name="access_code" type="nvarchar(11)"/>
-            <column name="view_by_date" type="timestamp"/>
+            <column name="view_by_date_utc" type="date"/>
             <column name="location_id" type="bigint"/>
             <column name="patient_id" type="bigint"/>
             <column name="program_id" type="integer"/>
