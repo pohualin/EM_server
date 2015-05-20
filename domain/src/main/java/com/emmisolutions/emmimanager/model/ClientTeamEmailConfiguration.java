@@ -55,7 +55,7 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
    	private Integer rank;
     
     @Column(name = "email_config", columnDefinition = "boolean", nullable = false)
-    private boolean email_config;
+    private boolean emailConfig;
 
     public Integer getVersion() {
 		return version;
@@ -81,16 +81,16 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
 		this.team = team;
 	}
 	
+	public boolean isEmailConfig() {
+		return emailConfig;
+	}
+
+	public void setEmailConfig(boolean emailConfig) {
+		this.emailConfig = emailConfig;
+	}
+
 	public Integer getRank() {
 		return rank;
-	}
-
-	public boolean isEmail_config() {
-		return email_config;
-	}
-
-	public void setEmail_config(boolean email_config) {
-		this.email_config = email_config;
 	}
 
 	public void setRank(Integer rank) {
@@ -123,8 +123,8 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
 	@Override
     public String toString() {
         return "ClientTeamEmailConfiguration{" + "id=" + id
-                + ", description=" + description + " ,email_config=" +
-                email_config + " ,team="
+                + ", description=" + description + " ,emailConfig=" +
+                emailConfig + " ,team="
                 + team + ", type=" + type + '}';
     }
 	

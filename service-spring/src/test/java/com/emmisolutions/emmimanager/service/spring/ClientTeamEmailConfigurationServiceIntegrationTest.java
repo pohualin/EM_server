@@ -68,7 +68,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
         emailConfig.setRank(defaultEmailConfig.getRank());
         emailConfig.setType(defaultEmailConfig.getType());
         emailConfig.setDescription(defaultEmailConfig.getDescription());
-        emailConfig.setEmail_config(defaultEmailConfig.isDefaultValue());
+        emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
         
         ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
         emailConfigTwo.setDescription(defaultEmailConfigTwo.getDescription());
@@ -77,7 +77,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
         emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
         emailConfigTwo.setType(defaultEmailConfigTwo.getType());
         emailConfigTwo.setDescription(defaultEmailConfigTwo.getDescription());
-        emailConfigTwo.setEmail_config(defaultEmailConfigTwo.isDefaultValue());
+        emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
         
         List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
         emailConfigList.add(emailConfig);
@@ -133,7 +133,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             emailConfig.setCreatedBy("system");
             emailConfig.setRank(defaultEmailConfig.getRank());
             emailConfig.setType(defaultEmailConfig.getType());
-            emailConfig.setEmail_config(defaultEmailConfig.isDefaultValue());
+            emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
             
             ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
             emailConfigTwo.setDescription(defaultEmailConfigTwo.getDescription());
@@ -141,7 +141,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             emailConfigTwo.setCreatedBy("system");
             emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
             emailConfigTwo.setType(defaultEmailConfigTwo.getType());
-            emailConfigTwo.setEmail_config(defaultEmailConfigTwo.isDefaultValue());
+            emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
             
             List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
             emailConfigList.add(emailConfig);

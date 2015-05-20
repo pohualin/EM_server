@@ -79,7 +79,7 @@ public class ClientTeamEmailConfigurationServiceImpl implements
 				  teamEmailConfig.setDescription(defaultConfig.getDescription());
 				  teamEmailConfig.setType(defaultConfig.getType());
 				  teamEmailConfig.setRank(defaultConfig.getRank());
-				  teamEmailConfig.setEmail_config(defaultConfig.isDefaultValue());
+				  teamEmailConfig.setEmailConfig(defaultConfig.isDefaultValue());
 				  teamEmailConfig.setTeam(reloadTeam);
 				  list.add(teamEmailConfig);
 		  }
