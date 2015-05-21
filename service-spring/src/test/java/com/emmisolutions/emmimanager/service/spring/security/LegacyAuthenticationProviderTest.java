@@ -60,7 +60,7 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
     UserClientService userClientService;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         authenticationProvider.setUserDetailsService(userDetailsService);
         adminAuthenticationProvider.setUserDetailsService(adminUserDetailsService);
     }
@@ -147,13 +147,14 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
 
         // do a login
         UserClient loggedInUser = (UserClient) login(userClient.getLogin(), plainTextPassword);
+        logout();
 
         // check to see that the permissions and granted authorities are present for the client and team
         assertThat("client user has been granted team level user permission",
                 Collections.unmodifiableCollection(loggedInUser.getAuthorities()),
-                hasItem(new SimpleGrantedAuthority(UserClientTeamPermissionName.PERM_CLIENT_TEAM_SCHEDULE_PROGRAM.toString()
-                        + "_" + loggedInUser.getTeamRoles().iterator().next().getTeam().getId())));
-
-        logout();
+                hasItem(new SimpleGrantedAuthority(String.format("%s_%s_%s",
+                        UserClientTeamPermissionName.PERM_CLIENT_TEAM_SCHEDULE_PROGRAM.toString()
+                        , loggedInUser.getTeamRoles().iterator().next().getTeam().getId(),
+                        loggedInUser.getClient().getId()))));
     }
 }
