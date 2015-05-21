@@ -51,7 +51,7 @@ public class PatientsResource {
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     public ResponseEntity<PatientResource> create(@PathVariable("clientId") Long clientId, @PathVariable("teamId") Long teamId, @RequestBody Patient patient) {
         patient.setClient(clientService.reload(new Client(clientId)));
         return new ResponseEntity<>(patientResourceAssembler.toResource(patientService.create(patient)), HttpStatus.OK);
@@ -101,7 +101,7 @@ public class PatientsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patients", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -135,7 +135,7 @@ public class PatientsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     public ResponseEntity<PatientResource> update(@RequestBody Patient patient,  @PathVariable("clientId") Long clientId, @PathVariable("teamId") Long teamId){
         Patient updatedPatient = patientService.update(patient);
         if (updatedPatient == null){

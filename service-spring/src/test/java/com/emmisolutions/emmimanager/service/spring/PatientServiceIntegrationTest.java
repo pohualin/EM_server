@@ -1,12 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.PatientSearchFilter;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.PatientService;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -15,9 +13,7 @@ import org.springframework.data.domain.Page;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -33,18 +29,18 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void testPatientCreateAndReload() {
-        assertThat("Patient was created", makeNewRandomPatient().getId(), is(notNullValue()));
+        assertThat("Patient was created", makeNewRandomPatient(null).getId(), is(notNullValue()));
     }
 
     @Test
     public void reloadPatient() {
-        Patient reloadedPatient = patientService.reload(makeNewRandomPatient());
+        Patient reloadedPatient = patientService.reload(makeNewRandomPatient(null));
         assertThat("Patient was reloaded", reloadedPatient.getId(), is(notNullValue()));
     }
 
     @Test
     public void testPatientUpdate() {
-        Patient savedPatient = makeNewRandomPatient();
+        Patient savedPatient = makeNewRandomPatient(null);
         assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
         savedPatient.setFirstName("update patient name");
         Patient updatedPatient = patientService.update(savedPatient);
@@ -85,7 +81,7 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void create() {
-        Patient savedPatient = makeNewRandomPatient();
+        Patient savedPatient = makeNewRandomPatient(null);
         assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
         Assert.assertThat("can find the patient for that client", patientService.list(null, new PatientSearchFilter(savedPatient.getClient(), savedPatient.getFirstName())), hasItem(savedPatient));
 
@@ -93,7 +89,7 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void testList() {
-        Patient patient = makeNewRandomPatient();
+        Patient patient = makeNewRandomPatient(null);
         PatientSearchFilter filter = new PatientSearchFilter(patient.getClient(), patient.getFirstName());
         Page<Patient> patientPage = patientService.list(null, filter);
         assertThat("Page of Patients retrieved contains the searched item", patientPage, hasItem(patient));
