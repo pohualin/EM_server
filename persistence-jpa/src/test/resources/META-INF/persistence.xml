@@ -68,6 +68,7 @@
         <class>com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.program.Specialty</class>
         <class>com.emmisolutions.emmimanager.model.program.ProgramSpecialty</class>
+        <class>com.emmisolutions.emmimanager.model.schedule.ScheduledProgram</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
