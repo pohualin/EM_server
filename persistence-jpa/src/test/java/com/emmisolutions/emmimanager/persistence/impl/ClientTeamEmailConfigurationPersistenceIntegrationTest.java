@@ -50,13 +50,11 @@ public class ClientTeamEmailConfigurationPersistenceIntegrationTest extends
 
 
         ClientTeamEmailConfiguration configuration = new ClientTeamEmailConfiguration();
-        configuration.setDescription(defaultEmailConfig.getDescription());
         configuration.setTeam(team);
         configuration.setCreatedBy("system");
         configuration.setType(defaultEmailConfig.getType());
         
         ClientTeamEmailConfiguration configurationTwo = new ClientTeamEmailConfiguration();
-        configurationTwo.setDescription(defaultEmailConfigTwo.getDescription());
         configurationTwo.setTeam(team);
         configurationTwo.setCreatedBy("system");
         configurationTwo.setType(defaultEmailConfigTwo.getType());

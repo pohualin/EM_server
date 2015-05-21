@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.model;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.team.*;
 
 import javax.persistence.*;
@@ -13,8 +14,7 @@ import javax.validation.constraints.NotNull;
   */
 @Audited
 @Entity
-@Table(name = "client_team_email_configuration", uniqueConstraints = @UniqueConstraint(columnNames = {
-        "client_team_id", "type"}, name = "uk_client_team_email_configuration"))
+@Table(name = "client_team_email_configuration")
 public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
 	/**
      * Default constructor
@@ -40,20 +40,31 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     @Column(columnDefinition = "bigint")
     private Long id;
 	
-	@NotNull
-    @Column(columnDefinition = "nvarchar(255)", nullable = false)
-    private String description;
+	@Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 50)
+    private EmailReminderType type;
 	
 	@NotNull
-    @Column(columnDefinition = "nvarchar(50)", nullable = false)
-    private String type;
- 
-    @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn(name = "client_team_id", nullable = false, columnDefinition = "bigint", foreignKey = @ForeignKey(name = "fk_client_team"))
+    @JoinColumn(name = "client_team_id", referencedColumnName="id")
     private Team team;
     
-    @Column(name ="rank", columnDefinition = "integer")
+    @NotNull
+    @ManyToOne
+    @NotAudited
+    @JoinColumn(name = "default_email_configuration_id", referencedColumnName="id")
+    private DefaultClientTeamEmailConfiguration defaulEmailConfiguration;
+    
+    public DefaultClientTeamEmailConfiguration getDefaulEmailConfiguration() {
+		return defaulEmailConfiguration;
+	}
+
+	public void setDefaulEmailConfiguration(
+			DefaultClientTeamEmailConfiguration defaulEmailConfiguration) {
+		this.defaulEmailConfiguration = defaulEmailConfiguration;
+	}
+
+	@Column(name ="rank", columnDefinition = "integer")
    	private Integer rank;
     
     @Column(name = "email_config", columnDefinition = "boolean", nullable = false)
@@ -67,14 +78,6 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
 		this.version = version;
 	}
 	
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-   
 	public Team getTeam() {
 		return team;
 	}
@@ -83,6 +86,14 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
 		this.team = team;
 	}
 	
+	public EmailReminderType getType() {
+		return type;
+	}
+
+	public void setType(EmailReminderType type) {
+		this.type = type;
+	}
+
 	public boolean isEmailConfig() {
 		return emailConfig;
 	}
@@ -114,19 +125,10 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
         return id != null ? id.hashCode() : 0;
     }
 
-    public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	@Override
+  	@Override
     public String toString() {
         return "ClientTeamEmailConfiguration{" + "id=" + id
-                + ", description=" + description + " ,emailConfig=" +
-                emailConfig + " ,team="
+                + emailConfig + " ,team="
                 + team + ", type=" + type + '}';
     }
 	

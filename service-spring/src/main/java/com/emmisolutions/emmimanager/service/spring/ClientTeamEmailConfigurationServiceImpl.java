@@ -54,7 +54,11 @@ public class ClientTeamEmailConfigurationServiceImpl implements
         }
    		
    		Team reloadTeam = teamService.reload(clientTeamEmailConfiguration.getTeam());
-        clientTeamEmailConfiguration.setTeam(reloadTeam);
+   		clientTeamEmailConfiguration.setTeam(reloadTeam);
+   		clientTeamEmailConfiguration
+        .setDefaulEmailConfiguration(defaultClientTeamEmailConfigurationPersistence
+                .reload(clientTeamEmailConfiguration
+                        .getDefaulEmailConfiguration().getId()));
    		return clientTeamEmailConfigurationPersistence.save(clientTeamEmailConfiguration);
    	}
 
@@ -75,7 +79,7 @@ public class ClientTeamEmailConfigurationServiceImpl implements
 			  Page<DefaultClientTeamEmailConfiguration> deafaultClientEmail= defaultClientTeamEmailConfigurationPersistence.findActive(pageable);
 			  for(DefaultClientTeamEmailConfiguration defaultConfig : deafaultClientEmail){
 				  ClientTeamEmailConfiguration teamEmailConfig = new ClientTeamEmailConfiguration();
-				  teamEmailConfig.setDescription(defaultConfig.getDescription());
+				  teamEmailConfig.setDefaulEmailConfiguration(defaultConfig);
 				  teamEmailConfig.setType(defaultConfig.getType());
 				  teamEmailConfig.setRank(defaultConfig.getRank());
 				  teamEmailConfig.setEmailConfig(defaultConfig.isDefaultValue());

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +18,8 @@ import org.hibernate.envers.Audited;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.EmailReminderType;
+import com.emmisolutions.emmimanager.model.Gender;
 
 /**
  * The default team email configuration.
@@ -37,14 +41,10 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @NotNull
-    @Column(columnDefinition = "nvarchar(255)", nullable = false)
-    private String description;
-    
-    @NotNull
-    @Column(columnDefinition = "nvarchar(50)", nullable = false)
-    private String type;
-    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 50)
+    private EmailReminderType type;
+     
     @Column(name ="rank", columnDefinition = "integer")
 	private Integer rank;
 
@@ -69,15 +69,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
         this.id = id;
     }
     
-    public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public boolean isDefaultValue() {
+    public boolean isDefaultValue() {
 		return defaultValue;
 	}
 
@@ -85,6 +77,14 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
 		this.defaultValue = defaultValue;
 	}
 
+	public EmailReminderType getType() {
+		return type;
+	}
+
+	public void setType(EmailReminderType type) {
+		this.type = type;
+	}
+	
     public Long getId() {
         return id;
     }
@@ -117,15 +117,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
         this.active = active;
     }
     
-    public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	@Override
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -144,8 +136,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     public String toString() {
         return "DefaultClientTeamEmailConfiguration{" + "id=" + id
                 + ", type=" + type +
-                ", description=" + description + " ,defaultValue=" +
-                defaultValue +  '}';
+                ", defaultValue=" + defaultValue +  '}';
     }
 
       

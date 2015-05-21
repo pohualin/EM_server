@@ -86,10 +86,7 @@
         <addUniqueConstraint tableName="default_team_email_configuration" columnNames="id, type"
                              constraintName="uk_default_team_email_configuration"/>
                              
-        <addUniqueConstraint tableName="client_team_email_configuration" columnNames="id,type,client_team_id"
-                             constraintName="uk_client_team_email_configuration"/>
-
-                       
+           
         <addForeignKeyConstraint baseTableName="client_team_email_configuration_audit"
                                  baseColumnNames="revision"
                                  constraintName="fk_client_team_email_configuration_audit_revision"
@@ -99,14 +96,14 @@
         <addForeignKeyConstraint baseTableName="client_team_email_configuration"
                                  baseColumnNames="client_team_id"
                                  constraintName="fk_client_team_email_configuration_team"
-                                 referencedTableName="team"
+                                 referencedTableName="client_team"
                                  referencedColumnNames="id"/>
 		
-		<createIndex indexName="ix_client_password_configuration_client"
+		<createIndex indexName="ix_client_email_configuration_team_default_email_configuration"
                tableName="client_team_email_configuration">
             <column name="client_team_id" type="BIGINT"/>
         </createIndex> 
-                                 
+                                       
 		<addForeignKeyConstraint baseTableName="client_team_email_configuration"
                                  baseColumnNames="default_email_configuration_id"
                                  constraintName="fk_client_team_email_configuration_default_email_configuration"
@@ -118,7 +115,7 @@
                   tableName="default_team_email_configuration"/>
     </changeSet>
     
-    <changeSet id="Add translations for Email configuration enums" author="wlee">
+     <changeSet id="Add translations for Email configuration enums" author="wlee">
     
     <insert tableName="strings">
             <column name="key_path" value="COLLECT_EMAIL"/>
@@ -133,5 +130,7 @@
             <column name="created_by" value="system"/>
         </insert>
     </changeSet>
+   
+   
 
 </databaseChangeLog>
