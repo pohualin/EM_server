@@ -1,10 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
-import com.emmisolutions.emmimanager.persistence.LocationPersistence;
-import com.emmisolutions.emmimanager.persistence.PatientPersistence;
-import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 import org.joda.time.DateTimeZone;
@@ -26,6 +23,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Resource
     LocationPersistence locationPersistence;
+
+    @Resource
+    ProviderPersistence providerPersistence;
 
     @Resource
     TeamPersistence teamPersistence;
@@ -54,10 +54,16 @@ public class ScheduleServiceImpl implements ScheduleService {
                 throw new InvalidDataAccessApiUsageException("Cannot schedule program for patient and team on different clients.");
             }
             toBeScheduled.setLocation(locationPersistence.reload(toBeScheduled.getLocation()));
+            toBeScheduled.setProvider(providerPersistence.reload(toBeScheduled.getProvider()));
             toBeScheduled.setAccessCode(accessCodeGenerator.next());
 
             savedScheduledProgram = schedulePersistence.save(toBeScheduled);
         }
         return savedScheduledProgram;
+    }
+
+    @Override
+    public ScheduledProgram reload(ScheduledProgram scheduledProgram) {
+        return schedulePersistence.reload(scheduledProgram);
     }
 }

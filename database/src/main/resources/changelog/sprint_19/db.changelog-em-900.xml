@@ -32,6 +32,9 @@
             <column name="location_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
+            <column name="provider_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
             <column name="patient_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -54,6 +57,7 @@
             <column name="access_code" type="nvarchar(11)"/>
             <column name="view_by_date_utc" type="date"/>
             <column name="location_id" type="bigint"/>
+            <column name="provider_id" type="bigint"/>
             <column name="patient_id" type="bigint"/>
             <column name="program_id" type="integer"/>
             <column name="team_id" type="bigint"/>
@@ -67,6 +71,11 @@
                                  baseColumnNames="location_id"
                                  constraintName="fk_scheduled_program_location"
                                  referencedTableName="location"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="scheduled_program"
+                                 baseColumnNames="provider_id"
+                                 constraintName="fk_scheduled_program_provider"
+                                 referencedTableName="provider"
                                  referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="scheduled_program"
                                  baseColumnNames="patient_id"
@@ -103,6 +112,14 @@
         <createIndex tableName="scheduled_program"
                      indexName="ix_scheduled_program_team_id">
             <column name="team_id"/>
+        </createIndex>
+        <createIndex tableName="scheduled_program"
+                     indexName="ix_scheduled_program_location_id">
+            <column name="location_id"/>
+        </createIndex>
+        <createIndex tableName="scheduled_program"
+                     indexName="ix_scheduled_program_provider_id">
+            <column name="provider_id"/>
         </createIndex>
         <createIndex tableName="scheduled_program" unique="true"
                      indexName="ak_scheduled_program_access_code">

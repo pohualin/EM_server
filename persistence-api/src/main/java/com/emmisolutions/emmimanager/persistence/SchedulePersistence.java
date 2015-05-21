@@ -22,4 +22,12 @@ public interface SchedulePersistence {
      * @return the saved ScheduledProgram
      */
     ScheduledProgram save(ScheduledProgram toSave);
+
+    /**
+     * Loads the scheduled program
+     *
+     * @param scheduledProgram to load
+     * @return the reloaded program
+     */
+    ScheduledProgram reload(ScheduledProgram scheduledProgram);
 }

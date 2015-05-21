@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.model.schedule;
 
-import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-import com.emmisolutions.emmimanager.model.Location;
-import com.emmisolutions.emmimanager.model.Patient;
-import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.program.Program;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
@@ -24,7 +21,9 @@ import java.util.Objects;
                 @Index(name = "ak_scheduled_program_access_code", columnList = "access_code", unique = true),
                 @Index(name = "ix_scheduled_program_program_id", columnList = "program_id"),
                 @Index(name = "ix_scheduled_program_patient_id", columnList = "patient_id"),
-                @Index(name = "ix_scheduled_program_team_id", columnList = "team_id")
+                @Index(name = "ix_scheduled_program_team_id", columnList = "team_id"),
+                @Index(name = "ix_scheduled_program_location_id", columnList = "location_id"),
+                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id"),
         }
 )
 public class ScheduledProgram extends AbstractAuditingEntity {
@@ -62,6 +61,12 @@ public class ScheduledProgram extends AbstractAuditingEntity {
 
     @NotNull
     @ManyToOne(optional = false)
+    @JoinColumn(name = "provider_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_provider"))
+    private Provider provider;
+
+    @NotNull
+    @ManyToOne(optional = false)
     @JoinColumn(name = "location_id", nullable = false, columnDefinition = "bigint",
             foreignKey = @ForeignKey(name = "fk_scheduled_program_location"))
     private Location location;
@@ -70,12 +75,28 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     @Column(name = "view_by_date_utc", nullable = false, columnDefinition = "date")
     private LocalDate viewByDate;
 
+    public ScheduledProgram() {
+    }
+
+    public ScheduledProgram(Long scheduleId, Team team) {
+        this.id = scheduleId;
+        this.team = team;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public String getAccessCode() {
@@ -126,6 +147,14 @@ public class ScheduledProgram extends AbstractAuditingEntity {
         this.location = location;
     }
 
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -137,13 +166,5 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 }

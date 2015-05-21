@@ -14,4 +14,12 @@ public interface ScheduleService {
      * @return the persistent ScheduledProgram
      */
     ScheduledProgram schedule(ScheduledProgram toBeScheduled);
+
+    /**
+     * Reloads a scheduled program
+     *
+     * @param scheduledProgram to reload
+     * @return the persistent ScheduledProgram
+     */
+    ScheduledProgram reload(ScheduledProgram scheduledProgram);
 }

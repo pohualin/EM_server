@@ -42,17 +42,21 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         ScheduledProgram scheduledProgram = new ScheduledProgram();
         Client client = makeNewRandomClient();
 
-        String shouldBeOverwrittenAccessCode = "23759604346";
-        scheduledProgram.setAccessCode(shouldBeOverwrittenAccessCode);
+        String accessCode = "23759604346";
+        scheduledProgram.setAccessCode(accessCode);
         scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
         scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setProvider(makeNewRandomProvider());
         scheduledProgram.setProgram(programService.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));
         scheduledProgram.setPatient(makeNewRandomPatient(client));
 
-        assertThat("save happens successfully",
-                scheduleService.schedule(scheduledProgram).getAccessCode(),
-                is(not(shouldBeOverwrittenAccessCode)));
+        ScheduledProgram saved = scheduleService.schedule(scheduledProgram);
+        assertThat("save happens successfully, access code is generated/overwritten",
+                saved.getAccessCode(),
+                is(not(accessCode)));
+
+        assertThat("reload works", scheduleService.reload(new ScheduledProgram(saved.getId(), null)), is(saved));
     }
 
     /**
@@ -63,6 +67,7 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         ScheduledProgram scheduledProgram = new ScheduledProgram();
         scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC).plusDays(1));
         scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setProvider(makeNewRandomProvider());
         scheduledProgram.setProgram(programService.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(null));
         scheduledProgram.setPatient(makeNewRandomPatient(null));
@@ -78,6 +83,7 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC).minusDays(1));
         scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setProvider(makeNewRandomProvider());
         scheduledProgram.setProgram(programService.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));
         scheduledProgram.setPatient(makeNewRandomPatient(client));
