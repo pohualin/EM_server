@@ -43,13 +43,6 @@ public class ClientResourceAssembler implements ResourceAssembler<Client, Client
                                 new TemplateVariable("teamId",
                                         TemplateVariable.VariableType.REQUEST_PARAM))), "team"));
 
-        ret.add(new Link(
-                new UriTemplate(
-                        linkTo(methodOn(PatientsResource.class).get(entity.getId(), null)).withSelfRel().getHref())
-                        .with(new TemplateVariables(
-                                new TemplateVariable("patientId",
-                                        TemplateVariable.VariableType.REQUEST_PARAM))), "patientById"));
-
         ret.setEntity(entity);
         return ret;
     }
