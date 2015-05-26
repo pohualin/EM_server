@@ -25,7 +25,7 @@ public class UserClientUserClientTeamRoleTeamResourceAssembler
             switch (userClientTeamPermission.getName()) {
                 case PERM_CLIENT_TEAM_SCHEDULE_PROGRAM:
                     ret.add(linkTo(methodOn(SchedulesResource.class)
-                            .schedule(entity.getTeam().getClient().getId(), entity.getTeam().getId(), null, null, null))
+                            .scheduled(entity.getTeam().getClient().getId(), entity.getTeam().getId(), null, null))
                             .withRel("schedulePrograms"));
                     break;
             }

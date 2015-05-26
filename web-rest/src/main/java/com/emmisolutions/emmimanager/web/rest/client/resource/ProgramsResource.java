@@ -85,7 +85,7 @@ public class ProgramsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/programs", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -114,7 +114,7 @@ public class ProgramsResource {
 
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/specialties", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -150,7 +150,7 @@ public class ProgramsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/locations", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
@@ -219,7 +219,7 @@ public class ProgramsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/providers", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),

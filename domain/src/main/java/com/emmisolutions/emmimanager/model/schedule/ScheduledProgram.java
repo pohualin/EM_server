@@ -1,9 +1,170 @@
 package com.emmisolutions.emmimanager.model.schedule;
 
+import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.program.Program;
+import org.hibernate.envers.Audited;
+import org.joda.time.LocalDate;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.util.Objects;
+
 /**
  * A schedule for a patient who is receiving services from a provider on a team,
  * at a particular time, at a Location, for a program.
- *
  */
-public class ScheduledProgram {
+@Entity
+@Audited
+@Table(name = "scheduled_program",
+        indexes = {
+                @Index(name = "ak_scheduled_program_access_code", columnList = "access_code", unique = true),
+                @Index(name = "ix_scheduled_program_program_id", columnList = "program_id"),
+                @Index(name = "ix_scheduled_program_patient_id", columnList = "patient_id"),
+                @Index(name = "ix_scheduled_program_team_id", columnList = "team_id"),
+                @Index(name = "ix_scheduled_program_location_id", columnList = "location_id"),
+                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id"),
+        }
+)
+public class ScheduledProgram extends AbstractAuditingEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", unique = true, nullable = false, columnDefinition = "bigint")
+    private Long id;
+
+    @Version
+    private Integer version;
+
+    @NotNull
+    @Pattern(regexp = "\\d{11}", message = "must be 11 numbers in total")
+    @Column(name = "access_code", length = 11, nullable = false, columnDefinition = "nvarchar(11)")
+    private String accessCode;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "program_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_rf_emmi"))
+    private Program program;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "patient_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_patient"))
+    private Patient patient;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "team_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_client_team"))
+    private Team team;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "provider_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_provider"))
+    private Provider provider;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "location_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_location"))
+    private Location location;
+
+    @NotNull
+    @Column(name = "view_by_date_utc", nullable = false, columnDefinition = "date")
+    private LocalDate viewByDate;
+
+    public ScheduledProgram() {
+    }
+
+    public ScheduledProgram(Long scheduleId, Team team) {
+        this.id = scheduleId;
+        this.team = team;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String getAccessCode() {
+        return accessCode;
+    }
+
+    public void setAccessCode(String accessCode) {
+        this.accessCode = accessCode;
+    }
+
+    public Program getProgram() {
+        return program;
+    }
+
+    public void setProgram(Program program) {
+        this.program = program;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public LocalDate getViewByDate() {
+        return viewByDate;
+    }
+
+    public void setViewByDate(LocalDate viewByDate) {
+        this.viewByDate = viewByDate;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScheduledProgram that = (ScheduledProgram) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
