@@ -78,7 +78,7 @@ public class PatientsResource {
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     public ResponseEntity<PatientResource> get(@PathVariable("clientId") Long clientId,
                                                @PathVariable("teamId") Long teamId,
                                                @RequestParam(value = "patientId", required = false) Long patientId) {
