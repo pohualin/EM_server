@@ -66,6 +66,14 @@ public class TeamResourceAssembler
         ret.add(linkTo(methodOn(PatientsResource.class)
                 .create(entity.getClient().getId(), entity.getId(), null)).withRel("patient"));
 
+        ret.add(new Link(
+                new UriTemplate(
+                        linkTo(methodOn(PatientsResource.class).get(entity.getClient().getId(), entity.getId(), null)).withSelfRel().getHref())
+                        .with(new TemplateVariables(
+                                new TemplateVariable("patientId",
+                                        TemplateVariable.VariableType.REQUEST_PARAM))), "patientById"));
+
+
         return ret;
     }
 

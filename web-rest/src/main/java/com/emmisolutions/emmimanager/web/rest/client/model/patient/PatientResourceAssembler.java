@@ -18,7 +18,6 @@ public class PatientResourceAssembler implements ResourceAssembler<Patient, Pati
     public PatientResource toResource(Patient entity) {
         PatientResource ret = new PatientResource();
         ret.setEntity(entity);
-        ret.add(linkTo(methodOn(PatientsResource.class).get(entity.getClient().getId(), entity.getId())).withSelfRel());
         return ret;
     }
 }
