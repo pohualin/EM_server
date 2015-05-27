@@ -67,6 +67,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
         emailConfig.setRank(defaultEmailConfig.getRank());
         emailConfig.setType(defaultEmailConfig.getType());
         emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
+        emailConfig.setDefaulEmailConfiguration(defaultEmailConfig);
         
         ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
         emailConfigTwo.setTeam(team);
@@ -74,6 +75,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
         emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
         emailConfigTwo.setType(defaultEmailConfigTwo.getType());
         emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
+        emailConfigTwo.setDefaulEmailConfiguration(defaultEmailConfigTwo);
         
         List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
         emailConfigList.add(emailConfig);
@@ -122,6 +124,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             emailConfig.setRank(defaultEmailConfig.getRank());
             emailConfig.setType(defaultEmailConfig.getType());
             emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
+            emailConfig.setDefaulEmailConfiguration(defaultEmailConfig);
             
             ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
             emailConfigTwo.setTeam(reloadTeam);
@@ -129,6 +132,7 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
             emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
             emailConfigTwo.setType(defaultEmailConfigTwo.getType());
             emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
+            emailConfigTwo.setDefaulEmailConfiguration(defaultEmailConfigTwo);
             
             List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
             emailConfigList.add(emailConfig);
