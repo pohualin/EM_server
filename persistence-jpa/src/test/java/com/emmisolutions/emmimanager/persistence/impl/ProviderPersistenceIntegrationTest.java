@@ -137,6 +137,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
  	public void searchForProvider(){
  		Provider provider = new Provider();
 		provider.setFirstName("Velma");
+		provider.setMiddleName("one");
 		provider.setLastName("Kelly");
 		provider.setEmail("velmakelly@fourtysecondstreet.com");
 		provider.setActive(false);
@@ -147,6 +148,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 
 		Provider providerTwo = new Provider();
 		providerTwo.setFirstName("Roxie");
+		providerTwo.setMiddleName("two");
 		providerTwo.setLastName("Hart");
 		providerTwo.setEmail("roxyhart@fourtysecondstreet.com");
 		providerTwo.setActive(false);
@@ -176,11 +178,13 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider was found", providerPageFour.getContent().size(), is(1));
 		assertThat("Provider was found", providerPageFour.getContent().iterator().next().getLastName(), is("Kelly"));
 
-
 		ProviderSearchFilter searchFilterFive = new ProviderSearchFilter(StatusFilter.ALL, "roXi$e");
 		Page<Provider> providerPageFive = providerPersistence.list(page, searchFilterFive);
 		assertThat("Provider was found", providerPageFive.getContent().size(), is(1));
 		assertThat("Provider was found", providerPageFive.getContent().iterator().next().getLastName(), is("Hart"));
+
+		assertThat("Middle name search finds provider",
+				providerPersistence.list(null, new ProviderSearchFilter("two")), hasItem(providerTwo));
  	}
  	
  	@Test
