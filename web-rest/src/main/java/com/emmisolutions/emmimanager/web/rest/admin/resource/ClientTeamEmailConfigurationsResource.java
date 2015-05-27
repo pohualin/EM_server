@@ -100,7 +100,6 @@ public class ClientTeamEmailConfigurationsResource {
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientTeamEmailConfigurationResource> saveOrUpdate(
             @PathVariable("teamId") Long teamId,
-            @PageableDefault(size = 10, sort = "rank") Pageable pageable,
             @RequestBody ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
     	
     	clientTeamEmailConfiguration.setTeam(new Team(teamId));
