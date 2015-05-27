@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="add middle name to provider normalized names" author="Matt">
+
+        <modifyDataType tableName="provider" columnName="normalized_name" newDataType="nvarchar(1024)"/>
+
+        <dropColumn tableName="provider_audit" columnName="normalized_name"/>
+
+        <sql><![CDATA[
+			update provider
+			set normalized_name = rtrim(ltrim(lower(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(concat(first_name,middle_name,last_name),'.',''),'\',''),'-',''),'\''',''),'=',''),'_',''),';',''),':',''),'`',''),'@',''),'#',''),'&',''),',',''),'!',''),'(',''),')',''),'/','') )))
+        ]]></sql>
+
+        <createIndex tableName="provider" indexName="ix_provider_normalized_name">
+            <column name="normalized_name"/>
+        </createIndex>
+
+        <createIndex tableName="location" indexName="ix_location_normalized_name">
+            <column name="normalized_name"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="drop unused provider/team table" author="Matt">
+        <dropIndex tableName="provider_team" indexName="ix_provider_team_teams_id"/>
+        <dropForeignKeyConstraint baseTableName="provider_team" constraintName="fk_provider_team_client_team"/>
+        <dropForeignKeyConstraint baseTableName="provider_team" constraintName="fk_provider_team_provider_id"/>
+        <dropForeignKeyConstraint baseTableName="provider_team_audit" constraintName="fk_provider_team_audit_revision"/>
+        <dropTable tableName="provider_team_audit"/>
+        <dropTable tableName="provider_team"/>
+    </changeSet>
+
+</databaseChangeLog>

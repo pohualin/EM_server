@@ -41,7 +41,8 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
 
     @Override
     public Provider save(Provider provider) {
-        provider.setNormalizedName(normalizeName(provider));
+        provider.setFullName(null);
+        provider.setNormalizedName(normalizeName(provider.getFullName()));
         return providerRepository.save(provider);
     }
 
@@ -88,11 +89,5 @@ public class ProviderPersistenceImpl implements ProviderPersistence {
         }
         return normalizedName;
     }
-
-    private String normalizeName(Provider provider) {
-        return normalizeName((provider.getFirstName() != null && provider.getLastName() != null) ? provider.getFirstName() + provider.getLastName()
-            : provider.getFirstName() == null ? provider.getLastName() == null ? "" : provider.getLastName() : provider.getFirstName());
-    }
-
 
 }
