@@ -47,4 +47,19 @@ public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest exten
         assertThat("system default should be false", systemDefault.getContent().get(1).isActive(),
                 is(true));
     }
+    
+    /**
+     * Test positive reload
+     */
+    @Test
+    public void testReload() {
+        assertThat("reload works",
+        		defaultTeamEmailConfigurationPersistence.reload(1l),
+                is(notNullValue()));
+
+        assertThat("reload nothing works",
+        		defaultTeamEmailConfigurationPersistence.reload(2l),
+                is(notNullValue()));
+    }
+
 }
