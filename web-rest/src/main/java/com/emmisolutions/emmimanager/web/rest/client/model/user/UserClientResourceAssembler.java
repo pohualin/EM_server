@@ -43,14 +43,14 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
     @Value("${admin.application.entry.point:/admin.html}")
     String adminEntryPoint;
 
-    Pattern specializedPermissions = Pattern.compile("([A-Z_]*)_[0-9]+");
+    Pattern specializedPermissions = Pattern.compile("([A-Z_]*)(_[0-9]+)?(_[0-9]+)");
 
     @Override
     public UserClientResource toResource(UserClient user) {
         if (user == null) {
             return null;
         }
-        List<String> perms = new ArrayList<>();
+        Set<String> perms = new HashSet<>();
         for (GrantedAuthority grantedAuthority : user.getAuthorities()) {
             // strip off the client and team specifics on the authorities
             Matcher matcher = specializedPermissions.matcher(grantedAuthority.getAuthority());
@@ -88,7 +88,7 @@ public class UserClientResourceAssembler implements ResourceAssembler<UserClient
                 user.isEmailValidated(),
                 user.isSecretQuestionCreated(),
                 clientResourceAssembler.toResource(user.getClient()),
-                perms,
+                new ArrayList<>(perms),
                 user.isImpersonated(),
                 user.getNotNowExpirationTime(),
                 user.getPasswordExpireationDateTime(),
