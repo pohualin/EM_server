@@ -19,5 +19,4 @@ import java.util.List;
 @XmlRootElement(name = "client-team-email-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientTeamEmailConfigurationResource extends BaseResource<ClientTeamEmailConfiguration> {
-
 }
