@@ -49,22 +49,7 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     @JoinColumn(name = "client_team_id", referencedColumnName="id")
     private Team team;
     
-    @NotNull
-    @ManyToOne
-    @NotAudited
-    @JoinColumn(name = "default_email_configuration_id", referencedColumnName="id")
-    private DefaultClientTeamEmailConfiguration defaulEmailConfiguration;
-    
-    public DefaultClientTeamEmailConfiguration getDefaulEmailConfiguration() {
-		return defaulEmailConfiguration;
-	}
-
-	public void setDefaulEmailConfiguration(
-			DefaultClientTeamEmailConfiguration defaulEmailConfiguration) {
-		this.defaulEmailConfiguration = defaulEmailConfiguration;
-	}
-
-	@Column(name ="rank", columnDefinition = "integer")
+    @Column(name ="rank", columnDefinition = "integer")
    	private Integer rank;
     
     @Column(name = "email_config", columnDefinition = "boolean", nullable = false)

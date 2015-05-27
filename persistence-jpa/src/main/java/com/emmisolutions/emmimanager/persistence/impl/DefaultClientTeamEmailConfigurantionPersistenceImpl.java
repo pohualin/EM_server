@@ -44,11 +44,5 @@ public class DefaultClientTeamEmailConfigurantionPersistenceImpl implements
                         .isActive()), page);
     }
 
-    @Override
-    public DefaultClientTeamEmailConfiguration reload(Long id) {
-        return defaultClientTeamEmailConfigurationRepository.findOne(id);
-    }
-
-	
-
+   
 }

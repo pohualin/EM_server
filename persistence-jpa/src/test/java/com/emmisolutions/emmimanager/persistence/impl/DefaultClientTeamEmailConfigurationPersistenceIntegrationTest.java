@@ -48,18 +48,4 @@ public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest exten
                 is(true));
     }
     
-    /**
-     * Test positive reload
-     */
-    @Test
-    public void testReload() {
-        assertThat("reload works",
-        		defaultTeamEmailConfigurationPersistence.reload(1l),
-                is(notNullValue()));
-
-        assertThat("reload nothing works",
-        		defaultTeamEmailConfigurationPersistence.reload(2l),
-                is(notNullValue()));
-    }
-
 }

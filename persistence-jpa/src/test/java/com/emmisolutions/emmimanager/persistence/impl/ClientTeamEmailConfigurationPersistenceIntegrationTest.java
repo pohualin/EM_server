@@ -54,16 +54,14 @@ public class ClientTeamEmailConfigurationPersistenceIntegrationTest extends
         emailConfig.setRank(defaultEmailConfig.getRank());
         emailConfig.setType(defaultEmailConfig.getType());
         emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
-        emailConfig.setDefaulEmailConfiguration(defaultEmailConfig);
-        
+                
         ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
         emailConfigTwo.setTeam(team);
         emailConfigTwo.setCreatedBy("system");
         emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
         emailConfigTwo.setType(defaultEmailConfigTwo.getType());
         emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
-        emailConfigTwo.setDefaulEmailConfiguration(defaultEmailConfigTwo);
-
+        
         ClientTeamEmailConfiguration configurationSave = clientTeamEmailConfigurationPersistence.save(emailConfig);
         ClientTeamEmailConfiguration configurationSaveTwo = clientTeamEmailConfigurationPersistence.save(emailConfigTwo);
         

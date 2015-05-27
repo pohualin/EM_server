@@ -18,13 +18,5 @@ public interface DefaultClientTeamEmailConfigurationPersistence {
      * @return page of Default Team Email Configuration
      */
     Page<DefaultClientTeamEmailConfiguration> findActive(Pageable page);
-    
-    
-    /**
-    * reload DefaultTeamEmailConfiguration by passing in an id
-    * @param id
-    * @return DefaultTeamEmailConfiguration
-    */
-    DefaultClientTeamEmailConfiguration reload(Long id);
-   
+      
 }
