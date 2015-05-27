@@ -47,21 +47,25 @@ public class ClientTeamEmailConfigurationPersistenceIntegrationTest extends
         
         DefaultClientTeamEmailConfiguration defaultEmailConfig = defaultEmailConfigList.getContent().get(0);
         DefaultClientTeamEmailConfiguration defaultEmailConfigTwo = defaultEmailConfigList.getContent().get(1);
+        
+        ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
+        emailConfig.setTeam(team);
+        emailConfig.setCreatedBy("system");
+        emailConfig.setRank(defaultEmailConfig.getRank());
+        emailConfig.setType(defaultEmailConfig.getType());
+        emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
+        emailConfig.setDefaulEmailConfiguration(defaultEmailConfig);
+        
+        ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
+        emailConfigTwo.setTeam(team);
+        emailConfigTwo.setCreatedBy("system");
+        emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
+        emailConfigTwo.setType(defaultEmailConfigTwo.getType());
+        emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
+        emailConfigTwo.setDefaulEmailConfiguration(defaultEmailConfigTwo);
 
-
-        ClientTeamEmailConfiguration configuration = new ClientTeamEmailConfiguration();
-        configuration.setTeam(team);
-        configuration.setCreatedBy("system");
-        configuration.setType(defaultEmailConfig.getType());
-        
-        ClientTeamEmailConfiguration configurationTwo = new ClientTeamEmailConfiguration();
-        configurationTwo.setTeam(team);
-        configurationTwo.setCreatedBy("system");
-        configurationTwo.setType(defaultEmailConfigTwo.getType());
-        
-        
-        ClientTeamEmailConfiguration configurationSave = clientTeamEmailConfigurationPersistence.save(configuration);
-        ClientTeamEmailConfiguration configurationSaveTwo = clientTeamEmailConfigurationPersistence.save(configurationTwo);
+        ClientTeamEmailConfiguration configurationSave = clientTeamEmailConfigurationPersistence.save(emailConfig);
+        ClientTeamEmailConfiguration configurationSaveTwo = clientTeamEmailConfigurationPersistence.save(emailConfigTwo);
         
         Page<ClientTeamEmailConfiguration> listOfEmailConfig = clientTeamEmailConfigurationPersistence.
         		find(team.getId(), null);
