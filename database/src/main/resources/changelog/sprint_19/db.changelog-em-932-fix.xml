@@ -25,12 +25,8 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="tinyint"/>
-            <column name="type" type="nvarchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email_config" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="true" />
-            </column>
+            <column name="type" type="nvarchar(50)"/>
+            <column name="email_config" type="boolean"/>
             <column name="rank" type="int"/>
             <column name="client_team_id" type="bigint"/>
         </createTable>
