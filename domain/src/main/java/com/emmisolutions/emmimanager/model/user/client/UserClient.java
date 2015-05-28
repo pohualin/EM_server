@@ -175,15 +175,17 @@ public class UserClient extends User {
             for (UserClientUserClientRole clientRole : getClientRoles()) {
                 for (UserClientPermission permission : clientRole.getUserClientRole().getUserClientPermissions()) {
                     authorityList.add(
-                            new SimpleGrantedAuthority(permission.getName().toString() + "_" +
-                                    clientRole.getUserClientRole().getClient().getId()));
+                            new SimpleGrantedAuthority(String.format("%s_%s",
+                                    permission.getName().toString(),
+                                    clientRole.getUserClientRole().getClient().getId())));
                 }
             }
-            // granted team authorities are in the form of PERM_NAMEOFPERMISSION_TEAMID
+            // granted team authorities are in the form of PERM_NAMEOFPERMISSION_TEAMID_CLIENTID
             for (UserClientUserClientTeamRole teamRole : getTeamRoles()) {
                 for (UserClientTeamPermission permission : teamRole.getUserClientTeamRole().getUserClientTeamPermissions()) {
-                    authorityList.add(new SimpleGrantedAuthority(permission.getName().toString() + "_" +
-                            teamRole.getTeam().getId()));
+                    authorityList.add(new SimpleGrantedAuthority(String.format("%s_%s_%s",
+                            permission.getName().toString(), teamRole.getTeam().getId(),
+                            teamRole.getTeam().getClient().getId())));
                 }
             }
             authorities = Collections.unmodifiableList(authorityList);

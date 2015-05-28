@@ -1,19 +1,17 @@
 package com.emmisolutions.emmimanager.model;
 
-import java.io.Serializable;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.validator.constraints.Email;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.hibernate.validator.constraints.Email;
+import java.io.Serializable;
 /**
  * A Provider and its specialty and teams
  */
@@ -35,18 +33,18 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@NotNull
 	@Size(max = 255)
 	@Column(name = "first_name", nullable = false)
-	@Pattern(regexp = "[A-Za-z '-(),.]*", message = "Name can only contain letters, spaces, and the following characters: - '")
+	@Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - '")
 	private String firstName;
 
 	@NotNull
 	@Size(max = 255)
 	@Column(name = "last_name", nullable = false)
-	@Pattern(regexp = "[A-Za-z '-(),.]*", message = "Name can only contain letters, spaces, and the following characters: - '")
+	@Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - '")
 	private String lastName;
 
 	@Size(max = 255)
 	@Column(name = "middle_name")
-	@Pattern(regexp = "[A-Za-z '-(),.]*", message = "Name can only contain letters, spaces, and the following characters: - '")
+	@Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - '")
 	private String middleName;
 
     @Transient

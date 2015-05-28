@@ -116,26 +116,16 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
         godPermission.setName(UserAdminPermissionName.PERM_GOD);
         assertThat("Role has the god permission", role.getPermissions(), hasItem(godPermission));
     }
-    
-    /**
-     * make sure Emmi User Role is default role
-     */
-    @Test
-    public void testEmmiUserIsDefaultRole() {
-        UserAdmin god = userAdminPersistence.fetchUserWillFullPermissions("contract_owner2");
-        UserAdminRole role = god.getRoles().iterator().next().getUserAdminRole();
-        assertThat("Emmi User Role is a default role", role.isDefaultRole(), is(true));
-    }
 
     /**
      * list contract owner data
      */
     @Test
     public void listPotentialContractOwners() {
-        UserAdmin contractOwner = userAdminPersistence.reload("contract_owner");
+        UserAdmin emmiSuperUser = userAdminPersistence.reload("emmi_super_user");
         Page<UserAdmin> ret = userAdminPersistence.listPotentialContractOwners(null);
         assertThat("Users should be returned", ret.hasContent(), is(true));
-        assertThat("contract_owner should be in the page", ret.getContent(), hasItem(contractOwner));
+        assertThat("emmi_super_user should be in the page", ret.getContent(), hasItem(emmiSuperUser));
     }
     
     @Test

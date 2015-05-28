@@ -162,6 +162,9 @@ public class PersistenceConfiguration {
         if (env.acceptsProfiles(SPRING_PROFILE_QA)) {
             springLiquibase.setContexts("qa");
         }
+        if (env.acceptsProfiles(SPRING_PROFILE_PRODUCTION)) {
+            springLiquibase.setContexts("prod");
+        }
         return springLiquibase;
     }
 
