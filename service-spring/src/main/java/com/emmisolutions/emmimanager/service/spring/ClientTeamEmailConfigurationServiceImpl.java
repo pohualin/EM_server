@@ -59,7 +59,6 @@ public class ClientTeamEmailConfigurationServiceImpl implements
    	}
 
 	@Override
-	@Transactional
 	public Page<ClientTeamEmailConfiguration> findByTeam(
 			Team team, Pageable pageable) {
 		  if (team.getId() == null) {
