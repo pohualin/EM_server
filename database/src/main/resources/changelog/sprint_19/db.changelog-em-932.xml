@@ -54,11 +54,12 @@
             </column>
             <column name="version" type="int"/>
             <column name="rank" type="int"/>
+            <column name="default_email_configuration_id" type="bigint"/>
             <column name="client_team_id" type="bigint"/>
         </createTable>
 
         <createTable tableName="client_team_email_configuration_audit">
-            <column name="id" autoIncrement="true" type="bigint">
+            <column name="id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="revision" type="bigint">
@@ -112,19 +113,20 @@
     
     <changeSet id="Add translations for Email configuration enums" author="wlee">
     
-    	<insert tableName="strings">
+    <insert tableName="strings">
             <column name="key_path" value="COLLECT_EMAIL"/>
             <column name="language_id" valueNumeric="1"/>
             <column name="message" value="Collect email"/>
             <column name="created_by" value="system"/>
-    	</insert>
-     	<insert tableName="strings">
+        </insert>
+        <insert tableName="strings">
             <column name="key_path" value="REQUIRE_EMAIL"/>
             <column name="language_id" valueNumeric="1"/>
             <column name="message" value="Require email"/>
             <column name="created_by" value="system"/>
         </insert>
     </changeSet>
-    
-  
+   
+   
+
 </databaseChangeLog>
