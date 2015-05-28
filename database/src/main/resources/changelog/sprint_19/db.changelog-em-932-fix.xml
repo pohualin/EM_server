@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+
+	<changeSet id="drop email configuration foreign key for the audit table " author="wlee">
+        <dropForeignKeyConstraint baseTableName="client_team_email_configuration_audit" constraintName="fk_client_team_email_configuration_audit_revision"/>
+    </changeSet>
+    
+    <changeSet id="drop client team email configuration audit table" author="wlee">
+        <dropTable tableName="client_team_email_configuration_audit"/>
+     </changeSet>
+
+    <changeSet id="recreate client team email configuration audit table" author="wlee">
+        <createTable tableName="client_team_email_configuration_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="type" type="nvarchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_config" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="rank" type="int"/>
+            <column name="client_team_id" type="bigint"/>
+        </createTable>
+          
+        
+        <addPrimaryKey tableName="client_team_email_configuration_audit" columnNames="id, revision" 
+                       constraintName="pk_client_team_email_configuration_audit"/>
+
+                          
+           
+        <addForeignKeyConstraint baseTableName="client_team_email_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_team_email_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+                           
+    </changeSet>
+    
+  
+</databaseChangeLog>
