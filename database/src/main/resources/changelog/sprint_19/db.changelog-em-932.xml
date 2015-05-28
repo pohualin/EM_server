@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    <changeSet id="add team level email configuration tables" author="wlee">
+
+        <!-- TABLES -->
+        <createTable tableName="default_team_email_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_default_team_email_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="type" type="nvarchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="default_value" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="rank" type="int"/>
+        </createTable>
+        
+       <createTable tableName="client_team_email_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_team_email_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="type" type="nvarchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_config" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="version" type="int"/>
+            <column name="rank" type="int"/>
+            <column name="client_team_id" type="bigint"/>
+        </createTable>
+
+        <createTable tableName="client_team_email_configuration_audit">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="type" type="nvarchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_config" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="true" />
+            </column>
+            <column name="rank" type="int"/>
+            <column name="client_team_id" type="bigint"/>
+        </createTable>
+       
+        <addNotNullConstraint tableName="client_team_email_configuration" columnName="type" columnDataType="varchar(50)"/>
+        <addNotNullConstraint tableName="default_team_email_configuration" columnName="type" columnDataType="varchar(50)"/>
+        
+        <addPrimaryKey tableName="client_team_email_configuration_audit" columnNames="id, revision" 
+                       constraintName="pk_client_team_email_configuration_audit"/>
+
+        <!-- UKs -->
+        <addUniqueConstraint tableName="default_team_email_configuration" columnNames="id, type"
+                             constraintName="uk_default_team_email_configuration"/>
+                             
+           
+        <addForeignKeyConstraint baseTableName="client_team_email_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_team_email_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+                                 
+        <addForeignKeyConstraint baseTableName="client_team_email_configuration"
+                                 baseColumnNames="client_team_id"
+                                 constraintName="fk_client_team_email_configuration_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>
+		
+		<createIndex indexName="ix_client_email_configuration_team_default_email_configuration"
+               tableName="client_team_email_configuration">
+            <column name="client_team_id" type="BIGINT"/>
+        </createIndex> 
+                                       
+		                   
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_19/data/em-932/team-email-configuration.csv"
+                  separator=";"
+                  tableName="default_team_email_configuration"/>
+    </changeSet>
+    
+    <changeSet id="Add translations for Email configuration enums" author="wlee">
+    
+    	<insert tableName="strings">
+            <column name="key_path" value="COLLECT_EMAIL"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Collect email"/>
+            <column name="created_by" value="system"/>
+    	</insert>
+     	<insert tableName="strings">
+            <column name="key_path" value="REQUIRE_EMAIL"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Require email"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+    
+  
+</databaseChangeLog>
