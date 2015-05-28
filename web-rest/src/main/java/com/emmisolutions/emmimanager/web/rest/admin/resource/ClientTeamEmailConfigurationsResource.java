@@ -101,7 +101,6 @@ public class ClientTeamEmailConfigurationsResource {
     public ResponseEntity<ClientTeamEmailConfigurationResource> saveOrUpdate(
             @PathVariable("teamId") Long teamId,
             @RequestBody ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
-    	
     	clientTeamEmailConfiguration.setTeam(new Team(teamId));
     	ClientTeamEmailConfiguration emailConfiguration = clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
                
