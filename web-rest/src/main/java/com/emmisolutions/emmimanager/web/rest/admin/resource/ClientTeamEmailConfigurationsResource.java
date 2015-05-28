@@ -92,7 +92,7 @@ public class ClientTeamEmailConfigurationsResource {
      * Save or update client team email configuration 
      *
      * @param teamId    for the email configuration
-     * @param  clientTeamEmailConfiguration the user client team configuration that needs to save or update
+     * @param clientTeamEmailConfiguration the user client team configuration that needs to save or update
      * @return a ClientTeamEmailConfiguration response entity
      */
     @RequestMapping(value = "/teams/{teamId}/email_configuration", method = RequestMethod.POST)
