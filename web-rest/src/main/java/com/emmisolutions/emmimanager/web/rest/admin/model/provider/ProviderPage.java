@@ -50,7 +50,7 @@ public class ProviderPage extends PagedResource<ProviderResource> {
      * @return Link reference data for providers
      */
     public static Link createProviderReferenceDataLink() {
-        Link link = linkTo(methodOn(ProvidersResource.class).getRefData(null, null, null)).withRel("providerReferenceData");
+        Link link = linkTo(methodOn(ProvidersResource.class).getRefData(null, null)).withRel("providerReferenceData");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -79,7 +79,7 @@ public class ProviderPage extends PagedResource<ProviderResource> {
      * @return Link for provider search
      */
     public static Link createProviderFullSearchLink() {
-        Link link = linkTo(methodOn(ProvidersResource.class).list(null, null, null, null, null)).withRel("providers");
+        Link link = linkTo(methodOn(ProvidersResource.class).list(null, null, null, null)).withRel("providers");
         UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(
             new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

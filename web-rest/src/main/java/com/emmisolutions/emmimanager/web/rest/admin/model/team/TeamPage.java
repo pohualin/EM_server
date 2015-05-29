@@ -48,10 +48,10 @@ public class TeamPage extends PagedResource<TeamResource> {
      * Create the search link
      *
      * @return Link for team searches
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.TeamsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.TeamsResource#list(org.springframework.data.domain.Pageable, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
     public static Link createFullSearchLink() {
-        Link link = linkTo(methodOn(TeamsResource.class).list(null, null, null, null, (String[]) null)).withRel("teams");
+        Link link = linkTo(methodOn(TeamsResource.class).list(null, null, null, (String[]) null)).withRel("teams");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

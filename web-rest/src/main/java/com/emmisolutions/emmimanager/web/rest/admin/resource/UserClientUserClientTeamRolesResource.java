@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -155,8 +154,6 @@ public class UserClientUserClientTeamRolesResource {
      * @param userClientId
      *            to lookup
      * @param pageable
-     *            to use
-     * @param sort
      *            to use
      * @param assembler
      *            to assemble resource

@@ -14,10 +14,8 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +69,6 @@ public class ClientsResource {
      * GET to search for clients
      *
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param status    to filter by
      * @param assembler used to create the PagedResources
      * @param name     to filter by
@@ -87,7 +84,6 @@ public class ClientsResource {
     })
     public ResponseEntity<ClientPage> list(
         @PageableDefault(size = 10, sort = "name") Pageable pageable,
-        @SortDefault(sort = "name") Sort sort,
         PagedResourcesAssembler<Client> assembler,
         @RequestParam(value = "status", required = false) String status,
         @RequestParam(value = "name", required = false) String name) {
@@ -126,7 +122,6 @@ public class ClientsResource {
      * GET to retrieve Potential Owner reference data. This data is paginated
      *
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param assembler used to create PagedResources
      * @return UserPage matching the search request
      */
@@ -138,7 +133,6 @@ public class ClientsResource {
         @ApiImplicitParam(name = "sort", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<UserPage> getOwnersReferenceData(@PageableDefault(size = 100, sort = "firstName") Pageable pageable,
-                                                           @SortDefault(sort = "id") Sort sort,
                                                            PagedResourcesAssembler<UserAdmin> assembler) {
         Page<UserAdmin> userPage = clientService.listPotentialContractOwners(pageable);
         if (userPage.hasContent()) {
