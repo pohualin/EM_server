@@ -10,10 +10,8 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +44,6 @@ public class TagsResource {
      * GET to search for tags by group id
      *
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param assembler used to create the PagedResources
      * @param groupId   the group id
      * @return TagPage or NO_CONTENT
@@ -59,8 +56,7 @@ public class TagsResource {
         @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TagPage> listTagsByGroupID(
-        @PageableDefault(size = 50) Pageable pageable,
-        @SortDefault(sort = "id") Sort sort,
+            @PageableDefault(size = 50, sort = "id") Pageable pageable,
         PagedResourcesAssembler<Tag> assembler,
         @PathVariable("groupId") Long groupId) {
 

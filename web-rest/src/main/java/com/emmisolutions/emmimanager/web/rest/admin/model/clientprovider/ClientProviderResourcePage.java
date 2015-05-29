@@ -4,9 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientLocationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientProvidersResource;
-
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
 import org.springframework.util.CollectionUtils;
@@ -14,7 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,10 +50,10 @@ public class ClientProviderResourcePage extends PagedResource<ClientProviderReso
      *
      * @param client to find within
      * @return Link for provider searches
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.ClientProvidersResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.ClientProvidersResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
     public static Link createAssociationLink(Client client) {
-        Link link = linkTo(methodOn(ClientProvidersResource.class).possible(client.getId(), null, null, null, null, null)).withRel("possibleProviders");
+        Link link = linkTo(methodOn(ClientProvidersResource.class).possible(client.getId(), null, null, null, null)).withRel("possibleProviders");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -74,7 +71,7 @@ public class ClientProviderResourcePage extends PagedResource<ClientProviderReso
      * @return the link
      */
     public static Link createCurrentProvidersSearchLink(Client client) {
-        Link link = linkTo(methodOn(ClientProvidersResource.class).current(client.getId(), null, null, null)).withRel("providers");
+        Link link = linkTo(methodOn(ClientProvidersResource.class).current(client.getId(), null, null)).withRel("providers");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -90,7 +87,7 @@ public class ClientProviderResourcePage extends PagedResource<ClientProviderReso
      * @return the link
      */
     public static Link createPossibleProvidersNotUsingGivenClientLink(Client client) {
-        Link link = linkTo(methodOn(ClientProvidersResource.class).possibleProvidersNotUsingClient(client.getId(), null, null, null, null, null)).withRel("possibleProvidersNotUsingClient");
+        Link link = linkTo(methodOn(ClientProvidersResource.class).possibleProvidersNotUsingClient(client.getId(), null, null, null, null)).withRel("possibleProvidersNotUsingClient");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
