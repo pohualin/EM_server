@@ -14,7 +14,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamResourceAssem
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -69,7 +67,6 @@ public class ClientProvidersResource {
      *
      * @param clientId  the client
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @return Page of ClientProviderResource objects or NO_CONTENT
      */
@@ -80,12 +77,12 @@ public class ClientProvidersResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "provider.lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "provider.normalizedName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientProviderResourcePage> current(
         @PathVariable Long clientId,
-        @PageableDefault(size = 10, sort = {"provider.lastName"}, direction = Sort.Direction.ASC) Pageable pageable,
-        Sort sort, PagedResourcesAssembler<ClientProvider> assembler) {
+        @PageableDefault(size = 10, sort = {"provider.normalizedName"}, direction = Sort.Direction.ASC) Pageable pageable,
+        PagedResourcesAssembler<ClientProvider> assembler) {
         Page<ClientProvider> clientProviderPage = clientProviderService.findByClient(new Client(clientId), pageable);
         if (clientProviderPage.hasContent()) {
             return new ResponseEntity<>(
@@ -127,7 +124,6 @@ public class ClientProvidersResource {
      *
      * @param clientId  the client
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @param name      filter
      * @param status    filter
@@ -140,12 +136,12 @@ public class ClientProvidersResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "normalizedName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ClientProviderResourcePage> possible(
         @PathVariable Long clientId,
-        @PageableDefault(size = 10, sort = {"lastName"}, direction = Sort.Direction.ASC) Pageable pageable,
-        Sort sort, PagedResourcesAssembler<ClientProvider> assembler,
+        @PageableDefault(size = 10, sort = {"normalizedName"}, direction = Sort.Direction.ASC) Pageable pageable,
+        PagedResourcesAssembler<ClientProvider> assembler,
         @RequestParam(value = "status", required = false) String status,
         @RequestParam(value = "name", required = false) String name) {
 
@@ -197,7 +193,6 @@ public class ClientProvidersResource {
      * 
      * @param clientId the client
      * @param pageable the page to request
-     * @param sort sorting
      * @param assembler used to create the PagedResources
      * @param status the status to filter
      * @param name the name to filter
@@ -209,11 +204,11 @@ public class ClientProvidersResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
+            @ApiImplicitParam(name = "sort", defaultValue = "normalizedName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")})
     public ResponseEntity<ClientProviderResourcePage> possibleProvidersNotUsingClient(
             @PathVariable Long clientId,
-            @PageableDefault(size = 10, sort = "lastName", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<ClientProvider> assembler,
+            @PageableDefault(size = 10, sort = "normalizedName", direction = Sort.Direction.ASC) Pageable pageable,
+            PagedResourcesAssembler<ClientProvider> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "name", required = false) String name) {
 

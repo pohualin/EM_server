@@ -9,24 +9,17 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientConflictResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResource;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientValidationErrorResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.*;
 import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientsActivationResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,40 +42,30 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
         APPLICATION_XML_VALUE})
 public class UserClientsResource {
 
+    public static final String RESET_PASSWORD_CLIENT_APPLICATION_URI = "#/reset_password/%s";
+    private static final String ACTIVATION_CLIENT_APPLICATION_URI = "#/activate/%s";
     @Resource
     ClientService clientService;
-
     @Resource
     UserClientService userClientService;
-
     @Resource
     UserClientPasswordService userClientPasswordService;
-
     @Resource
     UserClientResourceAssembler userClientResourceAssembler;
-
     @Resource
     UserClientConflictResourceAssembler userClientConflictResourceAssembler;
-    
     @Resource
     UserClientValidationErrorResourceAssembler userClientValidationErrorResourceAssembler;
-
     @Resource
     MailService mailService;
-
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
-
-    private static final String ACTIVATION_CLIENT_APPLICATION_URI = "#/activate/%s";
-
-    public static final String RESET_PASSWORD_CLIENT_APPLICATION_URI = "#/reset_password/%s";
 
     /**
      * Get a page of UserClient that satisfy the search criteria
      *
      * @param clientId  to use
      * @param pageable  to use
-     * @param sort      to use
      * @param assembler to use
      * @param status    to filter
      * @param term      to search
@@ -102,7 +85,6 @@ public class UserClientsResource {
     public ResponseEntity<UserClientPage> getUsers(
             @PathVariable(value = "clientId") Long clientId,
             @PageableDefault(size = 10, sort = "lastName", direction = Direction.ASC) Pageable pageable,
-            @SortDefault(sort = "lastName") Sort sort,
             PagedResourcesAssembler<UserClient> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "term", required = false) String term,

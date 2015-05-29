@@ -206,11 +206,11 @@ public class TeamProvidersResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "normalizedName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamProviderPage> possible(
             @PathVariable Long teamId,
-            @PageableDefault(size = 10, sort = {"lastName"}, direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 10, sort = {"normalizedName"}, direction = Sort.Direction.ASC) Pageable pageable,
             PagedResourcesAssembler<TeamProvider> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "name", required = false) String name) {

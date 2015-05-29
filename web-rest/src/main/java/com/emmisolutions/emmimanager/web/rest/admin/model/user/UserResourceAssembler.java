@@ -34,6 +34,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Component
 public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserResource> {
 
+    private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
+
     @Override
     public UserResource toResource(UserAdmin user) {
         List<UserAdminPermissionName> perms = new ArrayList<>();
@@ -90,7 +92,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
      * @return the link
      */
     public Link referenceTagsLinkForAdmin() {
-        Link link = linkTo(methodOn(AdminFunctionsResource.class).getRefData(null, null, null)).withRel("referenceTags");
+        Link link = linkTo(methodOn(AdminFunctionsResource.class).getRefData(null, null)).withRel("referenceTags");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", REQUEST_PARAM),
@@ -194,7 +196,5 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         }
         return null;
     }
-
-    private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 
 }
