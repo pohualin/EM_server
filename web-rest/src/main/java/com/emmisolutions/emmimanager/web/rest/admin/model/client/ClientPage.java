@@ -45,10 +45,10 @@ public class ClientPage extends PagedResource<ClientResource> {
      * Create the search link
      *
      * @return Link for client searches
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.ClientsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.ClientsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
     public static Link createFullSearchLink() {
-        Link link = linkTo(methodOn(ClientsResource.class).list(null, null, null, null, null)).withRel("clients");
+        Link link = linkTo(methodOn(ClientsResource.class).list(null, null, null, null)).withRel("clients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

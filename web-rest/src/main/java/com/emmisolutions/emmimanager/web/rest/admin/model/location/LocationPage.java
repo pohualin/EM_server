@@ -55,10 +55,10 @@ public class LocationPage extends PagedResource<LocationResource> {
      * Create the search link
      *
      * @return Link for location searches
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.LocationsResource#list(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, String, org.springframework.data.web.PagedResourcesAssembler, String...)
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.LocationsResource#list(org.springframework.data.domain.Pageable, String, org.springframework.data.web.PagedResourcesAssembler, String...)
      */
     public static Link createFullSearchLink() {
-        Link link = linkTo(methodOn(LocationsResource.class).list(null, null, null, null, (String[]) null)).withRel("locations");
+        Link link = linkTo(methodOn(LocationsResource.class).list(null, null, null, (String[]) null)).withRel("locations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

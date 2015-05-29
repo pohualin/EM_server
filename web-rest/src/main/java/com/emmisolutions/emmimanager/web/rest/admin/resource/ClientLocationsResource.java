@@ -68,7 +68,6 @@ public class ClientLocationsResource {
      *
      * @param clientId  the client
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
@@ -84,7 +83,7 @@ public class ClientLocationsResource {
     public ResponseEntity<ClientLocationResourcePage> current(
         @PathVariable Long clientId,
         @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,
-        Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
+        PagedResourcesAssembler<ClientLocation> assembler) {
         Page<ClientLocation> clientLocationPage = clientLocationService.findByClient(new Client(clientId), pageable);
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(
@@ -148,7 +147,6 @@ public class ClientLocationsResource {
      *
      * @param clientId  the client
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @param name      the name to filter
      * @param status    the status to filter
@@ -166,7 +164,7 @@ public class ClientLocationsResource {
     public ResponseEntity<ClientLocationResourcePage> possible(
         @PathVariable Long clientId,
         @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
-        Sort sort, PagedResourcesAssembler<ClientLocation> assembler,
+        PagedResourcesAssembler<ClientLocation> assembler,
         @RequestParam(value = "status", required = false) String status,
         @RequestParam(value = "name", required = false) String name) {
 
@@ -193,7 +191,6 @@ public class ClientLocationsResource {
      *
      * @param clientId  the client
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @param name      the name to filter
      * @param status    the status to filter
@@ -211,7 +208,7 @@ public class ClientLocationsResource {
     public ResponseEntity<ClientLocationResourcePage> possibleWithoutClientLocations(
         @PathVariable Long clientId,
         @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
-        Sort sort, PagedResourcesAssembler<ClientLocation> assembler,
+        PagedResourcesAssembler<ClientLocation> assembler,
         @RequestParam(value = "status", required = false) String status,
         @RequestParam(value = "name", required = false) String name) {
 

@@ -50,10 +50,10 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
      *
      * @param client the client
      * @return Link for location searches
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.ClientLocationsResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, String, String)
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.ClientLocationsResource#possible(Long, org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler, String, String)
      */
     public static Link createAssociationLink(Client client) {
-        Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null, null)).withRel("possibleLocations");
+        Link link = linkTo(methodOn(ClientLocationsResource.class).possible(client.getId(), null, null, null, null)).withRel("possibleLocations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -71,7 +71,7 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
      * @return the link
      */
     public static Link createAssociationWLink(Client client) {
-        Link link = linkTo(methodOn(ClientLocationsResource.class).possibleWithoutClientLocations(client.getId(), null, null, null, null, null)).withRel("possibleLocationsWithoutCL");
+        Link link = linkTo(methodOn(ClientLocationsResource.class).possibleWithoutClientLocations(client.getId(), null, null, null, null)).withRel("possibleLocationsWithoutCL");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -89,7 +89,7 @@ public class ClientLocationResourcePage extends PagedResource<ClientLocationReso
      * @return the link
      */
     public static Link createCurrentLocationsSearchLink(Client client) {
-        Link link = linkTo(methodOn(ClientLocationsResource.class).current(client.getId(), null, null, null)).withRel("locations");
+        Link link = linkTo(methodOn(ClientLocationsResource.class).current(client.getId(), null, null)).withRel("locations");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

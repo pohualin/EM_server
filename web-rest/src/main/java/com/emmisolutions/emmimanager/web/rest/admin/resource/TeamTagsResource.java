@@ -12,10 +12,8 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -167,9 +165,15 @@ public class TeamTagsResource {
     }
 
     /**
+     * /**
      * GET teamTags with tag
      *
-     * @return List of TeamTag objects or INTERNAL_SERVER_ERROR if the list is empty
+     * @param clientId  the client
+     * @param pageable  page spec
+     * @param assembler resources assembler
+     * @param tagIds    to get
+     * @param status    to get
+     * @return TeamTagPage
      */
     @RequestMapping(value = "/clients/{clientId}/team-tags", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
@@ -180,8 +184,7 @@ public class TeamTagsResource {
     })
     public ResponseEntity<TeamTagPage> teamTagsWithTags(
             @PathVariable("clientId") Long clientId,
-            @PageableDefault(size = 50) Pageable pageable,
-            @SortDefault(sort = "id") Sort sort,
+            @PageableDefault(size = 50, sort = "id") Pageable pageable,
             PagedResourcesAssembler<TeamTag> assembler,
             @RequestParam(value = "tagIds", required = false) List<Long> tagIds,
             @RequestParam(value = "status", required = false) String status) {

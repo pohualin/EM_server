@@ -52,7 +52,7 @@ public class ProviderClientResourcePage extends PagedResource<ProviderClientReso
      * @return the link
      */
     public static Link createCurrentClientsSearchLink(Provider provider) {
-        Link link = linkTo(methodOn(ProvidersResource.class).currentClients(provider.getId(), null, null, null)).withRel("clients");
+        Link link = linkTo(methodOn(ProvidersResource.class).currentClients(provider.getId(), null, null)).withRel("clients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

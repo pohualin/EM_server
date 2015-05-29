@@ -1,20 +1,15 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.groups;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.springframework.data.domain.Page;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
-import org.springframework.hateoas.UriTemplate;
-
 import com.emmisolutions.emmimanager.model.ReferenceGroup;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ReferenceGroupsResource;
+import org.springframework.data.domain.Page;
+import org.springframework.hateoas.*;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * A HATEOAS wrapper for a page of ReferenceGroupResource objects.
@@ -39,11 +34,11 @@ public class ReferenceGroupPage extends PagedResource<ReferenceGroupResource> {
      * Link for ref data
      *
      * @return Link reference data for groups and tags
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.GroupsResource#listGroupsByClientID(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, Long)
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.GroupsResource#listGroupsByClientID(org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler, Long)
      */
 
     public static Link createGroupReferenceDataLink() {
-        Link link = linkTo(methodOn(ReferenceGroupsResource.class).getAllReferenceGroups(null, null, null)).withRel("refDataGroups");
+        Link link = linkTo(methodOn(ReferenceGroupsResource.class).getAllReferenceGroups(null, null)).withRel("refDataGroups");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
@@ -58,7 +53,7 @@ public class ReferenceGroupPage extends PagedResource<ReferenceGroupResource> {
      * @return Link active reference data for groups and tags
      */
     public static Link createActiveReferenceGroupsDataLink() {
-        Link link = linkTo(methodOn(ReferenceGroupsResource.class).getActiveReferenceGroups(null, null, null)).withRel("activeReferenceGroups");
+        Link link = linkTo(methodOn(ReferenceGroupsResource.class).getActiveReferenceGroups(null, null)).withRel("activeReferenceGroups");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

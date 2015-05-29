@@ -10,11 +10,9 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +44,6 @@ public class EmailRestrictConfigurationsResource {
      *            to lookup
      * @param pageable
      *            to use
-     * @param sort
-     *            to use
      * @param assembler
      *            to use
      * @return an EmailRestrictConfigurationPage
@@ -61,7 +57,6 @@ public class EmailRestrictConfigurationsResource {
     public ResponseEntity<EmailRestrictConfigurationPage> list(
             @PathVariable("id") Long clientId,
             @PageableDefault(size = 10, sort = "emailEnding", direction = Direction.ASC) Pageable pageable,
-            @SortDefault(sort = "emailEnding", direction = Direction.ASC) Sort sort,
             PagedResourcesAssembler<EmailRestrictConfiguration> assembler) {
 
         Page<EmailRestrictConfiguration> page = emailRestrictConfigurationService

@@ -10,11 +10,9 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +44,6 @@ public class IpRestrictConfigurationsResource {
      *            to lookup
      * @param pageable
      *            to use
-     * @param sort
-     *            to use
      * @param assembler
      *            to use
      * @return an IpRestrictConfigurationPage
@@ -61,7 +57,6 @@ public class IpRestrictConfigurationsResource {
     public ResponseEntity<IpRestrictConfigurationPage> list(
             @PathVariable("id") Long clientId,
             @PageableDefault(size = 10, sort = "ipRangeStart", direction = Direction.ASC) Pageable pageable,
-            @SortDefault(sort = "ipRangeStart", direction = Direction.ASC) Sort sort,
             PagedResourcesAssembler<IpRestrictConfiguration> assembler) {
 
         Page<IpRestrictConfiguration> page = ipRestrictConfigurationService

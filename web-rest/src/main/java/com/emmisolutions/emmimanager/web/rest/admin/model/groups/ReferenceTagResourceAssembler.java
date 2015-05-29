@@ -18,7 +18,7 @@ public class ReferenceTagResourceAssembler implements
 	@Override
 	public ReferenceTagResource toResource(ReferenceTag entity) {
 		ReferenceTagResource ret = new ReferenceTagResource();
-		ret.add(linkTo(methodOn(ProvidersResource.class).getRefData(null, null, null)).withSelfRel());
+		ret.add(linkTo(methodOn(ProvidersResource.class).getRefData(null, null)).withSelfRel());
 		ret.setEntity(entity);
 		return ret;
 	}

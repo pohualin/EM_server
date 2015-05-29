@@ -1,18 +1,13 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
 import com.emmisolutions.emmimanager.model.ProviderSpecialty;
-import com.emmisolutions.emmimanager.model.ReferenceTag;
 import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderSpecialtyPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderSpecialtyResourceAssembler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,14 +35,12 @@ public class AdminFunctionsResource {
      * GET to retrieve Reference Tags with Specialty type.
      *
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param assembler used to create PagedResources
      * @return ReferenceTagPage matching the search request
      */
     @RequestMapping(value = "/referenceTags", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_SUPER_ADMIN"})
-    public ResponseEntity<ProviderSpecialtyPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
-                                                       @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<ProviderSpecialtyPage> getRefData(@PageableDefault(size = 10, sort = "id") Pageable pageable,
                                                        PagedResourcesAssembler<ProviderSpecialty> assembler) {
 
         Page<ProviderSpecialty> specialtyPage = providerService.findAllSpecialties(pageable);

@@ -43,10 +43,10 @@ public class GroupPage extends PagedResource<GroupResource> {
      *
      * @param client to use
      * @return Link for group searches
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.GroupsResource#listGroupsByClientID(org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort, org.springframework.data.web.PagedResourcesAssembler, Long)
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.GroupsResource#listGroupsByClientID(org.springframework.data.domain.Pageable, org.springframework.data.web.PagedResourcesAssembler, Long)
      */
     public static Link createFullSearchLink(Client client) {
-        Link link = linkTo(methodOn(GroupsResource.class).listGroupsByClientID(null, null, null, client.getId())).withRel("groups");
+        Link link = linkTo(methodOn(GroupsResource.class).listGroupsByClientID(null, null, client.getId())).withRel("groups");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
