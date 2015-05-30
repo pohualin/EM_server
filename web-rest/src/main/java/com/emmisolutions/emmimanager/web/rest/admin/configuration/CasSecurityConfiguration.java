@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
@@ -53,40 +54,30 @@ import static com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicA
 public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public static final String SERVICE_REQUEST_URL_PARAMETER = "redirect-url";
-
-    @Resource
-    private CasAuthenticationSuccessHandler casAuthenticationSuccessHandler;
-
-    @Resource
-    private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
-
-    @Resource(name = "adminUserDetailsService")
-    private UserDetailsService userDetailsService;
-
-    @Value("${cas.server.url:https://devcas1.emmisolutions.com/cas}")
-    private String casServerUrl;
-
-    @Value("${cas.server.login.url:https://devcas1.emmisolutions.com/cas/login}")
-    private String casServerLoginUrl;
-
-    @Value("${cas.service.validation.uri:/webapi/j_spring_cas_security_check}")
-    private String casValidationUri;
-
-    @Value("${cas.provider.key:12234245632699}")
-    private String casProviderKey;
-
-    @Value("${cas.username.suffix:@emmisolutions.com}")
-    private String userNameSuffix;
-
     @Resource
     DynamicAuthenticationDetailsSource dynamicAuthenticationDetailsSource;
-
     @Resource(name = "adminSecurityContextRepository")
     SecurityContextRepository adminSecurityContextRepository;
-
     @Resource(name = "adminTokenBasedRememberMeServices")
     TokenBasedRememberMeServices adminTokenBasedRememberMeServices;
-
+    @Resource
+    private CasAuthenticationSuccessHandler casAuthenticationSuccessHandler;
+    @Resource
+    private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
+    @Resource(name = "adminUserDetailsService")
+    private UserDetailsService userDetailsService;
+    @Resource
+    private CsrfTokenRepository csrfTokenRepository;
+    @Value("${cas.server.url:https://devcas1.emmisolutions.com/cas}")
+    private String casServerUrl;
+    @Value("${cas.server.login.url:https://devcas1.emmisolutions.com/cas/login}")
+    private String casServerLoginUrl;
+    @Value("${cas.service.validation.uri:/webapi/j_spring_cas_security_check}")
+    private String casValidationUri;
+    @Value("${cas.provider.key:12234245632699}")
+    private String casProviderKey;
+    @Value("${cas.username.suffix:@emmisolutions.com}")
+    private String userNameSuffix;
     private Base64 urlSafeBase64;
 
     /**
@@ -288,7 +279,8 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .key(adminTokenBasedRememberMeServices.getKey())
                     .rememberMeServices(adminTokenBasedRememberMeServices)
                     .and()
-                .csrf().disable()
+                .csrf()
+                .csrfTokenRepository(csrfTokenRepository).and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .antMatchers("/webapi").permitAll()

@@ -29,6 +29,7 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
 import javax.annotation.Resource;
@@ -53,32 +54,33 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     static final String AUTHORIZATION_COOKIE_NAME = "EM2_RMC";
 
     static final String CLIENT_RMC_HASH_KEY_SECRET = "EM2_RMC_SECRET_KEY_999087!";
-
-    @Resource(name = "clientAjaxAuthenticationSuccessHandler")
-    private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
-
-    @Resource(name = "clientAjaxAuthenticationFailureHandler")
-    private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
-
-    @Resource(name = "clientAjaxLogoutSuccessHandler")
-    private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
-
-    @Resource
-    private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
-
-    @Resource(name = "clientUserDetailsService")
-    private UserDetailsService clientUserDetailsService;
-
+    /**
+     * This is the processing URL for login
+     */
+    private static final String loginProcessingUrl = "/webapi-client/authenticate";
+    /**
+     * This is the processing URL for logout
+     */
+    private static final String logoutProcessingUrl = "/webapi-client/logout";
     @Resource
     Environment env;
-
-    private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
-
     @Resource
     PasswordEncoder passwordEncoder;
-
     @Resource
     PermissionEvaluator permissionEvaluator;
+    @Resource(name = "clientAjaxAuthenticationSuccessHandler")
+    private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
+    @Resource(name = "clientAjaxAuthenticationFailureHandler")
+    private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
+    @Resource(name = "clientAjaxLogoutSuccessHandler")
+    private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
+    @Resource
+    private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
+    @Resource(name = "clientUserDetailsService")
+    private UserDetailsService clientUserDetailsService;
+    @Resource
+    private CsrfTokenRepository csrfTokenRepository;
+    private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource(name = "legacyAuthenticationProvider")
     private void setAuthenticationProvider(UserDetailsConfigurableAuthenticationProvider authenticationProvider){
@@ -97,7 +99,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the handler that uses our permission evaluator
      */
     @Bean
-    public SecurityExpressionHandler<FilterInvocation> authorizationExpressionHandler(){
+    public SecurityExpressionHandler<FilterInvocation> authorizationExpressionHandler() {
         DefaultWebSecurityExpressionHandler ret = new DefaultWebSecurityExpressionHandler();
         ret.setPermissionEvaluator(permissionEvaluator);
         return ret;
@@ -109,7 +111,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return an HttpSessionSecurityContextRepository
      */
     @Bean(name = "clientSecurityContextRepository")
-    public SecurityContextRepository securityContextRepository(){
+    public SecurityContextRepository securityContextRepository() {
         HttpSessionSecurityContextRepository ret = new HttpSessionSecurityContextRepository();
         ret.setAllowSessionCreation(false);
         ret.setSpringSecurityContextKey("SPRING_SECURITY_CONTEXT_CLIENT");
@@ -123,7 +125,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the TokenBasedRememberMeServices
      */
     @Bean(name = "clientTokenBasedRememberMeServices")
-    public RootTokenBasedRememberMeServices tokenBasedRememberMeServices(){
+    public RootTokenBasedRememberMeServices tokenBasedRememberMeServices() {
         RootTokenBasedRememberMeServices rootTokenBasedRememberMeServices =
                 new RootTokenBasedRememberMeServices(CLIENT_RMC_HASH_KEY_SECRET, clientUserDetailsService);
         rootTokenBasedRememberMeServices.setAlwaysRemember(true);
@@ -140,7 +142,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the ProxyAwareWebAuthenticationDetailsSource
      */
     @Bean
-    public ProxyAwareWebAuthenticationDetailsSource authenticationDetailsSource(){
+    public ProxyAwareWebAuthenticationDetailsSource authenticationDetailsSource() {
         return new ProxyAwareWebAuthenticationDetailsSource();
     }
 
@@ -150,12 +152,12 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * @return the remember me services
      */
     @Bean
-    public RememberMeServices delegateRememberMeServices(){
-    	if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
+    public RememberMeServices delegateRememberMeServices() {
+        if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
             return new DelegateRememberMeServices();
-    	} else {
-    		return tokenBasedRememberMeServices();
-    	}
+        } else {
+            return tokenBasedRememberMeServices();
+        }
     }
 
     /**
@@ -168,16 +170,6 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider);
     }
-
-    /**
-     * This is the processing URL for login
-     */
-    private static final String loginProcessingUrl = "/webapi-client/authenticate";
-
-    /**
-     * This is the processing URL for logout
-     */
-    private static final String logoutProcessingUrl = "/webapi-client/logout";
 
     @Override
     @SuppressWarnings("unchecked")
@@ -216,7 +208,9 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
                     .permitAll()
                     .and()
-                .csrf().disable()
+                .csrf()
+                .csrfTokenRepository(csrfTokenRepository)
+                .and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .expressionHandler(authorizationExpressionHandler())

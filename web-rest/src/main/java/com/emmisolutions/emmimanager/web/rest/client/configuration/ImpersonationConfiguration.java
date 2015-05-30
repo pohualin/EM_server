@@ -1,10 +1,13 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
-import static com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration.CLIENT_RMC_HASH_KEY_SECRET;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasImpersonationAuthenticationSuccessHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenticationDetailsSource;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,18 +31,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasImpersonationAuthenticationSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenticationDetailsSource;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import static com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration.CLIENT_RMC_HASH_KEY_SECRET;
 
 /**
  * Impersonation in the client application or administrative users logging into the client side
@@ -56,39 +56,30 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenti
 @Order(110)
 public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
 
+    public static final String TRIGGER_VALUE = "impersonate-client";
     static final String IMP_AUTHORIZATION_COOKIE_NAME = "EM2_IMP_RMC";
-
-    @Value("${cas.service.validation.client.uri:/webapi-client/j_spring_cas_security_check}")
-    private String casValidationUri;
-
-    @Value("${cas.username.suffix:@emmisolutions.com}")
-    private String userNameSuffix;
-
-    @Value("${cas.provider.key:12234245632699}")
-    private String casProviderKey;
-
     @Resource(name = "clientSecurityContextRepository")
     SecurityContextRepository clientSecurityContextRepository;
-
     @Resource
     CasAuthenticationEntryPoint casAuthenticationEntryPoint;
-
     @Resource
     DynamicAuthenticationDetailsSource dynamicAuthenticationDetailsSource;
-
     @Resource
     Cas20ServiceTicketValidator cas20ServiceTicketValidator;
-
     @Resource
     CasImpersonationAuthenticationSuccessHandler casImpersonationAuthenticationSuccessHandler;
-
-    @Resource
-    private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
-
     @Resource(name = "impersonationUserDetailsService")
     UserDetailsService userDetailsService;
-
-    public static final String TRIGGER_VALUE = "impersonate-client";
+    @Value("${cas.service.validation.client.uri:/webapi-client/j_spring_cas_security_check}")
+    private String casValidationUri;
+    @Value("${cas.username.suffix:@emmisolutions.com}")
+    private String userNameSuffix;
+    @Value("${cas.provider.key:12234245632699}")
+    private String casProviderKey;
+    @Resource
+    private CsrfTokenRepository csrfTokenRepository;
+    @Resource
+    private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
 
     /**
      * Determines if the request is for a resource that should be impersonated
@@ -243,7 +234,9 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
                     .key(impersonationTokenBasedRememberMeServices().getKey())
                     .rememberMeServices(impersonationTokenBasedRememberMeServices())
                 .and()
-                .csrf().disable()
+                .csrf()
+                .csrfTokenRepository(csrfTokenRepository)
+                .and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .requestMatchers(new OrRequestMatcher(new AntPathRequestMatcher("/webapi-client/j_spring_cas_security_check"),
