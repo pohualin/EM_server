@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeServices;
+import com.emmisolutions.emmimanager.web.rest.admin.security.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
@@ -174,6 +175,10 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi-client/authenticated");
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-client.jsp?error");
+        DoubleSubmitSignedCsrfTokenRepository csrfTokenRepository =
+                new DoubleSubmitSignedCsrfTokenRepository(AUTHORIZATION_COOKIE_NAME);
+        csrfTokenRepository.setXsrfCookieName("XSRF-TOKEN-CLIENT");
+        csrfTokenRepository.setXsrfParameterName("X-XSRF-TOKEN-CLIENT");
         http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -207,9 +212,8 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                 .csrf()
-                .disable()
-//                    .csrfTokenRepository(new DoubleSubmitSignedCsrfTokenRepository(AUTHORIZATION_COOKIE_NAME))
-//                    .and()
+                .csrfTokenRepository(csrfTokenRepository)
+                .and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .expressionHandler(authorizationExpressionHandler())

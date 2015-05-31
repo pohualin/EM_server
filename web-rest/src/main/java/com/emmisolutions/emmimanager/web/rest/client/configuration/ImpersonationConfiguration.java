@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import com.emmisolutions.emmimanager.web.rest.admin.security.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
@@ -207,6 +208,10 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         casAuthenticationEntryPoint.setServiceProperties(impersonationServiceProperties());
+        DoubleSubmitSignedCsrfTokenRepository csrfTokenRepository =
+                new DoubleSubmitSignedCsrfTokenRepository(IMP_AUTHORIZATION_COOKIE_NAME);
+        csrfTokenRepository.setXsrfCookieName("XSRF-TOKEN-IMP");
+        csrfTokenRepository.setXsrfParameterName("X-XSRF-TOKEN-IMP");
         http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -232,9 +237,8 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
                     .rememberMeServices(impersonationTokenBasedRememberMeServices())
                 .and()
                 .csrf()
-                .disable()
-//                    .csrfTokenRepository(new DoubleSubmitSignedCsrfTokenRepository(IMP_AUTHORIZATION_COOKIE_NAME))
-//                    .and()
+                .csrfTokenRepository(csrfTokenRepository)
+                .and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .requestMatchers(new OrRequestMatcher(new AntPathRequestMatcher("/webapi-client/j_spring_cas_security_check"),
