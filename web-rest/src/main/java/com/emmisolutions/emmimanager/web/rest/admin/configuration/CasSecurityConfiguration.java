@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
+import com.emmisolutions.emmimanager.web.rest.admin.security.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
@@ -41,6 +41,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.emmisolutions.emmimanager.web.rest.admin.configuration.SecurityConfiguration.AUTHENTICATION_TOKEN_NAME;
 import static com.emmisolutions.emmimanager.web.rest.admin.security.cas.DynamicAuthenticationDetailsSource.makeDynamicUrlFromRequest;
 
 /**
@@ -66,8 +67,6 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
     @Resource(name = "adminUserDetailsService")
     private UserDetailsService userDetailsService;
-    @Resource
-    private CsrfTokenRepository csrfTokenRepository;
     @Value("${cas.server.url:https://devcas1.emmisolutions.com/cas}")
     private String casServerUrl;
     @Value("${cas.server.login.url:https://devcas1.emmisolutions.com/cas/login}")
@@ -280,7 +279,9 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .rememberMeServices(adminTokenBasedRememberMeServices)
                     .and()
                 .csrf()
-                .csrfTokenRepository(csrfTokenRepository).and()
+                .csrfTokenRepository(
+                        new DoubleSubmitSignedCsrfTokenRepository(AUTHENTICATION_TOKEN_NAME))
+                .and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .antMatchers("/webapi").permitAll()

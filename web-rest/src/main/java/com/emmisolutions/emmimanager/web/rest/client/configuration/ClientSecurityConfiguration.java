@@ -29,7 +29,6 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
 import javax.annotation.Resource;
@@ -78,8 +77,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
     @Resource(name = "clientUserDetailsService")
     private UserDetailsService clientUserDetailsService;
-    @Resource
-    private CsrfTokenRepository csrfTokenRepository;
+
     private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource(name = "legacyAuthenticationProvider")
@@ -209,8 +207,9 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                 .csrf()
-                .csrfTokenRepository(csrfTokenRepository)
-                .and()
+                .disable()
+//                    .csrfTokenRepository(new DoubleSubmitSignedCsrfTokenRepository(AUTHORIZATION_COOKIE_NAME))
+//                    .and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .expressionHandler(authorizationExpressionHandler())

@@ -31,7 +31,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -76,8 +75,6 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
     private String userNameSuffix;
     @Value("${cas.provider.key:12234245632699}")
     private String casProviderKey;
-    @Resource
-    private CsrfTokenRepository csrfTokenRepository;
     @Resource
     private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
 
@@ -235,8 +232,9 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
                     .rememberMeServices(impersonationTokenBasedRememberMeServices())
                 .and()
                 .csrf()
-                .csrfTokenRepository(csrfTokenRepository)
-                .and()
+                .disable()
+//                    .csrfTokenRepository(new DoubleSubmitSignedCsrfTokenRepository(IMP_AUTHORIZATION_COOKIE_NAME))
+//                    .and()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .requestMatchers(new OrRequestMatcher(new AntPathRequestMatcher("/webapi-client/j_spring_cas_security_check"),
