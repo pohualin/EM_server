@@ -2,9 +2,11 @@ package com.emmisolutions.emmimanager.model;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
+
 import org.aspectj.lang.annotation.Before;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.hibernate.validator.constraints.Email;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +15,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -56,6 +59,11 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", length = 25)
     private Gender gender;
+    
+    @Email
+    @Size(min = 0, max = 255)
+    @Column(columnDefinition = "nvarchar(255)")
+    private String email;
 
     @NotNull
     @Size(max = 255)
@@ -119,6 +127,14 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+    
+    public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
     public String getNormalizedName() {
         return normalizedName;

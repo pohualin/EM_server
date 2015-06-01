@@ -40,6 +40,5 @@ public interface ClientTeamEmailConfigurationService {
     public Page<ClientTeamEmailConfiguration> findByTeam(
             Team team,
             Pageable pageable);
-
-     
+  
 }
