@@ -39,7 +39,7 @@ public class TeamResourceAssembler
         // create special template link to allow to find a schedule by id for a team
         ret.add(createScheduleByIdLink(entity));
         
-        ret.add(linkTo(methodOn(PatientsResource.class).findTeamEmailConfigForPatient(entity.getId(), null, null, null)).withRel("patientTeamEmailConfig"));
+        ret.add(linkTo(methodOn(PatientsResource.class).findTeamEmailConfigForPatient(entity.getClient().getId(), entity.getId(), null, null)).withRel("patientTeamEmailConfig"));
 
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
                 .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null, null))
