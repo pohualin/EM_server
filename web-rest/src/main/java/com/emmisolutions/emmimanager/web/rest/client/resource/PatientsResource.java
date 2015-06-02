@@ -146,4 +146,41 @@ public class PatientsResource {
             return new ResponseEntity<>(patientResourceAssembler.toResource(updatedPatient), HttpStatus.OK);
         }
     }
+
+
+    /**
+     * GET for searching for patients
+     *
+     * @param clientId  for security, ensures logged in user has rights to search the client
+     * @param page  the page specification
+     * @param assembler to create PatientResource objects
+     * @return OK (200): containing a PatientResourcePage
+     *
+     * NO_CONTENT (204): when there are no matches
+     */
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/clientPatients", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<PatientResourcePage> listAllPatients(@PathVariable("clientId") Long clientId,
+                                                    @PageableDefault(size = 10, sort = "lastName") Pageable page,
+                                                    PagedResourcesAssembler<Patient> assembler,
+//                                                    @RequestParam(value = "name", required = false) String name,
+                                                    @PathVariable("teamId") Long teamId) {
+
+        PatientSearchFilter filter = new PatientSearchFilter(new Client(clientId));
+        Page<Patient> patientsPage = patientService.list(page, filter);
+        if (patientsPage.hasContent()) {
+            return new ResponseEntity<>(
+                    new PatientResourcePage(assembler
+                            .toResource(patientsPage, patientResourceAssembler), patientsPage, filter),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 }

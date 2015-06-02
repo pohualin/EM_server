@@ -34,6 +34,15 @@ public class PatientSearchFilter {
         }
     }
 
+
+    /**
+     * Creates a search filter using status and names
+     *
+     */
+    public PatientSearchFilter(Client client) {
+        this.setClient(client);
+    }
+
     public Set<String> getNames() {
         return names;
     }
