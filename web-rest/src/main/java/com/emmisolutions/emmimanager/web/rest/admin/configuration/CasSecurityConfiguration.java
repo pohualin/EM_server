@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.*;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +67,8 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private CasAuthenticationSuccessHandler casAuthenticationSuccessHandler;
     @Resource
     private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
+    @Resource(name ="clientCsrfAccessDeniedHandler")
+    private CsrfAccessDeniedHandler csrfAccessDeniedHandler;
     @Resource(name = "adminUserDetailsService")
     private UserDetailsService userDetailsService;
     @Resource(name = "adminCsrfTokenRepository")
@@ -276,6 +279,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
                             new AntPathRequestMatcher("/webapi/**"))
+                    .accessDeniedHandler(csrfAccessDeniedHandler)
                     .and()
                 .rememberMe()
                     .key(adminTokenBasedRememberMeServices.getKey())

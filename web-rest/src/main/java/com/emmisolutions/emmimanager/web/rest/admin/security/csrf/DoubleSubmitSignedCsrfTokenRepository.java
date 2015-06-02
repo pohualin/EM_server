@@ -32,15 +32,6 @@ import java.util.UUID;
  */
 public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepository {
 
-    private String DELIMITER = "-";
-
-    /**
-     * the server only secret string ensures that even if a client can read the security token,
-     * they still won't be able to create a valid signature, unless of course they know this
-     * secret string and the algorithm used for the hash
-     */
-    private String secretSalt = "server||only||secret||";
-
     private final List<SecurityTokenCookieParameterNameTuple> cookieParameterNamePairs;
 
     /**
@@ -60,7 +51,7 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
     @Override
     public CsrfToken generateToken(HttpServletRequest request) {
         StringBuilder csrfToken = new StringBuilder(UUID.randomUUID().toString());
-        StringBuilder toHash = new StringBuilder(secretSalt);
+        StringBuilder toHash = new StringBuilder(String.valueOf(System.nanoTime()));
         String xsrfParameterName = null;
         SECURITY_TOKEN_LOOP:
         for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
@@ -80,9 +71,8 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("No MD5 algorithm available!");
         }
-
         return new DefaultCsrfToken(xsrfParameterName, xsrfParameterName,
-                csrfToken.append(DELIMITER).append(
+                csrfToken.append("-").append(
                         new String(Hex.encode(digest.digest(toHash.toString().getBytes()))))
                         .toString());
     }
@@ -130,14 +120,6 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
                 new DefaultCsrfToken(xsrfParameterName, xsrfParameterName, csrfFromCookie) : null;
     }
 
-    public String getSecretSalt() {
-        return secretSalt;
-    }
-
-    public void setSecretSalt(String secretSalt) {
-        this.secretSalt = secretSalt;
-    }
-
     private boolean isSecureRequest(HttpServletRequest request) {
         return request.isSecure() ||
                 StringUtils.equalsIgnoreCase(request.getHeader("X-Forwarded-Ssl"), "on");
@@ -148,10 +130,17 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
      * xsrfCookie name and xsrf header/parameter name.
      */
     public static class SecurityTokenCookieParameterNameTuple {
-        String securityTokenName;
-        String xsrfCookieName;
-        String xsrfHeaderName;
+        private final String securityTokenName;
+        private final String xsrfCookieName;
+        private final String xsrfHeaderName;
 
+        /**
+         * Creates a tuple joining
+         *
+         * @param securityTokenName the token name
+         * @param xsrfCookieName    the xsrf cookie name
+         * @param xsrfHeaderName    the xsrf header/parameter name
+         */
         public SecurityTokenCookieParameterNameTuple(String securityTokenName,
                                                      String xsrfCookieName,
                                                      String xsrfHeaderName) {

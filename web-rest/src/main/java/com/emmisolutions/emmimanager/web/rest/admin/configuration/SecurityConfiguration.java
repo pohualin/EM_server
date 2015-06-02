@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.*;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import org.springframework.context.annotation.Bean;
@@ -63,6 +64,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
     @Resource
     private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
+    @Resource(name ="clientCsrfAccessDeniedHandler")
+    private CsrfAccessDeniedHandler csrfAccessDeniedHandler;
     @Resource
     private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
     @Resource
@@ -135,7 +138,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .and()
                     .exceptionHandling()
                         .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                                new AntPathRequestMatcher(loginProcessingUrl));
+                                new AntPathRequestMatcher(loginProcessingUrl))
+                        .accessDeniedHandler(csrfAccessDeniedHandler);
         } else {
             // cas isn't enabled register as normal
             http
@@ -144,7 +148,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .and()
                     .exceptionHandling()
                         .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                                new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
+                                new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
+                        .accessDeniedHandler(csrfAccessDeniedHandler);
         }
         http
                 .sessionManagement()
@@ -178,13 +183,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new CsrfTokenGeneratorFilter(adminCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()
-                .antMatchers("/webapi").permitAll()
-                .antMatchers("/webapi.*").permitAll()
-                .antMatchers("/webapi/").permitAll()
-                .antMatchers("/webapi/messages").permitAll()
-                .antMatchers("/api-docs*").permitAll()
-                .antMatchers("/api-docs/**").permitAll()
-                .antMatchers("/webapi/**").authenticated();
+                    .antMatchers("/webapi").permitAll()
+                    .antMatchers("/webapi.*").permitAll()
+                    .antMatchers("/webapi/").permitAll()
+                    .antMatchers("/webapi/messages").permitAll()
+                    .antMatchers("/api-docs*").permitAll()
+                    .antMatchers("/api-docs/**").permitAll()
+                    .antMatchers("/webapi/**").authenticated();
     }
 
 }

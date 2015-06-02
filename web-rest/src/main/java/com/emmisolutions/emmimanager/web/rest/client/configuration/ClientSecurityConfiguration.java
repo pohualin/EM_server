@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
@@ -78,6 +79,9 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
     @Resource(name = "clientAjaxLogoutSuccessHandler")
     private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
+    @Resource(name ="clientCsrfAccessDeniedHandler")
+    private CsrfAccessDeniedHandler csrfAccessDeniedHandler;
+
     @Resource
     private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
     @Resource(name = "clientUserDetailsService")
@@ -211,6 +215,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
                             new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
+                    .accessDeniedHandler(csrfAccessDeniedHandler)
                     .and()
                 .rememberMe()
                     .key(tokenBasedRememberMeServices().getKey())
