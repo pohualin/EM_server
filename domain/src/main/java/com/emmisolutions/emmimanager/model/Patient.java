@@ -35,12 +35,13 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @Size(max = 255)
     @Column(name = "first_name", nullable = false)
-    @Pattern(regexp = "[A-Za-z '-]*", message = "Name can only contain letters, spaces, and the following characters: - '")
+    @Pattern(regexp = "[A-Za-z '-]+\\.{0,1}[A-Za-z '-]*", message = "Name can only contain letters, spaces, and the following characters: . - '")
     private String firstName;
 
     @NotNull
     @Size(max = 255)
     @Column(name = "last_name", nullable = false)
+    @Pattern(regexp = "[A-Za-z '-]+\\.{0,1}[A-Za-z '-]*", message = "Name can only contain letters, spaces, and the following characters: . - '")
     private String lastName;
 
     @NotNull
