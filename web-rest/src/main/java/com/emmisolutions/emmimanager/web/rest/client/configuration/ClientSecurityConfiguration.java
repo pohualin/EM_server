@@ -3,9 +3,10 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeServices;
-import com.emmisolutions.emmimanager.web.rest.admin.security.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
@@ -30,6 +31,8 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
 import javax.annotation.Resource;
@@ -37,6 +40,7 @@ import javax.inject.Inject;
 
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
+import static com.emmisolutions.emmimanager.web.rest.client.configuration.ImpersonationConfiguration.IMP_AUTHORIZATION_COOKIE_NAME;
 
 /**
  * Spring Security Setup
@@ -170,15 +174,30 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(authenticationProvider);
     }
 
+    /**
+     * This is the Csrf Token Repository for the client facing applications
+     *
+     * @return CsrfTokenRepository that processes impersonation and normal client authentication but
+     * handles impersonation before normal (this matches the RememberMeServices implementation) and
+     * must match
+     */
+    @Bean(name = "clientCsrfTokenRepository")
+    public CsrfTokenRepository clientCsrfTokenRepository() {
+        return new DoubleSubmitSignedCsrfTokenRepository(
+                new DoubleSubmitSignedCsrfTokenRepository.SecurityTokenCookieParameterNameTuple(
+                        IMP_AUTHORIZATION_COOKIE_NAME, "XSRF-TOKEN-IMP", "X-XSRF-TOKEN-IMP"
+                ),
+                new DoubleSubmitSignedCsrfTokenRepository.SecurityTokenCookieParameterNameTuple(
+                        AUTHORIZATION_COOKIE_NAME, "XSRF-TOKEN-CLIENT", "X-XSRF-TOKEN-CLIENT"
+                ));
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     protected void configure(HttpSecurity http) throws Exception {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi-client/authenticated");
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-client.jsp?error");
-        DoubleSubmitSignedCsrfTokenRepository csrfTokenRepository =
-                new DoubleSubmitSignedCsrfTokenRepository(AUTHORIZATION_COOKIE_NAME);
-        csrfTokenRepository.setXsrfCookieName("XSRF-TOKEN-CLIENT");
-        csrfTokenRepository.setXsrfParameterName("X-XSRF-TOKEN-CLIENT");
+
         http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -188,10 +207,10 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .and()
                 .requestMatchers()
                     .antMatchers("/webapi-client/**")
-                .and()
-                    .exceptionHandling()
-                        .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                                new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
+                    .and()
+                .exceptionHandling()
+                    .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
+                            new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
                     .and()
                 .rememberMe()
                     .key(tokenBasedRememberMeServices().getKey())
@@ -212,8 +231,9 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                 .csrf()
-                .csrfTokenRepository(csrfTokenRepository)
-                .and()
+                    .csrfTokenRepository(clientCsrfTokenRepository())
+                    .and()
+                .addFilterAfter(new CsrfTokenGeneratorFilter(clientCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .expressionHandler(authorizationExpressionHandler())

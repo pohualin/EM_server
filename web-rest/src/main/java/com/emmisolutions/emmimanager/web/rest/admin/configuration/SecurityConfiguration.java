@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.*;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
@@ -103,6 +107,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return rootTokenBasedRememberMeServices;
     }
 
+    /**
+     * This is the Csrf Token Repository for the client facing applications
+     *
+     * @return CsrfTokenRepository that processes impersonation and normal client authentication but
+     * handles impersonation before normal (this matches the RememberMeServices implementation) and
+     * must match
+     */
+    @Bean(name = "adminCsrfTokenRepository")
+    public CsrfTokenRepository adminCsrfTokenRepository() {
+        // make sure the csrf repo handles impersonation as well as normal client login
+        return new DoubleSubmitSignedCsrfTokenRepository(
+                new DoubleSubmitSignedCsrfTokenRepository.SecurityTokenCookieParameterNameTuple(
+                AUTHENTICATION_TOKEN_NAME, "XSRF-TOKEN", "X-XSRF-TOKEN"
+        ));
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi/authenticated");
@@ -111,51 +131,51 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             // only register the login and logout URLs for processing when CAS is enabled
             http
                     .requestMatchers()
-                    .antMatchers(loginProcessingUrl, logoutProcessingUrl)
-                    .and()
+                        .antMatchers(loginProcessingUrl, logoutProcessingUrl)
+                        .and()
                     .exceptionHandling()
-                    .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                            new AntPathRequestMatcher(loginProcessingUrl));
+                        .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
+                                new AntPathRequestMatcher(loginProcessingUrl));
         } else {
             // cas isn't enabled register as normal
             http
                     .requestMatchers()
-                    .antMatchers("/webapi/**")
-                    .and()
+                        .antMatchers("/webapi/**")
+                        .and()
                     .exceptionHandling()
-                    .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                            new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
+                        .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
+                                new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
         }
         http
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
                 .securityContext()
-                .securityContextRepository(securityContextRepository())
-                .and()
+                    .securityContextRepository(securityContextRepository())
+                    .and()
                 .authenticationProvider(authenticationProvider)
                 .formLogin()
-                .loginPage("/login-admin.jsp")
-                .loginProcessingUrl(loginProcessingUrl)
-                .successHandler(ajaxAuthenticationSuccessHandler)
-                .failureHandler(ajaxAuthenticationFailureHandler)
-                .usernameParameter("j_username")
-                .passwordParameter("j_password")
-                .permitAll()
-                .and()
+                    .loginPage("/login-admin.jsp")
+                    .loginProcessingUrl(loginProcessingUrl)
+                    .successHandler(ajaxAuthenticationSuccessHandler)
+                    .failureHandler(ajaxAuthenticationFailureHandler)
+                    .usernameParameter("j_username")
+                    .passwordParameter("j_password")
+                    .permitAll()
+                    .and()
                 .rememberMe()
-                .key(tokenBasedRememberMeServices().getKey())
-                .rememberMeServices(tokenBasedRememberMeServices())
-                .and()
+                    .key(tokenBasedRememberMeServices().getKey())
+                    .rememberMeServices(tokenBasedRememberMeServices())
+                    .and()
                 .logout()
-                .logoutUrl(logoutProcessingUrl)
-                .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                .permitAll()
-                .and()
+                    .logoutUrl(logoutProcessingUrl)
+                    .logoutSuccessHandler(ajaxLogoutSuccessHandler)
+                    .permitAll()
+                    .and()
                 .csrf()
-                .csrfTokenRepository(
-                        new DoubleSubmitSignedCsrfTokenRepository(AUTHENTICATION_TOKEN_NAME))
-                .and()
+                    .csrfTokenRepository(adminCsrfTokenRepository())
+                    .and()
+                .addFilterAfter(new CsrfTokenGeneratorFilter(adminCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                 .antMatchers("/webapi").permitAll()

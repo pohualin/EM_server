@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-import com.emmisolutions.emmimanager.web.rest.admin.security.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.AllowSuccessHandlerCasAuthenticationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.CasAuthenticationFailureHandler;
@@ -32,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -70,6 +70,8 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
     CasImpersonationAuthenticationSuccessHandler casImpersonationAuthenticationSuccessHandler;
     @Resource(name = "impersonationUserDetailsService")
     UserDetailsService userDetailsService;
+    @Resource(name = "clientCsrfTokenRepository")
+    CsrfTokenRepository clientCsrfTokenRepository;
     @Value("${cas.service.validation.client.uri:/webapi-client/j_spring_cas_security_check}")
     private String casValidationUri;
     @Value("${cas.username.suffix:@emmisolutions.com}")
@@ -208,10 +210,6 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         casAuthenticationEntryPoint.setServiceProperties(impersonationServiceProperties());
-        DoubleSubmitSignedCsrfTokenRepository csrfTokenRepository =
-                new DoubleSubmitSignedCsrfTokenRepository(IMP_AUTHORIZATION_COOKIE_NAME);
-        csrfTokenRepository.setXsrfCookieName("XSRF-TOKEN-IMP");
-        csrfTokenRepository.setXsrfParameterName("X-XSRF-TOKEN-IMP");
         http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -236,9 +234,7 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
                     .key(impersonationTokenBasedRememberMeServices().getKey())
                     .rememberMeServices(impersonationTokenBasedRememberMeServices())
                 .and()
-                .csrf()
-                .csrfTokenRepository(csrfTokenRepository)
-                .and()
+                .csrf().disable()
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .requestMatchers(new OrRequestMatcher(new AntPathRequestMatcher("/webapi-client/j_spring_cas_security_check"),
