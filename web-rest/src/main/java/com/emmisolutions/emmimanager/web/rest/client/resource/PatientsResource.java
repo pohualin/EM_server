@@ -167,7 +167,7 @@ public class PatientsResource {
      * @param assembler makes a page for ClientTeamEmailConfiguration
      * @return a ClientTeamEmailConfiguration response entity
      */
-    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patien_email_configuration", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient_email_configuration", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     public ResponseEntity<TeamEmailConfigurationPage> findTeamEmailConfigForPatient(
