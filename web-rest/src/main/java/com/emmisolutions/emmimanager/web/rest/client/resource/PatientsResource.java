@@ -1,16 +1,22 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.PatientSearchFilter;
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
 import com.emmisolutions.emmimanager.service.PatientService;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientReferenceData;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourcePage;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationPage;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,6 +46,12 @@ public class PatientsResource {
 
     @Resource
     PatientResourceAssembler patientResourceAssembler;
+    
+    @Resource
+    ClientTeamEmailConfigurationService clientTeamEmailConfigurationService;
+    
+    @Resource
+    TeamEmailConfigurationResourceAssembler emailConfigurationAssembler;
 
     /**
      * POST for creating a patient for a given client
@@ -146,4 +158,36 @@ public class PatientsResource {
             return new ResponseEntity<>(patientResourceAssembler.toResource(updatedPatient), HttpStatus.OK);
         }
     }
+    
+    /**
+     * Find team email configuration for patient's or return the default
+     *
+     * @param teamId    for the email configuration
+     * @param pageable  which page to fetch
+     * @param assembler makes a page for ClientTeamEmailConfiguration
+     * @return a ClientTeamEmailConfiguration response entity
+     */
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patien_email_configuration", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+    public ResponseEntity<TeamEmailConfigurationPage> findTeamEmailConfigForPatient(
+    		@PathVariable("clientId") Long clientId,
+            @PathVariable("teamId") Long teamId,
+            @PageableDefault(size = 10, sort = "rank") Pageable pageable,
+            PagedResourcesAssembler<ClientTeamEmailConfiguration> assembler) {
+    	
+        Page<ClientTeamEmailConfiguration> page = clientTeamEmailConfigurationService
+                .findByTeam(new Team(teamId), pageable);
+    	if (page.hasContent()) {
+    	 return new ResponseEntity<>(new TeamEmailConfigurationPage(
+                 assembler.toResource(page,
+                		 emailConfigurationAssembler), page),
+                 HttpStatus.OK);
+    	}else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        
+    }
+    
 }
