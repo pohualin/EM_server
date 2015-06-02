@@ -323,6 +323,39 @@ public class UserClientsResource {
             }
         }
     }
+
+    /**
+     * GET emails that do not follow restrictions
+     *
+     * @param id         to get from
+     * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow
+     * returns null
+     */
+    @RequestMapping(value = "/user_client_bad_emails/{id}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "status", defaultValue = "0", value = "user status filter", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "term", defaultValue = "0", value = "user name filter", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "teamId", defaultValue = "0", value = "team id filter", dataType = "long", paramType = "query")
+    })
+    public ResponseEntity<UserClientPage> badEmails(
+            @PathVariable("id") Long id,
+            @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
+            PagedResourcesAssembler<UserClient> assembler) {
+
+        Page<UserClient> userClients = userClientService.emailsThatDontFollowRestrictions(pageable,id);
+
+        if (userClients != null && userClients.hasContent()) {
+            // create a ClientPage containing the response
+            return new ResponseEntity<>(new UserClientPage(assembler.toResource(userClients,userClientResourceAssembler),
+                    userClients), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
     
     private void setReloadedClient(Long clientId, UserClient userClient){
         Client client = new Client();

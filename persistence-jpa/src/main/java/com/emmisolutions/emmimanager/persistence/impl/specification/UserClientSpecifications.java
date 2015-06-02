@@ -196,4 +196,23 @@ public class UserClientSpecifications {
             }
         };
     }
+
+    /**
+     * Get all email endings for a client and or them
+     * @param clientId
+     */
+    public Specification<UserClient> orEmailEndingsForClient(final Long clientId, final List<String> emailEndingsWithWildcard) {
+        return new Specification<UserClient>() {
+            @Override
+            public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> predicates = new ArrayList<>();
+                for(String emailEnding : emailEndingsWithWildcard){
+                    predicates.add(cb.notLike(root.get(UserClient_.email), emailEnding));
+                }
+
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
+    }
+
 }

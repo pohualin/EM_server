@@ -67,6 +67,7 @@ public class ClientResourceAssembler implements
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
         ret.add(linkTo(methodOn(AdminPatientsResource.class).create(entity.getId(), null)).withRel("patient"));
+        ret.add(linkTo(methodOn(UserClientsResource.class).badEmails(entity.getId(),null,null)).withRel("getBadEmails"));
         ret.setEntity(entity);
         return ret;
     }

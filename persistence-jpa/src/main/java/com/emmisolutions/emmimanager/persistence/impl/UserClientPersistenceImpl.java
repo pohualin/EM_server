@@ -14,9 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -127,6 +125,16 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         toUnlock.setLoginFailureCount(0);
         toUnlock.setLockExpirationDateTime(null);
         return userClientRepository.save(toUnlock);
+    }
+
+    @Override
+    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long clientId, List<String> emailEndingForQuery) {
+        if(emailEndingForQuery.size()!=0) {
+            return userClientRepository.findAll(where(userClientSpecifications.orEmailEndingsForClient(clientId, emailEndingForQuery)),
+                    (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
+        }else{
+            return null;
+        }
     }
 
 }
