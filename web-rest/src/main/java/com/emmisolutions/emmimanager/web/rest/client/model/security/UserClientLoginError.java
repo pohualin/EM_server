@@ -1,15 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.security;
 
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import org.springframework.hateoas.ResourceSupport;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.springframework.hateoas.ResourceSupport;
-
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
 /**
  * A class to hold the login failure reason. Also attach an UserClient and
@@ -72,7 +69,7 @@ public class UserClientLoginError extends ResourceSupport {
     }
 
     @XmlEnum
-    public static enum Reason {
-        BAD, LOCK, EXPIRED, EXPIRED_CANT_CHANGE
+    public enum Reason {
+        BAD, LOCK, EXPIRED, EXPIRED_CANT_CHANGE, XSRF_MISSING, XSRF_INVALID
     }
 }

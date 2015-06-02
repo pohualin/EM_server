@@ -3,6 +3,9 @@ package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.*;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
@@ -37,28 +42,37 @@ import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PROD
 @Order(210)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Resource
-    private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
+    /**
+     * This is the processing URL for login
+     */
+    public static final String loginProcessingUrl = "/webapi/authenticate";
+    /**
+     * This is the processing URL for logout
+     */
+    public static final String logoutProcessingUrl = "/webapi/logout";
 
-    @Resource
-    private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
-
-    @Resource
-    private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
-
-    @Resource
-    private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
-
-    @Resource(name = "adminUserDetailsService")
-    private UserDetailsService adminUserDetailsService;
-
-    private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
+    /**
+     * This is the authentication token cookie name
+     */
+    public static String AUTHENTICATION_TOKEN_NAME = "EM2_ADMIN_RMC";
 
     @Resource
     Environment env;
-
     @Resource
     PasswordEncoder passwordEncoder;
+    @Resource
+    private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
+    @Resource
+    private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
+    @Resource(name ="clientCsrfAccessDeniedHandler")
+    private CsrfAccessDeniedHandler csrfAccessDeniedHandler;
+    @Resource
+    private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
+    @Resource
+    private PreAuthenticatedAuthenticationEntryPoint authenticationEntryPoint;
+    @Resource(name = "adminUserDetailsService")
+    private UserDetailsService adminUserDetailsService;
+    private UserDetailsConfigurableAuthenticationProvider authenticationProvider;
 
     @Resource(name = "legacyAuthenticationProvider")
     private void setAuthenticationProvider(UserDetailsConfigurableAuthenticationProvider authenticationProvider) {
@@ -92,19 +106,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         rootTokenBasedRememberMeServices.setUseSessionCookieOnly(true);
         rootTokenBasedRememberMeServices.setAlwaysRemember(true);
         rootTokenBasedRememberMeServices.setParameter("remember-me");
-        rootTokenBasedRememberMeServices.setCookieName("EM2_ADMIN_RMC");
+        rootTokenBasedRememberMeServices.setCookieName(AUTHENTICATION_TOKEN_NAME);
         return rootTokenBasedRememberMeServices;
     }
 
     /**
-     * This is the processing URL for login
+     * This is the Csrf Token Repository for the client facing applications
+     *
+     * @return CsrfTokenRepository that processes impersonation and normal client authentication but
+     * handles impersonation before normal (this matches the RememberMeServices implementation) and
+     * must match
      */
-    public static final String loginProcessingUrl = "/webapi/authenticate";
-
-    /**
-     * This is the processing URL for logout
-     */
-    public static final String logoutProcessingUrl = "/webapi/logout";
+    @Bean(name = "adminCsrfTokenRepository")
+    public CsrfTokenRepository adminCsrfTokenRepository() {
+        // make sure the csrf repo handles impersonation as well as normal client login
+        return new DoubleSubmitSignedCsrfTokenRepository(
+                new DoubleSubmitSignedCsrfTokenRepository.SecurityTokenCookieParameterNameTuple(
+                AUTHENTICATION_TOKEN_NAME, "XSRF-TOKEN", "X-XSRF-TOKEN"
+        ));
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -118,7 +138,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .and()
                     .exceptionHandling()
                         .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                            new AntPathRequestMatcher(loginProcessingUrl));
+                                new AntPathRequestMatcher(loginProcessingUrl))
+                        .accessDeniedHandler(csrfAccessDeniedHandler);
         } else {
             // cas isn't enabled register as normal
             http
@@ -127,7 +148,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .and()
                     .exceptionHandling()
                         .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
-                            new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"));
+                                new RequestHeaderRequestMatcher("X-Requested-With", "XMLHttpRequest"))
+                        .accessDeniedHandler(csrfAccessDeniedHandler);
         }
         http
                 .sessionManagement()
@@ -155,7 +177,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .logoutSuccessHandler(ajaxLogoutSuccessHandler)
                     .permitAll()
                     .and()
-                .csrf().disable()
+                .csrf()
+                    .csrfTokenRepository(adminCsrfTokenRepository())
+                    .and()
+                .addFilterAfter(new CsrfTokenGeneratorFilter(adminCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()
                     .antMatchers("/webapi").permitAll()
