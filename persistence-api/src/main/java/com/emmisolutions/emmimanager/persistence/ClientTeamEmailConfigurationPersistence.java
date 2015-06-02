@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
  */
 public interface ClientTeamEmailConfigurationPersistence {
 
-   
     /**
      * Find a page of client team email configuration
      *

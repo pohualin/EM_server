@@ -46,6 +46,6 @@ public class ClientTeamEmailConfigurationPersistenceImpl implements
 		return clientTeamEmailConfigurationRepository.findOne(id);
 	}
 
-	 
+   
    
 }
