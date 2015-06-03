@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAut
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.*;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfEnsureCookiesUniqueFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,6 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
@@ -118,7 +118,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * must match
      */
     @Bean(name = "adminCsrfTokenRepository")
-    public CsrfTokenRepository adminCsrfTokenRepository() {
+    public DoubleSubmitSignedCsrfTokenRepository adminCsrfTokenRepository() {
         // make sure the csrf repo handles impersonation as well as normal client login
         return new DoubleSubmitSignedCsrfTokenRepository(
                 new DoubleSubmitSignedCsrfTokenRepository.SecurityTokenCookieParameterNameTuple(
@@ -180,6 +180,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .csrfTokenRepository(adminCsrfTokenRepository())
                     .and()
+                .addFilterBefore(new CsrfEnsureCookiesUniqueFilter(adminCsrfTokenRepository()), CsrfFilter.class)
                 .addFilterAfter(new CsrfTokenGeneratorFilter(adminCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()

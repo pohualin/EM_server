@@ -2,7 +2,9 @@ package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.*;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfEnsureCookiesUniqueFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.util.CommonUtils;
@@ -33,7 +35,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
@@ -72,7 +73,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource(name = "adminUserDetailsService")
     private UserDetailsService userDetailsService;
     @Resource(name = "adminCsrfTokenRepository")
-    private CsrfTokenRepository adminCsrfTokenRepository;
+    private DoubleSubmitSignedCsrfTokenRepository adminCsrfTokenRepository;
     @Value("${cas.server.url:https://devcas1.emmisolutions.com/cas}")
     private String casServerUrl;
     @Value("${cas.server.login.url:https://devcas1.emmisolutions.com/cas/login}")
@@ -288,6 +289,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .csrfTokenRepository(adminCsrfTokenRepository)
                     .and()
+                .addFilterBefore(new CsrfEnsureCookiesUniqueFilter(adminCsrfTokenRepository), CsrfFilter.class)
                 .addFilterAfter(new CsrfTokenGeneratorFilter(adminCsrfTokenRepository), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()
