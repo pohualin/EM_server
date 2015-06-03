@@ -17,6 +17,7 @@ import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -62,6 +63,9 @@ public class UserClientsResource {
 
     @Resource
     MailService mailService;
+
+    @Resource(name = "clientCsrfAuthenticationStrategy")
+    CsrfAuthenticationStrategy clientCsrfAuthenticationStrategy;
 
     @Resource
     UserClientService userClientService;
@@ -182,6 +186,9 @@ public class UserClientsResource {
                 // update auth token
                 tokenBasedRememberMeServices.rewriteLoginToken(request, response, updatedUserClient);
 
+                // update CSRF token due to login token changing
+                clientCsrfAuthenticationStrategy.onAuthentication(null, request, response);
+
                 if (updatedUserClient != null) {
                     return new ResponseEntity<>(clientUserClientResourceAssembler.toResource(updatedUserClient), HttpStatus.OK);
                 } else {
@@ -242,7 +249,8 @@ public class UserClientsResource {
      *
      * @param userClientId           user client id
      * @param secretQuestionsCreated secret question has created or not
-     * @return
+     * @return OK (200): containing the UserClientResource
+     * GONE (410): if the updated user client is null
      */
     @RequestMapping(value = "/user_client/{userClientId}/secret_questions_created", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@user, #userClientId)")
@@ -265,8 +273,9 @@ public class UserClientsResource {
     /**
      * PUT lock the user who has the passed reset token
      *
-     * @param token password reset token for user client
-     * @return LocalDateTime locked out timestamp
+     * @param resetToken password reset token for user client
+     * @return OK (200): LocalDateTime locked out timestamp
+     * NO_CONTENT (204): if no user were locked out with the reset token
      */
     @RequestMapping(value = "/user_client/lock_out_user/with_reset_token", method = RequestMethod.PUT)
     @PermitAll

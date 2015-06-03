@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security.csrf;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -32,6 +34,8 @@ import java.util.UUID;
  */
 public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepository {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(DoubleSubmitSignedCsrfTokenRepository.class);
+
     private final List<SecurityTokenCookieParameterNameTuple> cookieParameterNamePairs;
 
     /**
@@ -48,10 +52,12 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
         this.cookieParameterNamePairs = Arrays.asList(securityTokenCookieParameterNameTuples);
     }
 
+    private final String SALT = "Pi3c3_0f_UnKn0wn_D4t4_A5_SaLt";
+
     @Override
     public CsrfToken generateToken(HttpServletRequest request) {
         StringBuilder csrfToken = new StringBuilder(UUID.randomUUID().toString());
-        StringBuilder toHash = new StringBuilder(String.valueOf(System.nanoTime()));
+        StringBuilder toHash = new StringBuilder(SALT);
         String xsrfParameterName = null;
         SECURITY_TOKEN_LOOP:
         for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
@@ -65,12 +71,17 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
                 }
             }
         }
+        if (toHash.length() == SALT.length()){
+            // user isn't logged in yet, use time as random seed
+            toHash.append(String.valueOf(System.nanoTime()));
+        }
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("No MD5 algorithm available!");
         }
+        LOGGER.debug("Hashing: {}", toHash);
         return new DefaultCsrfToken(xsrfParameterName, xsrfParameterName,
                 csrfToken.append("-").append(
                         new String(Hex.encode(digest.digest(toHash.toString().getBytes()))))
@@ -79,10 +90,12 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
 
     @Override
     public void saveToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response) {
+
         for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
             if (token != null) {
                 if (StringUtils.equalsIgnoreCase(token.getHeaderName(),
                         cookieParameterNamePair.getXsrfHeaderName())) {
+                    LOGGER.debug("Saving {}:{}", token.getHeaderName(), token.getToken());
                     Cookie csrfCookie = new Cookie(cookieParameterNamePair.getXsrfCookieName(), token.getToken());
                     csrfCookie.setPath("/");
                     csrfCookie.setMaxAge(-1);
@@ -91,6 +104,7 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
                     break;
                 }
             } else {
+                LOGGER.debug("Invalidating {}", cookieParameterNamePair.getXsrfCookieName());
                 // invalidation of csrf should happen if the token is null
                 Cookie csrfCookie = new Cookie(cookieParameterNamePair.getXsrfCookieName(), null);
                 csrfCookie.setPath("/");
@@ -117,6 +131,15 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
                 }
             }
         }
+        // don't load invalid tokens
+        if (request instanceof CsrfTokenValidationFilter.CsrfValidRequestWrapper){
+            if (!((CsrfTokenValidationFilter.CsrfValidRequestWrapper) request).isValid()){
+                LOGGER.debug("Invalid CSRF Cookie {}", csrfFromCookie);
+                // null out invalid CSRF cookies
+                csrfFromCookie = null;
+            }
+        }
+        LOGGER.debug("Returning CSRF Token {}:{}", xsrfParameterName, csrfFromCookie);
         return csrfFromCookie != null ?
                 new DefaultCsrfToken(xsrfParameterName, xsrfParameterName, csrfFromCookie) : null;
     }
