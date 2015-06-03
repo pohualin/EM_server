@@ -373,8 +373,10 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         configuration.setEmailEnding("a.com");
         emailRestrictConfigurationPersistence.saveOrUpdate(configuration);
 
-        List<String> emailEndings = new ArrayList<>();
-        emailEndings.add("%a.com");
+        List<EmailRestrictConfiguration> emailEndings = new ArrayList<>();
+        EmailRestrictConfiguration emailRestrictConfiguration = new EmailRestrictConfiguration();
+        emailRestrictConfiguration.setEmailEnding("%a.com");
+        emailEndings.add(emailRestrictConfiguration);
 
 
         Page<UserClient> emailsThatDoNotMatch = userClientPersistence.emailsThatDontFollowRestrictions(new PageRequest(0, 10), client.getId(), emailEndings);

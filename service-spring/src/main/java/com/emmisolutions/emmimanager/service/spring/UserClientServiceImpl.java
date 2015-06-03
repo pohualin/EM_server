@@ -391,11 +391,10 @@ public class UserClientServiceImpl implements UserClientService {
     public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long userClientId) {
         List<String> emailEndingForQuery = new ArrayList<>();
         Pageable localPageable = new PageRequest(0, 10, Sort.Direction.ASC, "id");
-        List<EmailRestrictConfiguration> emailEndings = emailRestrictConfigurationPersistence.list(localPageable, userClientId).getContent();
-        for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings){
-            emailEndingForQuery.add('%'+emailRestrictConfiguration.getEmailEnding());
-        }
-        return userClientPersistence.emailsThatDontFollowRestrictions(pageable, userClientId, emailEndingForQuery);
+
+        Page<EmailRestrictConfiguration> emailEndings = emailRestrictConfigurationPersistence.list(localPageable, userClientId);
+
+        return userClientPersistence.emailsThatDontFollowRestrictions(pageable, userClientId, emailEndings.getContent());
     }
 
 }
