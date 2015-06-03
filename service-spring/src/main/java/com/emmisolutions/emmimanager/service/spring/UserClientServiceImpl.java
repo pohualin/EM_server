@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfigura
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+import com.emmisolutions.emmimanager.persistence.EmailRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.*;
 import com.emmisolutions.emmimanager.service.mail.MailService;
@@ -17,7 +18,9 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -61,6 +64,10 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     PasswordEncoder passwordEncoder;
+
+    @Resource
+    EmailRestrictConfigurationPersistence emailRestrictConfigurationPersistence;
+
 
     @Override
     @Transactional
@@ -377,6 +384,27 @@ public class UserClientServiceImpl implements UserClientService {
         loadedUserClient.setNotNowExpirationTime(notNowExpirationTime);
         loadedUserClient = this.update(loadedUserClient);
         return loadedUserClient;
+    }
+
+    @Override
+    @Transactional()
+    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long userClientId) {
+        List<EmailRestrictConfiguration> emailRestrictConfigurations = new ArrayList<>();
+        Page<EmailRestrictConfiguration> emailEndings = null;
+        Pageable emailEndingsPageable = null;
+
+        do {
+            if(emailEndings!=null){
+                emailEndingsPageable = emailEndings.nextPageable();
+            }
+
+            emailEndings = emailRestrictConfigurationPersistence.list(emailEndingsPageable, userClientId);
+            for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings.getContent()){
+                emailRestrictConfigurations.add(emailRestrictConfiguration);
+            }
+        }while(emailEndings.hasContent() && emailEndings.hasNext());
+
+        return userClientPersistence.emailsThatDontFollowRestrictions(pageable, userClientId, emailRestrictConfigurations);
     }
 
 }
