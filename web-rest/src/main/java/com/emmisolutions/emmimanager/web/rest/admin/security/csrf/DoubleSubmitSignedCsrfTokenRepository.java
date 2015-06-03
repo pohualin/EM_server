@@ -52,10 +52,12 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
         this.cookieParameterNamePairs = Arrays.asList(securityTokenCookieParameterNameTuples);
     }
 
+    private final String SALT = "Pi3c3_0f_UnKn0wn_D4t4_A5_SaLt";
+
     @Override
     public CsrfToken generateToken(HttpServletRequest request) {
         StringBuilder csrfToken = new StringBuilder(UUID.randomUUID().toString());
-        StringBuilder toHash = new StringBuilder();
+        StringBuilder toHash = new StringBuilder(SALT);
         String xsrfParameterName = null;
         SECURITY_TOKEN_LOOP:
         for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
@@ -69,7 +71,7 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
                 }
             }
         }
-        if (toHash.length() == 0){
+        if (toHash.length() == SALT.length()){
             // user isn't logged in yet, use time as random seed
             toHash.append(String.valueOf(System.nanoTime()));
         }
@@ -91,7 +93,6 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
 
         for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
             if (token != null) {
-
                 if (StringUtils.equalsIgnoreCase(token.getHeaderName(),
                         cookieParameterNamePair.getXsrfHeaderName())) {
                     LOGGER.debug("Saving {}:{}", token.getHeaderName(), token.getToken());
@@ -138,7 +139,7 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
                 csrfFromCookie = null;
             }
         }
-        LOGGER.debug("Loading {}:{}", xsrfParameterName, csrfFromCookie);
+        LOGGER.debug("Returning CSRF Token {}:{}", xsrfParameterName, csrfFromCookie);
         return csrfFromCookie != null ?
                 new DefaultCsrfToken(xsrfParameterName, xsrfParameterName, csrfFromCookie) : null;
     }
