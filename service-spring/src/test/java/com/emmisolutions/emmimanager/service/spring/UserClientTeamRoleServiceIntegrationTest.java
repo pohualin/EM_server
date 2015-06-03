@@ -1,16 +1,19 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.reference.UserClientReferenceTeamRoleType;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientTeamRoleService;
+
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -131,4 +134,30 @@ public class UserClientTeamRoleServiceIntegrationTest extends BaseIntegrationTes
             userClientTeamRoleService.loadReferenceRoles(null).getTotalElements(), is(not(0l)));
     }
 
+    /**
+     * Test findByNormalizedName
+     */
+    @Test
+    public void findByNormalizedName(){
+        UserClientTeamRole first = makeNewRandomUserClientTeamRole(null);
+        Client client = first.getClient();
+        
+        UserClientTeamRole second = new UserClientTeamRole();
+        second.setName(first.getName());
+        second.setClient(client);
+        assertThat("Should find one match", userClientTeamRoleService.hasDuplicateName(second), is(true));
+        
+        UserClientTeamRole third = new UserClientTeamRole();
+        third.setId(first.getId());
+        third.setName(first.getName());
+        third.setClient(client);
+        assertThat("Should ignore self", userClientTeamRoleService.hasDuplicateName(third), is(false));
+        
+        UserClientRole clientRole = makeNewRandomUserClientRole(client);
+        UserClientTeamRole fourth = new UserClientTeamRole();
+        fourth.setName(first.getName());
+        fourth.setClient(client);
+        assertThat("Should find duplicate", userClientTeamRoleService.hasDuplicateName(fourth), is(true));
+    }
+    
 }

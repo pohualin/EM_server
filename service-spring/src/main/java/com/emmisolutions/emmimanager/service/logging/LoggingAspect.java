@@ -9,7 +9,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +20,6 @@ import java.util.Arrays;
  */
 @Aspect
 @Component("ServiceLayerAutoLogger")
-@Profile({Constants.SPRING_PROFILE_DEVELOPMENT})
 public class LoggingAspect {
 
     @Resource
@@ -43,7 +41,7 @@ public class LoggingAspect {
     @AfterThrowing(pointcut = "loggingPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         Logger log = getLogger(joinPoint);
-        if (env.acceptsProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)) {
+        if (log.isDebugEnabled() && !env.acceptsProfiles(Constants.SPRING_PROFILE_TEST)){
             log.error("Exception in {}() with cause = {}", joinPoint.getSignature().getName(), e.getCause(), e);
         }
     }

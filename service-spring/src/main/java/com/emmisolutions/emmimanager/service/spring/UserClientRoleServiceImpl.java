@@ -4,10 +4,13 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermission;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.reference.UserClientReferenceRole;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.UserClientReferenceRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientRolePersistence;
+import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientRoleService;
+
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.Set;
 
 /**
@@ -28,6 +32,9 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
 
     @Resource
     UserClientReferenceRolePersistence userClientReferenceRolePersistence;
+    
+    @Resource
+    UserClientTeamRolePersistence userClientTeamRolePersistence;
 
     @Resource
     ClientService clientService;
@@ -91,6 +98,27 @@ public class UserClientRoleServiceImpl implements UserClientRoleService {
     @Override
     public Set<UserClientPermission> loadPossiblePermissions() {
         return userClientRolePersistence.loadPossiblePermissions();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean hasDuplicateName(UserClientRole userClientRole) {
+        if (userClientRole == null || userClientRole.getClient() == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "UserClientRole can neither be null nor have an id and must have a client attached");
+        }
+        userClientRole.setClient(clientService.reload(userClientRole
+                .getClient()));
+        if(userClientRolePersistence.findDuplicateByName(userClientRole) == null){
+            // Check the same name is not used in team role
+            UserClientTeamRole userClientTeamRole = new UserClientTeamRole();
+            userClientTeamRole.setName(userClientRole.getName());
+            userClientTeamRole.setClient(userClientRole.getClient());
+            if(userClientTeamRolePersistence.findDuplicateByName(userClientTeamRole) == null){
+                return false; 
+            }
+        }
+        return true;
     }
 
 }

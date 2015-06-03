@@ -41,7 +41,7 @@ public class UserClientUserClientTeamRoleResourceAssembler
     public static Link createPossibleTeamsLink(UserClient userClient) {
         Link link = linkTo(
                 methodOn(UserClientUserClientTeamRolesResource.class).possible(
-                        userClient.getId(), null, null, null, null, null, null))
+                        userClient.getId(), null, null, null, null, null))
                 .withRel("possibleTeams");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
@@ -78,7 +78,7 @@ public class UserClientUserClientTeamRoleResourceAssembler
         Link link = linkTo(
                 methodOn(UserClientUserClientTeamRolesResource.class)
                         .getUserClientUserClientTeamRoles(userClient.getId(),
-                                null, null, null, null)).withRel(
+                                null, null, null)).withRel(
                 "existingTeams");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(

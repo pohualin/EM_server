@@ -11,8 +11,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.team.UserClientTeamRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.AdminPatientsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource;
 import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +23,86 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Component
 public class ClientResourceAssembler implements
         ResourceAssembler<Client, ClientResource> {
+
+    /**
+     * Create the search link
+     *
+     * @return Link for client searches
+     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource#getUsers(Long,
+     * org.springframework.data.domain.Pageable,
+     * org.springframework.data.web.PagedResourcesAssembler, String,
+     * String, Long, Long)
+     */
+    public static Link createFullUsersSearchLink(Client entity) {
+        Link link = linkTo(
+                methodOn(UserClientsResource.class).getUsers(entity.getId(),
+                        null, null, null, null, null, null)).withRel(
+                "users");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page",
+                                TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable(
+                                "sort",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(
+                                "term",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(
+                                "status",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(
+                                "teamId",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(
+                                "tagId",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+
+    /**
+     * Create full link to get EmailRestrictConfiguration
+     *
+     * @param entity
+     *            to use
+     * @return a link to get EmailRestrictConfiguration
+     */
+    public static Link createEmailRestrictConfigLink(Client entity) {
+        Link link = linkTo(
+                methodOn(EmailRestrictConfigurationsResource.class).list(
+                        entity.getId(), null, null)).withRel(
+                "emailRestrictConfigurations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page",
+                                TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable(
+                                "sort",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+
+    /**
+     * Create full link to get IpRestrictConfiguration
+     *
+     * @param entity
+     *            to use
+     * @return a link to get IpRestrictConfiguration
+     */
+    public static Link createIpRestrictConfigLink(Client entity) {
+        Link link = linkTo(
+                methodOn(IpRestrictConfigurationsResource.class).list(
+                        entity.getId(), null, null)).withRel(
+                "ipRestrictConfigurations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page",
+                                TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable(
+                                "sort",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
 
     @Override
     public ClientResource toResource(Client entity) {
@@ -71,85 +149,6 @@ public class ClientResourceAssembler implements
         ret.setEntity(entity);
         return ret;
     }
-
-    /**
-     * Create the search link
-     *
-     * @return Link for client searches
-     * @see com.emmisolutions.emmimanager.web.rest.admin.resource.UserClientsResource#getUsers(Long,
-     *      org.springframework.data.domain.Pageable,
-     *      org.springframework.data.domain.Sort,
-     *      org.springframework.data.web.PagedResourcesAssembler, String,
-     *      String, Long, Long)
-     */
-    public static Link createFullUsersSearchLink(Client entity) {
-        Link link = linkTo(
-                methodOn(UserClientsResource.class).getUsers(entity.getId(),
-                        null, null, null, null, null, null, null)).withRel(
-                "users");
-        UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page",
-                                TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable(
-                                "sort",
-                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable(
-                                "term",
-                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable(
-                                "status",
-                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable(
-                                "teamId",
-                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable(
-                                "tagId",
-                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
-        return new Link(uriTemplate, link.getRel());
-    }
-
-    /**
-     * Create full link to get EmailRestrictConfiguration
-     * 
-     * @param entity
-     *            to use
-     * @return a link to get EmailRestrictConfiguration
-     */
-    public static Link createEmailRestrictConfigLink(Client entity) {
-        Link link = linkTo(
-                methodOn(EmailRestrictConfigurationsResource.class).list(
-                        entity.getId(), null, null, null)).withRel(
-                "emailRestrictConfigurations");
-        UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page",
-                                TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable(
-                                "sort",
-                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
-        return new Link(uriTemplate, link.getRel());
-    }
-
-    /**
-     * Create full link to get IpRestrictConfiguration
-     * 
-     * @param entity
-     *            to use
-     * @return a link to get IpRestrictConfiguration
-     */
-    public static Link createIpRestrictConfigLink(Client entity) {
-        Link link = linkTo(
-                methodOn(IpRestrictConfigurationsResource.class).list(
-                        entity.getId(), null, null, null)).withRel(
-                "ipRestrictConfigurations");
-        UriTemplate uriTemplate = new UriTemplate(link.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page",
-                                TemplateVariable.VariableType.REQUEST_PARAM),
-                        new TemplateVariable(
-                                "sort",
-                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
-        return new Link(uriTemplate, link.getRel());
-    }
 }
+
+

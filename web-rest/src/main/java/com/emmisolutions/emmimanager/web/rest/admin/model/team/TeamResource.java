@@ -57,7 +57,7 @@ public class TeamResource extends BaseResource<Team> {
 	 }
 
     public static Link clientTeams(Client client){
-        Link link = linkTo(methodOn(TeamsResource.class).clientTeams(client.getId(), null, null, null, null, null, (String[]) null)).withRel("teams");
+        Link link = linkTo(methodOn(TeamsResource.class).clientTeams(client.getId(), null, null, null, null, (String[]) null)).withRel("teams");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),

@@ -3,12 +3,13 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.*;
-
+import com.emmisolutions.emmimanager.persistence.repo.ClientProviderRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ProviderSpecialtyRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -59,9 +60,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testProviderSave() {
 		Provider provider = new Provider();
-		provider.setFirstName("Mary");
-		provider.setMiddleName("Broadway");
-		provider.setLastName("Poppins");
+		provider.setFirstName("A-Za-z- '(),.");
+		provider.setMiddleName("A-Za-z- '(),.");
+		provider.setLastName("A-Za-z- '(),.");
 		provider.setEmail("marypoppins@fourtysecondstreet.com");
 		provider.setActive(true);
 		provider.setSpecialty(getSpecialty());
@@ -136,6 +137,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
  	public void searchForProvider(){
  		Provider provider = new Provider();
 		provider.setFirstName("Velma");
+		provider.setMiddleName("one");
 		provider.setLastName("Kelly");
 		provider.setEmail("velmakelly@fourtysecondstreet.com");
 		provider.setActive(false);
@@ -146,6 +148,7 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 
 		Provider providerTwo = new Provider();
 		providerTwo.setFirstName("Roxie");
+		providerTwo.setMiddleName("two");
 		providerTwo.setLastName("Hart");
 		providerTwo.setEmail("roxyhart@fourtysecondstreet.com");
 		providerTwo.setActive(false);
@@ -175,11 +178,13 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		assertThat("Provider was found", providerPageFour.getContent().size(), is(1));
 		assertThat("Provider was found", providerPageFour.getContent().iterator().next().getLastName(), is("Kelly"));
 
-
 		ProviderSearchFilter searchFilterFive = new ProviderSearchFilter(StatusFilter.ALL, "roXi$e");
 		Page<Provider> providerPageFive = providerPersistence.list(page, searchFilterFive);
 		assertThat("Provider was found", providerPageFive.getContent().size(), is(1));
 		assertThat("Provider was found", providerPageFive.getContent().iterator().next().getLastName(), is("Hart"));
+
+		assertThat("Middle name search finds provider",
+				providerPersistence.list(null, new ProviderSearchFilter("two")), hasItem(providerTwo));
  	}
  	
  	@Test

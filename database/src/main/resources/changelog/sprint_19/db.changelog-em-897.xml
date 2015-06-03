@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="add new columns to rf_emmi" author="Matt">
+
+        <addColumn tableName="rf_emmi" schemaName="program">
+            <column name="release_dt" type="datetime"/>
+            <column name="emmi_descrpn" type="nvarchar(2000)"/>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="rf_specialty_new" author="Matt">
+
+        <createTable tableName="rf_specialty_new" schemaName="program">
+            <column name="specialty_cd" type="integer">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_rf_specialty_new"/>
+            </column>
+            <column name="specialty_nm" type="nvarchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="specialty_clnt_nm" type="nvarchar(50)"/>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_dt" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_chng_dt" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="rf_emmi_specialty_new" author="Matt">
+
+        <createTable tableName="rf_emmi_specialty_new" schemaName="program">
+            <column name="surrogate_key" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emmi_cd" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="specialty_cd" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_dt" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_chng_dt" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="add keys" author="Matt">
+
+        <addPrimaryKey tableName="rf_emmi_specialty_new" schemaName="program"
+                       columnNames="emmi_cd, specialty_cd" constraintName="pk_rf_emmi_specialty_new"/>
+
+        <addForeignKeyConstraint baseTableName="rf_emmi_specialty_new"
+                                 baseTableSchemaName="program"
+                                 baseColumnNames="emmi_cd"
+                                 constraintName="fk_rf_emmi_specialty_new_rf_emmi"
+                                 referencedTableName="rf_emmi"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="emmi_cd"/>
+
+        <addForeignKeyConstraint baseTableName="rf_emmi_specialty_new"
+                                 baseTableSchemaName="program"
+                                 baseColumnNames="specialty_cd"
+                                 constraintName="fk_rf_emmi_specialty_new_rf_specialty_new"
+                                 referencedTableName="rf_specialty_new"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="specialty_cd"/>
+
+        <createIndex tableName="rf_emmi_specialty_new" schemaName="program"
+                     unique="true"
+                     indexName="ucx_rf_emmi_specialty_new_surrogate_ky">
+            <column name="surrogate_key"/>
+        </createIndex>
+
+        <createIndex tableName="rf_emmi_specialty_new" schemaName="program"
+                     indexName="rf_emmi_specialty_new_k2">
+            <column name="emmi_cd"/>
+        </createIndex>
+
+        <createIndex tableName="rf_emmi_specialty_new" schemaName="program"
+                     indexName="rf_emmi_specialty_new_k3">
+            <column name="specialty_cd"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="sample data" author="Matt" context="qa,dev,test">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_19/data/em-897/RF_SPECIALTY_NEW.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_specialty_new"
+                  schemaName="program"/>
+
+    </changeSet>
+
+    <changeSet id="test emmi specialties" author="Matt" context="test">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_19/data/em-897/RF_EMMI_SPECIALTY_NEW.test.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_emmi_specialty_new"
+                  schemaName="program"/>
+
+    </changeSet>
+
+    <changeSet id="dev emmi specialties" author="Matt" context="qa,dev">
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_19/data/em-897/RF_EMMI_SPECIALTY_NEW.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_emmi_specialty_new"
+                  schemaName="program"/>
+
+    </changeSet>
+
+    <changeSet id="add weight to emmi type codes" author="Matt">
+
+        <addColumn tableName="rf_emmi_type" schemaName="program">
+            <column name="weight" type="integer" defaultValueNumeric="100"/>
+        </addColumn>
+        <update tableName="rf_emmi_type" schemaName="program">
+            <column name="weight" valueNumeric="10"/>
+            <where>emmi_tp_nm = 'IVR CALL'</where>
+        </update>
+        <update tableName="rf_emmi_type" schemaName="program">
+            <column name="weight" valueNumeric="20"/>
+            <where>emmi_tp_nm = 'MULTIMEDIA PROGRAM'</where>
+        </update>
+        <update tableName="rf_emmi_type" schemaName="program">
+            <column name="weight" valueNumeric="30"/>
+            <where>emmi_tp_nm = 'ARTICLE'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

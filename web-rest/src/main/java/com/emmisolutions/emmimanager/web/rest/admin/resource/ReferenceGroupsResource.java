@@ -9,10 +9,8 @@ import com.emmisolutions.emmimanager.service.TagService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.groups.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +50,7 @@ public class ReferenceGroupsResource {
      *
      * @param id       to update
      * @param refGroup the update
-     * @return
+     * @return a reference group resource
      */
     @RequestMapping(value = "/referenceGroups/{id}", method = RequestMethod.PUT)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER"})
@@ -116,14 +114,12 @@ public class ReferenceGroupsResource {
      * Load all reference groups
      *
      * @param pageable  the page spec
-     * @param sort      the sort spec
      * @param assembler to convert ReferenceGroup objects within the page
      * @return the ReferenceGroupPage
      */
     @RequestMapping(value = "/referenceGroups", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<ReferenceGroupPage> getAllReferenceGroups(@PageableDefault(size = 50) Pageable pageable,
-                                                                    @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<ReferenceGroupPage> getAllReferenceGroups(@PageableDefault(size = 50, sort = "id") Pageable pageable,
                                                                     PagedResourcesAssembler<ReferenceGroup> assembler) {
 
         Page<ReferenceGroup> groupPage = referenceGroupService.loadReferenceGroups(pageable);
@@ -137,19 +133,16 @@ public class ReferenceGroupsResource {
     
     /**
      * Load active reference groups
-     * 
-     * @param the
+     *
+     * @param pageable
      *            page spec
-     * @param sort
-     *            the sort spec
      * @param assembler
      *            to convert ReferenceGroup objects within the page
      * @return the ReferenceGroupPage
      */
     @RequestMapping(value = "/activeReferenceGroups", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<ReferenceGroupPage> getActiveReferenceGroups(@PageableDefault(size = 50) Pageable pageable,
-                                                                    @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<ReferenceGroupPage> getActiveReferenceGroups(@PageableDefault(size = 50, sort = "id") Pageable pageable,
                                                                     PagedResourcesAssembler<ReferenceGroup> assembler) {
 
         Page<ReferenceGroup> groupPage = referenceGroupService.loadActiveReferenceGroups(pageable);
@@ -165,15 +158,13 @@ public class ReferenceGroupsResource {
      * Get all tags for a group
      *
      * @param pageable   the page spec
-     * @param sort       the sort spec
      * @param assembler  to assemble the page of ReferenceTag objects
      * @param refGroupId the reference group id
      * @return a ReferenceTagPage
      */
     @RequestMapping(value = "/referenceGroups/{refGroupId}/referenceTags}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<ReferenceTagPage> getAllReferenceTagsByGroup(@PageableDefault(size = 50) Pageable pageable,
-                                                                       @SortDefault(sort = "id") Sort sort,
+    public ResponseEntity<ReferenceTagPage> getAllReferenceTagsByGroup(@PageableDefault(size = 50, sort = "id") Pageable pageable,
                                                                        PagedResourcesAssembler<ReferenceTag> assembler,
                                                                        @PathVariable("refGroupId") Long refGroupId) {
 

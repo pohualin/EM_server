@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.web.rest.admin.resource;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
 import com.emmisolutions.emmimanager.service.ProviderService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,14 +81,12 @@ public class ProvidersResource {
      * GET to retrieve ReferenceData Specialty types for Provider.
      *
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param assembler used to create PagedResources
      * @return ReferenceTagPage matching the search request
      */
     @RequestMapping(value = "/referenceDataSpecialties", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ProviderSpecialtyPage> getRefData(@PageableDefault(size = 10) Pageable pageable,
-                                                       @SortDefault(sort = "id") Sort sort,
                                                        PagedResourcesAssembler<ProviderSpecialty> assembler) {
 
         Page<ProviderSpecialty> specialtyPage = providerService.findAllSpecialties(pageable);
@@ -127,7 +123,6 @@ public class ProvidersResource {
      * GET for searching for providers
      *
      * @param page      paged request
-     * @param sort      sorting request
      * @param assembler used to create the PagedResources
      * @param name      filter
      * @param status    a filter for providers
@@ -138,11 +133,10 @@ public class ProvidersResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name="size", defaultValue="10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name="page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name="sort", defaultValue="lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "normalizedName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<ProviderPage> list(
-            @PageableDefault(size = 10, sort="lastName") Pageable page,
-            @SortDefault(sort = "lastName") Sort sort,
+            @PageableDefault(size = 10, sort = "normalizedName") Pageable page,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Provider> assembler,
             @RequestParam(value = "name", required = false) String name) {
@@ -174,7 +168,6 @@ public class ProvidersResource {
      *
      * @param providerId  the provider id
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @return Page of ClientProviderResource objects or NO_CONTENT
      */
@@ -190,7 +183,7 @@ public class ProvidersResource {
     public ResponseEntity<ProviderClientResourcePage> currentClients(
         @PathVariable Long providerId,
         @PageableDefault(size = 10, sort = "client.name", direction = Sort.Direction.ASC) Pageable pageable,
-        Sort sort, PagedResourcesAssembler<ClientProvider> assembler) {
+        PagedResourcesAssembler<ClientProvider> assembler) {
         Page<ClientProvider> clientProviderPage = clientProviderService.findByProvider(new Provider(providerId), pageable);
         if (clientProviderPage.hasContent()) {
             return new ResponseEntity<>(

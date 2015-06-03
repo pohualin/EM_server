@@ -14,10 +14,8 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -95,7 +93,6 @@ public class TeamsResource {
      * GET to search for teams
      *
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param status    to filter by
      * @param assembler used to create the PagedResources
      * @param names     to filter by
@@ -107,11 +104,10 @@ public class TeamsResource {
     @ApiImplicitParams(value = {
         @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
         @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamPage> list(
         @PageableDefault(size = 10, sort = "name") Pageable pageable,
-        @SortDefault(sort = "id") Sort sort,
         @RequestParam(value = "status", required = false) String status,
         PagedResourcesAssembler<Team> assembler,
         @RequestParam(value = "name", required = false) String... names) {
@@ -124,7 +120,6 @@ public class TeamsResource {
      *
      * @param clientId  the client id
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param status    to filter by
      * @param assembler used to create the PagedResources
      * @param names     to filter by
@@ -139,8 +134,7 @@ public class TeamsResource {
         @ApiImplicitParam(name = "status", defaultValue = "ACTIVE_ONLY", value = "status to look up", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamPage> clientTeams(@PathVariable Long clientId,
-                                                @PageableDefault(size = 50) Pageable pageable,
-                                                @SortDefault(sort = "id") Sort sort,
+                                                @PageableDefault(size = 50, sort = "id") Pageable pageable,
                                                 @RequestParam(value = "status", required = false) String status,
                                                 PagedResourcesAssembler<Team> assembler,
                                                 @RequestParam(value = "teamTagsType", required = false) String teamTagsType,

@@ -413,12 +413,12 @@ public abstract class BaseIntegrationTest {
         return clientPasswordConfigurationService.save(configuration);
     }
 
-    protected Patient makeNewRandomPatient() {
+    protected Patient makeNewRandomPatient(Client client) {
         Patient patient = new Patient();
         patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
         patient.setLastName(RandomStringUtils.randomAlphabetic(20));
         patient.setDateOfBirth(LocalDate.now());
-        patient.setClient(makeNewRandomClient());
+        patient.setClient(client == null ? makeNewRandomClient() : client);
         return patientService.create(patient);
     }
 }

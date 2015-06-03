@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter.fromStringOrActive;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -72,14 +73,14 @@ public class TeamProvidersResource {
             @PageableDefault(size = 10, sort = {"provider.lastName"}, direction = Sort.Direction.ASC) Pageable page,
             PagedResourcesAssembler<TeamProvider> assembler) {
 
-        Team tofind = new Team();
-        tofind.setId(teamId);
+        Team toFind = new Team();
+        toFind.setId(teamId);
 
-        Page<TeamProvider> teamProviderPage = teamProviderService.findTeamProvidersByTeam(page, tofind);
+        Page<TeamProvider> teamProviderPage = teamProviderService.findTeamProvidersByTeam(page, toFind);
         if (teamProviderPage.hasContent()) {
-            return new ResponseEntity<>(new TeamProviderPage(assembler.toResource(teamProviderPage, teamProviderResourceAssembler), teamProviderPage), HttpStatus.OK);
+            return new ResponseEntity<>(new TeamProviderPage(assembler.toResource(teamProviderPage, teamProviderResourceAssembler), teamProviderPage), OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(NO_CONTENT);
         }
     }
 
@@ -96,14 +97,14 @@ public class TeamProvidersResource {
             @PathVariable("teamId") Long teamId,
             @RequestBody List<TeamProviderTeamLocationSaveRequest> providers) {
 
-        Team tofind = new Team();
-        tofind.setId(teamId);
+        Team toFind = new Team();
+        toFind.setId(teamId);
 
-        Set<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, tofind);
+        Set<TeamProvider> teamProviders = teamProviderService.associateProvidersToTeam(providers, toFind);
         if (!teamProviders.isEmpty()) {
-            return new ResponseEntity<>(teamProviders, HttpStatus.OK);
+            return new ResponseEntity<>(teamProviders, OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(NO_CONTENT);
         }
     }
 
@@ -115,10 +116,19 @@ public class TeamProvidersResource {
      */
     @RequestMapping(value = "/teamProvider", method = RequestMethod.POST)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<TeamProvider> updateTeamProvider(
+    public ResponseEntity<TeamProviderResource> updateTeamProvider(
             @RequestBody TeamProviderTeamLocationSaveRequest request) {
+
+        // update the team provider and provider
         teamProviderService.updateTeamProvider(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        // fetch the latest and return it
+        TeamProvider teamProvider = teamProviderService.reload(request.getTeamProvider());
+        if (teamProvider == null) {
+            return new ResponseEntity<>(NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), OK);
+        }
     }
 
     /**
@@ -145,12 +155,15 @@ public class TeamProvidersResource {
         teamProvider.setId(teamProviderId);
         teamProvider = teamProviderService.reload(teamProvider);
 
-        Page<TeamProviderTeamLocation> tptls = teamProviderService.findTeamLocationsByTeamProvider(teamProvider, pageable);
+        Page<TeamProviderTeamLocation> teamProviderTeamLocationPage =
+                teamProviderService.findTeamLocationsByTeamProvider(teamProvider, pageable);
 
-        if (tptls.hasContent()) {
-            return new ResponseEntity<>(new TeamProviderTeamLocationPage(assembler.toResource(tptls, teamProviderTeamLocationResourceAssembler), tptls), HttpStatus.OK);
+        if (teamProviderTeamLocationPage.hasContent()) {
+            return new ResponseEntity<>(
+                    new TeamProviderTeamLocationPage(assembler.toResource(teamProviderTeamLocationPage,
+                            teamProviderTeamLocationResourceAssembler), teamProviderTeamLocationPage), OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(NO_CONTENT);
         }
     }
 
@@ -168,9 +181,9 @@ public class TeamProvidersResource {
         teamProvider.setId(teamProviderId);
         teamProvider = teamProviderService.reload(teamProvider);
         if (teamProvider == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(NO_CONTENT);
         } else {
-            return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), HttpStatus.OK);
+            return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), OK);
         }
     }
 
@@ -193,11 +206,11 @@ public class TeamProvidersResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "normalizedName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<TeamProviderPage> possible(
             @PathVariable Long teamId,
-            @PageableDefault(size = 10, sort = {"lastName"}, direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 10, sort = {"normalizedName"}, direction = Sort.Direction.ASC) Pageable pageable,
             PagedResourcesAssembler<TeamProvider> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "name", required = false) String name) {
@@ -209,11 +222,11 @@ public class TeamProvidersResource {
 
         if (teamProviderPage.hasContent()) {
             return new ResponseEntity<>(
-                    new TeamProviderPage(assembler.toResource(teamProviderPage, teamProviderFinderResourceAssembler), teamProviderPage, filter),
-                    HttpStatus.OK
+                    new TeamProviderPage(assembler.toResource(teamProviderPage,
+                            teamProviderFinderResourceAssembler), teamProviderPage, filter), OK
             );
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(NO_CONTENT);
         }
     }
 
@@ -267,9 +280,9 @@ public class TeamProvidersResource {
 
         TeamProvider teamProvider = teamProviderService.findTeamProviderByProviderAndTeam(null, providerToFind, toFind);
         if (teamProvider == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(NO_CONTENT);
         } else {
-            return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), HttpStatus.OK);
+            return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), OK);
         }
     }
 }

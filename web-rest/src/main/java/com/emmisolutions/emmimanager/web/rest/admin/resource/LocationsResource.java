@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -115,7 +114,6 @@ public class LocationsResource {
      * GET to search for locations
      *
      * @param pageable  paged request
-     * @param sort      sorting request
      * @param status    to filter by
      * @param assembler used to create the PagedResources
      * @param names     to filter by
@@ -131,7 +129,6 @@ public class LocationsResource {
     })
     public ResponseEntity<LocationPage> list(
             @PageableDefault(size = 10, sort="name") Pageable pageable,
-            @SortDefault(sort = {"name","state"}) Sort sort,
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<Location> assembler,
             @RequestParam(value = "name", required = false) String... names) {
@@ -170,7 +167,6 @@ public class LocationsResource {
      *
      * @param id  the location
      * @param pageable  the page to request
-     * @param sort      sorting
      * @param assembler used to create the PagedResources
      * @return Page of ClientLocationResource objects or NO_CONTENT
      */
@@ -186,7 +182,7 @@ public class LocationsResource {
     public ResponseEntity<LocationClientResourcePage> currentClients(
             @PathVariable Long id,
             @PageableDefault(size = 10, sort = "client.name", direction = Sort.Direction.ASC) Pageable pageable,
-            Sort sort, PagedResourcesAssembler<ClientLocation> assembler) {
+            PagedResourcesAssembler<ClientLocation> assembler) {
         Page<ClientLocation> clientLocationPage = clientLocationService.findByLocation(new Location(id), pageable);
         if (clientLocationPage.hasContent()) {
             return new ResponseEntity<>(

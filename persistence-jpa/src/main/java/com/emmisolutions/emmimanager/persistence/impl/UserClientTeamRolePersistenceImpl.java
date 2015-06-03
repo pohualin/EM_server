@@ -4,8 +4,10 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermis
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.UserClientReferenceTeamRolePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientTeamRolePersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamPermissionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientTeamRoleRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -31,6 +33,9 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
 
     @Resource
     UserClientReferenceTeamRolePersistence userClientReferenceTeamRolePersistence;
+    
+    @Resource
+    MatchingCriteriaBean matchCriteria;
 
     @Override
     public Page<UserClientTeamRole> find(long clientId, Pageable page) {
@@ -46,6 +51,8 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
         if (userClientTeamRole == null){
             throw new InvalidDataAccessApiUsageException("UserClientTeamRole cannot be null");
         }
+        userClientTeamRole.setNormalizedName(matchCriteria
+                .normalizedName(userClientTeamRole.getName()));
         // reload the type because the version may have changed
         userClientTeamRole.setType(userClientReferenceTeamRolePersistence.reload(userClientTeamRole.getType()));
         return userClientTeamRoleRepository.save(userClientTeamRole);
@@ -79,6 +86,25 @@ public class UserClientTeamRolePersistenceImpl implements UserClientTeamRolePers
             return new HashSet<>();
         }
         return userClientTeamPermissionRepository.findAllByUserClientTeamRolesId(userClientRole.getId());
+    }
+
+    @Override
+    public UserClientTeamRole findDuplicateByName(UserClientTeamRole userClientTeamRole) {
+        UserClientTeamRole duplicate = null;
+        if (userClientTeamRole != null) {
+            String toSearch = matchCriteria
+                    .normalizedName(userClientTeamRole.getName());
+            if (StringUtils.isNotBlank(toSearch)) {
+                UserClientTeamRole sameNameAndClientInDb = userClientTeamRoleRepository
+                        .findByNormalizedNameAndClient(toSearch,
+                                userClientTeamRole.getClient());
+                if (!userClientTeamRole.equals(sameNameAndClientInDb)) {
+                    // if the object passed in is the same as the one in the db, not a dupe
+                    duplicate = sameNameAndClientInDb;
+                }
+            }
+        }
+        return duplicate;
     }
 
 }
