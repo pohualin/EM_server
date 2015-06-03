@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 import com.emmisolutions.emmimanager.model.TeamTag_;
 import com.emmisolutions.emmimanager.model.Team_;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole_;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is the specification class that allows for filtering of Client objects.
@@ -196,4 +199,34 @@ public class UserClientSpecifications {
             }
         };
     }
+
+    /**
+     * Get all email endings for a client and or them
+     * @param clientId
+     * @param emailEndings
+     */
+    public Specification<UserClient> orEmailEndingsForClient(final Long clientId, final List<EmailRestrictConfiguration> emailEndings) {
+        return new Specification<UserClient>() {
+            @Override
+            public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if(emailEndings == null){
+                    return null;
+                }
+
+                List<Predicate> predicates = new ArrayList<>();
+                Set<String> emailEndingForQuery = new HashSet<>();
+
+                for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings){
+                    emailEndingForQuery.add('%'+emailRestrictConfiguration.getEmailEnding());
+                }
+
+                for(String emailEnding : emailEndingForQuery){
+                    predicates.add(cb.notLike(root.get(UserClient_.email), emailEnding));
+                }
+
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
+    }
+
 }

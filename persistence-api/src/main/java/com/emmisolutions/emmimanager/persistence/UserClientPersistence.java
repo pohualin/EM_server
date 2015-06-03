@@ -1,10 +1,12 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -94,4 +96,13 @@ public interface UserClientPersistence {
      * @return an unlocked userClient
      */
     UserClient unlockUserClient(UserClient userClient);
+
+    /**
+     * get all emails that dont follow email restrictions
+     * @param pageable to use
+     * @param clientId client to use
+     * @param emails list of emails to use as restictions
+     * @return userClients that match query
+     */
+    Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long clientId, List<EmailRestrictConfiguration> emails);
 }

@@ -2,8 +2,10 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.EmailRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,6 +16,9 @@ import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -29,6 +34,8 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     UserClientRepository userClientRepository;
 
+    @Resource
+    EmailRestrictConfigurationPersistence emailRestrictConfigurationPersistence;
     /**
      * valid create
      */
@@ -337,4 +344,42 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("User is unlocked", userClient.getLoginFailureCount(), is(0));
     }
 
+    /**
+     * Test emailsThatDontFollowRestrictions
+     */
+    @Test
+    public void testEmailsThatDontFollowRestrictions() {
+        Client client = makeNewRandomClient();
+
+        UserClient user = new UserClient();
+        user.setClient(client);
+        user.setFirstName("firstName1");
+        user.setLastName("lastName1");
+        user.setLogin("flast1@a.com");
+        user.setEmail("flas1t@a.com");
+        userClientPersistence.saveOrUpdate(user);
+
+        UserClient user2 = new UserClient();
+        user2.setClient(client);
+        user2.setFirstName("firstName2");
+        user2.setLastName("lastName2");
+        user2.setLogin("flast2@b.com");
+        user2.setEmail("flas12@b.com");
+        userClientPersistence.saveOrUpdate(user2);
+
+        EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
+        configuration.setClient(client);
+        // configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
+        configuration.setEmailEnding("a.com");
+        emailRestrictConfigurationPersistence.saveOrUpdate(configuration);
+
+        List<EmailRestrictConfiguration> emailEndings = new ArrayList<>();
+        EmailRestrictConfiguration emailRestrictConfiguration = new EmailRestrictConfiguration();
+        emailRestrictConfiguration.setEmailEnding("%a.com");
+        emailEndings.add(emailRestrictConfiguration);
+
+
+        Page<UserClient> emailsThatDoNotMatch = userClientPersistence.emailsThatDontFollowRestrictions(new PageRequest(0, 10), client.getId(), emailEndings);
+        assertThat("should have flast12@b.com",emailsThatDoNotMatch.getContent().get(0),is(user2));
+    }
 }
