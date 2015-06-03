@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.client.resource.PatientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
+
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
 import org.springframework.hateoas.core.DummyInvocationUtils;
@@ -37,6 +38,8 @@ public class TeamResourceAssembler
 
         // create special template link to allow to find a schedule by id for a team
         ret.add(createScheduleByIdLink(entity));
+        
+        ret.add(linkTo(methodOn(PatientsResource.class).findTeamEmailConfigForPatient(entity.getClient().getId(), entity.getId(), null, null)).withRel("patientTeamEmailConfig"));
 
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
                 .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null, null))
