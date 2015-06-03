@@ -146,7 +146,7 @@ public class CsrfTokenValidationFilter extends OncePerRequestFilter {
         }
 
         public boolean isValid() {
-            return !HashStatus.INVALID.equals(status);
+            return true;
         }
     }
 
