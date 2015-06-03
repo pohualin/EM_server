@@ -6,8 +6,8 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeS
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfEnsureCookiesUniqueFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
@@ -33,6 +33,7 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
@@ -196,12 +197,21 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 ));
     }
 
+    /**
+     * Allows us to have access to the change the CSRF token if necessary
+     *
+     * @return the CsrfAuthenticationStrategy
+     */
+    @Bean(name = "clientCsrfAuthenticationStrategy")
+    public CsrfAuthenticationStrategy clientCsrfServices(){
+        return new CsrfAuthenticationStrategy(clientCsrfTokenRepository());
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     protected void configure(HttpSecurity http) throws Exception {
         ajaxAuthenticationSuccessHandler.setDefaultTargetUrl("/webapi-client/authenticated");
         ajaxAuthenticationFailureHandler.setDefaultFailureUrl("/login-client.jsp?error");
-
         http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -238,7 +248,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .csrfTokenRepository(clientCsrfTokenRepository())
                     .and()
-                .addFilterBefore(new CsrfEnsureCookiesUniqueFilter(clientCsrfTokenRepository()), CsrfFilter.class)
+                .addFilterBefore(new CsrfTokenValidationFilter(clientCsrfTokenRepository()), CsrfFilter.class)
                 .addFilterAfter(new CsrfTokenGeneratorFilter(clientCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()

@@ -21,6 +21,7 @@ import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -63,6 +64,9 @@ public class UserClientsPasswordResource {
 
     @Resource
     ClientPasswordConfigurationService clientPasswordConfigurationService;
+
+    @Resource(name = "clientCsrfAuthenticationStrategy")
+    CsrfAuthenticationStrategy clientCsrfAuthenticationStrategy;
 
     @Resource(name = "clientTokenBasedRememberMeServices")
     RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
@@ -166,6 +170,10 @@ public class UserClientsPasswordResource {
             // update user's login token
             tokenBasedRememberMeServices.rewriteLoginToken(request, response,
                     updated);
+
+            // update the user's CSRF token
+            clientCsrfAuthenticationStrategy.onAuthentication(null, request, response);
+
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             List<UserClientPasswordValidationErrorResource> errorResources = new ArrayList<>();

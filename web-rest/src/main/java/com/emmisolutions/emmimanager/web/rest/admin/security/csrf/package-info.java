@@ -8,10 +8,13 @@
  * Generation of CSRF tokens on GET requests via -
  * com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter
  * <p/>
- * Session-less backend via -
+ * Stateless backend via -
  * com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository
  * <p/>
  * Generation of json encoded 401 responses to requests with missing or invalid xsrf tokens via -
  * com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler
+ * <p/>
+ * XSS protection for CSRF tokens via:
+ * com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter
  */
 package com.emmisolutions.emmimanager.web.rest.admin.security.csrf;
