@@ -2,10 +2,12 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -134,6 +136,18 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
                 null, realFilter);
         assertThat("returned page of UserClient should not be empty",
                 userClientsWithFilter.hasContent(), is(true));
+        
+        UserClientSupportSearchFilter supportFilter = new UserClientSupportSearchFilter(userClient.getFirstName());
+        Page<UserClient> supportFilterResults = userClientPersistence.list(
+                null, supportFilter);
+        assertThat("returned page of UserClient should not be empty",
+                supportFilterResults, hasItem(userClient));
+        
+        UserClientSupportSearchFilter supportFilterA = new UserClientSupportSearchFilter();
+        Page<UserClient> supportFilterResultsA = userClientPersistence.list(
+                null, supportFilterA);
+        assertThat("returned page of UserClient should not be empty",
+                supportFilterResultsA, hasItem(userClient));
 
         UserClientSearchFilter nullClientIdFilter = new UserClientSearchFilter(
                 null, "a");

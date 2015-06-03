@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 
@@ -48,6 +49,19 @@ public interface UserClientService {
      * @return pageable UserClient
      */
     Page<UserClient> list(Pageable pageable, UserClientSearchFilter filter);
+    
+    /**
+     * Find existing UserClient across all clients with the passed in
+     * UserClientSupportSearchFilter
+     * 
+     * @param pageable
+     *            to use
+     * @param filter
+     *            to use
+     * @return a page of UserClient
+     */
+    Page<UserClient> list(Pageable pageable,
+            UserClientSupportSearchFilter filter);
 
     /**
      * Find an existing UserClient objects that would conflict with the saving

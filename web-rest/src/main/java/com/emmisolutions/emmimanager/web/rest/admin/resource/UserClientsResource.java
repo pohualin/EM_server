@@ -3,7 +3,9 @@ package com.emmisolutions.emmimanager.web.rest.admin.resource;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.UserClientCommonSearchFilter;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
@@ -28,7 +30,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
-import static com.emmisolutions.emmimanager.model.UserClientSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -91,8 +92,10 @@ public class UserClientsResource {
             @RequestParam(value = "teamId", required = false) Long teamId,
             @RequestParam(value = "tagId", required = false) Long tagId) {
 
-        UserClientSearchFilter filter = new UserClientSearchFilter(new Client(clientId),
-                fromStringOrActive(status), term);
+        UserClientSearchFilter filter = new UserClientSearchFilter(new Client(
+                clientId),
+                UserClientCommonSearchFilter.StatusFilter
+                        .fromStringOrActive(status), term);
         filter.setTeam(new Team(teamId));
         filter.setTag(new Tag(tagId));
 
@@ -304,6 +307,57 @@ public class UserClientsResource {
                         HttpStatus.NOT_ACCEPTABLE);
             }
         }
+    }
+    
+    /**
+     * Get a page of UserClient across all Clients based on the search criteria
+     * 
+     * @param pageable to use
+     * @param assembler to assemble search results
+     * @param status to filter
+     * @param term to search
+     * @return a page of UserClient that meet the search criteria
+     */
+    @RequestMapping(value = "/clientUsers", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "client.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "status", defaultValue = "0", value = "user status filter", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "term", defaultValue = "0", value = "user name filter", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<UserClientSupportPage> list(
+            @PageableDefault(size = 10, sort = "client.name", direction = Direction.ASC) Pageable pageable,
+            PagedResourcesAssembler<UserClient> assembler,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "term", required = false) String term) {
+
+        UserClientSupportSearchFilter filter = new UserClientSupportSearchFilter(
+                UserClientCommonSearchFilter.StatusFilter
+                        .fromStringOrActive(status),
+                term);
+
+        Page<UserClient> userClients = userClientService.list(pageable, filter);
+
+        if (userClients.hasContent()) {
+            return new ResponseEntity<>(new UserClientSupportPage(
+                    assembler.toResource(userClients,
+                            userClientResourceAssembler), userClients, filter),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
+    /**
+     * Get reference data such as status filter for UserClient
+     * @return an instance of reference data
+     */
+    @RequestMapping(value = "/clientUsers/ref", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ReferenceData getReferenceData() {
+        return new ReferenceData();
     }
     
     private void setReloadedClient(Long clientId, UserClient userClient){

@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
@@ -11,6 +12,7 @@ import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.*;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,6 +127,13 @@ public class UserClientServiceImpl implements UserClientService {
     @Transactional
     public Page<UserClient> list(Pageable pageable,
                                  UserClientSearchFilter filter) {
+        return userClientPersistence.list(pageable, filter);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserClient> list(Pageable pageable,
+            UserClientSupportSearchFilter filter) {
         return userClientPersistence.list(pageable, filter);
     }
 

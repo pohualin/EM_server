@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
@@ -10,6 +11,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 import com.emmisolutions.emmimanager.service.*;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -133,17 +135,19 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void testUserList() {
         Client client = makeNewRandomClient();
-        makeNewRandomUserClient(client);
-
-        Page<UserClient> userClients = userClientService.list(null, null);
-        assertThat("userClients should contain contents",
-                userClients.hasContent(), is(true));
+        UserClient userClient = makeNewRandomUserClient(client);
 
         UserClientSearchFilter filter = new UserClientSearchFilter(client, "a");
         Page<UserClient> userClientsWithFilter = userClientService.list(null,
                 filter);
         assertThat("userClients should contain contents",
                 userClientsWithFilter.hasContent(), is(true));
+        
+        UserClientSupportSearchFilter supportfilter = new UserClientSupportSearchFilter(userClient.getFirstName());
+        Page<UserClient> supportFilterResults = userClientService.list(null,
+                supportfilter);
+        assertThat("userClients should contain contents",
+                supportFilterResults, hasItem(userClient));
     }
 
     /**

@@ -50,9 +50,6 @@ public class UserClientUserClientTeamRolePersistenceIntegrationTest extends
                 .saveOrUpdate(entity);
         assertThat("entity created", created.getId(), is(notNullValue()));
 
-        assertThat("the user client should be found when not filtering",
-                userClientPersistence.list(null, null), hasItem(userClient));
-
         assertThat("the user client should be found when the team is added to the filter",
                 userClientPersistence.list(null, new UserClientSearchFilter() {{
                     setClient(client);
