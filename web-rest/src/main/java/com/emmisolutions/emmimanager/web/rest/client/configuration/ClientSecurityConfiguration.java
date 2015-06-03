@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeS
 import com.emmisolutions.emmimanager.web.rest.admin.security.PreAuthenticatedAuthenticationEntryPoint;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfEnsureCookiesUniqueFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
@@ -33,7 +34,6 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
 import javax.annotation.Resource;
@@ -186,7 +186,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
      * must match
      */
     @Bean(name = "clientCsrfTokenRepository")
-    public CsrfTokenRepository clientCsrfTokenRepository() {
+    public DoubleSubmitSignedCsrfTokenRepository clientCsrfTokenRepository() {
         return new DoubleSubmitSignedCsrfTokenRepository(
                 new DoubleSubmitSignedCsrfTokenRepository.SecurityTokenCookieParameterNameTuple(
                         IMP_AUTHORIZATION_COOKIE_NAME, "XSRF-TOKEN-IMP", "X-XSRF-TOKEN-IMP"
@@ -238,6 +238,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .csrfTokenRepository(clientCsrfTokenRepository())
                     .and()
+                .addFilterBefore(new CsrfEnsureCookiesUniqueFilter(clientCsrfTokenRepository()), CsrfFilter.class)
                 .addFilterAfter(new CsrfTokenGeneratorFilter(clientCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()

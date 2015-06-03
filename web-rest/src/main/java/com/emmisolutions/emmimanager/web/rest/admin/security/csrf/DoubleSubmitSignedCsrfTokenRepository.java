@@ -55,10 +55,10 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
         String xsrfParameterName = null;
         SECURITY_TOKEN_LOOP:
         for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
-            xsrfParameterName = cookieParameterNamePair.xsrfHeaderName;
+            xsrfParameterName = cookieParameterNamePair.getXsrfHeaderName();
             if (request.getCookies() != null) {
                 for (Cookie cookie : request.getCookies()) {
-                    if (StringUtils.equalsIgnoreCase(cookie.getName(), cookieParameterNamePair.securityTokenName)) {
+                    if (StringUtils.equalsIgnoreCase(cookie.getName(), cookieParameterNamePair.getSecurityTokenName())) {
                         toHash.append(cookie.getValue());
                         break SECURITY_TOKEN_LOOP;
                     }
@@ -81,8 +81,9 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
     public void saveToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response) {
         for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
             if (token != null) {
-                if (StringUtils.equalsIgnoreCase(token.getHeaderName(), cookieParameterNamePair.xsrfHeaderName)) {
-                    Cookie csrfCookie = new Cookie(cookieParameterNamePair.xsrfCookieName, token.getToken());
+                if (StringUtils.equalsIgnoreCase(token.getHeaderName(),
+                        cookieParameterNamePair.getXsrfHeaderName())) {
+                    Cookie csrfCookie = new Cookie(cookieParameterNamePair.getXsrfCookieName(), token.getToken());
                     csrfCookie.setPath("/");
                     csrfCookie.setMaxAge(-1);
                     csrfCookie.setSecure(isSecureRequest(request));
@@ -91,7 +92,7 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
                 }
             } else {
                 // invalidation of csrf should happen if the token is null
-                Cookie csrfCookie = new Cookie(cookieParameterNamePair.xsrfCookieName, null);
+                Cookie csrfCookie = new Cookie(cookieParameterNamePair.getXsrfCookieName(), null);
                 csrfCookie.setPath("/");
                 csrfCookie.setMaxAge(0);
                 csrfCookie.setSecure(isSecureRequest(request));
@@ -107,9 +108,9 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
         if (request.getCookies() != null) {
             SECURITY_TOKEN_LOOP:
             for (SecurityTokenCookieParameterNameTuple cookieParameterNamePair : cookieParameterNamePairs) {
-                xsrfParameterName = cookieParameterNamePair.xsrfHeaderName;
+                xsrfParameterName = cookieParameterNamePair.getXsrfHeaderName();
                 for (Cookie cookie : request.getCookies()) {
-                    if (cookie.getName().equalsIgnoreCase(cookieParameterNamePair.xsrfCookieName)) {
+                    if (cookie.getName().equalsIgnoreCase(cookieParameterNamePair.getXsrfCookieName())) {
                         csrfFromCookie = cookie.getValue();
                         break SECURITY_TOKEN_LOOP;
                     }
@@ -123,6 +124,10 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
     private boolean isSecureRequest(HttpServletRequest request) {
         return request.isSecure() ||
                 StringUtils.equalsIgnoreCase(request.getHeader("X-Forwarded-Ssl"), "on");
+    }
+
+    public List<SecurityTokenCookieParameterNameTuple> getCookieParameterNamePairs() {
+        return cookieParameterNamePairs;
     }
 
     /**
@@ -147,6 +152,18 @@ public class DoubleSubmitSignedCsrfTokenRepository implements CsrfTokenRepositor
             this.xsrfCookieName = xsrfCookieName;
             this.xsrfHeaderName = xsrfHeaderName;
             this.securityTokenName = securityTokenName;
+        }
+
+        public String getSecurityTokenName() {
+            return securityTokenName;
+        }
+
+        public String getXsrfCookieName() {
+            return xsrfCookieName;
+        }
+
+        public String getXsrfHeaderName() {
+            return xsrfHeaderName;
         }
     }
 }
