@@ -2,8 +2,8 @@ package com.emmisolutions.emmimanager.web.rest.admin.configuration;
 
 import com.emmisolutions.emmimanager.web.rest.admin.security.cas.*;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfEnsureCookiesUniqueFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -289,7 +289,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .csrfTokenRepository(adminCsrfTokenRepository)
                     .and()
-                .addFilterBefore(new CsrfEnsureCookiesUniqueFilter(adminCsrfTokenRepository), CsrfFilter.class)
+                .addFilterBefore(new CsrfTokenValidationFilter(adminCsrfTokenRepository), CsrfFilter.class)
                 .addFilterAfter(new CsrfTokenGeneratorFilter(adminCsrfTokenRepository), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()

@@ -4,8 +4,8 @@ import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAut
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.*;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeniedHandler;
-import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfEnsureCookiesUniqueFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
+import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -180,7 +180,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .csrfTokenRepository(adminCsrfTokenRepository())
                     .and()
-                .addFilterBefore(new CsrfEnsureCookiesUniqueFilter(adminCsrfTokenRepository()), CsrfFilter.class)
+                .addFilterBefore(new CsrfTokenValidationFilter(adminCsrfTokenRepository()), CsrfFilter.class)
                 .addFilterAfter(new CsrfTokenGeneratorFilter(adminCsrfTokenRepository()), CsrfFilter.class)
                 .headers().frameOptions().disable()
                 .authorizeRequests()
