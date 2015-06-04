@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -131,7 +132,8 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
     @Override
     public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long clientId, List<EmailRestrictConfiguration> emailsForQuery) {
         if(emailsForQuery.size()!=0) {
-            return userClientRepository.findAll(where(userClientSpecifications.orEmailEndingsForClient(clientId, emailsForQuery)),
+            return userClientRepository.findAll(where(userClientSpecifications.orEmailEndingsForClient(clientId, emailsForQuery))
+                            .and(userClientSpecifications.isClient(new UserClientSearchFilter(new Client(clientId), null))),
                     (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
         }else{
             return null;
