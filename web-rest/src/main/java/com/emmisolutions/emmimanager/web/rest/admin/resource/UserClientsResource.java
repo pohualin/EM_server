@@ -3,9 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.resource;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.UserClientCommonSearchFilter;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
-import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
@@ -94,7 +92,7 @@ public class UserClientsResource {
 
         UserClientSearchFilter filter = new UserClientSearchFilter(new Client(
                 clientId),
-                UserClientCommonSearchFilter.StatusFilter
+                UserClientSearchFilter.StatusFilter
                         .fromStringOrActive(status), term);
         filter.setTeam(new Team(teamId));
         filter.setTag(new Tag(tagId));
@@ -327,21 +325,21 @@ public class UserClientsResource {
             @ApiImplicitParam(name = "status", defaultValue = "0", value = "user status filter", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "term", defaultValue = "0", value = "user name filter", dataType = "string", paramType = "query")
     })
-    public ResponseEntity<UserClientSupportPage> list(
+    public ResponseEntity<UserClientPage> list(
             @PageableDefault(size = 10, sort = "client.name", direction = Direction.ASC) Pageable pageable,
             PagedResourcesAssembler<UserClient> assembler,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "term", required = false) String term) {
 
-        UserClientSupportSearchFilter filter = new UserClientSupportSearchFilter(
-                UserClientCommonSearchFilter.StatusFilter
-                        .fromStringOrActive(status),
+        // Create a filter without client
+        UserClientSearchFilter filter = new UserClientSearchFilter(null,
+                UserClientSearchFilter.StatusFilter.fromStringOrActive(status),
                 term);
 
         Page<UserClient> userClients = userClientService.list(pageable, filter);
 
         if (userClients.hasContent()) {
-            return new ResponseEntity<>(new UserClientSupportPage(
+            return new ResponseEntity<>(new UserClientPage(
                     assembler.toResource(userClients,
                             userClientResourceAssembler), userClients, filter),
                     HttpStatus.OK);

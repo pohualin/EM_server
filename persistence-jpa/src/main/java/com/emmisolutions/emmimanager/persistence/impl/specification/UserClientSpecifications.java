@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 
 import com.emmisolutions.emmimanager.model.TeamTag_;
 import com.emmisolutions.emmimanager.model.Team_;
-import com.emmisolutions.emmimanager.model.UserClientCommonSearchFilter;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
@@ -34,7 +33,7 @@ public class UserClientSpecifications {
      * @return Specification with search term
      */
     public Specification<UserClient> hasNames(
-            final UserClientCommonSearchFilter filter) {
+            final UserClientSearchFilter filter) {
         return new Specification<UserClient>() {
             @Override
             public Predicate toPredicate(Root<UserClient> root,
@@ -148,7 +147,7 @@ public class UserClientSpecifications {
      * @param searchFilter used to find the status
      * @return the specification as a filter predicate
      */
-    public Specification<UserClient> isInStatus(final UserClientCommonSearchFilter searchFilter) {
+    public Specification<UserClient> isInStatus(final UserClientSearchFilter searchFilter) {
         return new Specification<UserClient>() {
             @Override
             public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

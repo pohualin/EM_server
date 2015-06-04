@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.hateoas.ResourceSupport;
 
-import com.emmisolutions.emmimanager.model.UserClientCommonSearchFilter;
+import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 
 /**
  * Reference data for client editing
@@ -16,7 +16,7 @@ public class ReferenceData extends ResourceSupport {
 
     @XmlElement(name = "statusFilter")
     @XmlElementWrapper(name = "statusFilters")
-    private UserClientCommonSearchFilter.StatusFilter[] statusFilters = UserClientCommonSearchFilter.StatusFilter
+    private UserClientSearchFilter.StatusFilter[] statusFilters = UserClientSearchFilter.StatusFilter
             .values();
 
 }

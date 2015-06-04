@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
@@ -7,7 +9,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
  * The search filter for UserClient entities
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserClientSearchFilter extends UserClientCommonSearchFilter {
+public class UserClientSearchFilter {
+
+    private String term;
+
+    private StatusFilter status;
 
     private Client client;
 
@@ -19,15 +25,14 @@ public class UserClientSearchFilter extends UserClientCommonSearchFilter {
      * constructor
      */
     public UserClientSearchFilter() {
-        super();
+        this.status = StatusFilter.ALL;
     }
 
     /**
      * all status plus passed term
      */
     public UserClientSearchFilter(Client client, String term) {
-       super(term);
-       this.client = client;
+        this(client, StatusFilter.ALL, term);
     }
 
     /**
@@ -38,8 +43,13 @@ public class UserClientSearchFilter extends UserClientCommonSearchFilter {
      */
     public UserClientSearchFilter(Client client, StatusFilter status,
                                   String term) {
-        super(status, term);
         this.client = client;
+        this.term = term;
+        this.status = status;
+    }
+
+    public String getTerm() {
+        return term;
     }
 
     public Client getClient() {
@@ -48,6 +58,10 @@ public class UserClientSearchFilter extends UserClientCommonSearchFilter {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public StatusFilter getStatus() {
+        return status;
     }
 
     public Team getTeam() {
@@ -66,9 +80,33 @@ public class UserClientSearchFilter extends UserClientCommonSearchFilter {
         return tag;
     }
 
+    /**
+     * Status allowed
+     */
+    public enum StatusFilter {
+        ALL, ACTIVE_ONLY, INACTIVE_ONLY;
+
+        /**
+         * from string or ACTIVE
+         *
+         * @param status the status string
+         * @return never null, the status or ACTIVE
+         */
+        public static StatusFilter fromStringOrActive(String status) {
+            if (StringUtils.isNotBlank(status)) {
+                for (StatusFilter statusFilter : values()) {
+                    if (statusFilter.toString().equals(status.toUpperCase())) {
+                        return statusFilter;
+                    }
+                }
+            }
+            return ACTIVE_ONLY;
+        }
+    }
+
     @Override
     public String toString() {
-        return "UserClientSearchFilter{" + "term=" + getTerm() + ", status="
-                + getStatus() + '}';
+        return "UserClientSearchFilter{" + "term=" + term + ", status="
+                + status + '}';
     }
 }

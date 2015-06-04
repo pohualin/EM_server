@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
-import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
@@ -124,19 +123,12 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<UserClient> list(Pageable pageable,
-                                 UserClientSearchFilter filter) {
+            UserClientSearchFilter filter) {
         return userClientPersistence.list(pageable, filter);
     }
     
-    @Override
-    @Transactional(readOnly = true)
-    public Page<UserClient> list(Pageable pageable,
-            UserClientSupportSearchFilter filter) {
-        return userClientPersistence.list(pageable, filter);
-    }
-
     @Override
     public List<UserClientConflict> findConflictingUsers(UserClient userClient) {
         List<UserClientConflict> ret = new ArrayList<>();

@@ -6,8 +6,9 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupP
 import com.emmisolutions.emmimanager.web.rest.admin.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientSupportPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
+
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
 import org.springframework.hateoas.core.DummyInvocationUtils;
@@ -74,7 +75,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(UserPage.createFullSearchLink());
         ret.add(UserAdminRolePage.createUserAdminRolesLink());
         ret.add(createUserByIdLink());
-        ret.add(UserClientSupportPage.createFullSearchLink());
+        ret.add(UserClientPage.createFullSearchLink());
         ret.add(linkTo(methodOn(UserClientsResource.class).getReferenceData()).withRel("userClientReferenceData"));
         if (perms.contains(PERM_GOD) || perms.contains(PERM_ADMIN_SUPER_USER)) {
             ret.add(referenceTagsLinkForAdmin());

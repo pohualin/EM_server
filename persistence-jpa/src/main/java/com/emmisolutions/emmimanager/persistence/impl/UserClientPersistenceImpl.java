@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
-import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
@@ -72,16 +71,6 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                 (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
     }
     
-    @Override
-    public Page<UserClient> list(Pageable pageable,
-            UserClientSupportSearchFilter filter) {
-        return userClientRepository.findAll(
-                where(userClientSpecifications.hasNames(filter)).and(
-                        userClientSpecifications.isInStatus(filter)),
-                (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC,
-                        "id") : pageable);
-    }
-
     @Override
     public Set<UserClient> findConflictingUsers(UserClient userClient) {
         if (userClient == null ||

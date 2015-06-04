@@ -1,13 +1,11 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
-import com.emmisolutions.emmimanager.model.UserClientSupportSearchFilter;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -50,19 +48,6 @@ public interface UserClientService {
      */
     Page<UserClient> list(Pageable pageable, UserClientSearchFilter filter);
     
-    /**
-     * Find existing UserClient across all clients with the passed in
-     * UserClientSupportSearchFilter
-     * 
-     * @param pageable
-     *            to use
-     * @param filter
-     *            to use
-     * @return a page of UserClient
-     */
-    Page<UserClient> list(Pageable pageable,
-            UserClientSupportSearchFilter filter);
-
     /**
      * Find an existing UserClient objects that would conflict with the saving
      * of the passed user client
