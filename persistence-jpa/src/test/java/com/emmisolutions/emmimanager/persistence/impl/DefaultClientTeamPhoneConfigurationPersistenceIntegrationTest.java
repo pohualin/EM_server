@@ -28,7 +28,7 @@ public class DefaultClientTeamPhoneConfigurationPersistenceIntegrationTest exten
     public void testFindSystemDefault() {
     	Page<DefaultClientTeamPhoneConfiguration> systemDefault = defaultTeamPhoneConfigurationPersistence
                 .findActive(null);
-        assertThat("active default password configuration found", systemDefault, is(notNullValue()));
+        assertThat("active default phone configuration found", systemDefault, is(notNullValue()));
         assertThat("active should be true", systemDefault.getContent().get(1).isActive(),
                 is(true));
     }
