@@ -6,30 +6,27 @@ import static org.junit.Assert.assertThat;
 import javax.annotation.Resource;
 
 import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
-import com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfiguration;
-import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.DefaultPasswordConfigurationPersistence;
+import com.emmisolutions.emmimanager.persistence.DefaultClientTeamPhoneConfigurationPersistence;
 
 /**
- * Test DefaultEmailConfigurationPersistence
+ * Test DefaultPhoneConfigurationPersistence
  */
-public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest extends
+public class DefaultClientTeamPhoneConfigurationPersistenceIntegrationTest extends
         BaseIntegrationTest {
 
     @Resource
-    DefaultClientTeamEmailConfigurationPersistence defaultTeamEmailConfigurationPersistence;
+    DefaultClientTeamPhoneConfigurationPersistence defaultTeamPhoneConfigurationPersistence;
 
     /**
      * Test positive findSystemDefault
      */
     @Test
     public void testFindSystemDefault() {
-    	Page<DefaultClientTeamEmailConfiguration> systemDefault = defaultTeamEmailConfigurationPersistence
+    	Page<DefaultClientTeamPhoneConfiguration> systemDefault = defaultTeamPhoneConfigurationPersistence
                 .findActive(null);
         assertThat("active default password configuration found", systemDefault, is(notNullValue()));
         assertThat("active should be true", systemDefault.getContent().get(1).isActive(),
@@ -41,7 +38,7 @@ public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest exten
      */
     @Test
     public void testSave() {
-    	Page<DefaultClientTeamEmailConfiguration>  systemDefault = defaultTeamEmailConfigurationPersistence
+    	Page<DefaultClientTeamPhoneConfiguration>  systemDefault = defaultTeamPhoneConfigurationPersistence
                 .findActive(null);
         systemDefault.getContent().get(1).setActive(true);;
         assertThat("system default should be false", systemDefault.getContent().get(1).isActive(),

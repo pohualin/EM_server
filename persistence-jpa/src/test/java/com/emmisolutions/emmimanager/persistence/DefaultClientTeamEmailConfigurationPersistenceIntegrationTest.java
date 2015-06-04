@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.persistence.impl;
+package com.emmisolutions.emmimanager.persistence;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -16,7 +16,7 @@ import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigura
 import com.emmisolutions.emmimanager.persistence.DefaultPasswordConfigurationPersistence;
 
 /**
- * Test DefaultEmailConfigurationPersistence
+ * Test DefaultPasswordConfigurationPersistence
  */
 public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest extends
         BaseIntegrationTest {
