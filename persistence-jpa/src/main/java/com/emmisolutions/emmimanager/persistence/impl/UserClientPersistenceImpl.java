@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
@@ -14,9 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -127,6 +126,16 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         toUnlock.setLoginFailureCount(0);
         toUnlock.setLockExpirationDateTime(null);
         return userClientRepository.save(toUnlock);
+    }
+
+    @Override
+    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long clientId, List<EmailRestrictConfiguration> emailsForQuery) {
+        if(emailsForQuery.size()!=0) {
+            return userClientRepository.findAll(where(userClientSpecifications.orEmailEndingsForClient(clientId, emailsForQuery)),
+                    (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
+        }else{
+            return null;
+        }
     }
 
 }

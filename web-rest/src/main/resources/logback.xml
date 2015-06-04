@@ -13,6 +13,7 @@
     </appender>
 
     <logger name="com.emmisolutions.emmimanager" level="${logback.loglevel}"/>
+    <logger name="com.emmisolutions.emmimanager.web.rest.admin.security.csrf" level="WARN"/>
 
     <logger name="javax.activation" level="WARN"/>
     <logger name="com.hazelcast" level="WARN"/>

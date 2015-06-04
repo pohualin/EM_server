@@ -35,6 +35,16 @@ public class UserClientPage extends PagedResource<UserClientResource> {
      * Wrapped constructor
      *
      * @param userResources to be wrapped
+     */
+    public UserClientPage(PagedResources<UserClientResource> userResources,
+                          Page<UserClient> userPage) {
+        pageDefaults(userResources, userPage);
+    }
+
+    /**
+     * Wrapped constructor
+     *
+     * @param userResources to be wrapped
      * @param userPage      the raw response
      */
     public UserClientPage(PagedResources<UserClientResource> userResources,
