@@ -496,36 +496,4 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         boolean isValid = userClientService.validateActivationToken("invalidToken");
         assertThat("return false for null user client", isValid, is(false));
     }
-
-    /**
-     * Test emailsThatDontFollowRestrictions
-     */
-    @Test
-    public void testEmailsThatDontFollowRestrictions() {
-        Client client = makeNewRandomClient();
-
-        UserClient user = new UserClient();
-        user.setClient(client);
-        user.setFirstName("firstName1");
-        user.setLastName("lastName1");
-        user.setLogin("flast1@a.com");
-        user.setEmail("flas1t@a.com");
-        userClientService.create(user);
-
-        UserClient user2 = new UserClient();
-        user2.setClient(client);
-        user2.setFirstName("firstName2");
-        user2.setLastName("lastName2");
-        user2.setLogin("flast2@b.com");
-        user2.setEmail("flas12@b.com");
-        userClientService.create(user2);
-
-        EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
-        configuration.setClient(client);
-        configuration.setEmailEnding("a.com");
-        emailRestrictConfigurationService.create(configuration);
-
-        Page<UserClient> emailsThatDoNotMatch = userClientService.emailsThatDontFollowRestrictions(new PageRequest(0, 10), client.getId());
-        assertThat("should have flast@b.com",emailsThatDoNotMatch.getContent().get(0),is(user2));
-    }
 }

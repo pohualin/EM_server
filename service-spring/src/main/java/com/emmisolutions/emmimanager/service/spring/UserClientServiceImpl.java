@@ -385,26 +385,4 @@ public class UserClientServiceImpl implements UserClientService {
         loadedUserClient = this.update(loadedUserClient);
         return loadedUserClient;
     }
-
-    @Override
-    @Transactional()
-    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long userClientId) {
-        List<EmailRestrictConfiguration> emailRestrictConfigurations = new ArrayList<>();
-        Page<EmailRestrictConfiguration> emailEndings = null;
-        Pageable emailEndingsPageable = null;
-
-        do {
-            if(emailEndings!=null){
-                emailEndingsPageable = emailEndings.nextPageable();
-            }
-
-            emailEndings = emailRestrictConfigurationPersistence.list(emailEndingsPageable, userClientId);
-            for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings.getContent()){
-                emailRestrictConfigurations.add(emailRestrictConfiguration);
-            }
-        }while(emailEndings.hasContent() && emailEndings.hasNext());
-
-        return userClientPersistence.emailsThatDontFollowRestrictions(pageable, userClientId, emailRestrictConfigurations);
-    }
-
 }

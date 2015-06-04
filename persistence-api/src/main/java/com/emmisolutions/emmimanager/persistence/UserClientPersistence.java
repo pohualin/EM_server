@@ -96,13 +96,4 @@ public interface UserClientPersistence {
      * @return an unlocked userClient
      */
     UserClient unlockUserClient(UserClient userClient);
-
-    /**
-     * get all emails that dont follow email restrictions
-     * @param pageable to use
-     * @param clientId client to use
-     * @param emails list of emails to use as restictions
-     * @return userClients that match query
-     */
-    Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long clientId, List<EmailRestrictConfiguration> emails);
 }

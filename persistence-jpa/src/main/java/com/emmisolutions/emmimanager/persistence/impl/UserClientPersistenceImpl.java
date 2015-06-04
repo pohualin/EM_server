@@ -65,7 +65,8 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                         .and(userClientSpecifications.isClient(filter))
                         .and(userClientSpecifications.isInStatus(filter))
                         .and(userClientSpecifications.hasRoleOnTeam(filter))
-                        .and(userClientSpecifications.hasRoleOnTeamWithClientTag(filter)),
+                        .and(userClientSpecifications.hasRoleOnTeamWithClientTag(filter))
+                        .and(userClientSpecifications.orEmailEndingsForClient(filter)),
                 (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
     }
 
@@ -128,16 +129,4 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
         toUnlock.setLockExpirationDateTime(null);
         return userClientRepository.save(toUnlock);
     }
-
-    @Override
-    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long clientId, List<EmailRestrictConfiguration> emailsForQuery) {
-        if(emailsForQuery.size()!=0) {
-            return userClientRepository.findAll(where(userClientSpecifications.orEmailEndingsForClient(clientId, emailsForQuery))
-                            .and(userClientSpecifications.isClient(new UserClientSearchFilter(new Client(clientId), null))),
-                    (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
-        }else{
-            return null;
-        }
-    }
-
 }
