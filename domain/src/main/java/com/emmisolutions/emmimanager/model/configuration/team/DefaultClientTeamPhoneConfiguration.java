@@ -14,16 +14,18 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.hibernate.envers.Audited;
+
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-import com.emmisolutions.emmimanager.model.EmailReminderType;
+import com.emmisolutions.emmimanager.model.PhoneReminderType;
 
 /**
- * The default team email configuration.
+ * The default team phone configuration.
  */
 @Entity
-@Table(name = "default_team_email_configuration")
-@XmlRootElement(name = "default_team_email_configuration")
-public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
+@Table(name = "default_team_phone_configuration")
+@XmlRootElement(name = "default_team_phone_configuration")
+public class DefaultClientTeamPhoneConfiguration extends AbstractAuditingEntity
         implements Serializable {
 
     @Id
@@ -39,7 +41,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 50)
-    private EmailReminderType type;
+    private PhoneReminderType type;
      
     @Column(name ="rank", columnDefinition = "integer")
 	private Integer rank;
@@ -51,7 +53,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     /**
      * Default constructor
      */
-    public DefaultClientTeamEmailConfiguration() {
+    public DefaultClientTeamPhoneConfiguration() {
 
     }
 
@@ -61,7 +63,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
      * @param id
      *            to use
      */
-    public DefaultClientTeamEmailConfiguration(Long id) {
+    public DefaultClientTeamPhoneConfiguration(Long id) {
         this.id = id;
     }
     
@@ -73,11 +75,11 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
 		this.defaultValue = defaultValue;
 	}
 
-	public EmailReminderType getType() {
+	public PhoneReminderType getType() {
 		return type;
 	}
 
-	public void setType(EmailReminderType type) {
+	public void setType(PhoneReminderType type) {
 		this.type = type;
 	}
 	
@@ -119,7 +121,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        DefaultClientTeamEmailConfiguration that = (DefaultClientTeamEmailConfiguration) o;
+        DefaultClientTeamPhoneConfiguration that = (DefaultClientTeamPhoneConfiguration) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }
 	
