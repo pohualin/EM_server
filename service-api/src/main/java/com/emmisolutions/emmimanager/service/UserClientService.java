@@ -151,6 +151,14 @@ public interface UserClientService {
     UserClient saveNotNowExpirationTime(Long userClientId);
 
     /**
+     * Find all emails that don't follow the email restrictions of the client
+     * @param pageable object to use
+     * @param userClientSearchFilter to use
+     * @return
+     */
+    Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, UserClientSearchFilter userClientSearchFilter);
+
+    /**
      * A conflicting UserClient
      */
     public class UserClientConflict {

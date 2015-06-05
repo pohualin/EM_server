@@ -337,24 +337,8 @@ public class UserClientsResource {
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<UserClient> assembler) {
 
-        List<EmailRestrictConfiguration> emailRestrictConfigurations = new ArrayList<>();
-        Page<EmailRestrictConfiguration> emailEndings = null;
-        Pageable emailEndingsPageable = null;
-
-        do {
-            if(emailEndings!=null){
-                emailEndingsPageable = emailEndings.nextPageable();
-            }
-
-            emailEndings = emailRestrictConfigurationService.getByClient(emailEndingsPageable, new Client(id));
-            for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings.getContent()){
-                emailRestrictConfigurations.add(emailRestrictConfiguration);
-            }
-        }while(emailEndings.hasContent() && emailEndings.hasNext());
-
-        UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter(new Client(id),fromStringOrActive(status),null);
-        userClientSearchFilter.setEmailsEndings(emailRestrictConfigurations);
-        Page<UserClient> userClientPage = userClientService.list(pageable, userClientSearchFilter);
+        UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter(new Client(id), fromStringOrActive(status),null);
+        Page<UserClient> userClientPage = userClientService.emailsThatDontFollowRestrictions(pageable, userClientSearchFilter);
 
         if (userClientPage.hasContent()) {
             // create a ClientPage containing the response
