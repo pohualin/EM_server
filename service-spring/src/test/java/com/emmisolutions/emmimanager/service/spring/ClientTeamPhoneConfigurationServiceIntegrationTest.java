@@ -47,9 +47,7 @@ public class ClientTeamPhoneConfigurationServiceIntegrationTest extends
         Client client = makeNewRandomClient();
         Team team = makeNewRandomTeam(client);
         
-        DefaultClientTeamPhoneConfiguration defaultPhoneConfigList =  defaultClientTeamPhoneConfigurationPersistence.find();
-        
-        DefaultClientTeamPhoneConfiguration defaultPhoneConfig = defaultPhoneConfigList;
+        DefaultClientTeamPhoneConfiguration defaultPhoneConfig = defaultClientTeamPhoneConfigurationPersistence.find();
         ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
         phoneConfig.setTeam(team);
         phoneConfig.setCreatedBy("system");
@@ -80,23 +78,19 @@ public class ClientTeamPhoneConfigurationServiceIntegrationTest extends
         
         if(listOfPhoneConfig != null){
         	Team reloadTeam = teamService.reload(team);
-            List<ClientTeamPhoneConfiguration> list = new ArrayList<ClientTeamPhoneConfiguration> ();
-            
-            DefaultClientTeamPhoneConfiguration defaultPhoneConfigList =  defaultClientTeamPhoneConfigurationPersistence.find();
-            
-            DefaultClientTeamPhoneConfiguration defaultPhoneConfig = defaultPhoneConfigList;
+        
+            DefaultClientTeamPhoneConfiguration defaultPhoneConfig = defaultClientTeamPhoneConfigurationPersistence.find();
            
             ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
             phoneConfig.setTeam(reloadTeam);
             phoneConfig.setCreatedBy("system");
             phoneConfig.setCollectPhone(defaultPhoneConfig.isCollectPhone());
             phoneConfig.setRequirePhone(defaultPhoneConfig.isRequirePhone());
-               
-           
-            ClientTeamPhoneConfiguration phoneConfigSaved= clientTeamPhoneConfigurationService.saveOrUpdate(phoneConfig);
-                        
+       
+            clientTeamPhoneConfigurationService.saveOrUpdate(phoneConfig);
+            ClientTeamPhoneConfiguration phoneConfigSaved = clientTeamPhoneConfigurationService.findByTeam(reloadTeam);
             assertThat("should contain Phone configuration",
-            		listOfPhoneConfig, is(phoneConfigSaved));
+            		phoneConfig, is(phoneConfigSaved));
             
   				
          
