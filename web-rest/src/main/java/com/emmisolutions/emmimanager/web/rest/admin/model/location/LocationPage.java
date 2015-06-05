@@ -63,7 +63,7 @@ public class LocationPage extends PagedResource<LocationResource> {
                 .with(new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                         new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort*", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("status", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
