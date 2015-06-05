@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -525,7 +526,15 @@ public class UserClientServiceIntegrationTest extends BaseIntegrationTest {
         configuration.setEmailEnding("a.com");
         emailRestrictConfigurationService.create(configuration);
 
-        Page<UserClient> emailsThatDoNotMatch = userClientService.emailsThatDontFollowRestrictions(new PageRequest(0, 10), client.getId());
+        List<EmailRestrictConfiguration> emailRestrictConfigurationsList = new ArrayList<>();
+        emailRestrictConfigurationsList.add(configuration);
+
+        UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter();
+        userClientSearchFilter.setClient(client);
+        userClientSearchFilter.setEmailsEndings(emailRestrictConfigurationsList);
+
+
+        Page<UserClient> emailsThatDoNotMatch = userClientService.emailsThatDontFollowRestrictions(new PageRequest(0, 10), userClientSearchFilter);
         assertThat("should have flast@b.com",emailsThatDoNotMatch.getContent().get(0),is(user2));
     }
 }

@@ -7,12 +7,14 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole_;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -202,21 +204,20 @@ public class UserClientSpecifications {
 
     /**
      * Get all email endings for a client and or them
-     * @param clientId
-     * @param emailEndings
+     * @param filter that contains emailEndings
      */
-    public Specification<UserClient> orEmailEndingsForClient(final Long clientId, final List<EmailRestrictConfiguration> emailEndings) {
+    public Specification<UserClient> orEmailEndingsForClient(final UserClientSearchFilter filter) {
         return new Specification<UserClient>() {
             @Override
             public Predicate toPredicate(Root<UserClient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if(emailEndings == null){
+                if(filter == null || filter.getEmailsEndings() == null){
                     return null;
                 }
 
                 List<Predicate> predicates = new ArrayList<>();
                 Set<String> emailEndingForQuery = new HashSet<>();
 
-                for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings){
+                for(EmailRestrictConfiguration emailRestrictConfiguration: filter.getEmailsEndings()){
                     emailEndingForQuery.add('%'+emailRestrictConfiguration.getEmailEnding());
                 }
 
