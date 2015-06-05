@@ -28,7 +28,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
-import static com.emmisolutions.emmimanager.model.UserClientSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -91,8 +90,10 @@ public class UserClientsResource {
             @RequestParam(value = "teamId", required = false) Long teamId,
             @RequestParam(value = "tagId", required = false) Long tagId) {
 
-        UserClientSearchFilter filter = new UserClientSearchFilter(new Client(clientId),
-                fromStringOrActive(status), term);
+        UserClientSearchFilter filter = new UserClientSearchFilter(new Client(
+                clientId),
+                UserClientSearchFilter.StatusFilter
+                        .fromStringOrActive(status), term);
         filter.setTeam(new Team(teamId));
         filter.setTag(new Tag(tagId));
 
@@ -163,7 +164,7 @@ public class UserClientsResource {
      * @param id of the user
      * @return OK
      */
-    @RequestMapping(value = "/user_client/{id}/activate", method = RequestMethod.GET)
+    @RequestMapping(value = "/user_clients/{id}/activate", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> activate(@PathVariable Long id) {
 
@@ -193,7 +194,7 @@ public class UserClientsResource {
      * @param id of the user
      * @return OK
      */
-    @RequestMapping(value = "/user_client/{id}/activate", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/user_clients/{id}/activate", method = RequestMethod.DELETE)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> expireActivation(@PathVariable Long id) {
         userClientService.expireActivationToken(new UserClient(id));
@@ -206,7 +207,7 @@ public class UserClientsResource {
      * @param id of the user
      * @return OK
      */
-    @RequestMapping(value = "/user_client/{id}/resetPassword", method = RequestMethod.GET)
+    @RequestMapping(value = "/user_clients/{id}/resetPassword", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> resetPassword(@PathVariable Long id) {
 
@@ -234,7 +235,7 @@ public class UserClientsResource {
      * @param id of the user
      * @return OK
      */
-    @RequestMapping(value = "/user_client/{id}/resetPassword", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/user_clients/{id}/resetPassword", method = RequestMethod.DELETE)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> expireReset(@PathVariable Long id) {
         userClientPasswordService.expireResetToken(new UserClient(id));
@@ -247,7 +248,7 @@ public class UserClientsResource {
      * @param id to load
      * @return UserClientResource or NO_CONTENT
      */
-    @RequestMapping(value = "/user_client/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user_clients/{id}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<UserClientResource> get(@PathVariable("id") Long id) {
         UserClient userClient = userClientService.reload(new UserClient(id));
@@ -269,7 +270,7 @@ public class UserClientsResource {
      * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow
      * returns null
      */
-    @RequestMapping(value = "/user_client/{id}", method = RequestMethod.PUT, consumes = {
+    @RequestMapping(value = "/user_clients/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<UserClientResource> update(
@@ -315,7 +316,7 @@ public class UserClientsResource {
      * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow
      * returns null
      */
-    @RequestMapping(value = "/user_client_bad_emails/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user_clients_bad_emails/{id}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
@@ -336,6 +337,57 @@ public class UserClientsResource {
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+    }
+    
+    /**
+     * Get a page of UserClient across all Clients based on the search criteria
+     * 
+     * @param pageable to use
+     * @param assembler to assemble search results
+     * @param status to filter
+     * @param term to search
+     * @return a page of UserClient that meet the search criteria
+     */
+    @RequestMapping(value = "/user_clients", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "client.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "status", defaultValue = "0", value = "user status filter", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "term", defaultValue = "0", value = "user name filter", dataType = "string", paramType = "query")
+    })
+    public ResponseEntity<UserClientPage> list(
+            @PageableDefault(size = 10, sort = "normalizedName", direction = Direction.ASC) Pageable pageable,
+            PagedResourcesAssembler<UserClient> assembler,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "term", required = false) String term) {
+
+        // Create a filter without client
+        UserClientSearchFilter filter = new UserClientSearchFilter(null,
+                UserClientSearchFilter.StatusFilter.fromStringOrActive(status),
+                term);
+
+        Page<UserClient> userClients = userClientService.list(pageable, filter);
+
+        if (userClients.hasContent()) {
+            return new ResponseEntity<>(new UserClientPage(
+                    assembler.toResource(userClients,
+                            userClientResourceAssembler), userClients, filter),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
+    /**
+     * Get reference data such as status filter for UserClient
+     * @return an instance of reference data
+     */
+    @RequestMapping(value = "/user_clients/ref", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ReferenceData getReferenceData() {
+        return new ReferenceData();
     }
     
     private void setReloadedClient(Long clientId, UserClient userClient){
