@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -38,7 +39,7 @@ public interface UserClientPersistence {
      * @return Page<UserClient>
      */
     Page<UserClient> list(Pageable pageable, UserClientSearchFilter filter);
-
+    
     /**
      * Find UserClients that would violate unique constraints
      *

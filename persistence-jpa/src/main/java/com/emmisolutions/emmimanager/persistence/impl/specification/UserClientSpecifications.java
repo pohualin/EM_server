@@ -7,12 +7,14 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole_;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
