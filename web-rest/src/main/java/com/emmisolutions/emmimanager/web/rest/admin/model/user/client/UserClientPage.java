@@ -62,7 +62,7 @@ public class UserClientPage extends PagedResource<UserClientResource> {
     public static Link createFullSearchLink() {
         Link link = linkTo(
                 methodOn(UserClientsResource.class)
-                        .list(null, null, null, null)).withRel("clientUsers");
+                        .list(null, null, null, null)).withRel("userClients");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page",
