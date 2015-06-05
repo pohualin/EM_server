@@ -390,7 +390,7 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Override
     @Transactional()
-    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long userClientId) {
+    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, UserClientSearchFilter filter) {
         List<EmailRestrictConfiguration> emailRestrictConfigurations = new ArrayList<>();
         Page<EmailRestrictConfiguration> emailEndings = null;
         Pageable emailEndingsPageable = null;
@@ -400,13 +400,14 @@ public class UserClientServiceImpl implements UserClientService {
                 emailEndingsPageable = emailEndings.nextPageable();
             }
 
-            emailEndings = emailRestrictConfigurationPersistence.list(emailEndingsPageable, userClientId);
+            emailEndings = emailRestrictConfigurationPersistence.list(emailEndingsPageable, filter.getClient().getId());
             for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings.getContent()){
                 emailRestrictConfigurations.add(emailRestrictConfiguration);
             }
         }while(emailEndings.hasContent() && emailEndings.hasNext());
 
-        return userClientPersistence.emailsThatDontFollowRestrictions(pageable, userClientId, emailRestrictConfigurations);
+        return userClientPersistence.list(pageable, filter);
     }
+
 
 }
