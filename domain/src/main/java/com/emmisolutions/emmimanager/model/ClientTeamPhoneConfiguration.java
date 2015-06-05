@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
 import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -35,20 +36,16 @@ public class ClientTeamPhoneConfiguration extends AbstractAuditingEntity {
     @Column(columnDefinition = "bigint")
     private Long id;
 	
-	@Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 50)
-    private PhoneReminderType type;
-	
 	@NotNull
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "client_team_id", referencedColumnName="id")
+    @OneToOne
+    @JoinColumn(name = "client_team_id", nullable = false)
     private Team team;
+	
+	@Column(name = "collect_phone", columnDefinition = "boolean", nullable = false)
+    private boolean collectPhone;
     
-    @Column(name ="rank", columnDefinition = "integer")
-   	private Integer rank;
-    
-    @Column(name = "phone_config", columnDefinition = "boolean", nullable = false)
-    private boolean phoneConfig;
+    @Column(name = "require_phone", columnDefinition = "boolean", nullable = false)
+    private boolean requirePhone;
 
     public Integer getVersion() {
 		return version;
@@ -67,28 +64,20 @@ public class ClientTeamPhoneConfiguration extends AbstractAuditingEntity {
 	}
 	
 	
-	public Integer getRank() {
-		return rank;
+	public boolean isCollectPhone() {
+		return collectPhone;
 	}
 
-	public boolean isPhoneConfig() {
-		return phoneConfig;
+	public void setCollectPhone(boolean collectPhone) {
+		this.collectPhone = collectPhone;
 	}
 
-	public PhoneReminderType getType() {
-		return type;
+	public boolean isRequirePhone() {
+		return requirePhone;
 	}
 
-	public void setType(PhoneReminderType type) {
-		this.type = type;
-	}
-
-	public void setPhoneConfig(boolean phoneConfig) {
-		this.phoneConfig = phoneConfig;
-	}
-
-	public void setRank(Integer rank) {
-		this.rank = rank;
+	public void setRequirePhone(boolean requirePhone) {
+		this.requirePhone = requirePhone;
 	}
 
 	public Long getId() {
@@ -109,8 +98,10 @@ public class ClientTeamPhoneConfiguration extends AbstractAuditingEntity {
   	@Override
     public String toString() {
         return "ClientTeamEmailConfiguration{" + "id=" + id
-                + " ,phoneConfig=" +phoneConfig + " ,team="
-                + team + ", type=" + type + '}';
+                + " ,collect_phone=" + collectPhone 
+                + " ,require_phone=" + requirePhone
+                + " ,team="
+                + team +'}';
     }
 	
 	@Override

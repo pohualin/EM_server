@@ -1,3 +1,2 @@
-type;rank;default_value;created_by
-COLLECT_PHONE;1;1;system
-REQUIRE_PHONE;2;0;system
+collect_phone;require_phone;created_by
+1;0;system

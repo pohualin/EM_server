@@ -23,20 +23,16 @@ public interface ClientTeamPhoneConfigurationService {
 
     
     /**
-     * Find a Page of existing clientTeamPhoneConfiguration by Client id  and
+     * Find a existing clientTeamPhoneConfiguration by Client id  and
      * Team id
      * 
      * @param clientId
      *            to find
      * @param teamId
      *            to find
-     * @param pageable
-     *            to use
-     * @return a Page of existing clientTeamPhoneConfiguration
+     * @return a existing clientTeamPhoneConfiguration
      */
-    public Page<ClientTeamPhoneConfiguration> findByTeam(
-            Team team,
-            Pageable pageable);
+    public ClientTeamPhoneConfiguration findByTeam(Team team);
 
      
 }

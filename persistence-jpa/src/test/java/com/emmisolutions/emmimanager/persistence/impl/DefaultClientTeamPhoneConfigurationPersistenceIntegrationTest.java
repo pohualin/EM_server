@@ -26,10 +26,9 @@ public class DefaultClientTeamPhoneConfigurationPersistenceIntegrationTest exten
      */
     @Test
     public void testFindSystemDefault() {
-    	Page<DefaultClientTeamPhoneConfiguration> systemDefault = defaultTeamPhoneConfigurationPersistence
-                .findActive(null);
+    	DefaultClientTeamPhoneConfiguration systemDefault = defaultTeamPhoneConfigurationPersistence.find();
         assertThat("active default phone configuration found", systemDefault, is(notNullValue()));
-        assertThat("active should be true", systemDefault.getContent().get(1).isActive(),
+        assertThat("active should be true", systemDefault.isActive(),
                 is(true));
     }
 
@@ -38,10 +37,9 @@ public class DefaultClientTeamPhoneConfigurationPersistenceIntegrationTest exten
      */
     @Test
     public void testSave() {
-    	Page<DefaultClientTeamPhoneConfiguration>  systemDefault = defaultTeamPhoneConfigurationPersistence
-                .findActive(null);
-        systemDefault.getContent().get(1).setActive(true);;
-        assertThat("system default should be false", systemDefault.getContent().get(1).isActive(),
+    	DefaultClientTeamPhoneConfiguration  systemDefault = defaultTeamPhoneConfigurationPersistence.find();
+        systemDefault.setActive(true);;
+        assertThat("system default should be false", systemDefault.isActive(),
                 is(true));
     }
     

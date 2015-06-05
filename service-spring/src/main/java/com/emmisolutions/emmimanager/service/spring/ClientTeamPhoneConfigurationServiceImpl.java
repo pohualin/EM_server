@@ -57,37 +57,31 @@ public class ClientTeamPhoneConfigurationServiceImpl implements
             throw new InvalidDataAccessApiUsageException(
                     "ClientTeamPhoneConfiguration can not be null.");
         }
-   		
    		Team reloadTeam = teamService.reload(clientTeamPhoneConfiguration.getTeam());
    		clientTeamPhoneConfiguration.setTeam(reloadTeam);
    		return clientTeamPhoneConfigurationPersistence.save(clientTeamPhoneConfiguration);
    	}
 
 	@Override
-	public Page<ClientTeamPhoneConfiguration> findByTeam(
-			Team team, Pageable pageable) {
+	public ClientTeamPhoneConfiguration findByTeam(
+			Team team) {
 		  if (team.getId() == null) {
 	            throw new InvalidDataAccessApiUsageException(
 	                    "Team cannot be null"
 	                    + "to find ClientTeamEmailConfiguration");
 	        }
 		  
-		  Page<ClientTeamPhoneConfiguration> teamPhoneConfigDB = clientTeamPhoneConfigurationPersistence.find(team.getId(), pageable);
-		  if(!teamPhoneConfigDB.hasContent()){
+		  ClientTeamPhoneConfiguration teamPhoneConfigDB = clientTeamPhoneConfigurationPersistence.find(team.getId());
+		 
+		  if(teamPhoneConfigDB == null){
 			  Team reloadTeam = teamPersistence.reload(team);
-			  List<ClientTeamPhoneConfiguration> list = new ArrayList<ClientTeamPhoneConfiguration> ();
-			  Page<DefaultClientTeamPhoneConfiguration> deafaultClientPhone= defaultClientTeamPhoneConfigurationPersistence.findActive(pageable);
-			  for(DefaultClientTeamPhoneConfiguration defaultConfig : deafaultClientPhone){
-				  ClientTeamPhoneConfiguration teamPhoneConfig = new ClientTeamPhoneConfiguration();
-				  teamPhoneConfig.setType(defaultConfig.getType());
-				  teamPhoneConfig.setRank(defaultConfig.getRank());
-				  teamPhoneConfig.setPhoneConfig(defaultConfig.isDefaultValue());
-				  teamPhoneConfig.setTeam(reloadTeam);
-				  list.add(teamPhoneConfig);
-		  }
-			  return new PageImpl<ClientTeamPhoneConfiguration>(list);
-		  }
-		  else{
+			  DefaultClientTeamPhoneConfiguration defaultConfig= defaultClientTeamPhoneConfigurationPersistence.find();
+			  ClientTeamPhoneConfiguration teamPhoneConfig = new ClientTeamPhoneConfiguration();
+			  teamPhoneConfig.setCollectPhone(defaultConfig.isCollectPhone());
+			  teamPhoneConfig.setRequirePhone(defaultConfig.isRequirePhone());
+			  teamPhoneConfig.setTeam(reloadTeam);
+			  return teamPhoneConfig;
+		  }else{
 			  return teamPhoneConfigDB;
 		  }
 	               

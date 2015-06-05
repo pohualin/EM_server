@@ -6,7 +6,7 @@
 
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
-    <changeSet id="add team level phone configuration tables" author="wlee">
+    <changeSet id="add client team level phone configuration tables" author="wlee">
 
         <!-- TABLES -->
         <createTable tableName="default_team_phone_configuration">
@@ -22,17 +22,16 @@
             <column name="last_modified_by" type="nvarchar(255)"/>
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
-            <column name="type" type="nvarchar(50)">
-                <constraints nullable="false"/>
+            <column name="collect_phone" type="boolean">
+                <constraints nullable="false" />
             </column>
-            <column name="default_value" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="true" />
+            <column name="require_phone" type="boolean">
+                <constraints nullable="false" />
             </column>
             <column name="active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false" />
             </column>
-            <column name="rank" type="int"/>
-        </createTable>
+       </createTable>
         
        <createTable tableName="client_team_phone_configuration">
             <column name="id" autoIncrement="true" type="bigint">
@@ -46,15 +45,16 @@
             </column>
             <column name="last_modified_by" type="nvarchar(255)"/>
             <column name="last_modified_date" type="timestamp"/>
-            <column name="type" type="nvarchar(50)">
-                <constraints nullable="false"/>
+            <column name="collect_phone" type="boolean">
+                <constraints nullable="false" />
             </column>
-            <column name="phone_config" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="true" />
+            <column name="require_phone" type="boolean">
+                <constraints nullable="false" />
             </column>
             <column name="version" type="int"/>
-            <column name="rank" type="int"/>
-            <column name="client_team_id" type="bigint"/>
+            <column name="client_team_id" type="bigint">
+            	<constraints nullable="false" />
+            </column>
         </createTable>
 
         <createTable tableName="client_team_phone_configuration_audit">
@@ -65,23 +65,15 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="tinyint"/>
-            <column name="type" type="nvarchar(50)"/>
-            <column name="phone_config" type="boolean"/>
-            <column name="rank" type="int"/>
+            <column name="collect_phone" type="boolean"/>
+            <column name="require_phone" type="boolean"/>
             <column name="client_team_id" type="bigint"/>
         </createTable>
 
-       
-        <addNotNullConstraint tableName="client_team_phone_configuration" columnName="type" columnDataType="varchar(50)"/>
-        <addNotNullConstraint tableName="default_team_phone_configuration" columnName="type" columnDataType="varchar(50)"/>
-        
         <addPrimaryKey tableName="client_team_phone_configuration_audit" columnNames="id, revision" 
                        constraintName="pk_client_team_phone_configuration_audit"/>
 
-        <!-- UKs -->
-        <addUniqueConstraint tableName="default_team_phone_configuration" columnNames="id, type"
-                             constraintName="uk_default_team_phone_configuration"/>
-                             
+              
            
         <addForeignKeyConstraint baseTableName="client_team_phone_configuration_audit"
                                  baseColumnNames="revision"
@@ -107,21 +99,7 @@
                   tableName="default_team_phone_configuration"/>
     </changeSet>
     
-    <changeSet id="Add translations for phone configuration enums" author="wlee">
-    
-    	<insert tableName="strings">
-            <column name="key_path" value="COLLECT_PHONE"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="message" value="Collect phone"/>
-            <column name="created_by" value="system"/>
-    	</insert>
-     	<insert tableName="strings">
-            <column name="key_path" value="REQUIRE_PHONE"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="message" value="Require phone"/>
-            <column name="created_by" value="system"/>
-        </insert>
-    </changeSet>
-    
+   
+
   
 </databaseChangeLog>

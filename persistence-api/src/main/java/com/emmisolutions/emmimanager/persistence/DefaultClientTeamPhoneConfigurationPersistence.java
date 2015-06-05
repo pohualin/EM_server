@@ -13,10 +13,10 @@ public interface DefaultClientTeamPhoneConfigurationPersistence {
 
        
     /**
-     * Find all the active DefaultTeamPhoneConfiguration
+     * Find DefaultTeamPhoneConfiguration
      * 
-     * @return page of Default Team Phone Configuration
+     * @return Default Team Phone Configuration
      */
-    Page<DefaultClientTeamPhoneConfiguration> findActive(Pageable page);
+    DefaultClientTeamPhoneConfiguration find();
       
 }

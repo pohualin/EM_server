@@ -14,10 +14,9 @@ public interface ClientTeamPhoneConfigurationPersistence {
      * Find a page of client team phone configuration
      *
      * @param teamId for which to find the phone configuration
-     * @param page pagination specification
-     * @return a page of ClientTeamPhoneConfiguration objects
+     * @return a ClientTeamPhoneConfiguration objects
      */
-    Page<ClientTeamPhoneConfiguration> find(Long teamId, Pageable page);
+    ClientTeamPhoneConfiguration find(Long teamId);
 
     /**
      * Create/Update a client team phone configuration

@@ -27,12 +27,8 @@ public class ClientTeamPhoneConfigurationPersistenceImpl implements
     ClientTeamPhoneConfigurationRepository clientTeamPhoneConfigurationRepository;
 
 	@Override
-	public Page<ClientTeamPhoneConfiguration> find(Long teamId,
-			Pageable page) {
-		if (page == null) {
-            page = new PageRequest(0, 10);
-        }
-		return clientTeamPhoneConfigurationRepository.findByTeamId(teamId, page);
+	public ClientTeamPhoneConfiguration find(Long teamId){
+		return clientTeamPhoneConfigurationRepository.findByTeamId(teamId);
 	}
 
 	@Override

@@ -39,16 +39,12 @@ public class DefaultClientTeamPhoneConfiguration extends AbstractAuditingEntity
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 50)
-    private PhoneReminderType type;
+    @Column(name = "collect_phone", columnDefinition = "boolean", nullable = false)
+    private boolean collectPhone;
+    
+    @Column(name = "require_phone", columnDefinition = "boolean", nullable = false)
+    private boolean requirePhone;
      
-    @Column(name ="rank", columnDefinition = "integer")
-	private Integer rank;
-
-	@Column(name = "default_value", columnDefinition = "boolean", nullable = false)
-    private boolean defaultValue;
-
     
     /**
      * Default constructor
@@ -67,22 +63,6 @@ public class DefaultClientTeamPhoneConfiguration extends AbstractAuditingEntity
         this.id = id;
     }
     
-    public boolean isDefaultValue() {
-		return defaultValue;
-	}
-
-	public void setDefaultValue(boolean defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	public PhoneReminderType getType() {
-		return type;
-	}
-
-	public void setType(PhoneReminderType type) {
-		this.type = type;
-	}
-	
     public Long getId() {
         return id;
     }
@@ -91,19 +71,27 @@ public class DefaultClientTeamPhoneConfiguration extends AbstractAuditingEntity
         this.id = id;
     }
 
-    public Integer getRank() {
-        return rank;
-    }
-
-    public void setRank(Integer rank) {
-        this.rank = rank; 
-    } 
-    
     public Integer getVersion() {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public boolean isCollectPhone() {
+		return collectPhone;
+	}
+
+	public void setCollectPhone(boolean collectPhone) {
+		this.collectPhone = collectPhone;
+	}
+
+	public boolean isRequirePhone() {
+		return requirePhone;
+	}
+
+	public void setRequirePhone(boolean requirePhone) {
+		this.requirePhone = requirePhone;
+	}
+
+	public void setVersion(Integer version) {
         this.version = version;
     }
 
@@ -133,8 +121,9 @@ public class DefaultClientTeamPhoneConfiguration extends AbstractAuditingEntity
 	@Override
     public String toString() {
         return "DefaultClientTeamEmailConfiguration{" + "id=" + id
-                + ", type=" + type +
-                ", defaultValue=" + defaultValue +  '}';
+                + ", collect_phone=" + collectPhone 
+                + ", require_phone=" + requirePhone
+                +  '}';
     }
 
       

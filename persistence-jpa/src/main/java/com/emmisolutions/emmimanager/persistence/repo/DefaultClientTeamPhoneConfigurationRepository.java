@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.persistence.repo;
 
 import java.util.List;
 
+import com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration;
 
 import org.springframework.data.domain.Page;
@@ -19,14 +20,5 @@ public interface DefaultClientTeamPhoneConfigurationRepository extends
 				 JpaRepository<DefaultClientTeamPhoneConfiguration, Long>,
 				 JpaSpecificationExecutor<DefaultClientTeamPhoneConfiguration> {
 	
-	/**
-     * Find all active DefaultClientTeamPhoneConfiguration
-     *
-     * @param specification should be active
-     * @param pageable page specification
-     * @return an PhoneTemplate object or null
-     */
-	@Override
-	Page<DefaultClientTeamPhoneConfiguration> findAll(Specification<DefaultClientTeamPhoneConfiguration> specification, Pageable pageable);
-  
+	 DefaultClientTeamPhoneConfiguration findOne(Specification<DefaultClientTeamPhoneConfiguration> specification);
 }

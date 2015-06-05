@@ -15,17 +15,15 @@ public interface ClientTeamPhoneConfigurationRepository extends
         JpaSpecificationExecutor<ClientTeamPhoneConfiguration> {
 
     /**
-     * Find a page of ClientTeamPhoneConfiguration with given teamId and
+     * Find a ClientTeamPhoneConfiguration with given teamId and
      * page specification
      * 
      * @param teamId
      *            to use
-     * @param pageable
-     *            to use
-     * @return a page of ClientTeamPhoneConfiguration
+     * @return a ClientTeamPhoneConfiguration
      */
-    public Page<ClientTeamPhoneConfiguration> findByTeamId(
-            Long teamId, Pageable pageable);
+    public ClientTeamPhoneConfiguration findByTeamId(
+            Long teamId);
   
 
 }

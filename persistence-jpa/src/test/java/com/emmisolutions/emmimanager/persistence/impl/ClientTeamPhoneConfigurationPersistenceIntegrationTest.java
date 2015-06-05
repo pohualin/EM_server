@@ -40,38 +40,26 @@ public class ClientTeamPhoneConfigurationPersistenceIntegrationTest extends
         Client client = makeNewRandomClient();
         Team team = makeNewRandomTeam(client);
         
-        Page<DefaultClientTeamPhoneConfiguration> defaultPhoneConfigList =  defaultClientTeamPhoneConfigurationPersistence.findActive(new PageRequest(0, 10));
+        DefaultClientTeamPhoneConfiguration defaultPhoneConfig =  defaultClientTeamPhoneConfigurationPersistence.find();
         
-        DefaultClientTeamPhoneConfiguration defaultPhoneConfig = defaultPhoneConfigList.getContent().get(0);
-        DefaultClientTeamPhoneConfiguration defaultPhoneConfigTwo = defaultPhoneConfigList.getContent().get(1);
-        
+                   
         ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
         phoneConfig.setTeam(team);
         phoneConfig.setCreatedBy("system");
-        phoneConfig.setRank(defaultPhoneConfig.getRank());
-        phoneConfig.setType(defaultPhoneConfig.getType());
-        phoneConfig.setPhoneConfig(defaultPhoneConfig.isDefaultValue());
+        phoneConfig.setCollectPhone(defaultPhoneConfig.isCollectPhone());
+        phoneConfig.setRequirePhone(defaultPhoneConfig.isRequirePhone());
                 
-        ClientTeamPhoneConfiguration phoneConfigTwo = new ClientTeamPhoneConfiguration();
-        phoneConfigTwo.setTeam(team);
-        phoneConfigTwo.setCreatedBy("system");
-        phoneConfigTwo.setRank(defaultPhoneConfigTwo.getRank());
-        phoneConfigTwo.setType(defaultPhoneConfigTwo.getType());
-        phoneConfigTwo.setPhoneConfig(defaultPhoneConfigTwo.isDefaultValue());
-        
+              
         ClientTeamPhoneConfiguration configurationSave = clientTeamPhoneConfigurationPersistence.save(phoneConfig);
-        ClientTeamPhoneConfiguration configurationSaveTwo = clientTeamPhoneConfigurationPersistence.save(phoneConfigTwo);
-        
-        Page<ClientTeamPhoneConfiguration> listOfPhoneConfig = clientTeamPhoneConfigurationPersistence.
-        		find(team.getId(), null);
+               
+        ClientTeamPhoneConfiguration listOfPhoneConfig = clientTeamPhoneConfigurationPersistence.
+        		find(team.getId());
               
 
         assertThat("should contain configuration",
-                listOfPhoneConfig.getContent(), hasItem(configurationSave));
+                listOfPhoneConfig, is(configurationSave));
         
-        assertThat("should contain configuration",
-                listOfPhoneConfig.getContent(), hasItem(configurationSaveTwo));
-        
+               
         ClientTeamPhoneConfiguration configurationReload = clientTeamPhoneConfigurationPersistence.reload(configurationSave.getId());
         
         assertThat("should reload the same configuration",
