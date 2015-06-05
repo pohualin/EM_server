@@ -16,7 +16,7 @@ import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigura
 import com.emmisolutions.emmimanager.persistence.DefaultPasswordConfigurationPersistence;
 
 /**
- * Test DefaultPasswordConfigurationPersistence
+ * Test DefaultEmailConfigurationPersistence
  */
 public class DefaultClientTeamEmailConfigurationPersistenceIntegrationTest extends
         BaseIntegrationTest {
