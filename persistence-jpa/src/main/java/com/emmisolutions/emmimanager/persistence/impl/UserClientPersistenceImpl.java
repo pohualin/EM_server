@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.impl.specification.UserClientSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,7 +70,7 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                         .and(userClientSpecifications.orEmailEndingsForClient(filter)),
                 (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
     }
-
+    
     @Override
     public Set<UserClient> findConflictingUsers(UserClient userClient) {
         if (userClient == null ||
