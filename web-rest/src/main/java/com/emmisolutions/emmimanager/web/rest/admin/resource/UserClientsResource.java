@@ -4,8 +4,10 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
@@ -28,6 +30,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.emmisolutions.emmimanager.model.UserClientSearchFilter.StatusFilter.fromStringOrActive;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -50,6 +56,8 @@ public class UserClientsResource {
     @Resource
     UserClientPasswordService userClientPasswordService;
     @Resource
+    EmailRestrictConfigurationService emailRestrictConfigurationService;
+    @Resource
     UserClientResourceAssembler userClientResourceAssembler;
     @Resource
     UserClientConflictResourceAssembler userClientConflictResourceAssembler;
@@ -57,6 +65,7 @@ public class UserClientsResource {
     UserClientValidationErrorResourceAssembler userClientValidationErrorResourceAssembler;
     @Resource
     MailService mailService;
+
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
 
@@ -321,19 +330,23 @@ public class UserClientsResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "status", defaultValue = "0", value = "user status filter", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
     })
     public ResponseEntity<UserClientPage> badEmails(
             @PathVariable("id") Long id,
             @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
+            @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<UserClient> assembler) {
 
-        Page<UserClient> userClients = userClientService.emailsThatDontFollowRestrictions(pageable,id);
+        UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter(new Client(id), fromStringOrActive(status),null);
+        Page<UserClient> userClientPage = userClientService.emailsThatDontFollowRestrictions(pageable, userClientSearchFilter);
 
-        if (userClients != null && userClients.hasContent()) {
+        if (userClientPage.hasContent()) {
             // create a ClientPage containing the response
-            return new ResponseEntity<>(new UserClientPage(assembler.toResource(userClients,userClientResourceAssembler),
-                    userClients), HttpStatus.OK);
+            return new ResponseEntity<>(new UserClientPage(
+                    assembler.toResource(userClientPage,userClientResourceAssembler),
+                    userClientPage, userClientSearchFilter ),HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -341,7 +354,7 @@ public class UserClientsResource {
     
     /**
      * Get a page of UserClient across all Clients based on the search criteria
-     * 
+     *
      * @param pageable to use
      * @param assembler to assemble search results
      * @param status to filter
@@ -379,7 +392,7 @@ public class UserClientsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-    
+
     /**
      * Get reference data such as status filter for UserClient
      * @return an instance of reference data

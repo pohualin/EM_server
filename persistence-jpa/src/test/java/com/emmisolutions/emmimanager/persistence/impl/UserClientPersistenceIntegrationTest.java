@@ -378,8 +378,11 @@ public class UserClientPersistenceIntegrationTest extends BaseIntegrationTest {
         emailRestrictConfiguration.setEmailEnding("%a.com");
         emailEndings.add(emailRestrictConfiguration);
 
+        UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter();
+        userClientSearchFilter.setClient(client);
+        userClientSearchFilter.setEmailsEndings(emailEndings);
 
-        Page<UserClient> emailsThatDoNotMatch = userClientPersistence.emailsThatDontFollowRestrictions(new PageRequest(0, 10), client.getId(), emailEndings);
+        Page<UserClient> emailsThatDoNotMatch = userClientPersistence.list(new PageRequest(0, 10), userClientSearchFilter);
         assertThat("should have flast12@b.com",emailsThatDoNotMatch.getContent().get(0),is(user2));
     }
 }

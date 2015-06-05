@@ -152,10 +152,10 @@ public interface UserClientService {
     /**
      * Find all emails that don't follow the email restrictions of the client
      * @param pageable object to use
-     * @param userClientId to look in
+     * @param userClientSearchFilter to use
      * @return
      */
-    Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, Long userClientId);
+    Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, UserClientSearchFilter userClientSearchFilter);
 
     /**
      * A conflicting UserClient
