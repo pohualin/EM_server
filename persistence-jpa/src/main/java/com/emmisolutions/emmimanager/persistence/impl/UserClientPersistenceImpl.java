@@ -1,14 +1,11 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
-import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.MatchingCriteriaBean;
 import com.emmisolutions.emmimanager.persistence.impl.specification.UserClientSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.UserClientRepository;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -63,7 +62,7 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                                  UserClientSearchFilter filter) {
         return userClientRepository.findAll(
                 where(userClientSpecifications.hasNames(filter))
-                        .and(userClientSpecifications.isClient(filter))
+                        .and(userClientSpecifications.distinctIsClient(filter))
                         .and(userClientSpecifications.isInStatus(filter))
                         .and(userClientSpecifications.hasRoleOnTeam(filter))
                         .and(userClientSpecifications.hasRoleOnTeamWithClientTag(filter))
@@ -124,10 +123,9 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
 
     @Override
     public UserClient unlockUserClient(UserClient userClient) {
-        UserClient toUnlock = userClient;
-        toUnlock.setAccountNonLocked(true);
-        toUnlock.setLoginFailureCount(0);
-        toUnlock.setLockExpirationDateTime(null);
-        return userClientRepository.save(toUnlock);
+        userClient.setAccountNonLocked(true);
+        userClient.setLoginFailureCount(0);
+        userClient.setLockExpirationDateTime(null);
+        return userClientRepository.save(userClient);
     }
 }
