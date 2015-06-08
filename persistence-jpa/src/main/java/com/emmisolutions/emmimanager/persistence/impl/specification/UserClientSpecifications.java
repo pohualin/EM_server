@@ -7,14 +7,12 @@ import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfigurat
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient_;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole_;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,18 +65,22 @@ public class UserClientSpecifications {
     }
 
     /**
-     * Method to generate Specification with clientId
+     * Method to generate Specification with clientId. This
+     * also adds the DISTINCT to the query so that UserClient
+     * objects within a client will not repeat if other filters
+     * are used across joins.
      *
      * @param filter carries clientId
      * @return Specification with clientID
      */
-    public Specification<UserClient> isClient(
+    public Specification<UserClient> distinctIsClient(
             final UserClientSearchFilter filter) {
         return new Specification<UserClient>() {
             @Override
             public Predicate toPredicate(Root<UserClient> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (filter != null && filter.getClient() != null && filter.getClient().getId() != null) {
+                    query.distinct(true);
                     return cb.equal(root.get(UserClient_.client),
                             filter.getClient().getId());
                 }
