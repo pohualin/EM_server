@@ -6,7 +6,6 @@ import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequ
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.annotation.XmlEnum;
 
@@ -48,7 +47,7 @@ public interface UserClientService {
      * @return pageable UserClient
      */
     Page<UserClient> list(Pageable pageable, UserClientSearchFilter filter);
-
+    
     /**
      * Find an existing UserClient objects that would conflict with the saving
      * of the passed user client
@@ -149,6 +148,14 @@ public interface UserClientService {
      * @return user client
      */
     UserClient saveNotNowExpirationTime(Long userClientId);
+
+    /**
+     * Find all emails that don't follow the email restrictions of the client
+     * @param pageable object to use
+     * @param userClientSearchFilter to use
+     * @return
+     */
+    Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, UserClientSearchFilter userClientSearchFilter);
 
     /**
      * A conflicting UserClient

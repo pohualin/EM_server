@@ -66,6 +66,8 @@
         <class>com.emmisolutions.emmimanager.model.Gender</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.program.Specialty</class>
         <class>com.emmisolutions.emmimanager.model.program.ProgramSpecialty</class>
         <class>com.emmisolutions.emmimanager.model.schedule.ScheduledProgram</class>

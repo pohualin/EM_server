@@ -62,13 +62,14 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
                                  UserClientSearchFilter filter) {
         return userClientRepository.findAll(
                 where(userClientSpecifications.hasNames(filter))
-                        .and(userClientSpecifications.isClient(filter))
+                        .and(userClientSpecifications.distinctIsClient(filter))
                         .and(userClientSpecifications.isInStatus(filter))
                         .and(userClientSpecifications.hasRoleOnTeam(filter))
-                        .and(userClientSpecifications.hasRoleOnTeamWithClientTag(filter)),
+                        .and(userClientSpecifications.hasRoleOnTeamWithClientTag(filter))
+                        .and(userClientSpecifications.orEmailEndingsForClient(filter)),
                 (pageable == null) ? new PageRequest(0, 10, Sort.Direction.ASC, "id") : pageable);
     }
-
+    
     @Override
     public Set<UserClient> findConflictingUsers(UserClient userClient) {
         if (userClient == null ||
@@ -122,11 +123,9 @@ public class UserClientPersistenceImpl implements UserClientPersistence {
 
     @Override
     public UserClient unlockUserClient(UserClient userClient) {
-        UserClient toUnlock = userClient;
-        toUnlock.setAccountNonLocked(true);
-        toUnlock.setLoginFailureCount(0);
-        toUnlock.setLockExpirationDateTime(null);
-        return userClientRepository.save(toUnlock);
+        userClient.setAccountNonLocked(true);
+        userClient.setLoginFailureCount(0);
+        userClient.setLockExpirationDateTime(null);
+        return userClientRepository.save(userClient);
     }
-
 }

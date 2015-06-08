@@ -1,9 +1,11 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import java.util.List;
 
 /**
  * The search filter for UserClient entities
@@ -20,6 +22,8 @@ public class UserClientSearchFilter {
     private Team team;
 
     private Tag tag;
+
+    private List<EmailRestrictConfiguration> emailsEndings;
 
     /**
      * constructor
@@ -78,6 +82,14 @@ public class UserClientSearchFilter {
 
     public Tag getTag() {
         return tag;
+    }
+
+    public List<EmailRestrictConfiguration> getEmailsEndings() {
+        return emailsEndings;
+    }
+
+    public void setEmailsEndings(List<EmailRestrictConfiguration> emailsEndings) {
+        this.emailsEndings = emailsEndings;
     }
 
     /**

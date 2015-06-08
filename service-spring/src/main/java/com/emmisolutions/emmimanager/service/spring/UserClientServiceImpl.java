@@ -7,23 +7,28 @@ import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfigura
 import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequest;
+import com.emmisolutions.emmimanager.persistence.EmailRestrictConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.*;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.spring.security.LegacyPasswordEncoder;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +66,10 @@ public class UserClientServiceImpl implements UserClientService {
 
     @Resource
     PasswordEncoder passwordEncoder;
+
+    @Resource
+    EmailRestrictConfigurationPersistence emailRestrictConfigurationPersistence;
+
 
     @Override
     @Transactional
@@ -121,12 +130,12 @@ public class UserClientServiceImpl implements UserClientService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<UserClient> list(Pageable pageable,
-                                 UserClientSearchFilter filter) {
+            UserClientSearchFilter filter) {
         return userClientPersistence.list(pageable, filter);
     }
-
+    
     @Override
     public List<UserClientConflict> findConflictingUsers(UserClient userClient) {
         List<UserClientConflict> ret = new ArrayList<>();
@@ -378,5 +387,29 @@ public class UserClientServiceImpl implements UserClientService {
         loadedUserClient = this.update(loadedUserClient);
         return loadedUserClient;
     }
+
+    @Override
+    @Transactional()
+    public Page<UserClient> emailsThatDontFollowRestrictions(Pageable pageable, UserClientSearchFilter filter) {
+        List<EmailRestrictConfiguration> emailRestrictConfigurations = new ArrayList<>();
+        Page<EmailRestrictConfiguration> emailEndings = null;
+        Pageable emailEndingsPageable = null;
+
+        do {
+            if(emailEndings!=null){
+                emailEndingsPageable = emailEndings.nextPageable();
+            }
+
+            emailEndings = emailRestrictConfigurationPersistence.list(emailEndingsPageable, filter.getClient().getId());
+            for(EmailRestrictConfiguration emailRestrictConfiguration: emailEndings.getContent()){
+                emailRestrictConfigurations.add(emailRestrictConfiguration);
+            }
+        }while(emailEndings.hasContent() && emailEndings.hasNext());
+
+        filter.setEmailsEndings(emailRestrictConfigurations);
+
+        return userClientPersistence.list(pageable, filter);
+    }
+
 
 }

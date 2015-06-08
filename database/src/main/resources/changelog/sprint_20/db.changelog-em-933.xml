@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    <changeSet id="add client team level phone configuration tables" author="wlee">
+
+        <!-- TABLES -->
+        <createTable tableName="default_team_phone_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_default_team_phone_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="collect_phone" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="require_phone" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+       </createTable>
+        
+       <createTable tableName="client_team_phone_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_team_phone_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="collect_phone" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="require_phone" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="version" type="int"/>
+            <column name="client_team_id" type="bigint">
+            	<constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="client_team_phone_configuration_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="collect_phone" type="boolean"/>
+            <column name="require_phone" type="boolean"/>
+            <column name="client_team_id" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="client_team_phone_configuration_audit" columnNames="id, revision" 
+                       constraintName="pk_client_team_phone_configuration_audit"/>
+
+              
+           
+        <addForeignKeyConstraint baseTableName="client_team_phone_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_team_phone_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+                                 
+        <addForeignKeyConstraint baseTableName="client_team_phone_configuration"
+                                 baseColumnNames="client_team_id"
+                                 constraintName="fk_client_team_phone_configuration_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>
+		
+		<createIndex indexName="ix_client_phone_configuration_team_default_phone_configuration"
+               tableName="client_team_phone_configuration">
+            <column name="client_team_id" type="BIGINT"/>
+        </createIndex> 
+                                       
+		                   
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_20/data/em-933/team-phone-configuration.csv"
+                  separator=";"
+                  tableName="default_team_phone_configuration"/>
+    </changeSet>
+    
+   
+
+  
+</databaseChangeLog>
