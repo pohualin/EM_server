@@ -160,7 +160,7 @@ public class PatientsResource {
     }
 
     /**
-     * GET for searching for patients
+     * GET for listing all patients for the client
      *
      * @param clientId  for security, ensures logged in user has rights to search the client
      * @param page  the page specification
@@ -180,9 +180,7 @@ public class PatientsResource {
     public ResponseEntity<PatientResourcePage> listAllPatients(@PathVariable("clientId") Long clientId,
                                                     @PageableDefault(size = 10, sort = "lastName") Pageable page,
                                                     PagedResourcesAssembler<Patient> assembler,
-//                                                    @RequestParam(value = "name", required = false) String name,
                                                     @PathVariable("teamId") Long teamId) {
-
         PatientSearchFilter filter = new PatientSearchFilter(new Client(clientId));
         Page<Patient> patientsPage = patientService.list(page, filter);
         if (patientsPage.hasContent()) {
