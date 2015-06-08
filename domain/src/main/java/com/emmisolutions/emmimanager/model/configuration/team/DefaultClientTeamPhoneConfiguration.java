@@ -14,16 +14,17 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.hibernate.envers.Audited;
+
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-import com.emmisolutions.emmimanager.model.EmailReminderType;
 
 /**
- * The default team email configuration.
+ * The default team phone configuration.
  */
 @Entity
-@Table(name = "default_team_email_configuration")
-@XmlRootElement(name = "default_team_email_configuration")
-public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
+@Table(name = "default_team_phone_configuration")
+@XmlRootElement(name = "default_team_phone_configuration")
+public class DefaultClientTeamPhoneConfiguration extends AbstractAuditingEntity
         implements Serializable {
 
     @Id
@@ -37,21 +38,17 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 50)
-    private EmailReminderType type;
+    @Column(name = "collect_phone", columnDefinition = "boolean", nullable = false)
+    private boolean collectPhone;
+    
+    @Column(name = "require_phone", columnDefinition = "boolean", nullable = false)
+    private boolean requirePhone;
      
-    @Column(name ="rank", columnDefinition = "integer")
-	private Integer rank;
-
-	@Column(name = "default_value", columnDefinition = "boolean", nullable = false)
-    private boolean defaultValue;
-
     
     /**
      * Default constructor
      */
-    public DefaultClientTeamEmailConfiguration() {
+    public DefaultClientTeamPhoneConfiguration() {
 
     }
 
@@ -61,26 +58,10 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
      * @param id
      *            to use
      */
-    public DefaultClientTeamEmailConfiguration(Long id) {
+    public DefaultClientTeamPhoneConfiguration(Long id) {
         this.id = id;
     }
     
-    public boolean isDefaultValue() {
-		return defaultValue;
-	}
-
-	public void setDefaultValue(boolean defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	public EmailReminderType getType() {
-		return type;
-	}
-
-	public void setType(EmailReminderType type) {
-		this.type = type;
-	}
-	
     public Long getId() {
         return id;
     }
@@ -89,19 +70,27 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
         this.id = id;
     }
 
-    public Integer getRank() {
-        return rank;
-    }
-
-    public void setRank(Integer rank) {
-        this.rank = rank; 
-    } 
-    
     public Integer getVersion() {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public boolean isCollectPhone() {
+		return collectPhone;
+	}
+
+	public void setCollectPhone(boolean collectPhone) {
+		this.collectPhone = collectPhone;
+	}
+
+	public boolean isRequirePhone() {
+		return requirePhone;
+	}
+
+	public void setRequirePhone(boolean requirePhone) {
+		this.requirePhone = requirePhone;
+	}
+
+	public void setVersion(Integer version) {
         this.version = version;
     }
 
@@ -119,7 +108,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        DefaultClientTeamEmailConfiguration that = (DefaultClientTeamEmailConfiguration) o;
+        DefaultClientTeamPhoneConfiguration that = (DefaultClientTeamPhoneConfiguration) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }
 	
@@ -131,8 +120,9 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
 	@Override
     public String toString() {
         return "DefaultClientTeamEmailConfiguration{" + "id=" + id
-                + ", type=" + type +
-                ", defaultValue=" + defaultValue +  '}';
+                + ", collect_phone=" + collectPhone 
+                + ", require_phone=" + requirePhone
+                +  '}';
     }
 
       
