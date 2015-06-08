@@ -165,6 +165,7 @@ public class PatientsResource {
      * @param clientId  for security, ensures logged in user has rights to search the client
      * @param page  the page specification
      * @param assembler to create PatientResource objects
+     * @param teamId for permissions
      * @return OK (200): containing a PatientResourcePage
      *
      * NO_CONTENT (204): when there are no matches
