@@ -10,6 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
@@ -207,5 +208,26 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         groupPersistence.save(group);
 
         assertThat("we find a group by type", groupPersistence.doAnyGroupsUse(referenceGroup), is(true));
+    }
+
+    /**
+     * test saving 2 groups with same name should throw unique constraint exception
+     */
+    @Test(expected = DataIntegrityViolationException.class)
+    public void savingTwoGroupsWithSameName(){
+        Group groupOne = new Group();
+        groupOne.setName("dupGroup");
+
+        Group groupTwo = new Group();
+        groupTwo.setName("dupGroup");
+
+        Client clientOne = makeClient();
+        clientPersistence.save(clientOne);
+
+        groupOne.setClient(clientPersistence.reload(clientOne.getId()));
+        groupPersistence.save(groupOne);
+
+        groupTwo.setClient(clientPersistence.reload(clientOne.getId()));
+        groupPersistence.save(groupTwo);
     }
 }
