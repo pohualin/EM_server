@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
@@ -8,6 +9,7 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.CacheConfiguration;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,6 +69,12 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     PatientPersistence patientPersistence;
+
+    @Resource
+    SchedulePersistence schedulePersistence;
+
+    @Resource
+    ProgramPersistence programPersistence;
 
     /**
      * Login as a user
@@ -254,9 +262,30 @@ public abstract class BaseIntegrationTest {
         Patient patient = new Patient();
         patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
         patient.setLastName(RandomStringUtils.randomAlphabetic(20));
+        patient.setEmail(RandomStringUtils.randomAlphabetic(25) + "@" + RandomStringUtils.randomAlphabetic(25) + ".com");
         patient.setDateOfBirth(LocalDate.now());
-        patient.setClient(client == null ? makeNewRandomClient() :  client);
+        patient.setPhone("3" + RandomStringUtils.randomNumeric(2) + "-4" +
+                RandomStringUtils.randomNumeric(2) + "-" +
+                RandomStringUtils.randomNumeric(4));
+        patient.setClient(client == null ? makeNewRandomClient() : client);
         return patientPersistence.save(patient);
     }
 
+    public ScheduledProgram makeNewRandomScheduledProgram(Client client, Patient patient) {
+        ScheduledProgram scheduledProgram = new ScheduledProgram();
+        if (client == null){
+            client = makeNewRandomClient();
+        }
+        if (patient == null){
+            patient = makeNewRandomPatient(client);
+        }
+        scheduledProgram.setAccessCode("2" + RandomStringUtils.randomNumeric(10));
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
+        scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setProvider(makeNewRandomProvider());
+        scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
+        scheduledProgram.setTeam(makeNewRandomTeam(client));
+        scheduledProgram.setPatient(patient);
+        return schedulePersistence.save(scheduledProgram);
+    }
 }
