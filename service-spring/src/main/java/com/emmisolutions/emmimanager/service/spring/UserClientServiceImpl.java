@@ -406,6 +406,10 @@ public class UserClientServiceImpl implements UserClientService {
             }
         }while(emailEndings.hasContent() && emailEndings.hasNext());
 
+        if(!emailEndings.hasContent()){
+            return null;
+        }
+
         filter.setEmailsEndings(emailRestrictConfigurations);
 
         return userClientPersistence.list(pageable, filter);
