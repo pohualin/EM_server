@@ -258,6 +258,12 @@ public abstract class BaseIntegrationTest {
         return userAdminPersistence.saveOrUpdate(userAdmin);
     }
 
+    /**
+     * Creates a new patient
+     *
+     * @param client or null to create a random client
+     * @return a Patient
+     */
     protected Patient makeNewRandomPatient(Client client) {
         Patient patient = new Patient();
         patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
@@ -271,20 +277,34 @@ public abstract class BaseIntegrationTest {
         return patientPersistence.save(patient);
     }
 
-    public ScheduledProgram makeNewRandomScheduledProgram(Client client, Patient patient) {
+    /**
+     * Creates a new scheduled program
+     *
+     * @param client  to use or null to make a random
+     * @param patient to use or null to make a random patient on the client
+     * @param team    or null to create a new random team on the client, you probably
+     *                shouldn't use a Team with a different Client than the passed Client.
+     *                You can of course, but the data isn't really valid. Also our service
+     *                layer prohibits this case.
+     * @return a ScheduledProgram
+     */
+    public ScheduledProgram makeNewRandomScheduledProgram(Client client, Patient patient, Team team) {
         ScheduledProgram scheduledProgram = new ScheduledProgram();
-        if (client == null){
+        if (client == null) {
             client = makeNewRandomClient();
         }
-        if (patient == null){
+        if (patient == null) {
             patient = makeNewRandomPatient(client);
+        }
+        if (team == null) {
+            team = makeNewRandomTeam(client);
         }
         scheduledProgram.setAccessCode("2" + RandomStringUtils.randomNumeric(10));
         scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
         scheduledProgram.setLocation(makeNewRandomLocation());
         scheduledProgram.setProvider(makeNewRandomProvider());
         scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
-        scheduledProgram.setTeam(makeNewRandomTeam(client));
+        scheduledProgram.setTeam(team);
         scheduledProgram.setPatient(patient);
         return schedulePersistence.save(scheduledProgram);
     }

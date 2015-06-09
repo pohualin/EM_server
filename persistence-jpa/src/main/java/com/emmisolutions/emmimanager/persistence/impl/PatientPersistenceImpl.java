@@ -66,7 +66,8 @@ public class PatientPersistenceImpl implements PatientPersistence {
                         .and(patientSpecifications.belongsTo(filter))
                         .and(patientSpecifications.withPhoneNumber(filter))
                         .and(patientSpecifications.withEmail(filter))
-                        .and(patientSpecifications.withAccessCodes(filter)),
+                        .and(patientSpecifications.withAccessCodes(filter))
+                        .and(patientSpecifications.scheduledForTeams(filter)),
                 page);
 
     }

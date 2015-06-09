@@ -1,11 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.Patient;
-import com.emmisolutions.emmimanager.model.PatientSearchFilter;
-import com.emmisolutions.emmimanager.model.Patient_;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram_;
-import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -25,9 +21,6 @@ public class PatientSpecifications {
     @Resource
     MatchingCriteriaBean matchCriteria;
 
-    @Resource
-    ClientPersistence clientPersistence;
-
     /**
      * Adds a phone number filter if one is defined
      *
@@ -38,8 +31,12 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getPhone() != null) {
-                    return cb.equal(root.get(Patient_.phone), searchFilter.getPhone());
+                if (searchFilter != null && searchFilter.phones() != null) {
+                    List<Predicate> phonePredicates = new ArrayList<>();
+                    for (String phone : searchFilter.phones()) {
+                        phonePredicates.add(cb.equal(root.get(Patient_.phone), phone));
+                    }
+                    return cb.or(phonePredicates.toArray(new Predicate[phonePredicates.size()]));
                 }
                 return null;
             }
@@ -47,7 +44,8 @@ public class PatientSpecifications {
     }
 
     /**
-     * Adds an email specification if an email is defined in the search filter
+     * Adds an email specification if an email is defined in the search filter.
+     * If multiple emails are used they are OR'd together.
      *
      * @param searchFilter for the email attribute
      * @return a specification if there is an email filter present or null
@@ -56,8 +54,12 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getEmail() != null) {
-                    return cb.equal(root.get(Patient_.email), searchFilter.getEmail());
+                if (searchFilter != null && searchFilter.emails() != null) {
+                    List<Predicate> emailPredicates = new ArrayList<>();
+                    for (String email : searchFilter.emails()) {
+                        emailPredicates.add(cb.equal(root.get(Patient_.email), email));
+                    }
+                    return cb.or(emailPredicates.toArray(new Predicate[emailPredicates.size()]));
                 }
                 return null;
             }
@@ -65,7 +67,8 @@ public class PatientSpecifications {
     }
 
     /**
-     * Adds an access code specification if one is defined in the filter
+     * Adds an access code specification if one is defined in the filter. If multiple
+     * access codes are used they are OR'd together.
      *
      * @param searchFilter for the access code
      * @return a specification or null
@@ -74,11 +77,11 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.getAccessCodes() != null){
+                if (searchFilter != null && searchFilter.accessCodes() != null) {
                     List<Predicate> accessCodePredicates = new ArrayList<>();
-                    for (String accessCode : searchFilter.getAccessCodes()) {
+                    for (String accessCode : searchFilter.accessCodes()) {
                         accessCodePredicates.add(cb.equal(root.join(Patient_.scheduledPrograms, JoinType.LEFT)
-                                        .get(ScheduledProgram_.accessCode), accessCode));
+                                .get(ScheduledProgram_.accessCode), accessCode));
                     }
                     query.distinct(accessCodePredicates.size() > 1);
                     return cb.or(accessCodePredicates.toArray(new Predicate[accessCodePredicates.size()]));
@@ -99,8 +102,8 @@ public class PatientSpecifications {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
-                if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.getNames())) {
-                    for (String name : searchFilter.getNames()) {
+                if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.names())) {
+                    for (String name : searchFilter.names()) {
                         List<String> searchTerms = new ArrayList<>();
                         String[] terms = StringUtils.split(matchCriteria.normalizeName(name), " ");
                         if (terms != null) {
@@ -125,6 +128,34 @@ public class PatientSpecifications {
     }
 
     /**
+     * Filter patients by teams on which a scheduled program has occurred.
+     *
+     * @param searchFilter to look up the teams
+     * @return a specification ORing together any teams found in the filter
+     */
+    public Specification<Patient> scheduledForTeams(final PatientSearchFilter searchFilter) {
+        return new Specification<Patient>() {
+            @Override
+            public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (searchFilter != null && searchFilter.teams() != null) {
+                    List<Predicate> teamPredicates = new ArrayList<>();
+                    for (Team team : searchFilter.teams()) {
+                        if (team.getId() != null) {
+                            teamPredicates.add(cb.equal(root.join(Patient_.scheduledPrograms, JoinType.LEFT)
+                                    .join(ScheduledProgram_.team).get(Team_.id), team.getId()));
+                        }
+                    }
+                    if (!teamPredicates.isEmpty()) {
+                        query.distinct(teamPredicates.size() > 1);
+                        return cb.or(teamPredicates.toArray(new Predicate[teamPredicates.size()]));
+                    }
+                }
+                return null;
+            }
+        };
+    }
+
+    /**
      * Ensures that the patient belongs to a client
      *
      * @param filter to use to find the belongs to client
@@ -134,12 +165,8 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Client belongsToClient = null;
-                if (filter != null && filter.getClient() != null) {
-                    belongsToClient = clientPersistence.reload(filter.getClient().getId());
-                }
-                if (belongsToClient != null) {
-                    return cb.equal(root.get(Patient_.client), belongsToClient);
+                if (filter != null && filter.client() != null && filter.client().getId() != null) {
+                    return cb.equal(root.join(Patient_.client).get(Client_.id), filter.client().getId());
                 }
                 return null;
             }

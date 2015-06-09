@@ -25,9 +25,10 @@ public class AdminPatientResourcePage extends PagedResource<AdminPatientResource
     }
 
     /**
-     * contructor for Patient resource page
-     * @param pagedPatientResources
-     * @param patientPage
+     * Constructor for Patient resource page
+     *
+     * @param pagedPatientResources the resources
+     * @param patientPage           the entity
      */
     public AdminPatientResourcePage(PagedResources<AdminPatientResource> pagedPatientResources, Page<Patient> patientPage, PatientSearchFilter filter) {
         pageDefaults(pagedPatientResources, patientPage);
@@ -53,8 +54,8 @@ public class AdminPatientResourcePage extends PagedResource<AdminPatientResource
                 this.links.add(new Link(uriTemplate.toString(), rel));
             } else {
                 // add values
-                if (!CollectionUtils.isEmpty(filter.getNames())) {
-                    for (String s : filter.getNames()) {
+                if (!CollectionUtils.isEmpty(filter.names())) {
+                    for (String s : filter.names()) {
                         builder.queryParam("name", s);
                     }
                 }
