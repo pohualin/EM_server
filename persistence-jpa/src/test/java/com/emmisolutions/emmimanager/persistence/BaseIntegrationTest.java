@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
@@ -8,6 +9,7 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.CacheConfiguration;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,6 +69,12 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     PatientPersistence patientPersistence;
+
+    @Resource
+    SchedulePersistence schedulePersistence;
+
+    @Resource
+    ProgramPersistence programPersistence;
 
     /**
      * Login as a user
@@ -250,13 +258,54 @@ public abstract class BaseIntegrationTest {
         return userAdminPersistence.saveOrUpdate(userAdmin);
     }
 
+    /**
+     * Creates a new patient
+     *
+     * @param client or null to create a random client
+     * @return a Patient
+     */
     protected Patient makeNewRandomPatient(Client client) {
         Patient patient = new Patient();
         patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
         patient.setLastName(RandomStringUtils.randomAlphabetic(20));
+        patient.setEmail(RandomStringUtils.randomAlphabetic(25) + "@" + RandomStringUtils.randomAlphabetic(25) + ".com");
         patient.setDateOfBirth(LocalDate.now());
-        patient.setClient(client == null ? makeNewRandomClient() :  client);
+        patient.setPhone("3" + RandomStringUtils.randomNumeric(2) + "-4" +
+                RandomStringUtils.randomNumeric(2) + "-" +
+                RandomStringUtils.randomNumeric(4));
+        patient.setClient(client == null ? makeNewRandomClient() : client);
         return patientPersistence.save(patient);
     }
 
+    /**
+     * Creates a new scheduled program
+     *
+     * @param client  to use or null to make a random
+     * @param patient to use or null to make a random patient on the client
+     * @param team    or null to create a new random team on the client, you probably
+     *                shouldn't use a Team with a different Client than the passed Client.
+     *                You can of course, but the data isn't really valid. Also our service
+     *                layer prohibits this case.
+     * @return a ScheduledProgram
+     */
+    public ScheduledProgram makeNewRandomScheduledProgram(Client client, Patient patient, Team team) {
+        ScheduledProgram scheduledProgram = new ScheduledProgram();
+        if (client == null) {
+            client = makeNewRandomClient();
+        }
+        if (patient == null) {
+            patient = makeNewRandomPatient(client);
+        }
+        if (team == null) {
+            team = makeNewRandomTeam(client);
+        }
+        scheduledProgram.setAccessCode("2" + RandomStringUtils.randomNumeric(10));
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
+        scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setProvider(makeNewRandomProvider());
+        scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
+        scheduledProgram.setTeam(team);
+        scheduledProgram.setPatient(patient);
+        return schedulePersistence.save(scheduledProgram);
+    }
 }

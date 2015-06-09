@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="add phone for client patient_table" author="Matt">
+        <addColumn tableName="client_patient">
+            <column name="phone" type="nvarchar(12)"/>
+        </addColumn>
+
+        <addColumn tableName="client_patient_audit">
+            <column name="phone" type="nvarchar(12)"/>
+        </addColumn>
+
+        <createIndex tableName="client_patient" indexName="ix_client_patient_normalized_name">
+            <column name="normalized_name"/>
+        </createIndex>
+        <createIndex tableName="client_patient" indexName="ix_client_patient_email">
+            <column name="email"/>
+        </createIndex>
+        <createIndex tableName="client_patient" indexName="ix_client_patient_phone">
+            <column name="phone"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
