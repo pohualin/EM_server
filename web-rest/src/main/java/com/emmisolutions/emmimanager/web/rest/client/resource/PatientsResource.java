@@ -14,8 +14,10 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -202,10 +204,10 @@ public class PatientsResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "createdDate,desc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
     public ResponseEntity<PatientResourcePage> listAllPatientsScheduledForTeam(@PathVariable("clientId") Long clientId,
-                                                    @PageableDefault(size = 10, sort = "lastName") Pageable page,
+                                                    @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable page,
                                                     PagedResourcesAssembler<Patient> assembler,
                                                     @PathVariable("teamId") Long teamId) {
         PatientSearchFilter with = with().teams(new Team(teamId));
