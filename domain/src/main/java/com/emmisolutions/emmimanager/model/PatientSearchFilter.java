@@ -44,6 +44,8 @@ public class PatientSearchFilter {
     @XmlElementWrapper(name = "accessCodes")
     private Set<String> accessCodes;
 
+    private boolean loadLastScheduledProgram;
+
     private PatientSearchFilter() {
     }
 
@@ -222,6 +224,25 @@ public class PatientSearchFilter {
                 }
             }
         }
+        return this;
+    }
+
+    /**
+     * Whether or not to load the last scheduled program for the patient
+     *
+     * @return true to load
+     */
+    public boolean isLastScheduledProgram() {
+        return loadLastScheduledProgram;
+    }
+
+    /**
+     * Want to load the last scheduled program
+     *
+     * @return this PatientSearchFilter for chaining
+     */
+    public PatientSearchFilter loadLastScheduledProgram() {
+        this.loadLastScheduledProgram = true;
         return this;
     }
 
