@@ -342,7 +342,7 @@ public class UserClientsResource {
         UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter(new Client(id), fromStringOrActive(status),null);
         Page<UserClient> userClientPage = userClientService.emailsThatDontFollowRestrictions(pageable, userClientSearchFilter);
 
-        if (userClientPage.hasContent()) {
+        if (userClientPage != null && userClientPage.hasContent()) {
             // create a ClientPage containing the response
             return new ResponseEntity<>(new UserClientPage(
                     assembler.toResource(userClientPage,userClientResourceAssembler),

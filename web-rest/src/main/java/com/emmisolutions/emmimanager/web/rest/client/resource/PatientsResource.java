@@ -1,10 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
-import com.emmisolutions.emmimanager.model.Patient;
-import com.emmisolutions.emmimanager.model.PatientSearchFilter;
-import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
 import com.emmisolutions.emmimanager.service.PatientService;
@@ -16,7 +12,6 @@ import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.Te
 import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -28,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
+import static com.emmisolutions.emmimanager.model.PatientSearchFilter.with;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -46,10 +42,10 @@ public class PatientsResource {
 
     @Resource
     PatientResourceAssembler patientResourceAssembler;
-    
+
     @Resource
     ClientTeamEmailConfigurationService clientTeamEmailConfigurationService;
-    
+
     @Resource
     TeamEmailConfigurationResourceAssembler emailConfigurationAssembler;
 
@@ -82,10 +78,10 @@ public class PatientsResource {
     /**
      * GET for a patient with the passed in ID
      *
-     * @param clientId for security, ensures logged in user has rights to the client
+     * @param clientId  for security, ensures logged in user has rights to the client
      * @param patientId to retrieve
      * @return OK (200): containing  PatientResource
-     *
+     * <p/>
      * GONE (410): when there isn't a patent
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient", method = RequestMethod.GET)
@@ -106,11 +102,11 @@ public class PatientsResource {
      * GET for searching for patients
      *
      * @param clientId  for security, ensures logged in user has rights to search the client
-     * @param page  the page specification
+     * @param page      the page specification
      * @param assembler to create PatientResource objects
-     * @param name of the patient to search for
+     * @param name      of the patient to search for
      * @return OK (200): containing a PatientResourcePage
-     *
+     * <p/>
      * NO_CONTENT (204): when there are no matches
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patients", method = RequestMethod.GET)
@@ -126,13 +122,12 @@ public class PatientsResource {
                                                     PagedResourcesAssembler<Patient> assembler,
                                                     @RequestParam(value = "name", required = false) String name,
                                                     @PathVariable("teamId") Long teamId) {
-
-        PatientSearchFilter filter = new PatientSearchFilter(new Client(clientId), name);
-        Page<Patient> patientsPage = patientService.list(page, filter);
+        PatientSearchFilter with = with().client(new Client(clientId)).names(name);
+        Page<Patient> patientsPage = patientService.list(page, with);
         if (patientsPage.hasContent()) {
             return new ResponseEntity<>(
                     new PatientResourcePage(assembler
-                            .toResource(patientsPage, patientResourceAssembler), patientsPage, filter),
+                            .toResource(patientsPage, patientResourceAssembler), patientsPage, with),
                     HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -142,7 +137,7 @@ public class PatientsResource {
     /**
      * PUT for updating a patient
      *
-     * @param patient to update
+     * @param patient  to update
      * @param clientId for security, ensures logged in user has rights to search the client
      * @return OK (200): containing PatientResource
      * INTERNAL_SERVER_ERROR (500): when the update doesn't return an updated patient.
@@ -150,47 +145,12 @@ public class PatientsResource {
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
-    public ResponseEntity<PatientResource> update(@RequestBody Patient patient,  @PathVariable("clientId") Long clientId, @PathVariable("teamId") Long teamId){
+    public ResponseEntity<PatientResource> update(@RequestBody Patient patient, @PathVariable("clientId") Long clientId, @PathVariable("teamId") Long teamId) {
         Patient updatedPatient = patientService.update(patient);
-        if (updatedPatient == null){
+        if (updatedPatient == null) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             return new ResponseEntity<>(patientResourceAssembler.toResource(updatedPatient), HttpStatus.OK);
-        }
-    }
-
-    /**
-     * GET for listing all patients for the client
-     *
-     * @param clientId  for security, ensures logged in user has rights to search the client
-     * @param page  the page specification
-     * @param assembler to create PatientResource objects
-     * @param teamId for permissions
-     * @return OK (200): containing a PatientResourcePage
-     *
-     * NO_CONTENT (204): when there are no matches
-     */
-    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/clientPatients", method = RequestMethod.GET)
-    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
-            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "lastName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
-    })
-    public ResponseEntity<PatientResourcePage> listAllPatients(@PathVariable("clientId") Long clientId,
-                                                    @PageableDefault(size = 10, sort = "lastName") Pageable page,
-                                                    PagedResourcesAssembler<Patient> assembler,
-                                                    @PathVariable("teamId") Long teamId) {
-        PatientSearchFilter filter = new PatientSearchFilter(new Client(clientId));
-        Page<Patient> patientsPage = patientService.list(page, filter);
-        if (patientsPage.hasContent()) {
-            return new ResponseEntity<>(
-                    new PatientResourcePage(assembler
-                            .toResource(patientsPage, patientResourceAssembler), patientsPage, filter),
-                    HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
@@ -206,22 +166,22 @@ public class PatientsResource {
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
     public ResponseEntity<TeamEmailConfigurationPage> findTeamEmailConfigForPatient(
-    		@PathVariable("clientId") Long clientId,
+            @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = "rank") Pageable pageable,
             PagedResourcesAssembler<ClientTeamEmailConfiguration> assembler) {
-    	
+
         Page<ClientTeamEmailConfiguration> page = clientTeamEmailConfigurationService
                 .findByTeam(new Team(teamId), pageable);
-    	if (page.hasContent()) {
-    	 return new ResponseEntity<>(new TeamEmailConfigurationPage(
-                 assembler.toResource(page,
-                		 emailConfigurationAssembler), page),
-                 HttpStatus.OK);
-    	}else {
+        if (page.hasContent()) {
+            return new ResponseEntity<>(new TeamEmailConfigurationPage(
+                    assembler.toResource(page,
+                            emailConfigurationAssembler), page),
+                    HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        
+
     }
 }
