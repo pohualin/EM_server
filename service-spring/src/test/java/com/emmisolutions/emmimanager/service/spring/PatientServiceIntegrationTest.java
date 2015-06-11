@@ -1,18 +1,17 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Patient;
-import com.emmisolutions.emmimanager.model.PatientSearchFilter;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.PatientService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
+import static com.emmisolutions.emmimanager.model.PatientSearchFilter.with;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -83,15 +82,17 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
     public void create() {
         Patient savedPatient = makeNewRandomPatient(null);
         assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
-        Assert.assertThat("can find the patient for that client", patientService.list(null, new PatientSearchFilter(savedPatient.getClient(), savedPatient.getFirstName())), hasItem(savedPatient));
+        Assert.assertThat("can find the patient for that client", patientService.list(null,
+                        with().client(savedPatient.getClient()).names(savedPatient.getFirstName())),
+                hasItem(savedPatient));
 
     }
 
     @Test
     public void testList() {
         Patient patient = makeNewRandomPatient(null);
-        PatientSearchFilter filter = new PatientSearchFilter(patient.getClient(), patient.getFirstName());
-        Page<Patient> patientPage = patientService.list(null, filter);
-        assertThat("Page of Patients retrieved contains the searched item", patientPage, hasItem(patient));
+        assertThat("Page of Patients retrieved contains the searched item", patientService.list(null,
+                        with().client(patient.getClient()).names(patient.getFirstName())),
+                hasItem(patient));
     }
 }

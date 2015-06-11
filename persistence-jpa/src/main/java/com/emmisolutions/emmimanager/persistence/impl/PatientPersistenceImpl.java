@@ -2,8 +2,6 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.PatientSearchFilter;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.persistence.PatientPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.PatientSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.PatientRepository;
@@ -64,7 +62,13 @@ public class PatientPersistenceImpl implements PatientPersistence {
             // default pagination request if none
             page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
         }
-        return patientRepository.findAll(where(patientSpecifications.hasNames(filter)).and(patientSpecifications.belongsTo(filter)), page);
+        return patientRepository.findAll(where(patientSpecifications.hasNames(filter))
+                        .and(patientSpecifications.belongsTo(filter))
+                        .and(patientSpecifications.withPhoneNumber(filter))
+                        .and(patientSpecifications.withEmail(filter))
+                        .and(patientSpecifications.withAccessCodes(filter))
+                        .and(patientSpecifications.scheduledForTeams(filter)),
+                page);
 
     }
 }

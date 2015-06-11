@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.web.rest.client.model.patient;
 
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.PatientSearchFilter;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
@@ -27,8 +26,8 @@ public class PatientResourcePage extends PagedResource<PatientResource> {
 
     /**
      * constructor for Patient resource page
-     * @param pagedPatientResources
-     * @param patientPage
+     * @param pagedPatientResources the converted resources
+     * @param patientPage the entity page
      */
     public PatientResourcePage(PagedResources<PatientResource> pagedPatientResources, Page<Patient> patientPage, PatientSearchFilter filter) {
         pageDefaults(pagedPatientResources, patientPage);
@@ -54,8 +53,8 @@ public class PatientResourcePage extends PagedResource<PatientResource> {
                 this.links.add(new Link(uriTemplate.toString(), rel));
             } else {
                 // add values
-                if (!CollectionUtils.isEmpty(filter.getNames())) {
-                    for (String s : filter.getNames()) {
+                if (!CollectionUtils.isEmpty(filter.names())) {
+                    for (String s : filter.names()) {
                         builder.queryParam("name", s);
                     }
                 }
