@@ -211,7 +211,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * test saving 2 groups with same name should throw unique constraint exception
+     * test saving 2 groups with same name should throw unique constraint exception and should be case in sensitive
      */
     @Test(expected = DataIntegrityViolationException.class)
     public void savingTwoGroupsWithSameName(){
@@ -219,7 +219,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         groupOne.setName("dupGroup");
 
         Group groupTwo = new Group();
-        groupTwo.setName("dupGroup");
+        groupTwo.setName("dupgroup");
 
         Client clientOne = makeClient();
         clientPersistence.save(clientOne);
