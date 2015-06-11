@@ -66,6 +66,7 @@ public class TeamResourceAssembler
                         REQUEST_PARAM_CONTINUED))), "providers"));
 
         ret.add(createPatientFullSearchLink(entity));
+        ret.add(createAllPatientsScheduledLink(entity));
         ret.add(linkTo(methodOn(PatientsResource.class)
                 .create(entity.getClient().getId(), entity.getId(), null)).withRel("patient"));
 
@@ -106,6 +107,22 @@ public class TeamResourceAssembler
                         new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+
+
+    /**
+     * Link for patient search
+     *
+     * @return Link for patient search
+     */
+    private Link createAllPatientsScheduledLink(Team team) {
+        Link link = linkTo(methodOn(PatientsResource.class).listAllPatientsScheduledForTeam(team.getClient().getId(), null, null, team.getId())).withRel("patientsScheduled");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(
+                new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 
