@@ -16,7 +16,7 @@
 		    where id in (
 			SELECT id FROM client_group cg inner join
 			(
-				SELECT client_id, lower(name), count(*) FROM client_group
+				SELECT client_id, lower(name), count(*) num FROM client_group
 				group by client_id, name
 				having count(*) > 1
 			) AS DUP ON cg.client_id = DUP.client_id)
