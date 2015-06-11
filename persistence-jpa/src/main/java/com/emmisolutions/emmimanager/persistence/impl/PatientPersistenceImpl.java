@@ -17,6 +17,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.util.*;
 
@@ -36,6 +38,9 @@ public class PatientPersistenceImpl implements PatientPersistence {
 
     @Resource
     ScheduledProgramRepository scheduledProgramRepository;
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Override
     public Patient save(Patient patient) {
@@ -81,7 +86,7 @@ public class PatientPersistenceImpl implements PatientPersistence {
 
         // if indicated by the filter, find the latest scheduled program for each patient
         Map<Patient, ScheduledProgram> latestScheduledProgramMap = new HashMap<>();
-        if (filter != null && filter.isLastScheduledProgram() && ret.hasContent()) {
+        if (filter != null && filter.needToLoadLastScheduledProgram() && ret.hasContent()) {
             for (ScheduledProgram scheduledProgram :
                     scheduledProgramRepository.findAll(new Specification<ScheduledProgram>() {
                         @Override
@@ -97,7 +102,9 @@ public class PatientPersistenceImpl implements PatientPersistence {
                             return cb.in(root.get(ScheduledProgram_.id)).value(latestSubquery);
                         }
                     })) {
+                entityManager.detach(scheduledProgram); // allows us to modify the object without persisting changes
                 latestScheduledProgramMap.put(scheduledProgram.getPatient(), scheduledProgram);
+                scheduledProgram.setPatient(null); // so no infinite loops during serialization
             }
         }
 

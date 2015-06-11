@@ -8,6 +8,9 @@ import org.joda.time.LocalDate;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
 /**
@@ -26,6 +29,8 @@ import java.util.Objects;
                 @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id"),
         }
 )
+@XmlRootElement(name = "scheduled_program")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ScheduledProgram extends AbstractAuditingEntity {
 
     @Id
