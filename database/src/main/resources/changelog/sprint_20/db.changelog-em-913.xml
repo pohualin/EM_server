@@ -7,4 +7,36 @@
     <changeSet id="add unique key to client group" author="ktwery">
         <addUniqueConstraint tableName="client_group" columnNames="name, client_id" constraintName="uk_client_group_name"/>
     </changeSet>
+    <changeSet id="drop unique key to client group because it is not case insensitive" author="ktwery">
+        <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_name"/>
+    </changeSet>
+    <changeSet id="fix data to be unique" author="ktwery">
+        <sql><![CDATA[
+		    UPDATE client_group SET name=CONCAT(name, ' ', id)
+		    where id in (
+			SELECT id FROM client_group cg inner join
+			(
+				SELECT client_id, lower(name), count(*) FROM client_group
+				group by client_id, name
+				having count(*) > 1
+			) AS DUP ON cg.client_id = DUP.client_id)
+	    ]]></sql>
+    </changeSet>
+    <changeSet id="sql to make groupName case insensitive" author="ktwery" dbms="postgres, mssql, mysql">
+        <sql>
+            CREATE UNIQUE INDEX uk_client_group_name_client_id ON client_group(lower_case_name,client_id);
+        </sql>
+    </changeSet>
+    <changeSet id="sql to make groupName case insensitive h2" author="ktwery" dbms="h2">
+        <sql>
+            ALTER TABLE client_group ADD lower_case_name VARCHAR_IGNORECASE AS (LOWER(name));
+        </sql>
+    </changeSet>
+    <changeSet id="sql to make groupName constraint" author="ktwery" dbms="h2">
+        <sql>
+            ALTER TABLE client_group ADD CONSTRAINT uk_client_group_name_client_id UNIQUE(lower_case_name)
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
+
