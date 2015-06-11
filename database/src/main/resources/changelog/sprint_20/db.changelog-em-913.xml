@@ -7,6 +7,9 @@
     <changeSet id="drop unique key to client group because it is not case insensitive" author="ktwery">
         <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_name"/>
     </changeSet>
+    <changeSet id="another uk to drop" author="Matt">
+        <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_client_id_name"/>
+    </changeSet>
     <changeSet id="fix data to be unique" author="ktwery">
         <sql><![CDATA[
 		    UPDATE client_group SET name=CONCAT(name, ' ', id)
@@ -24,14 +27,17 @@
             CREATE UNIQUE INDEX uk_client_group_name_client_id ON client_group(LOWER(name),client_id);
         ]]></sql>
     </changeSet>
-    <changeSet id="sql to make groupName case insensitive h2" author="ktwery" dbms="h2, mssql">
+    <changeSet id="sql to make groupName case insensitive h2" author="ktwery" dbms="h2">
         <sql><![CDATA[
             ALTER TABLE client_group ADD lower_case_name NVARCHAR(255) AS (LOWER(name));
-            ALTER TABLE client_group ADD CONSTRAINT uk_client_group_name_client_id UNIQUE(lower_case_name)
+            ALTER TABLE client_group ADD CONSTRAINT uk_client_group_name_client_id UNIQUE(lower_case_name, client_id)
         ]]></sql>
     </changeSet>
-    <changeSet id="another uk to drop" author="Matt">
-        <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_client_id_name"/>
+    <changeSet id="sql to make groupName case insensitive mssql" author="ktwery" dbms="mssql">
+        <sql><![CDATA[
+            ALTER TABLE client_group ADD lower_case_name AS (LOWER(name));
+            ALTER TABLE client_group ADD CONSTRAINT uk_client_group_name_client_id UNIQUE(lower_case_name, client_id)
+        ]]></sql>
     </changeSet>
 
 </databaseChangeLog>
