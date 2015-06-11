@@ -10,13 +10,13 @@
     <changeSet id="drop unique key to client group because it is not case insensitive" author="ktwery">
         <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_name"/>
     </changeSet>
-    <changeSet id="fix group names to be unique" author="ktwery">
+    <changeSet id="fix data to be unique" author="ktwery">
         <sql><![CDATA[
 		    UPDATE client_group SET name=CONCAT(name, ' ', id)
 		    where id in (
 			SELECT id FROM client_group cg inner join
 			(
-				SELECT client_id as client_id, lower(name) as name, count(*) FROM client_group
+				SELECT client_id, lower(name) as name, count(*) as num FROM client_group
 				group by client_id, name
 				having count(*) > 1
 			) AS DUP ON cg.client_id = DUP.client_id)
