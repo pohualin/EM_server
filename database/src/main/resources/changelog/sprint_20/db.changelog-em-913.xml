@@ -4,8 +4,14 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <changeSet id="add unique key to client group" author="ktwery">
+        <addUniqueConstraint tableName="client_group" columnNames="name, client_id" constraintName="uk_client_group_name"/>
+    </changeSet>
     <changeSet id="drop unique key to client group because it is not case insensitive" author="ktwery">
         <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_name"/>
+    </changeSet>
+    <changeSet id="drop original unique constraint" author="Matt">
+        <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_client_id_name"/>
     </changeSet>
     <changeSet id="fix data to be unique" author="ktwery">
         <sql><![CDATA[
@@ -24,14 +30,17 @@
             CREATE UNIQUE INDEX uk_client_group_name_client_id ON client_group(LOWER(name),client_id);
         ]]></sql>
     </changeSet>
-    <changeSet id="sql to make groupName case insensitive h2" author="ktwery" dbms="h2, mssql">
+    <changeSet id="sql to make groupName case insensitive h2" author="Matt" dbms="h2">
         <sql><![CDATA[
             ALTER TABLE client_group ADD lower_case_name NVARCHAR(255) AS (LOWER(name));
-            ALTER TABLE client_group ADD CONSTRAINT uk_client_group_name_client_id UNIQUE(lower_case_name)
+            ALTER TABLE client_group ADD CONSTRAINT uk_client_group_name_client_id UNIQUE(lower_case_name, client_id)
         ]]></sql>
     </changeSet>
-    <changeSet id="another uk to drop" author="Matt">
-        <dropUniqueConstraint tableName="client_group" constraintName="uk_client_group_client_id_name"/>
+    <changeSet id="sql to make groupName case insensitive mssql" author="Matt" dbms="mssql">
+        <sql><![CDATA[
+            ALTER TABLE client_group ADD lower_case_name AS (LOWER(name));
+            ALTER TABLE client_group ADD CONSTRAINT uk_client_group_name_client_id UNIQUE(lower_case_name, client_id)
+        ]]></sql>
     </changeSet>
 
 </databaseChangeLog>
