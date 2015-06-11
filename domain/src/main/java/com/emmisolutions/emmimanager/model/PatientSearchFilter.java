@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.model;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +45,8 @@ public class PatientSearchFilter {
     @XmlElement(name = "accessCode")
     @XmlElementWrapper(name = "accessCodes")
     private Set<String> accessCodes;
+
+    private boolean loadLastScheduledProgram;
 
     private PatientSearchFilter() {
     }
@@ -164,6 +168,19 @@ public class PatientSearchFilter {
     }
 
     /**
+     * List based interface for phones
+     *
+     * @param phones the List of phones
+     * @return this PatientSearchFilter for chaining
+     */
+    public PatientSearchFilter phones(List<String> phones) {
+        if (!CollectionUtils.isEmpty(phones)) {
+            this.phones(phones.toArray(new String[phones.size()]));
+        }
+        return this;
+    }
+
+    /**
      * Get emails
      *
      * @return the emails
@@ -189,6 +206,13 @@ public class PatientSearchFilter {
                 }
             }
 
+        }
+        return this;
+    }
+
+    public PatientSearchFilter emails(List<String> emails) {
+        if (!CollectionUtils.isEmpty(emails)) {
+            this.emails(emails.toArray(new String[emails.size()]));
         }
         return this;
     }
@@ -225,6 +249,37 @@ public class PatientSearchFilter {
         return this;
     }
 
+    /**
+     * List based input for accessCodes
+     * @param accessCodes to add
+     * @return this PatientSearchFilter for chaining
+     */
+    public PatientSearchFilter accessCodes(List<String> accessCodes) {
+        if (!CollectionUtils.isEmpty(accessCodes)) {
+            this.accessCodes(accessCodes.toArray(new String[accessCodes.size()]));
+        }
+        return this;
+    }
+
+    /**
+     * Whether or not to load the last scheduled program for the patient
+     *
+     * @return true to load
+     */
+    public boolean needToLoadLastScheduledProgram() {
+        return loadLastScheduledProgram;
+    }
+
+    /**
+     * Want to load the last scheduled program
+     *
+     * @return this PatientSearchFilter for chaining
+     */
+    public PatientSearchFilter lastScheduledProgramLoaded() {
+        this.loadLastScheduledProgram = true;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "PatientSearchFilter{" +
@@ -236,4 +291,5 @@ public class PatientSearchFilter {
                 ", accessCodes=" + accessCodes +
                 '}';
     }
+
 }

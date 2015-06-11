@@ -83,7 +83,9 @@ public class PatientSpecifications {
                         accessCodePredicates.add(cb.equal(root.join(Patient_.scheduledPrograms, JoinType.LEFT)
                                 .get(ScheduledProgram_.accessCode), accessCode));
                     }
-                    query.distinct(accessCodePredicates.size() > 1);
+                    if (!query.isDistinct()) {
+                        query.distinct(accessCodePredicates.size() > 1);
+                    }
                     return cb.or(accessCodePredicates.toArray(new Predicate[accessCodePredicates.size()]));
                 }
                 return null;
@@ -146,7 +148,9 @@ public class PatientSpecifications {
                         }
                     }
                     if (!teamPredicates.isEmpty()) {
-                        query.distinct(teamPredicates.size() > 1);
+                        if (!query.isDistinct()) {
+                            query.distinct(true);
+                        }
                         return cb.or(teamPredicates.toArray(new Predicate[teamPredicates.size()]));
                     }
                 }
