@@ -128,7 +128,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 
         GroupSaveRequest groupSaveReqTwo = new GroupSaveRequest();
         Group groupTwo = new Group();
-        groupTwo.setName("GroupTwo");
+        groupTwo.setName("GroupTwo" + RandomStringUtils.randomAlphanumeric(18));
         groupTwo.setClient(clientService.reload(clientOne));
         Tag tagTwoA = new Tag();
         tagTwoA.setName("Tag TwoA");
@@ -144,7 +144,7 @@ public class GroupServiceIntegrationTest extends BaseIntegrationTest {
 
         GroupSaveRequest groupSaveReqThree = new GroupSaveRequest();
         Group groupThree = new Group();
-        groupThree.setName("GroupThree");
+        groupThree.setName("GroupThree"+ RandomStringUtils.randomAlphanumeric(18));
         groupThree.setClient(clientService.reload(clientOne));
         Tag tagThreeA = new Tag();
         tagThreeA.setName("Tag ThreeA");
