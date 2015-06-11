@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.envers.Audited;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-import com.emmisolutions.emmimanager.model.PhoneReminderType;
+//import com.emmisolutions.emmimanager.model.PhoneReminderType;
 
 /**
  * The default team phone configuration.
