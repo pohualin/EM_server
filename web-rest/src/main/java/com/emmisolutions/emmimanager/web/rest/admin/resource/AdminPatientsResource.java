@@ -76,6 +76,24 @@ public class AdminPatientsResource {
     }
 
     /**
+     * GET to retrieve an individual patient
+     *
+     * @param patientId to load
+     * @return OK (200): if the patient is found
+     * NO_CONTENT (204): if the patient is not found
+     */
+    @RequestMapping(value = "/patients/{patientId}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<AdminPatientResource> get(@PathVariable("patientId") Long patientId) {
+        Patient loaded = patientService.reload(new Patient(patientId));
+        if (loaded != null) {
+            return new ResponseEntity<>(adminPatientResourceAssembler.toResource(loaded), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
      * GET to find patients
      *
      * @return OK (200): containing a AdminPatientResourcePage
@@ -113,4 +131,5 @@ public class AdminPatientsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+
 }

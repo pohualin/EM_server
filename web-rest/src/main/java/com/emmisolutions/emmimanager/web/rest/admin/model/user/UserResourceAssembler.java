@@ -78,6 +78,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(UserClientPage.createFullSearchLink());
         ret.add(linkTo(methodOn(UserClientsResource.class).getReferenceData()).withRel("userClientReferenceData"));
         ret.add(AdminPatientResourcePage.searchLink());
+        ret.add(createPatientByIdLink());
         if (perms.contains(PERM_GOD) || perms.contains(PERM_ADMIN_SUPER_USER)) {
             ret.add(referenceTagsLinkForAdmin());
         }
@@ -132,7 +133,8 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
      * @return the link
      */
     public Link createProviderByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(ProvidersResource.class).getById(1l);
+        DummyInvocationUtils.LastInvocationAware invocations =
+                (DummyInvocationUtils.LastInvocationAware) methodOn(ProvidersResource.class).getById(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("providerById");
         String href = link.getHref();
@@ -151,7 +153,8 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
      * @return the link
      */
     public Link createLocationByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(LocationsResource.class).get(1l);
+        DummyInvocationUtils.LastInvocationAware invocations =
+                (DummyInvocationUtils.LastInvocationAware) methodOn(LocationsResource.class).get(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("locationById");
         String href = link.getHref();
@@ -170,7 +173,8 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
      * @return the link
      */
     public Link createUserClientByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UserClientsResource.class).get(1l);
+        DummyInvocationUtils.LastInvocationAware invocations =
+                (DummyInvocationUtils.LastInvocationAware) methodOn(UserClientsResource.class).get(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("userClientById");
         String href = link.getHref();
@@ -189,7 +193,8 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
      * @return the link
      */
     public Link createUserByIdLink() {
-        DummyInvocationUtils.LastInvocationAware invocations = (DummyInvocationUtils.LastInvocationAware) methodOn(UsersResource.class).get(1l);
+        DummyInvocationUtils.LastInvocationAware invocations =
+                (DummyInvocationUtils.LastInvocationAware) methodOn(UsersResource.class).get(1l);
         Method method = invocations.getLastInvocation().getMethod();
         Link link = linkTo(invocations).withRel("userById");
         String href = link.getHref();
@@ -197,6 +202,26 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         if (idx != -1) {
             return new Link(
                     href.substring(0, idx) + discoverer.getMapping(UsersResource.class, method),
+                    link.getRel());
+        }
+        return null;
+    }
+
+    /**
+     * Load patient by id
+     *
+     * @return the link
+     */
+    public Link createPatientByIdLink() {
+        DummyInvocationUtils.LastInvocationAware invocations =
+                (DummyInvocationUtils.LastInvocationAware) methodOn(AdminPatientsResource.class).get(1l);
+        Method method = invocations.getLastInvocation().getMethod();
+        Link link = linkTo(invocations).withRel("patientById");
+        String href = link.getHref();
+        int idx = href.indexOf(discoverer.getMapping(AdminPatientsResource.class));
+        if (idx != -1) {
+            return new Link(
+                    href.substring(0, idx) + discoverer.getMapping(AdminPatientsResource.class, method),
                     link.getRel());
         }
         return null;

@@ -82,6 +82,21 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @XmlElementWrapper(name = "scheduledPrograms")
     private Set<ScheduledProgram> scheduledPrograms;
 
+    /**
+     * No arg constructor
+     */
+    public Patient() {
+    }
+
+    /**
+     * Creates a patient by id
+     *
+     * @param id the id
+     */
+    public Patient(Long id) {
+        this.id = id;
+    }
+
     public Client getClient() {
         return client;
     }
