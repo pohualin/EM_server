@@ -2,8 +2,6 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.PatientSearchFilter;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.persistence.PatientPersistence;
 import com.emmisolutions.emmimanager.service.PatientService;
 import org.joda.time.LocalDate;
@@ -48,13 +46,9 @@ public class PatientServiceImpl implements PatientService {
         return patientPersistence.save(patient);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public Patient reload(Patient patient) {
-        if (patient == null || patient.getId() == null) {
-            return null;
-        }
         return patientPersistence.reload(patient);
     }
 

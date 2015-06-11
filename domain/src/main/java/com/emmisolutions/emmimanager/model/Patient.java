@@ -11,6 +11,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Objects;
@@ -76,7 +78,24 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     private String normalizedName;
 
     @OneToMany(mappedBy = "patient")
+    @XmlElement(name = "scheduledProgram")
+    @XmlElementWrapper(name = "scheduledPrograms")
     private Set<ScheduledProgram> scheduledPrograms;
+
+    /**
+     * No arg constructor
+     */
+    public Patient() {
+    }
+
+    /**
+     * Creates a patient by id
+     *
+     * @param id the id
+     */
+    public Patient(Long id) {
+        this.id = id;
+    }
 
     public Client getClient() {
         return client;

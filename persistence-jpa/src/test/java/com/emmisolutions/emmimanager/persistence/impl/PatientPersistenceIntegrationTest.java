@@ -151,5 +151,21 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
                 is(2l));
     }
 
+    @Test
+    public void loadLatestScheduledProgram() {
+        ScheduledProgram lastScheduledProgram = makeNewRandomScheduledProgram(null, null, null);
+        for (int i = 0; i < 5; i++) {
+            lastScheduledProgram = makeNewRandomScheduledProgram(lastScheduledProgram.getTeam().getClient(),
+                    lastScheduledProgram.getPatient(), lastScheduledProgram.getTeam());
+        }
+        assertThat("patient with a bunch of scheduled programs is found", patientPersistence.list(null,
+                        with().lastScheduledProgramLoaded().teams(lastScheduledProgram.getTeam())),
+                hasItem(lastScheduledProgram.getPatient()));
+
+        assertThat("last scheduled program is set", patientPersistence.list(null,
+                        with().lastScheduledProgramLoaded().teams(lastScheduledProgram.getTeam()))
+                .iterator().next().getScheduledPrograms(),
+                hasItem(lastScheduledProgram));
+    }
 
 }

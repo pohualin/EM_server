@@ -49,6 +49,7 @@ public class GroupPersistenceImpl implements GroupPersistence {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Page<Group> list(Pageable page, GroupSearchFilter searchFilter) {
         if (page == null) {
             // default pagination request if none
