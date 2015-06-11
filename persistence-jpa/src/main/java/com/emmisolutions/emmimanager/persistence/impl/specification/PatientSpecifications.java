@@ -149,7 +149,7 @@ public class PatientSpecifications {
                     }
                     if (!teamPredicates.isEmpty()) {
                         if (!query.isDistinct()) {
-                            query.distinct(teamPredicates.size() > 1);
+                            query.distinct(true);
                         }
                         return cb.or(teamPredicates.toArray(new Predicate[teamPredicates.size()]));
                     }
