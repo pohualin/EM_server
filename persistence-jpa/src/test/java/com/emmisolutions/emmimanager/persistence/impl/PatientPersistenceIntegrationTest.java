@@ -9,6 +9,7 @@ import com.emmisolutions.emmimanager.persistence.PatientPersistence;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 
@@ -154,17 +155,22 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void loadLatestScheduledProgram() {
         ScheduledProgram lastScheduledProgram = makeNewRandomScheduledProgram(null, null, null);
+        Patient patient = lastScheduledProgram.getPatient();
         for (int i = 0; i < 5; i++) {
             lastScheduledProgram = makeNewRandomScheduledProgram(lastScheduledProgram.getTeam().getClient(),
                     lastScheduledProgram.getPatient(), lastScheduledProgram.getTeam());
         }
-        assertThat("patient with a bunch of scheduled programs is found", patientPersistence.list(null,
-                        with().lastScheduledProgramLoaded().teams(lastScheduledProgram.getTeam())),
-                hasItem(lastScheduledProgram.getPatient()));
 
-        assertThat("last scheduled program is set", patientPersistence.list(null,
-                        with().lastScheduledProgramLoaded().teams(lastScheduledProgram.getTeam()))
-                .iterator().next().getScheduledPrograms(),
+        Page<Patient> patients = patientPersistence.list(null,
+                with().lastScheduledProgramLoaded().teams(lastScheduledProgram.getTeam()));
+
+        assertThat("The patient should be nulled out on the last scheduled program",
+                lastScheduledProgram.getPatient(), is(nullValue()));
+
+        assertThat("patient with a bunch of scheduled programs is found", patients,
+                hasItem(patient));
+
+        assertThat("last scheduled program is set", patients.iterator().next().getScheduledPrograms(),
                 hasItem(lastScheduledProgram));
     }
 
