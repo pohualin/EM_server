@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
+
 import com.emmisolutions.emmimanager.persistence.configuration.serializer.SpecificationsKryoStreamSerializer;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
@@ -7,6 +8,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.instance.HazelcastInstanceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -18,18 +20,35 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_DEVELOPMENT;
+import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_TEST;
+
 @Configuration
 @EnableCaching
 public class CacheConfiguration {
 
-    private final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
-
     private static HazelcastInstance hazelcastInstance;
-
+    private final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
     @Resource
     private Environment env;
 
+    @Value("${cache.cluster.group.name:development_cluster}")
+    private String clusterGroupName;
+
+    @Value("${cache.cluster.required.min.size:1}")
+    private String minNumberOfClusterMembersRequiredToStartServer;
+
+    @Value("${cache.cluster.enabled:true}")
+    private boolean clusterEnabled;
+
     private CacheManager cacheManager;
+
+    /**
+     * @return the unique instance.
+     */
+    public static HazelcastInstance getHazelcastInstance() {
+        return hazelcastInstance;
+    }
 
     @PreDestroy
     public void destroy() {
@@ -49,6 +68,9 @@ public class CacheConfiguration {
         final Config config = new Config();
         config.setInstanceName("emmiManager");
 
+        // allow multiple groups in the same multi-cast area
+        config.getGroupConfig().setName(clusterGroupName);
+
         // add custom serializers here
         config.getSerializationConfig()
                 .addSerializerConfig(
@@ -59,22 +81,22 @@ public class CacheConfiguration {
 
         config.getNetworkConfig().setPort(5701);
         config.getNetworkConfig().setPortAutoIncrement(true);
-
-//        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST)) {
-
         config.setProperty("hazelcast.version.check.enabled", "false");
-        config.setProperty("hazelcast.local.localAddress", "127.0.0.1");
 
-        config.getNetworkConfig().getJoin().getAwsConfig().setEnabled(false);
-        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
-        config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(false);
-//        }
+        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT, SPRING_PROFILE_TEST)) {
+            config.setProperty("hazelcast.local.localAddress", "127.0.0.1");
+            config.getNetworkConfig().getJoin().getAwsConfig().setEnabled(false);
+            config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+            config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(false);
+        } else {
+            config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(clusterEnabled);
+            config.setProperty("hazelcast.initial.min.cluster.size", minNumberOfClusterMembersRequiredToStartServer);
+        }
 
         config.getMapConfigs().put("default", initializeDefaultMapConfig());
         config.getMapConfigs().put("com.emmisolutions.emmimanager.model.*", initializeDomainMapConfig());
 
         hazelcastInstance = HazelcastInstanceFactory.newHazelcastInstance(config);
-
         return hazelcastInstance;
     }
 
@@ -121,13 +143,5 @@ public class CacheConfiguration {
 
         mapConfig.setTimeToLiveSeconds(env.getProperty("cache.timeToLiveSeconds", Integer.class, 3600));
         return mapConfig;
-    }
-
-
-    /**
-     * @return the unique instance.
-     */
-    public static HazelcastInstance getHazelcastInstance() {
-        return hazelcastInstance;
     }
 }
