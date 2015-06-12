@@ -75,4 +75,9 @@
     <!-- For production, uncomment this one (no logging except errors) -->
     <!--Environment name="spring.profiles.active" value="prod" type="java.lang.String" override="false"/-->
 
+    <!-- Cluster Cache Configuration Settings -->
+    <!--<Environment name="cache.cluster.enabled" value="true" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="cache.cluster.group.name" value="development_cluster" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="cache.cluster.required.min.size" value="1" type="java.lang.String" override="false"/>-->
+
 </Context>
