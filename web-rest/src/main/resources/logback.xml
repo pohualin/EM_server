@@ -16,8 +16,7 @@
     <logger name="com.emmisolutions.emmimanager.web.rest.admin.security.csrf" level="WARN"/>
 
     <logger name="javax.activation" level="WARN"/>
-    <logger name="com.hazelcast" level="WARN"/>
-    <logger name="com.hazelcast.util.HealthMonitor" level="INFO"/>
+    <logger name="com.hazelcast" level="INFO"/>
     <logger name="com.microsoft.sqlserver" level="OFF"/>
     <logger name="javax.mail" level="WARN"/>
     <logger name="javax.xml.bind" level="WARN"/>
