@@ -41,6 +41,8 @@ public class TeamResourceAssembler
         
         ret.add(linkTo(methodOn(PatientsResource.class).findTeamEmailConfigForPatient(entity.getClient().getId(), entity.getId(), null, null)).withRel("patientTeamEmailConfig"));
 
+        ret.add(linkTo(methodOn(PatientsResource.class).findTeamPhoneConfigForPatient(entity.getClient().getId(), entity.getId())).withRel("patientTeamPhoneConfig"));
+        
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
                 .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null, null))
                 .withSelfRel().getHref()).with(
