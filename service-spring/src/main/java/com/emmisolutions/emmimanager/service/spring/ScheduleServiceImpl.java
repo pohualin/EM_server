@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ScheduleService;
@@ -7,6 +8,8 @@ import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -65,5 +68,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduledProgram reload(ScheduledProgram scheduledProgram) {
         return schedulePersistence.reload(scheduledProgram);
+    }
+
+    @Override
+    public Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page){
+        return schedulePersistence.findAllByPatient(patientPersistence.reload(patient), page);
     }
 }

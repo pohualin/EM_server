@@ -1,7 +1,9 @@
 package com.emmisolutions.emmimanager.web.rest.client.model.patient;
 
 import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.client.resource.PatientsResource;
+import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
