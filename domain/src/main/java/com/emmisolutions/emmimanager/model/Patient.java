@@ -82,6 +82,10 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @XmlElementWrapper(name = "scheduledPrograms")
     private Set<ScheduledProgram> scheduledPrograms;
 
+    @ManyToOne
+    @JoinColumn(name = "patient_opt_out_preference")
+    private PatientOptOutPreference optOutPreference;
+
     /**
      * No arg constructor
      */
