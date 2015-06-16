@@ -210,4 +210,12 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 '}';
     }
+
+    public PatientOptOutPreference getOptOutPreference() {
+        return optOutPreference;
+    }
+
+    public void setOptOutPreference(PatientOptOutPreference optOutPreference) {
+        this.optOutPreference = optOutPreference;
+    }
 }
