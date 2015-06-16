@@ -77,10 +77,25 @@ public class TeamResourceAssembler
                                 new TemplateVariable("patientId",
                                         TemplateVariable.VariableType.REQUEST_PARAM))), "patientById"));
 
-
+        ret.add(createAllSchedulesForPatientLink(entity));
         return ret;
     }
 
+    /**
+     * Link to get all scheduled programs for a given patient
+     *
+     * @return Link for schedules for a given patient
+     */
+    private Link createAllSchedulesForPatientLink(Team team) {
+        Link link = linkTo(methodOn(SchedulesResource.class).getPatientSchedules(team.getClient().getId(), team.getId(), null, null, null)).withRel("patientScheduleDetails");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref()).with(
+                new TemplateVariables(
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("patientId", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
 
     private UriTemplate addPaginationTemplate(String baseUri) {
         return new UriTemplate(baseUri)
