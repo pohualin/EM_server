@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.service.ScheduleService;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ResourceAssembler;
@@ -155,5 +157,34 @@ public class SchedulesResource {
             }
         }
         return new ResponseEntity<>(GONE);
+    }
+
+    /**
+     * GET to retrieve a page of ScheduledProgram objects for a particular patient.
+     *
+     * @return ScheduledProgramResourcePage when authorized or 403 if the user is not
+     * authorized.
+     */
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient_schedule", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "createdDate,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+    })
+    public ScheduledProgramResourcePage getPatientSchedules(
+            @PathVariable("clientId") Long clientId,
+            @PathVariable("teamId") Long teamId,
+            @RequestParam(value = "patientId", required = false) Long patientId,
+            @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.ASC) Pageable page,
+
+        PagedResourcesAssembler<ScheduledProgram> assembler) {
+
+        Page<ScheduledProgram> scheduledPrograms = scheduleService.findAllByPatient(new Patient(patientId), page);
+
+        return new ScheduledProgramResourcePage(
+                assembler.toResource(scheduledPrograms, scheduledProgramResourceResourceAssembler),
+                scheduledPrograms);
     }
 }

@@ -1,6 +1,9 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service layer for scheduling maintenance
@@ -22,4 +25,13 @@ public interface ScheduleService {
      * @return the persistent ScheduledProgram
      */
     ScheduledProgram reload(ScheduledProgram scheduledProgram);
+
+    /**
+     * finds all scheduled programs for a given patient
+     * @param patient to find by
+     * @param page specification
+     * @return a page of scheduled programs
+     */
+    Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page);
+
 }

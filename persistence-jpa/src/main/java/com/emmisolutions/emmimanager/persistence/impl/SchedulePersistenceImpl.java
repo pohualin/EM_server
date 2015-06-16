@@ -1,10 +1,15 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Team_;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram_;
 import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ScheduledProgramRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
@@ -55,5 +60,17 @@ public class SchedulePersistenceImpl implements SchedulePersistence {
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         });
+    }
+
+    @Override
+    public Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page){
+        if (patient == null || patient.getId() == null){
+            return null;
+        }
+        if (page == null) {
+            // default pagination request if none
+            page = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        }
+        return scheduledProgramRepository.findAllByPatient(patient, page);
     }
 }
