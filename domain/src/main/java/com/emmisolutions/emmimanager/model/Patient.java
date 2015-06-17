@@ -37,13 +37,13 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @Size(max = 255)
     @Column(name = "first_name", nullable = false)
-    @Pattern(regexp = "[A-Za-z '-]+[.A-Za-z '-]*", message = "Name can only contain letters, spaces, and the following characters: . - '")
+    @Pattern(regexp = "[A-Za-z '-.]*", message = "Name can only contain letters, spaces, and the following characters: . - '")
     private String firstName;
 
     @NotNull
     @Size(max = 255)
     @Column(name = "last_name", nullable = false)
-    @Pattern(regexp = "[A-Za-z '-]+[.A-Za-z '-]*", message = "Name can only contain letters, spaces, and the following characters: . - '")
+    @Pattern(regexp = "[A-Za-z '-.]*", message = "Name can only contain letters, spaces, and the following characters: . - '")
     private String lastName;
 
     @NotNull
@@ -74,13 +74,17 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @Size(max = 255)
     @Column(name = "normalized_name", length = 510, nullable = false)
     @NotAudited
-    @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
+    @Pattern(regexp = "[a-z]*", message = "Normalized name can only contain lowercase letters")
     private String normalizedName;
 
     @OneToMany(mappedBy = "patient")
     @XmlElement(name = "scheduledProgram")
     @XmlElementWrapper(name = "scheduledPrograms")
     private Set<ScheduledProgram> scheduledPrograms;
+
+    @ManyToOne
+    @JoinColumn(name = "patient_opt_out_preference_id")
+    private PatientOptOutPreference optOutPreference;
 
     /**
      * No arg constructor
@@ -205,5 +209,13 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';
+    }
+
+    public PatientOptOutPreference getOptOutPreference() {
+        return optOutPreference;
+    }
+
+    public void setOptOutPreference(PatientOptOutPreference optOutPreference) {
+        this.optOutPreference = optOutPreference;
     }
 }

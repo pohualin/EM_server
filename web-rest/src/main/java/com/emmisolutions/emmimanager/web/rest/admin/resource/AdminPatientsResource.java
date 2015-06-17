@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.PatientService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.patient.AdminPatientResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.patient.AdminPatientResourcePage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.patient.ReferenceData;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
@@ -61,6 +62,17 @@ public class AdminPatientsResource {
     ResourceAssembler<Patient, AdminPatientResource> adminPatientResourceAssembler;
 
     /**
+     * GET to Retrieve reference data for patients.
+     *
+     * @return patient ReferenceData
+     */
+    @RequestMapping(value = "/patients/reference_data", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ReferenceData getReferenceData() {
+        return new ReferenceData(patientService.allPossibleOptOutPreferences());
+    }
+
+    /**
      * POST for creating a patient for a given client
      *
      * @param clientId the client id
@@ -90,6 +102,27 @@ public class AdminPatientsResource {
             return new ResponseEntity<>(adminPatientResourceAssembler.toResource(loaded), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
+     * PUT to update an individual patient
+     *
+     * @param patientId to save
+     * @param patient   the patient object to save
+     * @return OK (200): if the patient is found
+     * NO_CONTENT (500): if the patient is not updated
+     */
+    @RequestMapping(value = "/patients/{patientId}", method = RequestMethod.PUT)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<AdminPatientResource> update(@PathVariable("patientId") Long patientId,
+                                                       @RequestBody Patient patient) {
+        patient.setId(patientId);
+        Patient updated = patientService.update(patient);
+        if (updated != null) {
+            return new ResponseEntity<>(adminPatientResourceAssembler.toResource(updated), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

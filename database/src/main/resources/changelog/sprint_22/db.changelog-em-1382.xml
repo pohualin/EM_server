@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="add opt out type" author="Matt">
+
+        <!-- create opt out preference tables -->
+        <createTable tableName="patient_opt_out_preference">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_patient_opt_out_preference"/>
+            </column>
+            <column name="key_path" type="NVARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="patient_opt_out_preference" columnNames="key_path"
+                             constraintName="uk_patient_opt_out_preference_key_path"/>
+
+        <createTable tableName="patient_opt_out_preference_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="key_path" type="NVARCHAR(1024)"/>
+        </createTable>
+        <addPrimaryKey tableName="patient_opt_out_preference_audit"
+                       constraintName="pk_patient_opt_out_preference_audit" columnNames="id, revision"/>
+
+        <!-- load in the opt out preferences and translations -->
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_22/data/em-1382/patient_opt_out_preference.csv"
+                  separator=";"
+                  tableName="patient_opt_out_preference"/>
+
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_22/data/em-1382/preference_translation.csv"
+                  separator=";"
+                  tableName="strings"/>
+
+        <!-- add reference to opt out preference from patient table -->
+        <addColumn tableName="client_patient">
+            <column name="patient_opt_out_preference_id" type="bigint"/>
+        </addColumn>
+        <addColumn tableName="client_patient_audit">
+            <column name="patient_opt_out_preference_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="client_patient"
+                                 baseColumnNames="patient_opt_out_preference_id"
+                                 constraintName="fk_patient_opt_out_preference"
+                                 referencedTableName="patient_opt_out_preference"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="client_patient" indexName="ix_client_patient_patient_opt_out_preference_id">
+            <column name="patient_opt_out_preference_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -26,19 +26,28 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     ClientService clientService;
 
+    /**
+     * Create and reload a patient
+     */
     @Test
-    public void testPatientCreateAndReload() {
+    public void createAndReload() {
         assertThat("Patient was created", makeNewRandomPatient(null).getId(), is(notNullValue()));
     }
 
+    /**
+     * Make sure reload works
+     */
     @Test
-    public void reloadPatient() {
+    public void reload() {
         Patient reloadedPatient = patientService.reload(makeNewRandomPatient(null));
         assertThat("Patient was reloaded", reloadedPatient.getId(), is(notNullValue()));
     }
 
+    /**
+     * Ensure update works properly
+     */
     @Test
-    public void testPatientUpdate() {
+    public void update() {
         Patient savedPatient = makeNewRandomPatient(null);
         assertThat("Patient was created", savedPatient.getId(), is(notNullValue()));
         savedPatient.setFirstName("update patient name");
@@ -74,7 +83,6 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
         patientService.update(toUpdate);
     }
 
-
     /**
      * Create successfully then find.
      */
@@ -88,11 +96,22 @@ public class PatientServiceIntegrationTest extends BaseIntegrationTest {
 
     }
 
+    /**
+     * Make sure list returns the proper patient
+     */
     @Test
-    public void testList() {
+    public void list() {
         Patient patient = makeNewRandomPatient(null);
         assertThat("Page of Patients retrieved contains the searched item", patientService.list(null,
                         with().client(patient.getClient()).names(patient.getFirstName())),
                 hasItem(patient));
+    }
+
+    /**
+     * Make sure opt out preference possibilities loads
+     */
+    @Test
+    public void loadAllPossibleOptOutOptions() {
+        assertThat("opt out preferences load", patientService.allPossibleOptOutPreferences().isEmpty(), is(false));
     }
 }
