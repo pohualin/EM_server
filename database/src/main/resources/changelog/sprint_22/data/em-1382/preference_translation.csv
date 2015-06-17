@@ -1,0 +1,4 @@
+language_id;key_path;message;created_by
+1;OPT_OUT_WHOLE_PATIENT;Whole patient;system
+1;OPT_OUT_PHONE;Phone;system
+1;OPT_OUT_EMAIL;Email;system

@@ -152,6 +152,9 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
                 is(2l));
     }
 
+    /**
+     * Ensure that the latest scheduled program is returned in the patient list
+     */
     @Test
     public void loadLatestScheduledProgram() {
         ScheduledProgram lastScheduledProgram = makeNewRandomScheduledProgram(null, null, null);
@@ -174,4 +177,8 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
                 hasItem(lastScheduledProgram));
     }
 
+    @Test
+    public void optOutPreferences() {
+        assertThat("opt out preferences load", patientPersistence.allPossibleOptOutPreferences().isEmpty(), is(false));
+    }
 }
