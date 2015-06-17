@@ -74,7 +74,7 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     @Size(max = 255)
     @Column(name = "normalized_name", length = 510, nullable = false)
     @NotAudited
-    @Pattern(regexp = "[a-z0-9]*", message = "Normalized name can only contain lowercase letters, digits, and spaces")
+    @Pattern(regexp = "[a-z]*", message = "Normalized name can only contain lowercase letters")
     private String normalizedName;
 
     @OneToMany(mappedBy = "patient")
@@ -83,7 +83,7 @@ public class Patient extends AbstractAuditingEntity implements Serializable {
     private Set<ScheduledProgram> scheduledPrograms;
 
     @ManyToOne
-    @JoinColumn(name = "patient_opt_out_preference")
+    @JoinColumn(name = "patient_opt_out_preference_id")
     private PatientOptOutPreference optOutPreference;
 
     /**

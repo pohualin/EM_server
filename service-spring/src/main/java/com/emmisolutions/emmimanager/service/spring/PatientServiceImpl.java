@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.PatientOptOutPreference;
 import com.emmisolutions.emmimanager.model.PatientSearchFilter;
 import com.emmisolutions.emmimanager.persistence.PatientPersistence;
 import com.emmisolutions.emmimanager.service.PatientService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 
 /**
  * Implementation for Patient Service
@@ -56,5 +58,10 @@ public class PatientServiceImpl implements PatientService {
     @Transactional(readOnly = true)
     public Page<Patient> list(Pageable page,  PatientSearchFilter patientSearchFilter) {
         return patientPersistence.list(page, patientSearchFilter);
+    }
+
+    @Override
+    public Collection<PatientOptOutPreference> allPossibleOptOutPreferences() {
+        return patientPersistence.allPossibleOptOutPreferences();
     }
 }
