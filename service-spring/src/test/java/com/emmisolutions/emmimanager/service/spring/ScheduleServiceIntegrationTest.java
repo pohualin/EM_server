@@ -35,7 +35,7 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Happy path save.
+     * Happy path save and reload/find.
      */
     @Test
     public void valid() {
@@ -57,6 +57,10 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
                 is(not(accessCode)));
 
         assertThat("reload works", scheduleService.reload(new ScheduledProgram(saved.getId(), null)), is(saved));
+
+        assertThat("find by patient works", scheduleService.findAllByPatient(scheduledProgram.getPatient(), null), hasItem(saved));
+
+        assertThat("find by null patient should not find anything", scheduleService.findAllByPatient(null, null), is(nullValue()));
     }
 
     /**

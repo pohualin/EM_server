@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,10 +29,20 @@ public interface ScheduleService {
 
     /**
      * finds all scheduled programs for a given patient
+     *
      * @param patient to find by
-     * @param page specification
+     * @param page    specification
      * @return a page of scheduled programs
      */
     Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page);
+
+    /**
+     * finds a page of scheduled programs by filter
+     *
+     * @param filter to AND together
+     * @param page   specifcation
+     * @return Page of ScheduledProgram objects matching filter
+     */
+    Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page);
 
 }
