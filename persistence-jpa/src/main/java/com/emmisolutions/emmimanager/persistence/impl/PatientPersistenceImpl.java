@@ -1,11 +1,13 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.PatientOptOutPreference;
 import com.emmisolutions.emmimanager.model.PatientSearchFilter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram_;
 import com.emmisolutions.emmimanager.persistence.PatientPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.PatientSpecifications;
+import com.emmisolutions.emmimanager.persistence.repo.PatientOptOutPreferenceRepository;
 import com.emmisolutions.emmimanager.persistence.repo.PatientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ScheduledProgramRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,9 @@ public class PatientPersistenceImpl implements PatientPersistence {
 
     @Resource
     ScheduledProgramRepository scheduledProgramRepository;
+
+    @Resource
+    PatientOptOutPreferenceRepository patientOptOutPreferenceRepository;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -120,5 +125,10 @@ public class PatientPersistenceImpl implements PatientPersistence {
         }
 
         return ret;
+    }
+
+    @Override
+    public Collection<PatientOptOutPreference> allPossibleOptOutPreferences() {
+        return patientOptOutPreferenceRepository.findAll();
     }
 }
