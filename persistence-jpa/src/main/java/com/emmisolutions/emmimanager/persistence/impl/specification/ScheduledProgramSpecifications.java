@@ -6,6 +6,8 @@ import com.emmisolutions.emmimanager.model.Team_;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram_;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +55,6 @@ public class ScheduledProgramSpecifications {
             @Override
             public Predicate toPredicate(Root<ScheduledProgram> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (filter != null && filter.team() != null) {
-                    // if there's a team make sure the schedule is for that team
                     return cb.equal(root.join(ScheduledProgram_.team)
                             .get(Team_.id), filter.team().getId());
                 }
@@ -105,4 +106,23 @@ public class ScheduledProgramSpecifications {
             }
         };
     }
+
+    /**
+     * Spec based upon whether or not to show expired scheduled programs
+     *
+     * @param filter to determine expired
+     * @return a Specification or null
+     */
+    public Specification<ScheduledProgram> expired(final ScheduledProgramSearchFilter filter) {
+        return new Specification<ScheduledProgram>() {
+            @Override
+            public Predicate toPredicate(Root<ScheduledProgram> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (filter != null && !filter.includeExpired()) {
+                    return cb.greaterThanOrEqualTo(root.get(ScheduledProgram_.viewByDate), LocalDate.now(DateTimeZone.UTC));
+                }
+                return null;
+            }
+        };
+    }
+
 }
