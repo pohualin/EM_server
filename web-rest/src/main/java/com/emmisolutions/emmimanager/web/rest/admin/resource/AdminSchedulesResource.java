@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.service.ScheduleService;
@@ -39,6 +40,21 @@ public class AdminSchedulesResource {
      */
     public static final String ACCESS_CODES_REQUEST_PARAM = "accessCode";
 
+    /**
+     * request parameter name
+     */
+    public static final String PATIENT_REQUEST_PARAM = "patient";
+
+    /**
+     * request parameter name
+     */
+    public static final String CLIENT_REQUEST_PARAM = "client";
+
+    /**
+     * request parameter name
+     */
+    public static final String EXPIRED_REQUEST_PARAM = "expired";
+
     @Resource
     ScheduleService scheduleService;
 
@@ -52,20 +68,28 @@ public class AdminSchedulesResource {
      * NO_CONTENT (204): when nothing is found
      * NOT_AUTHORIZED (403): if the user is not authorized.
      */
-    @RequestMapping(value = "/scheduled_programs}", method = RequestMethod.GET)
+    @RequestMapping(value = "/scheduled_programs", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "createdDate,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = ACCESS_CODES_REQUEST_PARAM, defaultValue = "createdDate,asc", value = "sort to apply format: property,asc or desc", dataType = "list", paramType = "query")
+            @ApiImplicitParam(name = ACCESS_CODES_REQUEST_PARAM, defaultValue = "", value = "Access codes to filter by", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = PATIENT_REQUEST_PARAM, defaultValue = "", value = "Patient IDs to filter by", dataType = "long", paramType = "query"),
+            @ApiImplicitParam(name = EXPIRED_REQUEST_PARAM, defaultValue = "", value = "Show expired", dataType = "boolean", paramType = "query")
     })
     public ResponseEntity<ScheduledProgramResourcePage> find(
             @RequestParam(value = ACCESS_CODES_REQUEST_PARAM, required = false) List<String> accessCodes,
-            @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.ASC) Pageable page,
+            @RequestParam(value = PATIENT_REQUEST_PARAM, required = false) Long patientId,
+            @RequestParam(value = EXPIRED_REQUEST_PARAM, required = false) Boolean expired,
+            @PageableDefault(size = 25, sort = "viewByDate", direction = Sort.Direction.ASC) Pageable page,
             PagedResourcesAssembler<ScheduledProgram> assembler) {
 
-        ScheduledProgramSearchFilter filter = with().accessCodes(accessCodes);
+        ScheduledProgramSearchFilter filter = with()
+                .accessCodes(accessCodes)
+                .patients(new Patient(patientId))
+                .includeExpired(Boolean.TRUE.equals(expired));
+
         Page<ScheduledProgram> scheduledPrograms = scheduleService.find(filter, page);
 
         if (scheduledPrograms.hasContent()) {
