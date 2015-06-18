@@ -82,18 +82,33 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     @Column(name = "view_by_date_utc", nullable = false, columnDefinition = "date")
     private LocalDate viewByDate;
 
+    public ScheduledProgram() {
+    }
+
+    /**
+     * Id only based constructor
+     *
+     * @param scheduleId the id
+     */
+    public ScheduledProgram(Long scheduleId) {
+        this.id = scheduleId;
+    }
+
+    /**
+     * Id and team based constructor
+     *
+     * @param scheduleId the scheduled id
+     * @param team       the team
+     */
+    public ScheduledProgram(Long scheduleId, Team team) {
+        this.id = scheduleId;
+        this.team = team;
+    }
+
     @Override
     @XmlElement(name = "created_date")
     public DateTime getCreatedDate() {
         return super.getCreatedDate();
-    }
-
-    public ScheduledProgram() {
-    }
-
-    public ScheduledProgram(Long scheduleId, Team team) {
-        this.id = scheduleId;
-        this.team = team;
     }
 
     public Long getId() {

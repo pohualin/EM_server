@@ -1,7 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
-import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -35,11 +35,12 @@ public interface SchedulePersistence {
     ScheduledProgram reload(ScheduledProgram scheduledProgram);
 
     /**
-     * finds all scheduled programs for a given patient
-     * @param patient to find by
-     * @param page specification
-     * @return a page of scheduled programs
+     * Finds a page of scheduled programs based upon the passed filter
+     *
+     * @param searchFilter to find programs
+     * @param page         specification
+     * @return page of ScheduledProgram objects
      */
-    Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page);
+    Page<ScheduledProgram> find(ScheduledProgramSearchFilter searchFilter, Pageable page);
 
 }

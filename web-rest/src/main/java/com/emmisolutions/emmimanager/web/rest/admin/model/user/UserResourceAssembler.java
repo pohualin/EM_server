@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.groups.ReferenceGroupP
 import com.emmisolutions.emmimanager.web.rest.admin.model.location.LocationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.patient.AdminPatientResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.schedule.ScheduledProgramResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
@@ -79,6 +80,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(linkTo(methodOn(UserClientsResource.class).getReferenceData()).withRel("userClientReferenceData"));
         ret.add(AdminPatientResourcePage.searchLink());
         ret.add(createPatientByIdLink());
+        ret.add(ScheduledProgramResourcePage.searchLink());
         if (perms.contains(PERM_GOD) || perms.contains(PERM_ADMIN_SUPER_USER)) {
             ret.add(referenceTagsLinkForAdmin());
         }
