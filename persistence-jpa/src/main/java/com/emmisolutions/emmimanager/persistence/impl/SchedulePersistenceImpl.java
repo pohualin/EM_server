@@ -53,8 +53,9 @@ public class SchedulePersistenceImpl implements SchedulePersistence {
     public Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page) {
         return scheduledProgramRepository.findAll(where(specifications.id(filter))
                         .and(specifications.team(filter))
+                        .and(specifications.expired(filter))
                         .and(specifications.patients(filter))
                         .and(specifications.accessCodes(filter)),
-                page == null ? new PageRequest(0, 50, Sort.Direction.ASC, "id") : page);
+                page == null ? new PageRequest(0, 50, Sort.Direction.ASC, "viewByDate") : page);
     }
 }
