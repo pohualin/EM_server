@@ -7,15 +7,14 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ProgramPersistence;
 import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
-import org.hamcrest.CoreMatchers;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
+import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -66,9 +65,15 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("reload with different team should return null", schedulePersistence.reload(differentTeam),
                 is(nullValue()));
 
-        assertThat("reload with patient works", schedulePersistence.findAllByPatient(patient, null).getContent().iterator().next(), is(saved));
+        assertThat("reload with patient works", schedulePersistence.find(with().patients(patient), null), hasItem(saved));
+
+        assertThat("access code works",
+                schedulePersistence.find(with().accessCodes(saved.getAccessCode()).patients(patient), null), hasItem(saved));
     }
 
+    /**
+     * Edge case reload scenarios should function as spec'd here
+     */
     @Test
     public void reloadScenarios(){
         assertThat("reload empty is null", schedulePersistence.reload(new ScheduledProgram()), is(nullValue()));
