@@ -32,6 +32,8 @@ public class ScheduledProgramSearchFilter {
 
     private Team team;
 
+    private boolean includeExpired;
+
     private ScheduledProgramSearchFilter() {
     }
 
@@ -43,7 +45,6 @@ public class ScheduledProgramSearchFilter {
     public static ScheduledProgramSearchFilter with() {
         return new ScheduledProgramSearchFilter();
     }
-
 
     /**
      * Retrieves all patient filters
@@ -168,13 +169,34 @@ public class ScheduledProgramSearchFilter {
         return team;
     }
 
+    /**
+     * Show expired programs
+     *
+     * @param includeExpired true to show expired
+     * @return this ScheduledProgramSearchFilter for chaining
+     */
+    public ScheduledProgramSearchFilter includeExpired(boolean includeExpired) {
+        this.includeExpired = includeExpired;
+        return this;
+    }
+
+    /**
+     * Fetches the expired filter
+     *
+     * @return expired set on the filter
+     */
+    public boolean includeExpired() {
+        return this.includeExpired;
+    }
+
     @Override
     public String toString() {
         return "ScheduledProgramSearchFilter{" +
-                "id=" + id +
+                "accessCodes=" + accessCodes +
                 ", patients=" + patients +
-                ", accessCodes=" + accessCodes +
+                ", id=" + id +
+                ", team=" + team +
+                ", includeExpired=" + includeExpired +
                 '}';
     }
-
 }

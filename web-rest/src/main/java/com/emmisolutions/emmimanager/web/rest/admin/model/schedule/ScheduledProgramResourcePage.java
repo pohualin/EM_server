@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.schedule;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
@@ -13,7 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.emmisolutions.emmimanager.web.rest.admin.resource.AdminSchedulesResource.ACCESS_CODES_REQUEST_PARAM;
+import static com.emmisolutions.emmimanager.web.rest.admin.resource.AdminSchedulesResource.*;
 import static org.springframework.hateoas.TemplateVariable.VariableType.REQUEST_PARAM;
 import static org.springframework.hateoas.TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -48,13 +49,15 @@ public class ScheduledProgramResourcePage extends PagedResource<ScheduledProgram
      */
     public static Link searchLink() {
         Link link = linkTo(methodOn(AdminSchedulesResource.class)
-                .find(null, null, null)).withRel("scheduledPrograms");
+                .find(null, null, null, null, null)).withRel("scheduledPrograms");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
                 .with(new TemplateVariables(
                         new TemplateVariable("page", REQUEST_PARAM),
                         new TemplateVariable("size", REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("sort*", REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable(ACCESS_CODES_REQUEST_PARAM + "*", REQUEST_PARAM_CONTINUED)
+                        new TemplateVariable(ACCESS_CODES_REQUEST_PARAM + "*", REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(PATIENT_REQUEST_PARAM + "*", REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(EXPIRED_REQUEST_PARAM, REQUEST_PARAM_CONTINUED)
                 ));
         return new Link(uriTemplate, link.getRel());
     }
@@ -74,7 +77,11 @@ public class ScheduledProgramResourcePage extends PagedResource<ScheduledProgram
                 // add args to template
                 UriTemplate uriTemplate = new UriTemplate(link.getHref())
                         .with(new TemplateVariables(
-                                new TemplateVariable(ACCESS_CODES_REQUEST_PARAM + "*", REQUEST_PARAM_CONTINUED)));
+                                new TemplateVariable(ACCESS_CODES_REQUEST_PARAM + "*", REQUEST_PARAM_CONTINUED),
+                                new TemplateVariable(PATIENT_REQUEST_PARAM + "*", REQUEST_PARAM_CONTINUED),
+                                new TemplateVariable(EXPIRED_REQUEST_PARAM, REQUEST_PARAM_CONTINUED)
+
+                        ));
                 this.links.add(new Link(uriTemplate.toString(), rel));
             } else {
                 // add values
@@ -82,6 +89,14 @@ public class ScheduledProgramResourcePage extends PagedResource<ScheduledProgram
                     for (String s : filter.accessCodes()) {
                         builder.queryParam(ACCESS_CODES_REQUEST_PARAM, s);
                     }
+                }
+                if (!CollectionUtils.isEmpty(filter.patients())) {
+                    for (Patient patient : filter.patients()) {
+                        builder.queryParam(PATIENT_REQUEST_PARAM, patient.getId());
+                    }
+                }
+                if (filter.includeExpired()) {
+                    builder.queryParam(EXPIRED_REQUEST_PARAM, filter.includeExpired());
                 }
                 this.links.add(new Link(builder.build().encode().toUriString(), rel));
             }
