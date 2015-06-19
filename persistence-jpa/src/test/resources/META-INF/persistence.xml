@@ -50,6 +50,7 @@
         <class>com.emmisolutions.emmimanager.model.ClientType</class>
         <class>com.emmisolutions.emmimanager.model.ClientRegion</class>
         <class>com.emmisolutions.emmimanager.model.ClientTier</class>
+        <class>com.emmisolutions.emmimanager.model.ClientNote</class>
         <class>com.emmisolutions.emmimanager.model.TeamProvider</class>
         <class>com.emmisolutions.emmimanager.model.TeamLocation</class>
 		<class>com.emmisolutions.emmimanager.model.TeamProviderTeamLocation</class>
