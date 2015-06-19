@@ -1,10 +1,90 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import org.springframework.web.bind.annotation.RestController;
+import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
+import com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.service.ClientTeamPhoneConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientTeamSelfRegConfigurationService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamPhoneConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamPhoneConfigurationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamSelfRegConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamSelfRegConfigurationResourceAssembler;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 /**
- * Created by achavan on 6/19/2015.
+ * ClientTeamSelfRegConfigurationsResource REST API
  */
 @RestController
+@RequestMapping(value = "/webapi", produces = { APPLICATION_JSON_VALUE,
+        APPLICATION_XML_VALUE })
 public class ClientTeamSelfRegConfigurationsResource {
+
+    @Resource
+    ClientTeamSelfRegConfigurationService clientTeamSelfRegConfigurationService;
+
+    @Resource
+    ClientTeamSelfRegConfigurationResourceAssembler selfRegConfigResourceAssembler;
+
+
+    /**
+     * Find client team self registration configuration if there is any
+     *
+     * @param teamId    for the self reg configuration
+     * @param assembler makes a page for ClientTeamSelfRegConfiguration
+     * @return a ClientTeamSelfRegConfiguration response entity
+     */
+    @RequestMapping(value = "/teams/{teamId}/self_reg_configuration", method = RequestMethod.GET)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    public ResponseEntity<ClientTeamSelfRegConfigurationResource> findByTeam(
+            @PathVariable("teamId") Long teamId,
+            PagedResourcesAssembler<ClientTeamSelfRegConfiguration> assembler) {
+
+        ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration = clientTeamSelfRegConfigurationService
+                .findByTeam(new Team(teamId));
+
+        if (clientTeamSelfRegConfiguration != null) {
+            return new ResponseEntity<>(selfRegConfigResourceAssembler.toResource(
+                    clientTeamSelfRegConfiguration),
+                    HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+
+    /**
+     * Save or update client team self registration configuration
+     *
+     * @param teamId    for the self reg configuration
+     * @param clientTeamSelfRegConfiguration the user client team self reg configuration that needs to save or update
+     * @return a ClientTeamSelfRegConfiguration response entity
+     */
+    @RequestMapping(value = "/teams/{teamId}/self_reg_configuration", method = RequestMethod.POST)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    public ResponseEntity<ClientTeamSelfRegConfigurationResource> saveOrUpdate(
+            @PathVariable("teamId") Long teamId,
+            @RequestBody ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {
+        clientTeamSelfRegConfiguration.setTeam(new Team(teamId));
+        ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.saveOrUpdate(clientTeamSelfRegConfiguration);
+
+        if (selfRegConfiguration != null) {
+            return new ResponseEntity<>(
+                    selfRegConfigResourceAssembler
+                            .toResource(selfRegConfiguration),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 }
