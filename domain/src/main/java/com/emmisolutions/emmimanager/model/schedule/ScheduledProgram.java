@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.model.schedule;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.program.Program;
 import org.hibernate.envers.Audited;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
@@ -83,9 +85,30 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     public ScheduledProgram() {
     }
 
+    /**
+     * Id only based constructor
+     *
+     * @param scheduleId the id
+     */
+    public ScheduledProgram(Long scheduleId) {
+        this.id = scheduleId;
+    }
+
+    /**
+     * Id and team based constructor
+     *
+     * @param scheduleId the scheduled id
+     * @param team       the team
+     */
     public ScheduledProgram(Long scheduleId, Team team) {
         this.id = scheduleId;
         this.team = team;
+    }
+
+    @Override
+    @XmlElement(name = "created_date")
+    public DateTime getCreatedDate() {
+        return super.getCreatedDate();
     }
 
     public Long getId() {

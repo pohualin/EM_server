@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.client.resource;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
+import com.emmisolutions.emmimanager.service.ClientTeamPhoneConfigurationService;
 import com.emmisolutions.emmimanager.service.PatientService;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientReferenceData;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResource;
@@ -10,8 +11,11 @@ import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResour
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourcePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationPage;
 import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,10 +50,16 @@ public class PatientsResource {
     PatientResourceAssembler patientResourceAssembler;
 
     @Resource
+    ClientTeamPhoneConfigurationService clientTeamPhoneConfigurationService;
+    
+    @Resource
     ClientTeamEmailConfigurationService clientTeamEmailConfigurationService;
 
     @Resource
     TeamEmailConfigurationResourceAssembler emailConfigurationAssembler;
+    
+    @Resource
+    TeamPhoneConfigurationResourceAssembler phoneConfigurationAssembler;
 
     /**
      * POST for creating a patient for a given client
@@ -159,6 +169,7 @@ public class PatientsResource {
     /**
      * Find team email configuration for patient's or return the default
      *
+     * @param clientId    for the email configuration
      * @param teamId    for the email configuration
      * @param pageable  which page to fetch
      * @param assembler makes a page for ClientTeamEmailConfiguration
@@ -186,7 +197,31 @@ public class PatientsResource {
 
 
     }
+    
+    /**
+     * Find team phone configuration for patient's or return the default
+     *
+     * @param clientId    for the phone configuration
+     * @param teamId    for the phone configuration
+     * @return a ClientTeamPhoneConfiguration response entity
+     */
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient_phone_configuration", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+    public ResponseEntity<TeamPhoneConfigurationResource> findTeamPhoneConfigForPatient(
+            @PathVariable("clientId") Long clientId,
+            @PathVariable("teamId") Long teamId) {
 
+        ClientTeamPhoneConfiguration teamPhoneConfiguration = clientTeamPhoneConfigurationService
+                .findByTeam(new Team(teamId));
+        if (teamPhoneConfiguration != null) {
+            return new ResponseEntity<>(phoneConfigurationAssembler.toResource(
+            		teamPhoneConfiguration), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    
     /**
      * GET for listing all scheduled patients the given team
      *

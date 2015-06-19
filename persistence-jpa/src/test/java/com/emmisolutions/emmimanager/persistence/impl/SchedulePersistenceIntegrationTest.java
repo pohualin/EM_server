@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
+import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -34,6 +36,7 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
     public void save() {
         ScheduledProgram scheduledProgram = new ScheduledProgram();
         Client client = makeNewRandomClient();
+        Patient patient = makeNewRandomPatient(client);
 
         scheduledProgram.setAccessCode("23759604346");
         scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
@@ -41,7 +44,7 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
         scheduledProgram.setProvider(makeNewRandomProvider());
         scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));
-        scheduledProgram.setPatient(makeNewRandomPatient(client));
+        scheduledProgram.setPatient(patient);
 
         ScheduledProgram saved = schedulePersistence.save(scheduledProgram);
         assertThat("save happens successfully",
@@ -61,8 +64,16 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
         ScheduledProgram differentTeam = new ScheduledProgram(saved.getId(), makeNewRandomTeam(client));
         assertThat("reload with different team should return null", schedulePersistence.reload(differentTeam),
                 is(nullValue()));
+
+        assertThat("reload with patient works", schedulePersistence.find(with().patients(patient), null), hasItem(saved));
+
+        assertThat("access code works",
+                schedulePersistence.find(with().accessCodes(saved.getAccessCode()).patients(patient), null), hasItem(saved));
     }
 
+    /**
+     * Edge case reload scenarios should function as spec'd here
+     */
     @Test
     public void reloadScenarios(){
         assertThat("reload empty is null", schedulePersistence.reload(new ScheduledProgram()), is(nullValue()));

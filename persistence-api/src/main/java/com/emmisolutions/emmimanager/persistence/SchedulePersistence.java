@@ -1,6 +1,9 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Persistence Layer for scheduling
@@ -30,4 +33,14 @@ public interface SchedulePersistence {
      * @return the reloaded program
      */
     ScheduledProgram reload(ScheduledProgram scheduledProgram);
+
+    /**
+     * Finds a page of scheduled programs based upon the passed filter
+     *
+     * @param searchFilter to find programs
+     * @param page         specification
+     * @return page of ScheduledProgram objects
+     */
+    Page<ScheduledProgram> find(ScheduledProgramSearchFilter searchFilter, Pageable page);
+
 }

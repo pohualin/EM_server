@@ -1,16 +1,22 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+
+import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 
 /**
  * Spring implementation of the schedule service
@@ -65,5 +71,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ScheduledProgram reload(ScheduledProgram scheduledProgram) {
         return schedulePersistence.reload(scheduledProgram);
+    }
+
+    @Override
+    public Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page){
+        return patient != null && patient.getId() != null ? find(with().patients(patient), page) : null;
+    }
+
+    @Override
+    public Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page) {
+        return schedulePersistence.find(filter, page);
     }
 }

@@ -1,11 +1,12 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.PatientOptOutPreference;
 import com.emmisolutions.emmimanager.model.PatientSearchFilter;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Collection;
 
 /**
  * Patient Persistence API
@@ -15,16 +16,16 @@ public interface PatientPersistence {
     /**
      * Creates or updates a given patient
      *
-     * @param patient
-     * @return
+     * @param patient to save
+     * @return the updated patient
      */
     Patient save(Patient patient);
 
     /**
      * Reloads a given patient
      *
-     * @param patient
-     * @return
+     * @param patient to reload
+     * @return the persistent patient
      */
     Patient reload(Patient patient);
 
@@ -36,5 +37,12 @@ public interface PatientPersistence {
      * @return a page of patient objects
      */
     Page<Patient> list(Pageable page, PatientSearchFilter searchFilter);
+
+    /**
+     * Loads the collection of possible opt out preferences
+     *
+     * @return collection of preferences
+     */
+    Collection<PatientOptOutPreference> allPossibleOptOutPreferences();
 
 }

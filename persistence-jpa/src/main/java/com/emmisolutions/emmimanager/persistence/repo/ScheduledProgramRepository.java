@@ -17,4 +17,5 @@ public interface ScheduledProgramRepository extends JpaRepository<ScheduledProgr
      * @return true if it already exists or false if it does not
      */
     ScheduledProgram findFirstByAccessCodeEquals(String toCheck);
+
 }
