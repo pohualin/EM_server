@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientNote;
 import com.emmisolutions.emmimanager.service.ClientNoteService;
-import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.note.ClientNoteResource;
-import com.emmisolutions.emmimanager.web.rest.admin.model.client.note.ClientNoteResourceAssembler;
 
 /**
  * ClientNote REST API
@@ -30,13 +29,10 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.client.note.ClientNote
 public class ClientNotesResource {
 
     @Resource
-    ClientService clientService;
-    
-    @Resource
     ClientNoteService clientNoteService;
 
-    @Resource
-    ClientNoteResourceAssembler clientNoteResourceAssembler;
+    @Resource(name = "clientNoteResourceAssembler")
+    ResourceAssembler<ClientNote, ClientNoteResource> clientNoteResourceAssembler;
 
     /**
      * Delete an existing ClientNote
@@ -106,11 +102,10 @@ public class ClientNotesResource {
     @RequestMapping(value = "/client/{clientId}/client_note", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER" })
-    public ResponseEntity<ClientNoteResource> save(
+    public ResponseEntity<ClientNoteResource> create(
             @PathVariable("clientId") Long clientId,
             @RequestBody ClientNote clientNote) {
-        clientNote.setClient(clientService.reload(new Client(clientId)));
-        
+        clientNote.setClient(new Client(clientId));
         ClientNote saved = clientNoteService.create(clientNote);
 
         if (saved == null) {
@@ -123,22 +118,21 @@ public class ClientNotesResource {
     }
 
     /**
-     * Update a ClinetNote
+     * Update an existing ClientNote
      * 
-     * @param clientId
-     *            to use
-     * @param clientNote
+     * @param clientNoteId
      *            to update
-     * @return updated ClientNoteResource
+     * @param clientNote
+     *            to use
+     * @return ClientNoteResource with updated ClientNote
      */
-    @RequestMapping(value = "/client/{clientId}/client_note", method = RequestMethod.PUT, consumes = {
+    @RequestMapping(value = "/client_note/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER" })
     public ResponseEntity<ClientNoteResource> update(
-            @PathVariable("clientId") Long clientId,
+            @PathVariable("id") Long clientNoteId,
             @RequestBody ClientNote clientNote) {
-        clientNote.setClient(clientService.reload(new Client(clientId)));
-        
+        clientNote.setClient(new Client(clientNote.getClient().getId()));
         ClientNote saved = clientNoteService.update(clientNote);
 
         if (saved == null) {

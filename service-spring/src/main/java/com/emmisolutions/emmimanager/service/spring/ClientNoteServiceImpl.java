@@ -38,7 +38,6 @@ public class ClientNoteServiceImpl implements ClientNoteService {
     @Transactional(readOnly = true)
     public ClientNote findByClient(Client client) {
         Client toUse = clientService.reload(client);
-
         if (toUse != null) {
             return clientNotePersistence.findByClientId(toUse.getId());
         } else {
@@ -50,8 +49,7 @@ public class ClientNoteServiceImpl implements ClientNoteService {
     @Transactional(readOnly = true)
     public ClientNote reload(ClientNote clientNote) {
         if (clientNote == null || clientNote.getId() == null) {
-            throw new InvalidDataAccessApiUsageException(
-                    "ClientNote or clientNoteId can not be null");
+            return null;
         }
         return clientNotePersistence.reload(clientNote.getId());
     }
@@ -61,14 +59,20 @@ public class ClientNoteServiceImpl implements ClientNoteService {
     public ClientNote create(ClientNote clientNote) {
         clientNote.setId(null);
         clientNote.setVersion(null);
+        // Reload Client
+        clientNote.setClient(clientService.reload(clientNote.getClient()));
         return clientNotePersistence.saveOrUpdate(clientNote);
     }
 
     @Override
     public ClientNote update(ClientNote clientNote) {
-        ClientNote toUpdate = reload(clientNote);
-        toUpdate.setNote(clientNote.getNote());
-        return clientNotePersistence.saveOrUpdate(toUpdate);
+        if (clientNote.getId() == null || clientNote.getVersion() == null) {
+            throw new InvalidDataAccessApiUsageException(
+                    "clientNote id and version can not be null");
+        }
+        // Reload Client
+        clientNote.setClient(clientService.reload(clientNote.getClient()));
+        return clientNotePersistence.saveOrUpdate(clientNote);
     }
 
 }

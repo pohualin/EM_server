@@ -65,4 +65,9 @@
         </createIndex>
     </changeSet>
     
+    <changeSet id="add unique key to client_note table" author="Paul">
+	    <addUniqueConstraint tableName="client_note" columnNames="client_id"
+	                             constraintName="uk_client_note_client_id"/>
+    </changeSet>
+    
 </databaseChangeLog>

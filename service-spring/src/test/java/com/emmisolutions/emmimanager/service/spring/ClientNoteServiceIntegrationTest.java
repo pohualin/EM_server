@@ -29,11 +29,23 @@ public class ClientNoteServiceIntegrationTest extends BaseIntegrationTest {
     public void testSave() {
         Client client = makeNewRandomClient();
         ClientNote note = new ClientNote();
-        note.setClient(client);
+        note.setClient(new Client(client.getId()));
         note.setNote(RandomStringUtils.randomAlphanumeric(4096));
         note = clientNoteService.create(note);
         assertThat("should create a ClientNote", note.getId(),
                 is(notNullValue()));
+        
+        // Version and Id are required for update
+        ClientNote updateWithIdAndVersion = new ClientNote();
+        updateWithIdAndVersion.setClient(client);
+        updateWithIdAndVersion.setId(note.getId());
+        updateWithIdAndVersion.setVersion(note.getVersion());
+        updateWithIdAndVersion.setNote(RandomStringUtils.randomAlphanumeric(4096));
+        updateWithIdAndVersion = clientNoteService.update(updateWithIdAndVersion);
+        assertThat("should update an existing ClientNote", updateWithIdAndVersion.getId().equals(note.getId()),
+                is(true));
+        assertThat("should have different version", updateWithIdAndVersion.getVersion().equals(note.getVersion()),
+                is(false));
 
         ClientNote reload = clientNoteService.reload(new ClientNote(note
                 .getId()));
@@ -81,16 +93,6 @@ public class ClientNoteServiceIntegrationTest extends BaseIntegrationTest {
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeDeleteWithNullId() {
         clientNoteService.delete(new ClientNote());
-    }
-
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeReloadWithNull() {
-        clientNoteService.reload(null);
-    }
-
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeReloadWithNullId() {
-        clientNoteService.reload(new ClientNote());
     }
 
 }

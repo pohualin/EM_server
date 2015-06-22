@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,7 +23,7 @@ import org.hibernate.envers.Audited;
 @Audited
 @Entity
 @XmlRootElement(name = "client_note")
-@Table(name = "client_note")
+@Table(name = "client_note", uniqueConstraints = { @UniqueConstraint(columnNames = { "client_id" }, name = "uk_client_note_client") })
 public class ClientNote extends AbstractAuditingEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +45,6 @@ public class ClientNote extends AbstractAuditingEntity implements Serializable {
      * Default constructor
      */
     public ClientNote() {
-
     }
 
     /**
