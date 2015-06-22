@@ -9,7 +9,7 @@ import com.emmisolutions.emmimanager.persistence.ClientNotePersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientNoteRepository;
 
 /**
- * Persistence Implementation to deal with PasswordConfiguration
+ * Persistence Implementation to deal with ClientNote
  */
 @Repository
 public class ClientNotePersistenceImpl implements ClientNotePersistence {
@@ -34,10 +34,7 @@ public class ClientNotePersistenceImpl implements ClientNotePersistence {
 
     @Override
     public void delete(Long id) {
-        ClientNote toDelete = reload(id);
-        if (toDelete != null) {
-            clientNoteRepository.delete(toDelete);
-        }
+        clientNoteRepository.delete(id);
     }
 
 }
