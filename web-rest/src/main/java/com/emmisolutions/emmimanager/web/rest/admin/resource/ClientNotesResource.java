@@ -35,47 +35,13 @@ public class ClientNotesResource {
     ResourceAssembler<ClientNote, ClientNoteResource> clientNoteResourceAssembler;
 
     /**
-     * Delete an existing ClientNote
-     * 
-     * @param clientNoteId
-     *            to delete
-     */
-    @RequestMapping(value = "/client_note/{id}", method = RequestMethod.DELETE)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER" })
-    public void delete(@PathVariable("id") Long clientNoteId) {
-        clientNoteService.delete(new ClientNote(clientNoteId));
-    }
-
-    /**
-     * Reload an existing ClientNote by id
-     * 
-     * @param clientNoteId
-     *            to use
-     * @return an existing ClientNote
-     */
-    @RequestMapping(value = "/client_note/{id}", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public ResponseEntity<ClientNoteResource> get(
-            @PathVariable("id") Long clientNoteId) {
-        ClientNote clientNote = clientNoteService.reload(new ClientNote(
-                clientNoteId));
-        if (clientNote != null) {
-            return new ResponseEntity<>(
-                    clientNoteResourceAssembler.toResource(clientNote),
-                    HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
-
-    /**
      * Get ClientNote by Client
      * 
      * @param clientId
      *            to lookup
      * @return a ClientNote
      */
-    @RequestMapping(value = "/client/{clientId}/client_note", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/client_note", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientNoteResource> getByClient(
             @PathVariable("clientId") Long clientId) {
@@ -99,7 +65,7 @@ public class ClientNotesResource {
      *            to create
      * @return saved ClientNoteResource
      */
-    @RequestMapping(value = "/client/{clientId}/client_note", method = RequestMethod.POST, consumes = {
+    @RequestMapping(value = "/clients/{clientId}/client_note", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER" })
     public ResponseEntity<ClientNoteResource> create(
@@ -120,19 +86,19 @@ public class ClientNotesResource {
     /**
      * Update an existing ClientNote
      * 
-     * @param clientNoteId
-     *            to update
-     * @param clientNote
+     * @param clientId
      *            to use
-     * @return ClientNoteResource with updated ClientNote
+     * @param clientNote
+     *            to update
+     * @return a ClientNoteResource with updated ClientNote
      */
-    @RequestMapping(value = "/client_note/{id}", method = RequestMethod.PUT, consumes = {
+    @RequestMapping(value = "/clients/{clientId}/client_note", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER" })
     public ResponseEntity<ClientNoteResource> update(
-            @PathVariable("id") Long clientNoteId,
+            @PathVariable("clientId") Long clientId,
             @RequestBody ClientNote clientNote) {
-        clientNote.setClient(new Client(clientNote.getClient().getId()));
+        clientNote.setClient(new Client(clientId));
         ClientNote saved = clientNoteService.update(clientNote);
 
         if (saved == null) {

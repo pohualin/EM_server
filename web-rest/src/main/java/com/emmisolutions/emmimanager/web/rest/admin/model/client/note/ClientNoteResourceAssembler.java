@@ -24,8 +24,8 @@ public class ClientNoteResourceAssembler implements
         ClientNoteResource ret = new ClientNoteResource();
         if (entity.getId() != null) {
             ret.add(linkTo(
-                    methodOn(ClientNotesResource.class).get(entity.getId()))
-                    .withSelfRel());
+                    methodOn(ClientNotesResource.class).getByClient(
+                            entity.getClient().getId())).withSelfRel());
         }
         ret.setEntity(entity);
         return ret;
