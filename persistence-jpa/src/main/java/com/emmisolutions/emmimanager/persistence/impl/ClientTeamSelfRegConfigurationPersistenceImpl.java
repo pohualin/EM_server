@@ -40,6 +40,6 @@ public class ClientTeamSelfRegConfigurationPersistenceImpl implements
 
     @Override
     public ClientTeamSelfRegConfiguration findByName(String code) {
-        return clientTeamSelfRegConfigurationRepository.findByCode(code);
+        return clientTeamSelfRegConfigurationRepository.findByCodeIgnoreCase(code);
     }
 }

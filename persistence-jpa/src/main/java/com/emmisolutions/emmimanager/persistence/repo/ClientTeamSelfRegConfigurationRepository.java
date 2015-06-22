@@ -21,6 +21,6 @@ public interface ClientTeamSelfRegConfigurationRepository extends
             Long teamId);
 
 
-    ClientTeamSelfRegConfiguration findByCode(String code);
+    ClientTeamSelfRegConfiguration findByCodeIgnoreCase(String code);
 }
 
