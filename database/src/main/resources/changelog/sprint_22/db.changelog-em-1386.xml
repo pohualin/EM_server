@@ -24,7 +24,7 @@
             <column name="client_id" type="bigint">
                 <constraints nullable="false" />
             </column>
-            <column name="note" type="nvarchar(4096)">
+            <column name="note" type="nvarchar(2048)">
             	<constraints nullable="false"  />
             </column>
     	</createTable>
