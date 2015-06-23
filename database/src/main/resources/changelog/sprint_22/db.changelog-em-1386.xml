@@ -48,7 +48,7 @@
             </column>
             <column name="revision_type" type="tinyint"/>
             <column name="client_id" type="bigint"/>
-            <column name="note" type="nvarchar(4096)" />
+            <column name="note" type="nvarchar(2048)" />
     	</createTable>
     	
     	<addPrimaryKey tableName="client_note_audit" columnNames="id, revision"
