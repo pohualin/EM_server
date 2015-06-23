@@ -31,7 +31,7 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.phones() != null) {
+                if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.phones())) {
                     List<Predicate> phonePredicates = new ArrayList<>();
                     for (String phone : searchFilter.phones()) {
                         phonePredicates.add(cb.equal(root.get(Patient_.phone), phone));
@@ -54,7 +54,7 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.emails() != null) {
+                if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.emails())) {
                     List<Predicate> emailPredicates = new ArrayList<>();
                     for (String email : searchFilter.emails()) {
                         emailPredicates.add(cb.equal(root.get(Patient_.email), email));
@@ -77,7 +77,7 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.accessCodes() != null) {
+                if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.accessCodes())) {
                     List<Predicate> accessCodePredicates = new ArrayList<>();
                     for (String accessCode : searchFilter.accessCodes()) {
                         accessCodePredicates.add(cb.equal(root.join(Patient_.scheduledPrograms, JoinType.LEFT)
@@ -139,7 +139,7 @@ public class PatientSpecifications {
         return new Specification<Patient>() {
             @Override
             public Predicate toPredicate(Root<Patient> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                if (searchFilter != null && searchFilter.teams() != null) {
+                if (searchFilter != null && !CollectionUtils.isEmpty(searchFilter.teams())) {
                     List<Predicate> teamPredicates = new ArrayList<>();
                     for (Team team : searchFilter.teams()) {
                         if (team.getId() != null) {
