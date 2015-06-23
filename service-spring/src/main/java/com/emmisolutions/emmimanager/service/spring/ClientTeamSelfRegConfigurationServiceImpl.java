@@ -78,7 +78,7 @@ public class ClientTeamSelfRegConfigurationServiceImpl implements
 
     @Override
     public ClientTeamSelfRegConfiguration findByTeam(Team team) {
-        if (team.getId() == null) {
+        if (team == null || team.getId() == null) {
             throw new InvalidDataAccessApiUsageException("Team cannot be null" + "to find ClientTeamSelfRegConfiguration");
         }
         return clientTeamSelfRegConfigurationPersistence.find(team.getId());
