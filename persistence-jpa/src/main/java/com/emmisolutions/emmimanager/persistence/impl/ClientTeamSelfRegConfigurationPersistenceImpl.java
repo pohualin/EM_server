@@ -37,9 +37,8 @@ public class ClientTeamSelfRegConfigurationPersistenceImpl implements
         return clientTeamSelfRegConfigurationRepository.findOne(id);
     }
 
-
     @Override
-    public ClientTeamSelfRegConfiguration findByName(String code) {
+    public ClientTeamSelfRegConfiguration findByCode(String code) {
         return clientTeamSelfRegConfigurationRepository.findByCodeIgnoreCase(code);
     }
 }

@@ -14,9 +14,17 @@ public interface ClientTeamSelfRegConfigurationService {
      * @param clientTeamSelfRegConfiguration to save or update
      * @return a associated ClientTeamPhoneConfiguration
      */
-    ClientTeamSelfRegConfiguration saveOrUpdate(
+    ClientTeamSelfRegConfiguration create(
             ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration);
 
+    /**
+     * Save or Update a ClientTeamSelfRegConfiguration
+     *
+     * @param clientTeamSelfRegConfiguration to save or update
+     * @return a associated ClientTeamPhoneConfiguration
+     */
+    ClientTeamSelfRegConfiguration update(
+            ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration);
 
     /**
      * Find a existing clientTeamSelfRegConfiguration by team id
@@ -25,14 +33,4 @@ public interface ClientTeamSelfRegConfigurationService {
      * @return a existing clientTeamSelfRegConfiguration
      */
     ClientTeamSelfRegConfiguration findByTeam(Team team);
-
-    /**
-     * Find a existing clientTeamSelfRegConfiguration by name/code
-     *
-     * @param name to find
-     * @return a existing clientTeamSelfRegConfiguration
-     */
-//    ClientTeamSelfRegConfiguration findByName(String name);
-
-
 }

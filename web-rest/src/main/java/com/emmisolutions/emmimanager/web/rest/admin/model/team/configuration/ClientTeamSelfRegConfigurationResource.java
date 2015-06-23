@@ -8,8 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * HATEOAS wrapper for ClientTeamSelfRegConfiguration, essentially a DTO instead of
- * a wrapper.
+ * HATEOAS wrapper for ClientTeamSelfRegConfiguration
  */
 @XmlRootElement(name = "client-team-self-reg-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)

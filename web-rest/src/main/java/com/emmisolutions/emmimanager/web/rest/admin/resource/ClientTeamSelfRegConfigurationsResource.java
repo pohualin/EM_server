@@ -10,6 +10,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.Cli
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamSelfRegConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamSelfRegConfigurationResourceAssembler;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +32,8 @@ public class ClientTeamSelfRegConfigurationsResource {
     @Resource
     ClientTeamSelfRegConfigurationService clientTeamSelfRegConfigurationService;
 
-    @Resource
-    ClientTeamSelfRegConfigurationResourceAssembler selfRegConfigResourceAssembler;
-
+    @Resource(name = "clientTeamSelfRegConfigurationResourceAssembler")
+    ResourceAssembler<ClientTeamSelfRegConfiguration, ClientTeamSelfRegConfigurationResource> selfRegConfigResourceAssembler;
 
     /**
      * Find client team self registration configuration if there is any
@@ -62,19 +62,45 @@ public class ClientTeamSelfRegConfigurationsResource {
 
 
     /**
-     * Save or update client team self registration configuration
+     * POST to save client team self registration configuration
      *
      * @param teamId    for the self reg configuration
      * @param clientTeamSelfRegConfiguration the user client team self reg configuration that needs to save or update
-     * @return a ClientTeamSelfRegConfiguration response entity
+     * @return a ClientTeamSelfRegConfiguration response entity, with HttpStatus.CREATED or HttpStatus.NOT_ACCEPTABLE
      */
     @RequestMapping(value = "/teams/{teamId}/self_reg_configuration", method = RequestMethod.POST)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public ResponseEntity<ClientTeamSelfRegConfigurationResource> saveOrUpdate(
+    public ResponseEntity<ClientTeamSelfRegConfigurationResource> save(
             @PathVariable("teamId") Long teamId,
             @RequestBody ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {
         clientTeamSelfRegConfiguration.setTeam(new Team(teamId));
-        ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.saveOrUpdate(clientTeamSelfRegConfiguration);
+        ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.create(clientTeamSelfRegConfiguration);
+
+        if (selfRegConfiguration != null) {
+            return new ResponseEntity<>(
+                    selfRegConfigResourceAssembler
+                            .toResource(selfRegConfiguration),
+                    HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+    }
+
+    /**
+     * PUT to update client team self registration configuration
+     *
+     * @param teamId    for the self reg configuration
+     * @param clientTeamSelfRegConfiguration the user client team self reg configuration that needs to save or update
+     * @return a ClientTeamSelfRegConfiguration response entity, with HttpStatus.OK or HttpStatus.NOT_ACCEPTABLE
+     */
+    @RequestMapping(value = "/teams/{teamId}/self_reg_configuration", method = RequestMethod.PUT)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    public ResponseEntity<ClientTeamSelfRegConfigurationResource> update(
+            @PathVariable("teamId") Long teamId,
+            @RequestBody ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {
+        clientTeamSelfRegConfiguration.setTeam(new Team(teamId));
+        ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.update(clientTeamSelfRegConfiguration);
 
         if (selfRegConfiguration != null) {
             return new ResponseEntity<>(
@@ -82,9 +108,8 @@ public class ClientTeamSelfRegConfigurationsResource {
                             .toResource(selfRegConfiguration),
                     HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
     }
-
 }

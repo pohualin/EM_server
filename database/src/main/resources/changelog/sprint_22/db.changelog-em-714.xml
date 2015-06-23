@@ -55,8 +55,10 @@
                                  constraintName="fk_client_team_self_reg_config_team"
                                  referencedTableName="client_team"
                                  referencedColumnNames="id"/>
-		
-		<createIndex indexName="ix_client_team_self_reg_config_team_id"
+
+        <addUniqueConstraint tableName="client_team_self_reg_config" columnNames="code" constraintName="uk_client_team_self_reg_config_code"/>
+
+        <createIndex indexName="ix_client_team_self_reg_config_team_id"
                tableName="client_team_self_reg_config">
             <column name="client_team_id" type="BIGINT"/>
         </createIndex> 

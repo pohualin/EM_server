@@ -31,7 +31,12 @@ public interface ClientTeamSelfRegConfigurationPersistence {
      */
     ClientTeamSelfRegConfiguration reload(Long id);
 
-    ClientTeamSelfRegConfiguration findByName(String code);
+    /**
+     * Finds a self registration configuration by the code given
+     * @param code
+     * @return ClientTeamSelfRegConfiguration
+     */
+    ClientTeamSelfRegConfiguration findByCode(String code);
 
 
 }

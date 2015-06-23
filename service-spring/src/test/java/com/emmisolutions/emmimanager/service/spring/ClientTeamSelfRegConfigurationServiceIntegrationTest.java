@@ -37,7 +37,7 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
         ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
         selfRegConfiguration.setTeam(team);
         selfRegConfiguration.setCode("CODE_FOR_TEAM_ONE");
-        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.saveOrUpdate(selfRegConfiguration);
+        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
         ClientTeamSelfRegConfiguration foundSelfRegConfiguration = clientTeamSelfRegConfigurationService.findByTeam(team);
         assertThat("the saved self reg config is found:", foundSelfRegConfiguration, is(selfRegConfigurationSaved));
     }
@@ -47,7 +47,7 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeSaveOrUpdateNull() {
-        clientTeamSelfRegConfigurationService.saveOrUpdate(null);
+        clientTeamSelfRegConfigurationService.create(null);
     }
 
 
@@ -66,7 +66,7 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
         Team team = makeNewRandomTeam(client);
         ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
         selfRegConfiguration.setTeam(team);
-        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.saveOrUpdate(selfRegConfiguration);
+        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
         ClientTeamSelfRegConfiguration foundSelfRegConfiguration = clientTeamSelfRegConfigurationService.findByTeam(team);
         assertThat("the saved self reg config is found:", foundSelfRegConfiguration, is(selfRegConfigurationSaved));
     }
@@ -78,12 +78,12 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
         ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
         selfRegConfiguration.setTeam(team);
         selfRegConfiguration.setCode("CODE_FOR_TEAM_ONE");
-        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.saveOrUpdate(selfRegConfiguration);
+        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
         ClientTeamSelfRegConfiguration foundSelfRegConfiguration = clientTeamSelfRegConfigurationService.findByTeam(team);
         assertThat("the saved self reg config is found:", foundSelfRegConfiguration, is(selfRegConfigurationSaved));
 
         foundSelfRegConfiguration.setCode("UPDATED_CODE");
-        ClientTeamSelfRegConfiguration selfRegConfigurationUpdated = clientTeamSelfRegConfigurationService.saveOrUpdate(foundSelfRegConfiguration);
+        ClientTeamSelfRegConfiguration selfRegConfigurationUpdated = clientTeamSelfRegConfigurationService.update(foundSelfRegConfiguration);
         assertThat("the saved self reg config is found:", selfRegConfigurationUpdated, is(foundSelfRegConfiguration));
 
         ClientTeamSelfRegConfiguration foundSelfRegConfiguration2 = clientTeamSelfRegConfigurationService.findByTeam(team);
