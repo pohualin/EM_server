@@ -41,7 +41,7 @@ public class ClientNotePersistenceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         ClientNote note = new ClientNote();
         note.setClient(client);
-        note.setNote(RandomStringUtils.randomAlphanumeric(4096));
+        note.setNote(RandomStringUtils.randomAlphanumeric(2048));
         note = clientNotePersistence.saveOrUpdate(note);
         assertThat("save note successfully", note.getId(), is(notNullValue()));
 

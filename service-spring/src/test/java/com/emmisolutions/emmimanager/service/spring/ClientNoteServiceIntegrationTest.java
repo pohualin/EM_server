@@ -30,7 +30,7 @@ public class ClientNoteServiceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         ClientNote note = new ClientNote();
         note.setClient(new Client(client.getId()));
-        note.setNote(RandomStringUtils.randomAlphanumeric(4096));
+        note.setNote(RandomStringUtils.randomAlphanumeric(2048));
         note = clientNoteService.create(note);
         assertThat("should create a ClientNote", note.getId(),
                 is(notNullValue()));
