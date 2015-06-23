@@ -27,7 +27,7 @@ public class ClientTeamSelfRegConfiguration extends AbstractAuditingEntity {
     private Integer version;
 
     @NotNull
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "client_team_id", nullable = false)
     private Team team;
 
