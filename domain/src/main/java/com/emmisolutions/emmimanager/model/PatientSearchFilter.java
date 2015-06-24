@@ -22,8 +22,6 @@ public class PatientSearchFilter {
 
     private static final Pattern phonePattern = Pattern.compile("([2-9][0-9][0-9])([2-9][0-9][0-9])([0-9][0-9][0-9][0-9])");
 
-    private static final Pattern accessCodePattern = Pattern.compile("1[0-9]{10}|2[0-9]{10}");
-
     @XmlElement(name = "name")
     @XmlElementWrapper(name = "names")
     private Set<String> names;
@@ -149,18 +147,20 @@ public class PatientSearchFilter {
      */
     public PatientSearchFilter phones(String... phones) {
         if (phones != null) {
+            if (this.phones == null) {
+                this.phones = new HashSet<>();
+            }
             for (String phone : phones) {
                 // strip out non-numeric characters
                 String stripped = StringUtils.removePattern(phone, "[^\\d]*");
                 Matcher phoneMatcher = phonePattern.matcher(stripped);
+
                 // re-format as hyphen separated if there are 10 numbers
                 if (phoneMatcher.matches()) {
-                    if (this.phones == null) {
-                        this.phones = new HashSet<>();
-
-                    }
                     this.phones.add(String.format("%s-%s-%s",
                             phoneMatcher.group(1), phoneMatcher.group(2), phoneMatcher.group(3)));
+                } else {
+                    this.phones.add(stripped);
                 }
             }
         }
@@ -238,7 +238,7 @@ public class PatientSearchFilter {
         if (accessCodes != null) {
             for (String accessCode : accessCodes) {
                 String trimmed = StringUtils.trimToNull(accessCode);
-                if (trimmed != null && accessCodePattern.matcher(trimmed).matches()) {
+                if (trimmed != null) {
                     if (this.accessCodes == null) {
                         this.accessCodes = new HashSet<>();
                     }

@@ -50,6 +50,7 @@
         <class>com.emmisolutions.emmimanager.model.ClientType</class>
         <class>com.emmisolutions.emmimanager.model.ClientRegion</class>
         <class>com.emmisolutions.emmimanager.model.ClientTier</class>
+        <class>com.emmisolutions.emmimanager.model.ClientNote</class>
         <class>com.emmisolutions.emmimanager.model.TeamProvider</class>
         <class>com.emmisolutions.emmimanager.model.TeamLocation</class>
 		<class>com.emmisolutions.emmimanager.model.TeamProviderTeamLocation</class>
@@ -72,6 +73,7 @@
         <class>com.emmisolutions.emmimanager.model.program.ProgramSpecialty</class>
         <class>com.emmisolutions.emmimanager.model.schedule.ScheduledProgram</class>
         <class>com.emmisolutions.emmimanager.model.PatientOptOutPreference</class>
+        <class>com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
