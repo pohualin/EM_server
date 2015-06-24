@@ -3,18 +3,16 @@ package com.emmisolutions.emmimanager.salesforce.wsc;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.salesforce.service.SalesForceLookup;
-import com.sforce.soap.enterprise.EnterpriseConnection;
 import com.sforce.soap.enterprise.SearchRecord;
 import com.sforce.soap.enterprise.SearchResult;
 import com.sforce.soap.enterprise.sobject.Account;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,31 +28,8 @@ public class Lookup implements SalesForceLookup {
     private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
     private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
 
-    private EnterpriseConnection connection;
-
-    @Value("${salesforce.username}")
-    private String username;
-
-    @Value("${salesforce.password}")
-    private String password;
-
-    @Value("${salesforce.url}")
-    private String url;
-
-    private synchronized void init() {
-        try {
-            if (connection == null) {
-                LOGGER.debug("Attempting to connect to SalesForce");
-                ConnectorConfig config = new ConnectorConfig();
-                config.setUsername(username);
-                config.setPassword(password);
-                config.setAuthEndpoint(url);
-                connection = new EnterpriseConnection(config);
-            }
-        } catch (ConnectionException e) {
-            LOGGER.error("Error connecting to SalesForce", e);
-        }
-    }
+    @Resource
+    SalesForceOneConnection salesForceConnection;
 
     /**
      * Queries SalesForce for accounts using a default page size and a filter
@@ -74,12 +49,10 @@ public class Lookup implements SalesForceLookup {
      * @return a search response
      */
     public SalesForceSearchResponse findAccounts(String searchString, int pageSizeRequested) {
-        if (connection == null) {
-            init();
-            if (connection == null) {
-                LOGGER.error("No Connection to SalesForce present, unable to process search request for '{}'", searchString);
-                return new SalesForceSearchResponse(true, new ArrayList<SalesForce>());
-            }
+
+        if (salesForceConnection.get() == null) {
+            LOGGER.error("No Connection to SalesForce present, unable to process search request for '{}'", searchString);
+            return new SalesForceSearchResponse(true, new ArrayList<SalesForce>());
         }
 
         String strippedSearchString = StringUtils.stripToNull(searchString);
@@ -102,9 +75,10 @@ public class Lookup implements SalesForceLookup {
         // perform a search for the term
         SearchResult searchResult = null;
         try {
-            searchResult = connection.search(String.format(FIND_QUERY, escape(strippedSearchString), pageSize + 1));
+            searchResult = salesForceConnection.get()
+                    .search(String.format(FIND_QUERY, escape(strippedSearchString), pageSize + 1));
         } catch (ConnectionException e) {
-            connection = null;
+            salesForceConnection.reUp();
             findAccounts(searchString, pageSizeRequested);
         }
 
