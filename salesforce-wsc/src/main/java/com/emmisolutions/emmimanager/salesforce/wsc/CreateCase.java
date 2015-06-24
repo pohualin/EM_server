@@ -21,7 +21,7 @@ public class CreateCase implements SalesForceCreateCase {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateCase.class);
 
     @Resource
-    SalesForceOneConnection salesForceConnection;
+    SalesforceConnection salesForceConnection;
 
     @Override
     public void openCase(SalesForce salesForceAccount) {

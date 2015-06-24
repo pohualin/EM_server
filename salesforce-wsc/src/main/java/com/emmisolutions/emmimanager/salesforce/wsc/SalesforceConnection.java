@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
  * Manages the salesforce connection
  */
 @Component
-public class SalesForceOneConnection {
+public class SalesforceConnection {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SalesForceOneConnection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SalesforceConnection.class);
 
     private EnterpriseConnection connection;
 
