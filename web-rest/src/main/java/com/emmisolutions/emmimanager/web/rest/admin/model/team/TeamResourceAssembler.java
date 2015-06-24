@@ -4,13 +4,6 @@ import com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderPage;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamEmailConfigurationsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamPhoneConfigurationsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamSchedulingConfigurationsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamLocationsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamProvidersResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamTagsResource;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
 
 import org.springframework.hateoas.*;
