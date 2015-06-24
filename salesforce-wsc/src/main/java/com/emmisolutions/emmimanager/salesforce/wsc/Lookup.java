@@ -29,7 +29,7 @@ public class Lookup implements SalesForceLookup {
     private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
 
     @Resource
-    SalesforceConnection salesForceConnection;
+    ConnectionFactory salesForceConnection;
 
     /**
      * Queries SalesForce for accounts using a default page size and a filter
