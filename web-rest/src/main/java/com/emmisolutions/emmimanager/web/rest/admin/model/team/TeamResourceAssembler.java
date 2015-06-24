@@ -1,14 +1,17 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.team;
 
+import com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamEmailConfigurationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamPhoneConfigurationsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientTeamSchedulingConfigurationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamLocationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamProvidersResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamTagsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.TeamsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
 
 import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
@@ -32,7 +35,9 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
        
         ret.add(linkTo(methodOn(ClientTeamEmailConfigurationsResource.class).findTeamEmailConfig(entity.getId(), null, null)).withRel("teamEmailConfig"));
         ret.add(linkTo(methodOn(ClientTeamPhoneConfigurationsResource.class).findTeamPhoneConfig(entity.getId(), null)).withRel("teamPhoneConfig"));
-        
+        ret.add(linkTo(methodOn(ClientTeamSchedulingConfigurationsResource.class).findTeamSchedulingConfig(entity.getId(), null)).withRel("teamSchedulingConfig"));
+        ret.add(linkTo(methodOn(ClientTeamSelfRegConfigurationsResource.class).findByTeam(entity.getId(), null)).withRel("selfRegConfig"));
+
         ret.add(addPageSizeAndSort(
                 linkTo(methodOn(TeamTagsResource.class).list(entity.getId(), null, null)).withRel("tags")));
 
