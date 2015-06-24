@@ -34,7 +34,7 @@ public class ClientTeamSelfRegConfiguration extends AbstractAuditingEntity {
     @NotNull
     @Size(max = 100)
     @Column(length = 100, nullable = false)
-    @Pattern(regexp = "[\\-A-Za-z0-9_]*", message = "Name can only contain letters, digits, spaces, and the following characters: - ' = _ ; : @ # & , . ! ( ) /")
+    @Pattern(regexp = "[\\-A-Za-z0-9_]*", message = "Name can only contain letters, digits, and the following characters: - _")
     private String code;
 
     public Long getId() {
