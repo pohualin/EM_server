@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.salesforce.wsc;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.salesforce.service.SalesForceCreateCase;
 import com.sforce.soap.enterprise.*;
-import com.sforce.soap.enterprise.sobject.Case;
+import com.sforce.soap.enterprise.sobject.*;
 import com.sforce.ws.ConnectionException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 
+import static com.emmisolutions.emmimanager.salesforce.wsc.ConnectionFactory.escape;
+
 /**
  * Responsible for creating a case in SF.
  */
@@ -19,6 +21,10 @@ import javax.annotation.Resource;
 public class CreateCase implements SalesForceCreateCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateCase.class);
+
+    private static final String REFERENCE_SEARCH = "FIND {%s} RETURNING %s(Id, Name ORDER BY Name LIMIT %s)";
+
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     @Resource
     ConnectionFactory salesForceConnection;
@@ -31,12 +37,51 @@ public class CreateCase implements SalesForceCreateCase {
         }
 
         Case newCase = new Case();
+
         newCase.setAccountId(salesForceAccount.getAccountNumber());
-        newCase.setIsClosed(true);
+        newCase.setProgram__c("ff");
+        newCase.setContactId("cont");
+        newCase.setRecordTypeId("recordTypeId");
+        newCase.setOwnerId("");
+        newCase.setCreatedById("");
+        newCase.setLastModifiedById("");
+        newCase.setCSS_Specialist__c("");
+
 
         try {
             describeGlobalSample();
+            try {
+                System.out.println("");
+                System.out.println("Search User Records...");
+                SearchResult searchResult = salesForceConnection.get()
+                        .search(String.format(REFERENCE_SEARCH, escape("david"),
+                                "User", DEFAULT_PAGE_SIZE + 1));
+                for (SearchRecord searchRecord : searchResult.getSearchRecords()) {
+                    System.out.println("Id: " + searchRecord.getRecord().getId());
+                    System.out.println("Name: " + ((User) searchRecord.getRecord()).getName());
+                }
 
+                System.out.println("");
+                System.out.println("Search Program Records...");
+                QueryResult queryResult = salesForceConnection.get()
+                        .query("SELECT Id, Name from Program__c WHERE name like '%ANT%' LIMIT 25");
+                for (SObject searchRecord : queryResult.getRecords()) {
+                    System.out.println("Program Id: " + searchRecord.getId());
+                    System.out.println("Program Name: " + ((Program__c) searchRecord).getName());
+                }
+
+                System.out.println("");
+                System.out.println("Search Contact Records...");
+                searchResult = salesForceConnection.get()
+                        .search(String.format(REFERENCE_SEARCH, escape("david"),
+                                "Contact", DEFAULT_PAGE_SIZE + 1));
+                for (SearchRecord searchRecord : searchResult.getSearchRecords()) {
+                    System.out.println("Id: " + searchRecord.getRecord().getId());
+                    System.out.println("Name: " + ((Contact) searchRecord.getRecord()).getName());
+                }
+            } catch (ConnectionException e) {
+                e.printStackTrace();
+            }
         } catch (ConnectionException e) {
             salesForceConnection.reUp();
             openCase(salesForceAccount);
@@ -44,9 +89,6 @@ public class CreateCase implements SalesForceCreateCase {
     }
 
     private void describeGlobalSample() throws ConnectionException {
-
-        // describeGlobal() returns an array of object results that
-        // includes the object names that are available to the logged-in user.
 
         DescribeGlobalResult dgr = salesForceConnection.get().describeGlobal();
         // Loop through the array echoing the object names to the console

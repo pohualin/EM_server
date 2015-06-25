@@ -16,6 +16,8 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.emmisolutions.emmimanager.salesforce.wsc.ConnectionFactory.escape;
+
 /**
  * Lookup implementation that uses WSC to query SalesForce.
  */
@@ -26,7 +28,6 @@ public class Lookup implements SalesForceLookup {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
-    private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
 
     @Resource
     ConnectionFactory salesForceConnection;
@@ -95,18 +96,6 @@ public class Lookup implements SalesForceLookup {
             }
         }
         return new SalesForceSearchResponse(totalNumber <= pageSize, accounts);
-    }
-
-    private String escape(String searchQuery) {
-        StringBuilder ret = new StringBuilder();
-        for (Character character : searchQuery.toCharArray()) {
-            if (ESCAPE_CHARS.contains(character.toString())) {
-                ret.append('\\').append(character);
-            } else {
-                ret.append(character);
-            }
-        }
-        return ret.toString();
     }
 
     private SalesForce convert(Account account) {

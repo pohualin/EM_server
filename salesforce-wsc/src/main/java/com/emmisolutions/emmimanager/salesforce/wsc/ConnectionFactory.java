@@ -15,9 +15,8 @@ import org.springframework.stereotype.Component;
 public class ConnectionFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionFactory.class);
-
+    private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
     private EnterpriseConnection connection;
-
     @Value("${salesforce.username}")
     private String username;
 
@@ -26,6 +25,18 @@ public class ConnectionFactory {
 
     @Value("${salesforce.url}")
     private String url;
+
+    public static String escape(String searchQuery) {
+        StringBuilder ret = new StringBuilder();
+        for (Character character : searchQuery.toCharArray()) {
+            if (ESCAPE_CHARS.contains(character.toString())) {
+                ret.append('\\').append(character);
+            } else {
+                ret.append(character);
+            }
+        }
+        return ret.toString();
+    }
 
     private synchronized void init() {
         try {
