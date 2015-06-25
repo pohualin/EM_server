@@ -70,4 +70,8 @@
 	                             constraintName="uk_client_note_client_id"/>
     </changeSet>
     
+    <changeSet id="update note to nvarchar(800)" author="Paul">
+    	<modifyDataType tableName="client_note" columnName="note" newDataType="nvarchar(800)"/>
+    	<modifyDataType tableName="client_note_audit" columnName="note" newDataType="nvarchar(800)"/>
+    </changeSet>    
 </databaseChangeLog>
