@@ -30,7 +30,7 @@ public class ClientNoteServiceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         ClientNote note = new ClientNote();
         note.setClient(new Client(client.getId()));
-        note.setNote(RandomStringUtils.randomAlphanumeric(2048));
+        note.setNote(RandomStringUtils.randomAlphanumeric(800));
         note = clientNoteService.create(note);
         assertThat("should create a ClientNote", note.getId(),
                 is(notNullValue()));
@@ -41,7 +41,7 @@ public class ClientNoteServiceIntegrationTest extends BaseIntegrationTest {
         updateWithIdAndVersion.setId(note.getId());
         updateWithIdAndVersion.setVersion(note.getVersion());
         updateWithIdAndVersion.setNote(RandomStringUtils
-                .randomAlphanumeric(2048));
+                .randomAlphanumeric(800));
         updateWithIdAndVersion = clientNoteService
                 .update(updateWithIdAndVersion);
         assertThat("should update an existing ClientNote",
@@ -73,7 +73,7 @@ public class ClientNoteServiceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         ClientNote note = new ClientNote();
         note.setClient(client);
-        note.setNote(RandomStringUtils.randomAlphanumeric(2048));
+        note.setNote(RandomStringUtils.randomAlphanumeric(800));
         note = clientNoteService.create(note);
 
         assertThat("should find null with another client without note",
@@ -107,7 +107,7 @@ public class ClientNoteServiceIntegrationTest extends BaseIntegrationTest {
         Client client = makeNewRandomClient();
         ClientNote note = new ClientNote();
         note.setClient(client);
-        note.setNote(RandomStringUtils.randomAlphanumeric(2048));
+        note.setNote(RandomStringUtils.randomAlphanumeric(800));
         note = clientNoteService.create(note);
         clientNoteService.update(new ClientNote(note.getId()));
     }
