@@ -38,7 +38,7 @@ public class ClientNote extends AbstractAuditingEntity implements Serializable {
     private Client client;
 
     @NotNull
-    @Column(columnDefinition = "nvarchar(2048)", nullable = false)
+    @Column(columnDefinition = "nvarchar(800)", nullable = false)
     private String note;
 
     /**
