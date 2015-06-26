@@ -6,7 +6,7 @@
 
     <changeSet id="add rowver to tables" author="Matt" dbms="mssql">
         <sqlFile relativeToChangelogFile="true"
-                 path="changelog/sprint_22/data/rowver.sql"/>
+                 path="data/rowver.sql"/>
     </changeSet>
 
 </databaseChangeLog>
