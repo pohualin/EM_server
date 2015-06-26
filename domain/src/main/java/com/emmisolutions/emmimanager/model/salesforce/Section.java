@@ -9,18 +9,18 @@ import java.util.List;
 public class Section {
 
     private String name;
-    private List<Field> fields = new ArrayList<>();
+    private List<CaseField> caseFields = new ArrayList<>();
 
-    public List<Field> getFields() {
-        return fields;
+    public List<CaseField> getCaseFields() {
+        return caseFields;
     }
 
-    public void setFields(List<Field> fields) {
-        this.fields = fields;
+    public void setCaseFields(List<CaseField> caseFields) {
+        this.caseFields = caseFields;
     }
 
-    public void addField(Field field) {
-        fields.add(field);
+    public void addField(CaseField caseField) {
+        caseFields.add(caseField);
     }
 
     public String getName() {
@@ -33,9 +33,10 @@ public class Section {
 
     @Override
     public String toString() {
-        return "Section{" +
-                "name='" + name + '\'' +
-                ", fields=" + fields +
+        return "{" +
+                "\"class\": \"" + getClass().getSimpleName() + "\"" +
+                ", \"name\":\"" + name + "\"" +
+                ", \"fields\":" + caseFields +
                 '}';
     }
 }

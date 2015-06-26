@@ -3,9 +3,10 @@ package com.emmisolutions.emmimanager.model.salesforce;
 /**
  * A Field on a salesforce form
  */
-public abstract class Field {
+public abstract class CaseField {
 
     private String label;
+    private String name;
     private FieldType type;
     private boolean required;
 
@@ -35,10 +36,20 @@ public abstract class Field {
 
     @Override
     public String toString() {
-        return "Field{" +
-                "label='" + label + '\'' +
-                ", type=" + type +
-                ", required=" + required +
+        return "{" +
+                "\"class\": \"" + getClass().getSimpleName() + "\"" +
+                ", \"name\":\"" + name + "\"" +
+                ", \"label\":\"" + label + "\"" +
+                ", \"type\":\"" + getType() + "\"" +
+                ", \"required\":" + required +
                 '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

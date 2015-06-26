@@ -5,7 +5,7 @@ import static com.emmisolutions.emmimanager.model.salesforce.FieldType.REFERENCE
 /**
  * A reference field. This is a reference to a different object type.
  */
-public class ReferenceField extends Field {
+public class ReferenceCaseField extends CaseField {
 
     private String referenceId;
 
@@ -44,12 +44,15 @@ public class ReferenceField extends Field {
 
     @Override
     public String toString() {
-        return "ReferenceField{" +
-                "label='" + getLabel() + '\'' +
-                ", required=" + isRequired() +
-                ", referenceId='" + referenceId + '\'' +
-                ", referenceName='" + referenceName + '\'' +
-                ", referenceType='" + referenceType + '\'' +
+        return "{" +
+                "\"class\": \"" + getClass().getSimpleName() + "\"" +
+                ", \"type\":\"" + getType() + "\"" +
+                ", \"name\":\"" + getName() + "\"" +
+                ", \"label\":\"" + getLabel() + '"' +
+                ", \"required\":" + isRequired() +
+                ", \"referenceId\":\"" + referenceId + "\"" +
+                ", \"referenceName\":\"" + referenceName + "\"" +
+                ", \"referenceType\":\"" + referenceType + "\"" +
                 '}';
     }
 }

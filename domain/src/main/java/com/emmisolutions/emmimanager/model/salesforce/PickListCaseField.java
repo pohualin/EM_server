@@ -1,14 +1,12 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
-import java.util.Arrays;
-
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.MULTI_PICK_LIST;
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.PICK_LIST;
 
 /**
  * For select fields.. single and multi
  */
-public class PickListField extends Field {
+public class PickListCaseField extends CaseField {
 
     private String[] values;
 
@@ -47,12 +45,35 @@ public class PickListField extends Field {
 
     @Override
     public String toString() {
-        return "PickListField{" +
-                "label='" + getLabel() + '\'' +
-                ", required=" + isRequired() +
-                ", multiSelect=" + multiSelect +
-                ", options=" + Arrays.toString(options) +
-                ", values=" + Arrays.toString(values) +
+        return "{" +
+                "\"class\": \"" + getClass().getSimpleName() + "\"" +
+                ", \"type\":\"" + getType() + "\"" +
+                ", \"name\":\"" + getName() + "\"" +
+                ", \"label\":\"" + getLabel() + "\"" +
+                ", \"required\":" + isRequired() +
+                ", \"multiSelect\":" + multiSelect +
+                ", \"options\":" + toJsonString(options) +
+                ", \"values\":" + toJsonString(values) +
                 '}';
+    }
+
+    private String toJsonString(Object[] a) {
+        if (a == null)
+            return "null";
+
+        int iMax = a.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append("[");
+        for (int i = 0; ; i++) {
+            b.append("\"");
+            b.append(String.valueOf(a[i]));
+            b.append("\"");
+            if (i == iMax)
+                return b.append(']').toString();
+            b.append(", ");
+        }
     }
 }

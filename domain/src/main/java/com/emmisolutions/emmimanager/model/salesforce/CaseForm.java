@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
 public class CaseForm {
 
     private CaseType type;
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     public CaseType getType() {
         return type;
@@ -26,11 +27,17 @@ public class CaseForm {
         this.sections = sections;
     }
 
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
     @Override
     public String toString() {
-        return "CaseForm{" +
-                "type=" + type +
-                ", sections=" + sections +
+        return "{" +
+                "\"class\": \"" + getClass().getSimpleName() + "\"" +
+                ", \"type\":" + type +
+                ", \"sections\":" + sections +
                 '}';
     }
+
 }
