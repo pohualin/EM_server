@@ -1,8 +1,11 @@
 package com.emmisolutions.emmimanager.salesforce.wsc;
 
 import com.emmisolutions.emmimanager.model.SalesForce;
+import com.emmisolutions.emmimanager.model.salesforce.*;
 import com.emmisolutions.emmimanager.salesforce.service.SalesForceCreateCase;
 import com.sforce.soap.enterprise.*;
+import com.sforce.soap.enterprise.Field;
+import com.sforce.soap.enterprise.FieldType;
 import com.sforce.soap.enterprise.sobject.*;
 import com.sforce.ws.ConnectionException;
 import org.apache.commons.lang3.StringUtils;
@@ -11,7 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static com.emmisolutions.emmimanager.model.salesforce.FieldType.STRING;
 import static com.emmisolutions.emmimanager.salesforce.wsc.ConnectionFactory.escape;
 
 /**
@@ -46,7 +54,6 @@ public class CreateCase implements SalesForceCreateCase {
         newCase.setCreatedById("");
         newCase.setLastModifiedById("");
         newCase.setCSS_Specialist__c("");
-
 
         try {
             describeGlobalSample();
@@ -88,133 +95,146 @@ public class CreateCase implements SalesForceCreateCase {
         }
     }
 
-    private void describeGlobalSample() throws ConnectionException {
+    private Map<CaseType, CaseForm> describeGlobalSample() throws ConnectionException {
+        DescribeSObjectResult dsr = salesForceConnection.get().describeSObject("Case");
 
-        DescribeGlobalResult dgr = salesForceConnection.get().describeGlobal();
-        // Loop through the array echoing the object names to the console
-        for (DescribeGlobalSObjectResult sObjectResult : dgr.getSobjects()) {
+        Map<String, Field> fieldMap = describeObject(dsr);
 
-            if (StringUtils.equalsIgnoreCase("Case", sObjectResult.getName())) {
-                DescribeSObjectResult dsr = salesForceConnection.get()
-                        .describeSObject(sObjectResult.getName());
-
-                describeObject(dsr);
-
-                for (RecordTypeInfo recordTypeInfo : dsr.getRecordTypeInfos()) {
-                    if (!StringUtils.equalsIgnoreCase("master", recordTypeInfo.getName())) {
-                        System.out.println("RecordType:");
-                        System.out.println("\tId: " + recordTypeInfo.getRecordTypeId());
-                        System.out.println("\tName: " + recordTypeInfo.getName());
-                        System.out.println("\tAvailable: " + recordTypeInfo.getAvailable());
-                        System.out.println("\tDefaultRecordTypeMapping: " + recordTypeInfo.getDefaultRecordTypeMapping());
-                        describeLayout(salesForceConnection.get().describeLayout(
-                                sObjectResult.getName(), null, new String[]{recordTypeInfo.getRecordTypeId()}));
-                    }
-                }
+        // refine the field map by type
+        Map<CaseType, CaseForm> caseTypeCaseFormMap = new HashMap<>();
+        for (RecordTypeInfo recordTypeInfo : dsr.getRecordTypeInfos()) {
+            if (!StringUtils.equalsIgnoreCase("master", recordTypeInfo.getName())) {
+                System.out.println("RecordType:");
+                System.out.println("\tId: " + recordTypeInfo.getRecordTypeId());
+                System.out.println("\tName: " + recordTypeInfo.getName());
+                System.out.println("\tAvailable: " + recordTypeInfo.getAvailable());
+                System.out.println("\tDefaultRecordTypeMapping: " + recordTypeInfo.getDefaultRecordTypeMapping());
+                CaseForm caseForm = new CaseForm();
+                CaseType caseType = new CaseType();
+                caseType.setId(recordTypeInfo.getRecordTypeId());
+                caseType.setName(recordTypeInfo.getName());
+                caseForm.setType(caseType);
+                caseTypeCaseFormMap.put(caseType, caseForm);
+                describeLayout(caseForm, salesForceConnection.get().describeLayout("Case", null,
+                        new String[]{recordTypeInfo.getRecordTypeId()}), fieldMap);
 
             }
         }
-
+        return caseTypeCaseFormMap;
     }
 
-    private void describeLayout(DescribeLayoutResult dlr) throws ConnectionException {
-// Get all the layouts for the sObject
+    private void describeLayout(CaseForm caseForm, DescribeLayoutResult dlr, Map<String, Field> fieldMap)
+            throws ConnectionException {
+
+        // some pick list values are different per record type
+        Map<String, PicklistForRecordType> pickListOverrides = new HashMap<>();
+        for (RecordTypeMapping recordTypeMapping : dlr.getRecordTypeMappings()) {
+            System.out.println("Record type mapping:");
+            System.out.println("\tName: " + recordTypeMapping.getName());
+            System.out.println("\tRecord Type Id: " + recordTypeMapping.getRecordTypeId());
+            System.out.println("\tAvailable: " + recordTypeMapping.getAvailable());
+            for (PicklistForRecordType picklistForRecordType : recordTypeMapping.getPicklistsForRecordType()) {
+                pickListOverrides.put(picklistForRecordType.getPicklistName(), picklistForRecordType);
+                System.out.println("\tPickList: " + picklistForRecordType.getPicklistName());
+                for (PicklistEntry picklistEntry : picklistForRecordType.getPicklistValues()) {
+                    if (picklistEntry.isActive()) {
+                        System.out.println("\t\t" + picklistEntry.getValue());
+                    }
+                }
+            }
+        }
+
+        // Get all the layouts for the sObject
         for (int i = 0; i < dlr.getLayouts().length; i++) {
             DescribeLayout layout = dlr.getLayouts()[i];
             DescribeLayoutSection[] editLayoutSectionList =
                     layout.getEditLayoutSections();
-            System.out.println(" There are " +
-                    editLayoutSectionList.length +
-                    " edit layout sections");
-            // Write the headings of the edit layout sections
-            for (int x = 0; x < editLayoutSectionList.length; x++) {
-                System.out.println(x +
-                        " This edit layout section has a heading of " +
-                        editLayoutSectionList[x].getHeading());
-            }
 
-            for (RecordTypeMapping recordTypeMapping : dlr.getRecordTypeMappings()) {
-                System.out.println("Record type mapping:");
-                System.out.println("\tName: " + recordTypeMapping.getName());
-                System.out.println("\tRecord Type Id: " + recordTypeMapping.getRecordTypeId());
-                System.out.println("\tAvailable: " + recordTypeMapping.getAvailable());
-                for (PicklistForRecordType picklistForRecordType : recordTypeMapping.getPicklistsForRecordType()) {
-                    System.out.println("\tPickList: " + picklistForRecordType.getPicklistName());
-                    for (PicklistEntry picklistEntry : picklistForRecordType.getPicklistValues()) {
-                        if (picklistEntry.isActive()) {
-                            System.out.println("\t\t" + picklistEntry.getValue());
-                        }
-                    }
-                }
-            }
             // For each edit layout section, get its details.
             for (DescribeLayoutSection els : editLayoutSectionList) {
-                System.out.println("Edit layout section heading: " +
-                        els.getHeading());
+                Section section = new Section();
+                section.setName(els.getHeading());
+                System.out.println("Edit layout section heading: " + els.getHeading());
                 System.out.println("\tDisplay Heading: " + els.getUseHeading());
                 DescribeLayoutRow[] dlrList = els.getLayoutRows();
-                System.out.println("This edit layout section has " +
-                        dlrList.length + " layout rows.");
+                System.out.println("This edit layout section has " + dlrList.length + " layout rows.");
                 for (DescribeLayoutRow lr : dlrList) {
-                    System.out.println(" This row has " +
-                            lr.getNumItems() + " layout items.");
-                    DescribeLayoutItem[] dliList = lr.getLayoutItems();
-                    for (int n = 0; n < dliList.length; n++) {
-                        DescribeLayoutItem li = dliList[n];
+                    System.out.println(" This row has " + lr.getNumItems() + " layout items.");
+                    for (DescribeLayoutItem li : lr.getLayoutItems()) {
                         if (li.getEditableForNew()) {
-
-                            if ((li.getLayoutComponents() != null) &&
-                                    (li.getLayoutComponents().length > 0)) {
-                                System.out.println("\tLayout item " + n +
-                                        ", layout component: " +
-                                        li.getLayoutComponents()[0].getValue());
+                            if ((li.getLayoutComponents() != null) && (li.getLayoutComponents().length > 0)) {
+                                String componentName = li.getLayoutComponents()[0].getValue();
+                                System.out.println("\tlayout component: " + componentName);
                                 System.out.println("\tRequired: " + li.getRequired());
+                                Field globalField = fieldMap.get(componentName);
+                                com.emmisolutions.emmimanager.model.salesforce.Field emmiField = null;
+                                switch (globalField.getType()) {
 
+                                    case picklist:
+                                        PickListField pickListField = new PickListField();
+                                        pickListField.setLabel(globalField.getLabel());
+                                        List<String> options = new ArrayList<>();
+                                        List<String> values = new ArrayList<>();
+                                        PicklistForRecordType override = pickListOverrides.get(componentName);
+                                        PicklistEntry[] entries;
+                                        if (override != null) {
+                                            entries = override.getPicklistValues();
+                                        } else {
+                                            entries = globalField.getPicklistValues();
+                                        }
+                                        for (PicklistEntry entry : entries) {
+                                            if (entry.isActive()) {
+                                                options.add(entry.getValue());
+                                                if (entry.isDefaultValue()) {
+                                                    values.add(entry.getValue());
+                                                }
+                                            }
+                                        }
+                                        pickListField.setOptions(options.toArray(new String[options.size()]));
+                                        pickListField.setValues(values.toArray(new String[values.size()]));
+                                        emmiField = pickListField;
+                                        break;
+                                    case multipicklist:
+                                        PickListField multiPickListField = new PickListField();
+                                        multiPickListField.setMultiSelect(true);
+                                        emmiField = multiPickListField;
+                                        break;
+                                    case string:
+                                        StringField stringField = new StringField();
+                                        stringField.setType(STRING);
+                                        stringField.setMaxLength(globalField.getLength());
+                                        emmiField = stringField;
+                                        break;
+                                }
+                                if (emmiField != null) {
+                                    emmiField.setLabel(globalField.getLabel());
+                                    emmiField.setRequired(li.getRequired());
+                                    section.addField(emmiField);
+                                }
                             } else {
-                                System.out.println("\tLayout item " + n + ", no layout component");
+                                System.out.println("\tLayout item, no layout component");
                             }
                         }
                     }
                 }
             }
         }
-
     }
 
-    private void describeObject(DescribeSObjectResult dsr) throws ConnectionException {
-        // First, get some object properties
-        System.out.println("\n\nObject Name: " + dsr.getName());
-        if (dsr.getCustom())
-            System.out.println("Custom Object");
-        if (dsr.getLabel() != null)
-            System.out.println("Label: " + dsr.getLabel());
-        // Get the permissions on the object
-        if (dsr.getCreateable())
-            System.out.println("Createable");
-        if (dsr.getDeletable())
-            System.out.println("Deleteable");
-        if (dsr.getQueryable())
-            System.out.println("Queryable");
-        if (dsr.getReplicateable())
-            System.out.println("Replicateable");
-        if (dsr.getRetrieveable())
-            System.out.println("Retrieveable");
-        if (dsr.getSearchable())
-            System.out.println("Searchable");
-        if (dsr.getUndeletable())
-            System.out.println("Undeleteable");
-        if (dsr.getUpdateable())
-            System.out.println("Updateable");
-        System.out.println("Number of fields: " + dsr.getFields().length);
+    private Map<String, Field> describeObject(DescribeSObjectResult dsr) throws ConnectionException {
+        Map<String, Field> fieldMap = new HashMap<>();
 
         // Now, retrieve metadata for each field
         for (Field field : dsr.getFields()) {// Get the field
-// Write some field properties
+            fieldMap.put(field.getName(), field);
+
+            // Write some field properties
             System.out.println("Field name: " + field.getName());
             System.out.println("\tField Label: " + field.getLabel());
-// This next property indicates that this
-// field is searched when using
-// the name search group in SOSL
+
+            // This next property indicates that this
+            // field is searched when using
+            // the name search group in SOSL
             if (field.getNameField())
                 System.out.println("\tThis is a name field.");
             if (field.getRestrictedPicklist())
@@ -230,7 +250,8 @@ public class CreateCase implements SalesForceCreateCase {
                 System.out.println("\tDigits: " + field.getDigits());
             if (field.getCustom())
                 System.out.println("\tThis is a custom field.");
-// Write the permissions of this field
+
+            // Write the permissions of this field
             if (field.isNillable())
                 System.out.println("\tCan be nulled.");
             if (field.getCreateable())
@@ -239,7 +260,8 @@ public class CreateCase implements SalesForceCreateCase {
                 System.out.println("\tFilterable");
             if (field.getUpdateable())
                 System.out.println("\tUpdateable");
-// If this is a picklist field, show the picklist values
+
+            // If this is a picklist field, show the picklist values
             if (field.getType().equals(FieldType.picklist)) {
                 System.out.println("\t\tPicklist values: ");
                 for (PicklistEntry picklistEntry : field.getPicklistValues()) {
@@ -258,7 +280,9 @@ public class CreateCase implements SalesForceCreateCase {
             }
 
             System.out.println("");
+
         }
+        return fieldMap;
     }
 
 }

@@ -32,4 +32,13 @@ public abstract class Field {
     public void setRequired(boolean required) {
         this.required = required;
     }
+
+    @Override
+    public String toString() {
+        return "Field{" +
+                "label='" + label + '\'' +
+                ", type=" + type +
+                ", required=" + required +
+                '}';
+    }
 }
