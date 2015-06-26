@@ -169,33 +169,11 @@ public class CreateCase implements SalesForceCreateCase {
                                 Field globalField = fieldMap.get(componentName);
                                 com.emmisolutions.emmimanager.model.salesforce.Field emmiField = null;
                                 switch (globalField.getType()) {
-
                                     case picklist:
-                                        PickListField pickListField = new PickListField();
-                                        pickListField.setLabel(globalField.getLabel());
-                                        List<String> options = new ArrayList<>();
-                                        List<String> values = new ArrayList<>();
-                                        PicklistForRecordType override = pickListOverrides.get(componentName);
-                                        PicklistEntry[] entries;
-                                        if (override != null) {
-                                            entries = override.getPicklistValues();
-                                        } else {
-                                            entries = globalField.getPicklistValues();
-                                        }
-                                        for (PicklistEntry entry : entries) {
-                                            if (entry.isActive()) {
-                                                options.add(entry.getValue());
-                                                if (entry.isDefaultValue()) {
-                                                    values.add(entry.getValue());
-                                                }
-                                            }
-                                        }
-                                        pickListField.setOptions(options.toArray(new String[options.size()]));
-                                        pickListField.setValues(values.toArray(new String[values.size()]));
-                                        emmiField = pickListField;
+                                        emmiField = createPickListField(globalField, pickListOverrides);
                                         break;
                                     case multipicklist:
-                                        PickListField multiPickListField = new PickListField();
+                                        PickListField multiPickListField = createPickListField(globalField, pickListOverrides);
                                         multiPickListField.setMultiSelect(true);
                                         emmiField = multiPickListField;
                                         break;
@@ -205,6 +183,8 @@ public class CreateCase implements SalesForceCreateCase {
                                         stringField.setMaxLength(globalField.getLength());
                                         emmiField = stringField;
                                         break;
+                                    case _boolean:
+
                                 }
                                 if (emmiField != null) {
                                     emmiField.setLabel(globalField.getLabel());
@@ -219,6 +199,31 @@ public class CreateCase implements SalesForceCreateCase {
                 }
             }
         }
+    }
+
+    private PickListField createPickListField(Field globalField, Map<String, PicklistForRecordType> pickListOverrides) {
+        PickListField pickListField = new PickListField();
+        pickListField.setLabel(globalField.getLabel());
+        List<String> options = new ArrayList<>();
+        List<String> values = new ArrayList<>();
+        PicklistForRecordType override = pickListOverrides.get(globalField.getName());
+        PicklistEntry[] entries;
+        if (override != null) {
+            entries = override.getPicklistValues();
+        } else {
+            entries = globalField.getPicklistValues();
+        }
+        for (PicklistEntry entry : entries) {
+            if (entry.isActive()) {
+                options.add(entry.getValue());
+                if (entry.isDefaultValue()) {
+                    values.add(entry.getValue());
+                }
+            }
+        }
+        pickListField.setOptions(options.toArray(new String[options.size()]));
+        pickListField.setValues(values.toArray(new String[values.size()]));
+        return pickListField;
     }
 
     private Map<String, Field> describeObject(DescribeSObjectResult dsr) throws ConnectionException {
