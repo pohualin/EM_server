@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="update translations for opt out" author="Matt">
+        <loadUpdateData
+                encoding="UTF-8"
+                file="changelog/sprint_22/data/em-1482/preference_translation.csv"
+                primaryKey="language_id,key_path"
+                separator=";"
+                tableName="strings"/>
+    </changeSet>
+
+</databaseChangeLog>
