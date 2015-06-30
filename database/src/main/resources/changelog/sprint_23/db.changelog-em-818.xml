@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="patient_self_reg_config_tables" author="Amrita">
+
+        <createTable tableName="patient_self_reg_config">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patient_self_reg_config"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="patient_id_english_label" type="nvarchar(255)"/>
+            <column name="patient_id_spanish_label" type="nvarchar(255)"/>
+            <column name="header_english" type="nvarchar(255)"/>
+            <column name="header_spanish" type="nvarchar(255)"/>
+            <column name="name_english_label" type="nvarchar(255)"/>
+            <column name="name_spanish_label" type="nvarchar(255)"/>
+            <column name="require_phone" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_dob" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_dob" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_email" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_email" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_id" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_name" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_phone" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_id" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_name" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_label_type" type="int"/>
+            <column name="self_reg_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="patient_self_reg_config_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="require_phone" type="boolean"/>
+            <column name="expose_dob" type="boolean"/>
+            <column name="require_dob" type="boolean"/>
+            <column name="expose_email" type="boolean"/>
+            <column name="require_email" type="boolean"/>
+            <column name="expose_id" type="boolean"/>
+            <column name="expose_name" type="boolean"/>
+            <column name="expose_phone" type="boolean"/>
+            <column name="require_id" type="boolean"/>
+            <column name="require_name" type="boolean"/>
+            <column name="patient_id_english_label" type="nvarchar(255)"/>
+            <column name="patient_id_spanish_label" type="nvarchar(255)"/>
+            <column name="header_english" type="nvarchar(255)"/>
+            <column name="header_spanish" type="nvarchar(255)"/>
+            <column name="name_english_label" type="nvarchar(255)"/>
+            <column name="name_spanish_label" type="nvarchar(255)"/>
+            <column name="id_label_type" type="int"/>
+            <column name="self_reg_id" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="patient_self_reg_config_audit" columnNames="id, revision"
+                       constraintName="pk_patient_self_reg_config_audit"/>
+
+        <addForeignKeyConstraint baseTableName="patient_self_reg_config_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_patient_self_reg_config_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+        <addForeignKeyConstraint baseTableName="patient_self_reg_config"
+                                 baseColumnNames="self_reg_id"
+                                 constraintName="fk_patient_self_reg_config_client_team_self_reg"
+                                 referencedTableName="client_team_self_reg_config"
+                                 referencedColumnNames="id"/>
+
+        <createIndex indexName="ix_patient_self_reg_config_client_team_self_reg_id"
+                     tableName="patient_self_reg_config">
+            <column name="self_reg_id" type="BIGINT"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>
