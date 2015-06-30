@@ -30,7 +30,7 @@
         </createTable>
 
         <createTable tableName="client_team_self_reg_config_audit">
-            <column name="id" type="bigint">
+            <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="revision" type="bigint">
