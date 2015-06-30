@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.persistence.*;
 import org.junit.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
@@ -68,5 +69,21 @@ public class ClientTeamSelfRegConfigurationPersistenceIntegrationTest extends
 
         ClientTeamSelfRegConfiguration foundSelfRegConfiguration2 = clientTeamSelfRegConfigurationPersistence.find(team.getId());
         assertThat("the saved self reg config is found:", foundSelfRegConfiguration2, is(selfRegConfigurationUpdated));
+    }
+
+    @Test(expected = DataIntegrityViolationException.class)
+    public void testDuplicateCodeName(){
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
+        selfRegConfiguration.setTeam(team);
+        selfRegConfiguration.setCode("CODE_FOR_TEAM_ONE");
+        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationPersistence.save(selfRegConfiguration);
+
+        Team teamTwo = makeNewRandomTeam(client);
+        ClientTeamSelfRegConfiguration selfRegConfigurationForTeamTwo = new ClientTeamSelfRegConfiguration();
+        selfRegConfigurationForTeamTwo.setTeam(teamTwo);
+        selfRegConfigurationForTeamTwo.setCode("CODE_FOR_TEAM_ONE");
+        ClientTeamSelfRegConfiguration selfRegConfigurationSavedForTeamTwo = clientTeamSelfRegConfigurationPersistence.save(selfRegConfigurationForTeamTwo);
     }
 }
