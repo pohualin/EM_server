@@ -26,7 +26,7 @@
             </column>
             <column name="revision_type" type="tinyint"/>
             <column name="client_team_id" type="bigint"/>
-            <column name="code" type="varchar(100)"/>
+            <column name="code" type="nvarchar(100)"/>
         </createTable>
        
         <addPrimaryKey tableName="client_team_self_reg_config_audit" columnNames="id, revision"
@@ -38,5 +38,8 @@
                                  referencedTableName="revision_info"
                                  referencedColumnNames="revision"/>
 
+    </changeSet>
+    <changeSet id="modify_data_type_client_team_self_reg_config_code" author="Amrita">
+        <modifyDataType columnName="code" newDataType="nvarchar(100)" tableName="client_team_self_reg_config"/>
     </changeSet>
 </databaseChangeLog>
