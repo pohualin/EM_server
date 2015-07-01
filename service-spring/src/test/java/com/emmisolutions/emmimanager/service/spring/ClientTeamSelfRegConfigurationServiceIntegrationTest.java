@@ -7,7 +7,6 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientTeamSelfRegConfigurationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import org.junit.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
@@ -89,23 +88,6 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
 
         ClientTeamSelfRegConfiguration foundSelfRegConfiguration2 = clientTeamSelfRegConfigurationService.findByTeam(team);
         assertThat("the saved self reg config is found:", foundSelfRegConfiguration2, is(selfRegConfigurationUpdated));
-    }
-
-    @Test(expected = DataIntegrityViolationException.class)
-    public void testDuplicateCodeName(){
-        Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam(client);
-        ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
-        selfRegConfiguration.setTeam(team);
-        selfRegConfiguration.setCode("CODE_FOR_TEAM_ONE_DUP_TEST");
-        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
-
-
-        Team teamTwo = makeNewRandomTeam(client);
-        ClientTeamSelfRegConfiguration selfRegConfigurationForTeamTwo = new ClientTeamSelfRegConfiguration();
-        selfRegConfigurationForTeamTwo.setTeam(teamTwo);
-        selfRegConfigurationForTeamTwo.setCode("CODE_FOR_TEAM_ONE_DUP_TEST");
-        ClientTeamSelfRegConfiguration selfRegConfigurationSavedForTeamTwo = clientTeamSelfRegConfigurationService.create(selfRegConfigurationForTeamTwo);
     }
 
     @Test
