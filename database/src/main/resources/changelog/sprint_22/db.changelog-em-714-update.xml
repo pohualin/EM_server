@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="drop_constraints_client_team_self_reg_config_audit" author="Amrita">
+        <dropForeignKeyConstraint baseTableName="client_team_self_reg_config_audit" constraintName="fk_client_team_self_reg_config_audit_revision"></dropForeignKeyConstraint>
+        <dropPrimaryKey tableName="client_team_self_reg_config_audit" constraintName="pk_client_team_self_reg_config_audit"></dropPrimaryKey>
+    </changeSet>
+
+    <changeSet id="drop_client_team_self_reg_config_audit" author="Amrita">
+        <dropTable tableName="client_team_self_reg_config_audit"></dropTable>
+    </changeSet>
+
+    <changeSet id="recreate_client_team_self_reg_config_audit" author="Amrita">
+        <createTable tableName="client_team_self_reg_config_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="client_team_id" type="bigint"/>
+            <column name="code" type="nvarchar(100)"/>
+        </createTable>
+       
+        <addPrimaryKey tableName="client_team_self_reg_config_audit" columnNames="id, revision"
+                       constraintName="pk_client_team_self_reg_config_audit"/>
+
+        <addForeignKeyConstraint baseTableName="client_team_self_reg_config_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_client_team_self_reg_config_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+    </changeSet>
+    <changeSet id="modify_data_type_client_team_self_reg_config_code" author="Amrita">
+        <dropUniqueConstraint tableName="client_team_self_reg_config" constraintName="uk_client_team_self_reg_config_code"></dropUniqueConstraint>
+        <modifyDataType columnName="code" newDataType="nvarchar(100)" tableName="client_team_self_reg_config"/>
+        <addUniqueConstraint tableName="client_team_self_reg_config" columnNames="code" constraintName="uk_client_team_self_reg_config_code"/>
+    </changeSet>
+</databaseChangeLog>
