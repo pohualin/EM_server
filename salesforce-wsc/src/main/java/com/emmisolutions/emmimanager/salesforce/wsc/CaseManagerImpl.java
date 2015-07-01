@@ -39,7 +39,7 @@ public class CaseManagerImpl implements CaseManager {
     @Resource
     ConnectionFactory salesForceConnection;
 
-    private Map<CaseType, CaseForm> forms;
+    Map<CaseType, CaseForm> forms;
 
     @Override
     public List<CaseType> caseTypes() {
@@ -59,7 +59,7 @@ public class CaseManagerImpl implements CaseManager {
             return null;
         }
         CaseForm ret = forms.get(caseType);
-        LOGGER.debug("{}", ret);
+        LOGGER.debug("created new case form: {}", ret);
         return ret;
     }
 
@@ -73,7 +73,6 @@ public class CaseManagerImpl implements CaseManager {
             LOGGER.error("No Connection to SalesForce present, unable to create case");
             return;
         }
-
         if (caseForm != null && caseForm.getType() != null) {
             try {
                 SObject newCase = new SObject("Case");
@@ -90,73 +89,8 @@ public class CaseManagerImpl implements CaseManager {
                 }
 
                 // populate the new case with the passed caseForm
-                for (Section section : caseForm.getSections()) {
-                    for (CaseField caseField : section.getCaseFields()) {
-                        String sObjectValue = null;
-                        switch (caseField.getType()) {
-                            case PICK_LIST:
-                                PickListCaseField pickListCaseField = (PickListCaseField) caseField;
-                                if (!CollectionUtils.isEmpty(pickListCaseField.getValues())) {
-                                    sObjectValue = pickListCaseField.getValues().get(0);
-                                }
-                                break;
-                            case MULTI_PICK_LIST:
-                                StringBuilder sb = new StringBuilder();
-                                PickListCaseField multiPick = (PickListCaseField) caseField;
-                                if (!CollectionUtils.isEmpty(multiPick.getValues())) {
-                                    for (String s : multiPick.getValues()) {
-                                        sb.append(s).append(";");
-                                    }
-                                    if (sb.length() > 0) {
-                                        sb.deleteCharAt(sb.length() - 1);
-                                    }
-                                    sObjectValue = sb.toString();
-                                }
-                                break;
-                            case BOOLEAN:
-                                BooleanCaseField booleanCaseField = (BooleanCaseField) caseField;
-                                newCase.setSObjectField(caseField.getName(),
-                                        Boolean.TRUE.equals(booleanCaseField.getValue()));
-                                break;
-                            case DOUBLE:
-                                DoubleCaseField doubleCaseField = (DoubleCaseField) caseField;
-                                if (doubleCaseField.getValue() != null) {
-                                    sObjectValue = doubleCaseField.getValue().toString();
-                                }
-                                break;
-                            case DATETIME:
-                                DateTimeCaseField dateTimeCaseField = (DateTimeCaseField) caseField;
-                                if (dateTimeCaseField.getValue() != null) {
-                                    newCase.setSObjectField(caseField.getName(),
-                                            dateTimeCaseField.getValue().toDate());
-                                }
-                                break;
-                            case DATE:
-                                DateCaseField dateCaseField = (DateCaseField) caseField;
-                                if (dateCaseField.getValue() != null) {
-                                    newCase.setSObjectField(caseField.getName(),
-                                            dateCaseField.getValue().toDate());
-                                }
-                                break;
-                            case REFERENCE:
-                                ReferenceCaseField referenceField = (ReferenceCaseField) caseField;
-                                if (StringUtils.isNotBlank(referenceField.getReferenceId())) {
-                                    sObjectValue = referenceField.getReferenceId();
-                                }
-                                break;
-                            default:
-                                StringCaseField stringCaseField = (StringCaseField) caseField;
-                                if (StringUtils.isNotBlank(stringCaseField.getValue())) {
-                                    sObjectValue = stringCaseField.getValue();
-                                }
-                                break;
+                populateNewCaseFromForm(newCase, caseForm);
 
-                        }
-                        if (sObjectValue != null) {
-                            newCase.setSObjectField(caseField.getName(), sObjectValue);
-                        }
-                    }
-                }
                 SaveResult[] saveResults =
                         salesForceConnection.get().create(new SObject[]{newCase});
                 LOGGER.debug("Attempting to save {}", caseForm);
@@ -211,6 +145,88 @@ public class CaseManagerImpl implements CaseManager {
         }
     }
 
+    /**
+     * This method populates the newCase object from the passed caseForm
+     *
+     * @param newCase  to populate
+     * @param caseForm from here
+     */
+    private void populateNewCaseFromForm(SObject newCase, CaseForm caseForm) {
+        for (Section section : caseForm.getSections()) {
+            for (CaseField caseField : section.getCaseFields()) {
+                String sObjectValue = null;
+                switch (caseField.getType()) {
+                    case PICK_LIST:
+                        PickListCaseField pickListCaseField = (PickListCaseField) caseField;
+                        if (!CollectionUtils.isEmpty(pickListCaseField.getValues())) {
+                            sObjectValue = pickListCaseField.getValues().get(0);
+                        }
+                        break;
+                    case MULTI_PICK_LIST:
+                        StringBuilder sb = new StringBuilder();
+                        PickListCaseField multiPick = (PickListCaseField) caseField;
+                        if (!CollectionUtils.isEmpty(multiPick.getValues())) {
+                            for (String s : multiPick.getValues()) {
+                                sb.append(s).append(";");
+                            }
+                            if (sb.length() > 0) {
+                                sb.deleteCharAt(sb.length() - 1);
+                            }
+                            sObjectValue = sb.toString();
+                        }
+                        break;
+                    case BOOLEAN:
+                        BooleanCaseField booleanCaseField = (BooleanCaseField) caseField;
+                        newCase.setSObjectField(caseField.getName(),
+                                Boolean.TRUE.equals(booleanCaseField.getValue()));
+                        break;
+                    case DOUBLE:
+                        DoubleCaseField doubleCaseField = (DoubleCaseField) caseField;
+                        if (doubleCaseField.getValue() != null) {
+                            sObjectValue = doubleCaseField.getValue().toString();
+                        }
+                        break;
+                    case DATETIME:
+                        DateTimeCaseField dateTimeCaseField = (DateTimeCaseField) caseField;
+                        if (dateTimeCaseField.getValue() != null) {
+                            newCase.setSObjectField(caseField.getName(),
+                                    dateTimeCaseField.getValue().toDate());
+                        }
+                        break;
+                    case DATE:
+                        DateCaseField dateCaseField = (DateCaseField) caseField;
+                        if (dateCaseField.getValue() != null) {
+                            newCase.setSObjectField(caseField.getName(),
+                                    dateCaseField.getValue().toDate());
+                        }
+                        break;
+                    case REFERENCE:
+                        ReferenceCaseField referenceField = (ReferenceCaseField) caseField;
+                        if (StringUtils.isNotBlank(referenceField.getReferenceId())) {
+                            sObjectValue = referenceField.getReferenceId();
+                        }
+                        break;
+                    default:
+                        StringCaseField stringCaseField = (StringCaseField) caseField;
+                        if (StringUtils.isNotBlank(stringCaseField.getValue())) {
+                            sObjectValue = stringCaseField.getValue();
+                        }
+                        break;
+
+                }
+                if (sObjectValue != null) {
+                    newCase.setSObjectField(caseField.getName(), sObjectValue);
+                }
+            }
+        }
+    }
+
+    /**
+     * Responsible for creating all Case forms
+     *
+     * @return a Map of CaseForm objects by CaseType
+     * @throws ConnectionException when SF gives a problem
+     */
     private Map<CaseType, CaseForm> createForms() throws ConnectionException {
         String objectName = "Case";
         LOGGER.debug("Discovering Base Fields in Case object");
@@ -260,6 +276,15 @@ public class CaseManagerImpl implements CaseManager {
         return caseTypeCaseFormMap;
     }
 
+    /**
+     * Populates a case form from its description
+     *
+     * @param caseForm                    to be populated
+     * @param dlr                         the layout of the Case screens
+     * @param fieldMap                    the base fields present on a Case object
+     * @param baseFieldDependentFieldsMap the dependent fields keyed by the base field which controls them
+     * @throws ConnectionException when SF gives a problem
+     */
     private void populateCaseForm(CaseForm caseForm, DescribeLayoutResult dlr, Map<String, Field> fieldMap,
                                   Map<Field, List<Field>> baseFieldDependentFieldsMap)
             throws ConnectionException {
@@ -306,6 +331,15 @@ public class CaseManagerImpl implements CaseManager {
         }
     }
 
+    /**
+     * This is responsible for transforming the SF concept of a dependent field into a new picklist
+     * attached to an option on a different emmi field. Thi sis
+     *
+     * @param controller the field determining when a dependent picklist becomes active and required
+     * @param emmiField  the existing emmi CaseField to be modified
+     * @param fieldMap   containing the base Case field definitinos
+     * @param field      the dependent field itself
+     */
     private void addDependentFieldsToEmmiField(Field controller, CaseField emmiField, Map<String, Field> fieldMap, Field field) {
 
         Field baseField = fieldMap.get(field.getName());
@@ -377,6 +411,13 @@ public class CaseManagerImpl implements CaseManager {
         }
     }
 
+    /**
+     * Creates a PickListCaseField from a SimplePickList
+     *
+     * @param baseField      the Case level field
+     * @param simplePickList the picklist model
+     * @return PickListCaseField
+     */
     private PickListCaseField createDependentCaseField(Field baseField, SimplePickList simplePickList) {
         if (simplePickList != null) {
             // this means we have a dependent picklist for this selected option
@@ -395,6 +436,13 @@ public class CaseManagerImpl implements CaseManager {
         return null;
     }
 
+    /**
+     * Creates a case field from the base field.
+     *
+     * @param baseField         the starting point
+     * @param pickListOverrides a Map keyed by baseField name that has overrides by record type
+     * @return CaseField with options
+     */
     private CaseField createCaseField(Field baseField, Map<String, PicklistForRecordType> pickListOverrides) {
         CaseField emmiCaseField;
         switch (baseField.getType()) {
@@ -436,6 +484,13 @@ public class CaseManagerImpl implements CaseManager {
         return emmiCaseField;
     }
 
+    /**
+     * Creates a PickListCaseField from a base field
+     *
+     * @param globalField       the base
+     * @param pickListOverrides a Map keyed by baseField name that has overrides by record type
+     * @return PickListCaseField with the overrides or base picklist values
+     */
     private PickListCaseField createPickListField(Field globalField,
                                                   Map<String, PicklistForRecordType> pickListOverrides) {
         PickListCaseField pickListField = new PickListCaseField();
@@ -464,6 +519,9 @@ public class CaseManagerImpl implements CaseManager {
         return pickListField;
     }
 
+    /**
+     * Utility class to allow for PicklistForRecordType creation
+     */
     class SimplePickList {
         private String name;
         private String label;
@@ -488,6 +546,9 @@ public class CaseManagerImpl implements CaseManager {
         }
     }
 
+    /**
+     * Utility class to process the dependent picklist.validFor() attribute.
+     */
     class BitSet {
         byte[] data;
 

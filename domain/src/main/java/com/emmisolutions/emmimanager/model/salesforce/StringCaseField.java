@@ -7,7 +7,7 @@ public class StringCaseField extends CaseField {
 
     private String value;
 
-    private int maxLength;
+    private Integer maxLength;
 
     public String getValue() {
         return value;
@@ -17,11 +17,11 @@ public class StringCaseField extends CaseField {
         this.value = value;
     }
 
-    public int getMaxLength() {
+    public Integer getMaxLength() {
         return maxLength;
     }
 
-    public void setMaxLength(int maxLength) {
+    public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
     }
 
