@@ -70,7 +70,8 @@ public class ClientTeamSelfRegConfigurationServiceImpl implements
 
     private boolean isCodeAlreadyUsed(ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {
         ClientTeamSelfRegConfiguration config = clientTeamSelfRegConfigurationPersistence.findByCode(clientTeamSelfRegConfiguration.getCode());
-        if (config != null  && !(config.getId().equals(clientTeamSelfRegConfiguration.getId()))) {
+        if (config != null  && ((clientTeamSelfRegConfiguration.getId() != null && !(config.getId().equals(clientTeamSelfRegConfiguration.getId()))) ||
+                config.getId()!= null && clientTeamSelfRegConfiguration.getId() == null)) {
             return true;
         }
         return false;
