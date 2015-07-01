@@ -12,7 +12,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -88,6 +88,25 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
 
         ClientTeamSelfRegConfiguration foundSelfRegConfiguration2 = clientTeamSelfRegConfigurationService.findByTeam(team);
         assertThat("the saved self reg config is found:", foundSelfRegConfiguration2, is(selfRegConfigurationUpdated));
+    }
+
+    @Test
+    public void testDuplicateCodeName(){
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
+        selfRegConfiguration.setTeam(team);
+        selfRegConfiguration.setCode("CODE_FOR_TEAM_ONE_DUP_TEST");
+        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
+        assertThat("the saved self reg config is found:", selfRegConfigurationSaved.getId(), is(notNullValue()));
+
+
+        Team teamTwo = makeNewRandomTeam(client);
+        ClientTeamSelfRegConfiguration selfRegConfigurationForTeamTwo = new ClientTeamSelfRegConfiguration();
+        selfRegConfigurationForTeamTwo.setTeam(teamTwo);
+        selfRegConfigurationForTeamTwo.setCode("CODE_FOR_TEAM_ONE_DUP_TEST");
+        ClientTeamSelfRegConfiguration selfRegConfigurationSavedForTeamTwo = clientTeamSelfRegConfigurationService.create(selfRegConfigurationForTeamTwo);
+        assertThat("the saved self reg config is found:", selfRegConfigurationSavedForTeamTwo, is(nullValue()));
     }
 
     @Test
