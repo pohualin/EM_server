@@ -3,9 +3,9 @@ package com.emmisolutions.emmimanager.salesforce.wsc;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.salesforce.service.SalesForceLookup;
-import com.sforce.soap.enterprise.SearchRecord;
-import com.sforce.soap.enterprise.SearchResult;
-import com.sforce.soap.enterprise.sobject.Account;
+import com.sforce.soap.partner.SearchRecord;
+import com.sforce.soap.partner.SearchResult;
+import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -50,6 +50,10 @@ public class Lookup implements SalesForceLookup {
      * @return a search response
      */
     public SalesForceSearchResponse findAccounts(String searchString, int pageSizeRequested) {
+        return findAccounts(searchString, pageSizeRequested, true);
+    }
+
+    private SalesForceSearchResponse findAccounts(String searchString, int pageSizeRequested, boolean reUpConnection) {
 
         if (salesForceConnection.get() == null) {
             LOGGER.error("No Connection to SalesForce present, unable to process search request for '{}'", searchString);
@@ -79,8 +83,10 @@ public class Lookup implements SalesForceLookup {
             searchResult = salesForceConnection.get()
                     .search(String.format(FIND_QUERY, escape(strippedSearchString), pageSize + 1));
         } catch (ConnectionException e) {
-            salesForceConnection.reUp();
-            findAccounts(searchString, pageSizeRequested);
+            if (reUpConnection) {
+                salesForceConnection.reUp();
+                findAccounts(searchString, pageSizeRequested, false);
+            }
         }
 
         totalNumber = searchResult != null ? searchResult.getSearchRecords().length : 0;
@@ -88,7 +94,7 @@ public class Lookup implements SalesForceLookup {
             // found a match
             int count = 0;
             for (SearchRecord o : searchResult.getSearchRecords()) {
-                accounts.add(convert((Account) o.getRecord()));
+                accounts.add(convert(o.getRecord()));
                 count++;
                 if (count >= pageSize) {
                     break;
@@ -98,17 +104,17 @@ public class Lookup implements SalesForceLookup {
         return new SalesForceSearchResponse(totalNumber <= pageSize, accounts);
     }
 
-    private SalesForce convert(Account account) {
+    private SalesForce convert(SObject sObject) {
         SalesForce sf = new SalesForce();
-        sf.setAccountNumber(account.getId());
-        sf.setName(account.getName());
-        sf.setStreet(account.getBillingStreet());
-        sf.setState(account.getBillingState());
-        sf.setCity(account.getBillingCity());
-        sf.setCountry(account.getBillingCountry());
-        sf.setPostalCode(account.getBillingPostalCode());
-        sf.setPhoneNumber(account.getPhone());
-        sf.setFax(account.getFax());
+        sf.setAccountNumber((String) sObject.getSObjectField("Id"));
+        sf.setName((String) sObject.getSObjectField("Name"));
+        sf.setStreet((String) sObject.getSObjectField("BillingStreet"));
+        sf.setState((String) sObject.getSObjectField("BillingState"));
+        sf.setCity((String) sObject.getSObjectField("BillingCity"));
+        sf.setCountry((String) sObject.getSObjectField("BillingCountry"));
+        sf.setPostalCode((String) sObject.getSObjectField("BillingPostalCode"));
+        sf.setPhoneNumber((String) sObject.getSObjectField("Phone"));
+        sf.setFax((String) sObject.getSObjectField("Fax"));
         return sf;
     }
 

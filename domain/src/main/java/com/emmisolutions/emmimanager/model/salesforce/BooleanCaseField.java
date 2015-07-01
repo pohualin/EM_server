@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.BOOLEAN;
 
 /**
@@ -8,6 +11,10 @@ import static com.emmisolutions.emmimanager.model.salesforce.FieldType.BOOLEAN;
 public class BooleanCaseField extends CaseField {
 
     private Boolean value;
+
+    private List<PickListCaseField> requiredPicklistsWhenTrue = new ArrayList<>();
+
+    private List<PickListCaseField> requiredPicklistsWhenFalse = new ArrayList<>();
 
     public Boolean getValue() {
         return value;
@@ -22,6 +29,22 @@ public class BooleanCaseField extends CaseField {
         return BOOLEAN;
     }
 
+    public List<PickListCaseField> getRequiredPicklistsWhenTrue() {
+        return requiredPicklistsWhenTrue;
+    }
+
+    public void setRequiredPicklistsWhenTrue(List<PickListCaseField> requiredPicklistsWhenTrue) {
+        this.requiredPicklistsWhenTrue = requiredPicklistsWhenTrue;
+    }
+
+    public List<PickListCaseField> getRequiredPicklistsWhenFalse() {
+        return requiredPicklistsWhenFalse;
+    }
+
+    public void setRequiredPicklistsWhenFalse(List<PickListCaseField> requiredPicklistsWhenFalse) {
+        this.requiredPicklistsWhenFalse = requiredPicklistsWhenFalse;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -33,5 +56,4 @@ public class BooleanCaseField extends CaseField {
                 ", \"value\":" + value +
                 '}';
     }
-
 }

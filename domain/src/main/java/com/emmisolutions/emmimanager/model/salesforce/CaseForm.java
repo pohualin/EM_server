@@ -39,5 +39,4 @@ public class CaseForm {
                 ", \"sections\":" + sections +
                 '}';
     }
-
 }

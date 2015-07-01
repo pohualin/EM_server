@@ -1,28 +1,27 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
+import org.joda.time.LocalDateTime;
+
+import static com.emmisolutions.emmimanager.model.salesforce.FieldType.DATETIME;
+
 /**
- * Field that has a String value
+ * A field that contains a double value
  */
-public class StringCaseField extends CaseField {
+public class DateTimeCaseField extends CaseField {
 
-    private String value;
+    private LocalDateTime value;
 
-    private int maxLength;
-
-    public String getValue() {
+    public LocalDateTime getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(LocalDateTime value) {
         this.value = value;
     }
 
-    public int getMaxLength() {
-        return maxLength;
-    }
-
-    public void setMaxLength(int maxLength) {
-        this.maxLength = maxLength;
+    @Override
+    public FieldType getType() {
+        return DATETIME;
     }
 
     @Override
@@ -33,8 +32,7 @@ public class StringCaseField extends CaseField {
                 ", \"name\":\"" + getName() + "\"" +
                 ", \"label\":\"" + getLabel() + "\"" +
                 ", \"required\":" + isRequired() +
-                ", \"maxLength\":" + maxLength +
-                ", \"value\":\"" + value + "\"" +
+                ", \"value\":" + value +
                 '}';
     }
 }

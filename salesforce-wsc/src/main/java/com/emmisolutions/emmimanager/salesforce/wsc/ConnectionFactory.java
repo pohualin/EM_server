@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.salesforce.wsc;
 
-import com.sforce.soap.enterprise.EnterpriseConnection;
+import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import org.slf4j.Logger;
@@ -16,7 +16,8 @@ public class ConnectionFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionFactory.class);
     private static final String ESCAPE_CHARS = "?&|!{}[]()^~*:\\'+-";
-    private EnterpriseConnection connection;
+    private PartnerConnection connection;
+
     @Value("${salesforce.username}")
     private String username;
 
@@ -46,7 +47,7 @@ public class ConnectionFactory {
                 config.setUsername(username);
                 config.setPassword(password);
                 config.setAuthEndpoint(url);
-                connection = new EnterpriseConnection(config);
+                connection = new PartnerConnection(config);
             }
         } catch (ConnectionException e) {
             LOGGER.error("Error connecting to SalesForce", e);
@@ -58,7 +59,7 @@ public class ConnectionFactory {
      *
      * @return EnterpriseConnection to use
      */
-    public EnterpriseConnection get() {
+    public PartnerConnection get() {
         init();
         return connection;
     }

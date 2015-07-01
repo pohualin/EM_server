@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
+import java.util.List;
+
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.MULTI_PICK_LIST;
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.PICK_LIST;
 
@@ -8,23 +10,15 @@ import static com.emmisolutions.emmimanager.model.salesforce.FieldType.PICK_LIST
  */
 public class PickListCaseField extends CaseField {
 
-    private String[] values;
+    private List<String> values;
 
-    private String[] options;
+    private List<DependentPickListPossibleValue> options;
 
     private boolean multiSelect;
 
     @Override
     public FieldType getType() {
         return !multiSelect ? PICK_LIST : MULTI_PICK_LIST;
-    }
-
-    public String[] getValues() {
-        return values;
-    }
-
-    public void setValues(String[] values) {
-        this.values = values;
     }
 
     public boolean isMultiSelect() {
@@ -35,11 +29,19 @@ public class PickListCaseField extends CaseField {
         this.multiSelect = multiSelect;
     }
 
-    public String[] getOptions() {
+    public List<String> getValues() {
+        return values;
+    }
+
+    public void setValues(List<String> values) {
+        this.values = values;
+    }
+
+    public List<DependentPickListPossibleValue> getOptions() {
         return options;
     }
 
-    public void setOptions(String[] options) {
+    public void setOptions(List<DependentPickListPossibleValue> options) {
         this.options = options;
     }
 
@@ -52,14 +54,16 @@ public class PickListCaseField extends CaseField {
                 ", \"label\":\"" + getLabel() + "\"" +
                 ", \"required\":" + isRequired() +
                 ", \"multiSelect\":" + multiSelect +
-                ", \"options\":" + toJsonString(options) +
+                ", \"options\":" + options +
                 ", \"values\":" + toJsonString(values) +
                 '}';
     }
 
-    private String toJsonString(Object[] a) {
-        if (a == null)
+    private String toJsonString(List toPrint) {
+        if (toPrint == null) {
             return "null";
+        }
+        Object[] a = toPrint.toArray();
 
         int iMax = a.length - 1;
         if (iMax == -1)

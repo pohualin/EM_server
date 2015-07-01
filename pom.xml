@@ -49,7 +49,7 @@
         <javax.annotation.version>1.2</javax.annotation.version>
         <querydsl.version>3.4.1</querydsl.version>
         <woodstox.version>4.4.0</woodstox.version>
-        <salesforce.version>31.1.0</salesforce.version>
+        <salesforce.version>34.1.0</salesforce.version>
         <json.simple.version>1.1.1</json.simple.version>
         <spring.rest.exception.handler.version>1.0.1</spring.rest.exception.handler.version>
         <thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
@@ -629,8 +629,8 @@
             </dependency>
 
             <dependency>
-                <groupId>salesforce</groupId>
-                <artifactId>salesforce</artifactId>
+                <groupId>com.emmisolutions.salesforce</groupId>
+                <artifactId>partner-wsc</artifactId>
                 <version>${salesforce.version}</version>
             </dependency>
 
