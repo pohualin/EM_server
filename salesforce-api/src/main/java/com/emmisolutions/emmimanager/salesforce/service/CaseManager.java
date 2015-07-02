@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.salesforce.service;
 
 import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
+import com.emmisolutions.emmimanager.model.salesforce.CaseSaveResult;
 import com.emmisolutions.emmimanager.model.salesforce.CaseType;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 
@@ -14,7 +15,7 @@ public interface CaseManager {
     /**
      * Opens a SF case
      */
-    void saveCase(CaseForm caseForm, UserAdmin user);
+    CaseSaveResult saveCase(CaseForm caseForm, UserAdmin user);
 
     /**
      * Creates a new CaseForm for a particular CaseType

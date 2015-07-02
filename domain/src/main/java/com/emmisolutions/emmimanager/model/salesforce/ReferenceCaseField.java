@@ -1,5 +1,9 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.REFERENCE;
 
 /**
@@ -11,7 +15,7 @@ public class ReferenceCaseField extends CaseField {
 
     private String referenceName = "";
 
-    private String referenceType;
+    private List<String> referenceTypes;
 
     public String getReferenceId() {
         return referenceId;
@@ -29,17 +33,24 @@ public class ReferenceCaseField extends CaseField {
         this.referenceName = referenceName;
     }
 
-    public String getReferenceType() {
-        return referenceType;
-    }
-
-    public void setReferenceType(String referenceType) {
-        this.referenceType = referenceType;
-    }
-
     @Override
     public FieldType getType() {
         return REFERENCE;
+    }
+
+    public List<String> getReferenceTypes() {
+        return referenceTypes;
+    }
+
+    public void setReferenceTypes(List<String> referenceTypes) {
+        this.referenceTypes = referenceTypes;
+    }
+
+    public void addReferenceTypes(String... referenceTypes) {
+        if (this.referenceTypes == null) {
+            this.referenceTypes = new ArrayList<>();
+        }
+        Collections.addAll(this.referenceTypes, referenceTypes);
     }
 
     @Override
@@ -51,7 +62,7 @@ public class ReferenceCaseField extends CaseField {
                 ", \"required\":" + isRequired() +
                 ", \"referenceId\":\"" + referenceId + "\"" +
                 ", \"referenceName\":\"" + referenceName + "\"" +
-                ", \"referenceType\":\"" + referenceType + "\"" +
+                ", \"referenceTypes\":" + toJsonString(referenceTypes) +
                 '}';
     }
 }

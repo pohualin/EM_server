@@ -12,7 +12,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
@@ -33,8 +32,6 @@ public class CaseManagerImpl implements CaseManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseManagerImpl.class);
 
     private static final String REFERENCE_SEARCH = "FIND {%s} RETURNING %s(Id, Name ORDER BY Name LIMIT %s)";
-
-    private static final int DEFAULT_PAGE_SIZE = 20;
 
     @Resource
     ConnectionFactory salesForceConnection;
@@ -58,27 +55,34 @@ public class CaseManagerImpl implements CaseManager {
         if (caseType == null) {
             return null;
         }
-        CaseForm ret = forms.get(caseType);
-        LOGGER.debug("created new case form: {}", ret);
-        return ret;
+        return forms.get(caseType);
     }
 
     @Override
-    public void saveCase(CaseForm caseForm, UserAdmin user) {
-        saveCase(caseForm, user, true);
+    public CaseSaveResult saveCase(CaseForm caseForm, UserAdmin user) {
+        return saveCase(caseForm, user, true);
     }
 
-    private void saveCase(CaseForm caseForm, UserAdmin user, boolean reUpConnection) {
+    /**
+     * Saves the form to salesforce
+     *
+     * @param caseForm       to save
+     * @param user           requesting the save
+     * @param reUpConnection to try to reconnect on any failure
+     * @return the saved result
+     */
+    private CaseSaveResult saveCase(CaseForm caseForm, UserAdmin user, boolean reUpConnection) {
+        CaseSaveResult ret = new CaseSaveResult();
         if (salesForceConnection.get() == null) {
             LOGGER.error("No Connection to SalesForce present, unable to create case");
-            return;
+            return ret.addErrorMessage("No Connection to SalesForce present, unable to create case");
         }
         if (caseForm != null && caseForm.getType() != null) {
             try {
                 SObject newCase = new SObject("Case");
                 newCase.setSObjectField("RecordTypeId", caseForm.getType().getId());
 
-                // set the owner id of the case to the passed user
+                // set the owner id of the case to the passed user's email address/login
                 if (user != null && StringUtils.isNotBlank(user.getLogin())) {
                     SearchResult searchResult = salesForceConnection.get()
                             .search(String.format(REFERENCE_SEARCH, escape(user.getLogin()), "User", 1));
@@ -97,14 +101,13 @@ public class CaseManagerImpl implements CaseManager {
                 for (SaveResult saveResult : saveResults) {
                     if (saveResult.isSuccess()) {
                         LOGGER.debug("{} ({}): saved successfully", caseForm.getType().getName(), saveResult.getId());
+                        ret.setSuccess(true);
+                        ret.setId(saveResult.getId());
                     } else {
-                        if (LOGGER.isDebugEnabled()) {
-                            for (Error error : saveResult.getErrors()) {
-                                LOGGER.debug("error ({}): {}", error.getStatusCode(), error.getMessage());
-                                LOGGER.debug("fields: {}", (Object) error.getFields());
-                            }
+                        for (Error error : saveResult.getErrors()) {
+                            LOGGER.debug("error ({}): {}", error.getStatusCode(), error.getMessage());
+                            ret.addErrorMessage(error.getMessage());
                         }
-                        throw new InvalidDataAccessApiUsageException("Error saving case");
                     }
                 }
             } catch (ConnectionException e) {
@@ -113,20 +116,11 @@ public class CaseManagerImpl implements CaseManager {
                     saveCase(caseForm, user, false);
                 } else {
                     LOGGER.error("SalesForce Unrecoverable Error", e);
+                    ret.addErrorMessage(e.getMessage());
                 }
             }
-
         }
-
-//                System.out.println("");
-//                System.out.println("Search Program Records...");
-//                QueryResult queryResult = salesForceConnection.get()
-//                        .query("SELECT Id, Name from Program__c WHERE name like '%ANT%' LIMIT 25");
-//                for (SObject searchRecord : queryResult.getRecords()) {
-//                    System.out.println("Program Id: " + searchRecord.getId());
-//                    System.out.println("Program Name: " + ((Program__c) searchRecord).getName());
-//                }
-
+        return ret;
     }
 
     @PostConstruct
@@ -141,6 +135,8 @@ public class CaseManagerImpl implements CaseManager {
             if (retry) {
                 salesForceConnection.reUp();
                 reUp(false);
+            } else {
+                LOGGER.error("SalesForce error", e);
             }
         }
     }
@@ -269,23 +265,19 @@ public class CaseManagerImpl implements CaseManager {
      */
     private Map<CaseType, CaseForm> createForms() throws ConnectionException {
         String objectName = "Case";
-        LOGGER.debug("Discovering Base Fields in Case object");
         DescribeSObjectResult dsr = salesForceConnection.get().describeSObject(objectName);
 
         // save base level field information for Case objects in general
         Map<String, Field> fieldMap = new HashMap<>();
         for (Field field : dsr.getFields()) {
-            LOGGER.debug("\tBase Field: {}", field.getName());
             fieldMap.put(field.getName(), field);
         }
 
         // figure out dependent pick lists based upon the values chosen for other fields
         Map<Field, List<Field>> baseFieldDependentFieldsMap = new HashMap<>();
-        LOGGER.debug("Discovering dependent pick lists in base fields");
         for (Field field : dsr.getFields()) {
             if (field.isDependentPicklist()) {
                 Field controller = fieldMap.get(field.getControllerName());
-                LOGGER.debug("\tDependent Field: {} based upon selections from base field: {}", field.getName(), controller.getName());
                 List<Field> dependentFields = baseFieldDependentFieldsMap.get(controller);
                 if (dependentFields == null) {
                     dependentFields = new ArrayList<>();
@@ -512,7 +504,7 @@ public class CaseManagerImpl implements CaseManager {
                 break;
             case reference:
                 ReferenceCaseField referenceField = new ReferenceCaseField();
-                referenceField.setReferenceType(baseField.getReferenceTo()[0]);
+                referenceField.addReferenceTypes(baseField.getReferenceTo());
                 emmiCaseField = referenceField;
                 break;
             default:

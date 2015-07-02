@@ -1,7 +1,5 @@
 package com.emmisolutions.emmimanager.salesforce.service;
 
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.model.salesforce.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.salesforce.BaseIntegrationTest;
@@ -15,6 +13,9 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test stub for create case.. this is really just
@@ -36,9 +37,21 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
             for (Section section : aCase.getSections()) {
                 for (CaseField caseField : section.getCaseFields()) {
                     if (StringUtils.equalsIgnoreCase("AccountId", caseField.getName())) {
-                        SalesForceSearchResponse salesForceSearchResponse = salesForceLookup.findAccounts("magee", 1);
-                        SalesForce salesForce = salesForceSearchResponse.getAccounts().get(0);
-                        ((ReferenceCaseField) caseField).setReferenceId(salesForce.getAccountNumber());
+                        ReferenceCaseField referenceCaseField = (ReferenceCaseField) caseField;
+                        IdNameLookupResultContainer lookupResultContainer = salesForceLookup.find("magee", 1,
+                                referenceCaseField.getReferenceTypes()
+                                        .toArray(new String[referenceCaseField.getReferenceTypes().size()]));
+                        IdNameLookupResult lookupResult = lookupResultContainer.getContent().get(0);
+                        referenceCaseField.setReferenceId(lookupResult.getId());
+                    }
+
+                    if (StringUtils.equalsIgnoreCase("Program__c", caseField.getName())) {
+                        ReferenceCaseField referenceCaseField = (ReferenceCaseField) caseField;
+                        IdNameLookupResultContainer lookupResultContainer = salesForceLookup.find("anti", 1,
+                                referenceCaseField.getReferenceTypes()
+                                        .toArray(new String[referenceCaseField.getReferenceTypes().size()]));
+                        IdNameLookupResult lookupResult = lookupResultContainer.getContent().get(0);
+                        referenceCaseField.setReferenceId(lookupResult.getId());
                     }
 
                     if (StringUtils.equalsIgnoreCase("Subject", caseField.getName()) &&
@@ -58,7 +71,10 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
 
                     if (caseField.getType().equals(PICK_LIST) &&
                             caseField instanceof PickListCaseField) {
+
                         final PickListCaseField pickListCaseField = (PickListCaseField) caseField;
+
+                        // status field only, choose the last item in list
                         if (StringUtils.equalsIgnoreCase("Status", pickListCaseField.getLabel())) {
                             final DependentPickListPossibleValue closedStatus =
                                     pickListCaseField.getOptions().get(pickListCaseField.getOptions().size() - 1);
@@ -76,6 +92,8 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
                                 }
                             }
                         }
+
+                        // all other lists choose the first option if one isn't already chosen
                         if (CollectionUtils.isEmpty(pickListCaseField.getValues())) {
                             final DependentPickListPossibleValue dependentPickListPossibleValue = pickListCaseField.getOptions().get(0);
                             pickListCaseField.setValues(new ArrayList<String>() {{
@@ -105,7 +123,10 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
                     }
                 }
             }
-            caseManager.saveCase(aCase, new UserAdmin("mfleming@emmisolutions.com", "****"));
+            CaseSaveResult caseSaveResult =
+                    caseManager.saveCase(aCase, new UserAdmin("mfleming@emmisolutions.com", "****"));
+            assertThat("Save should be successful", caseSaveResult.isSuccess(), is(true));
+            assertThat("Case Id should not be blank", caseSaveResult.getId(), is(notNullValue()));
         }
     }
 }

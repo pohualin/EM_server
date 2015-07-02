@@ -78,26 +78,4 @@ public class PickListCaseField extends CaseField {
                 ", \"values\":" + toJsonString(values) +
                 '}';
     }
-
-    private String toJsonString(List toPrint) {
-        if (toPrint == null) {
-            return "null";
-        }
-        Object[] a = toPrint.toArray();
-
-        int iMax = a.length - 1;
-        if (iMax == -1)
-            return "[]";
-
-        StringBuilder b = new StringBuilder();
-        b.append("[");
-        for (int i = 0; ; i++) {
-            b.append("\"");
-            b.append(String.valueOf(a[i]));
-            b.append("\"");
-            if (i == iMax)
-                return b.append(']').toString();
-            b.append(", ");
-        }
-    }
 }

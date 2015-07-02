@@ -2,11 +2,15 @@ package com.emmisolutions.emmimanager.salesforce.wsc;
 
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResult;
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
 import com.emmisolutions.emmimanager.salesforce.service.SalesForceLookup;
+import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.partner.SearchRecord;
 import com.sforce.soap.partner.SearchResult;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +32,7 @@ public class Lookup implements SalesForceLookup {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
+    private static final String ID_NAME_SOQL_QUERY = "SELECT Id, Name from %s WHERE Name like %s%s%s ORDER BY Name LIMIT %s";
 
     @Resource
     ConnectionFactory salesForceConnection;
@@ -45,12 +50,78 @@ public class Lookup implements SalesForceLookup {
     /**
      * Queries SalesForce for accounts
      *
-     * @param searchString the filter
-     * @param pageSizeRequested     the number of objects to request from SalesForce
+     * @param searchString      the filter
+     * @param pageSizeRequested the number of objects to request from SalesForce
      * @return a search response
      */
     public SalesForceSearchResponse findAccounts(String searchString, int pageSizeRequested) {
         return findAccounts(searchString, pageSizeRequested, true);
+    }
+
+    @Override
+    public IdNameLookupResultContainer find(String searchString, int pageSizeRequested, String... types) {
+        return find(searchString, pageSizeRequested, true, types);
+    }
+
+    private IdNameLookupResultContainer find(String searchString, int pageSizeRequested, boolean reUpConnection, String... types) {
+
+        if (salesForceConnection.get() == null) {
+            LOGGER.error("No Connection to SalesForce present, unable to process search request for '{}'", searchString);
+            return new IdNameLookupResultContainer(true, new ArrayList<IdNameLookupResult>());
+        }
+
+        String strippedSearchString = StringUtils.stripToNull(searchString);
+
+        // make sure a filter and types are present
+        if (StringUtils.isBlank(strippedSearchString) || ArrayUtils.isEmpty(types)) {
+            return new IdNameLookupResultContainer(true, new ArrayList<IdNameLookupResult>());
+        }
+
+        int pageSize;
+        if (pageSizeRequested <= 0) {
+            pageSize = DEFAULT_PAGE_SIZE;
+        } else {
+            pageSize = pageSizeRequested;
+        }
+
+        int totalNumber = 0;
+        List<IdNameLookupResult> lookupResults = new ArrayList<>();
+        try {
+            for (String type : types) {
+                QueryResult queryResult = salesForceConnection.get()
+                        .query(String.format(ID_NAME_SOQL_QUERY,
+                                type, "'%", escape(strippedSearchString), "%'", pageSize + 1));
+
+                if (queryResult != null) {
+                    totalNumber += queryResult.getSize();
+                    if (queryResult.getSize() > 0) {
+                        // found a match
+                        int count = 0;
+                        for (SObject searchRecord : queryResult.getRecords()) {
+                            count++;
+                            lookupResults.add(new IdNameLookupResult(
+                                    (String) searchRecord.getSObjectField("Id"),
+                                    (String) searchRecord.getSObjectField("Name")));
+                            if (count >= pageSize) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (totalNumber >= pageSize) {
+                    // no need to fetch the next object, already full
+                    break;
+                }
+            }
+        } catch (ConnectionException e) {
+            if (reUpConnection) {
+                salesForceConnection.reUp();
+                find(searchString, pageSizeRequested, false, types);
+            } else {
+                LOGGER.error("SalesForce error", e);
+            }
+        }
+        return new IdNameLookupResultContainer(totalNumber <= pageSize, lookupResults);
     }
 
     private SalesForceSearchResponse findAccounts(String searchString, int pageSizeRequested, boolean reUpConnection) {
@@ -86,6 +157,8 @@ public class Lookup implements SalesForceLookup {
             if (reUpConnection) {
                 salesForceConnection.reUp();
                 findAccounts(searchString, pageSizeRequested, false);
+            } else {
+                LOGGER.error("SalesForce error", e);
             }
         }
 

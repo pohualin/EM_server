@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.model.salesforce;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import java.util.List;
+
 /**
  * A Field on a salesforce form
  */
@@ -54,6 +56,14 @@ public abstract class CaseField {
         this.required = required;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -64,11 +74,25 @@ public abstract class CaseField {
                 '}';
     }
 
-    public String getName() {
-        return name;
-    }
+    protected String toJsonString(List toPrint) {
+        if (toPrint == null) {
+            return "null";
+        }
+        Object[] a = toPrint.toArray();
 
-    public void setName(String name) {
-        this.name = name;
+        int iMax = a.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append("[");
+        for (int i = 0; ; i++) {
+            b.append("\"");
+            b.append(String.valueOf(a[i]));
+            b.append("\"");
+            if (i == iMax)
+                return b.append(']').toString();
+            b.append(", ");
+        }
     }
 }
