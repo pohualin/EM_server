@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 import java.util.*;
 
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.PICK_LIST;
-import static com.emmisolutions.emmimanager.model.salesforce.FieldType.fromString;
+import static com.emmisolutions.emmimanager.model.salesforce.FieldType.fromSalesForceTypeString;
 import static com.emmisolutions.emmimanager.salesforce.wsc.ConnectionFactory.escape;
 
 /**
@@ -146,7 +146,8 @@ public class CaseManagerImpl implements CaseManager {
     }
 
     /**
-     * This method populates the newCase object from the passed caseForm
+     * This method populates the newCase object from the passed caseForm by
+     * looping over the sections and then fields within the sections
      *
      * @param newCase  to populate
      * @param caseForm from here
@@ -154,68 +155,107 @@ public class CaseManagerImpl implements CaseManager {
     private void populateNewCaseFromForm(SObject newCase, CaseForm caseForm) {
         for (Section section : caseForm.getSections()) {
             for (CaseField caseField : section.getCaseFields()) {
-                String sObjectValue = null;
-                switch (caseField.getType()) {
-                    case PICK_LIST:
-                        PickListCaseField pickListCaseField = (PickListCaseField) caseField;
-                        if (!CollectionUtils.isEmpty(pickListCaseField.getValues())) {
-                            sObjectValue = pickListCaseField.getValues().get(0);
-                        }
-                        break;
-                    case MULTI_PICK_LIST:
-                        StringBuilder sb = new StringBuilder();
-                        PickListCaseField multiPick = (PickListCaseField) caseField;
-                        if (!CollectionUtils.isEmpty(multiPick.getValues())) {
-                            for (String s : multiPick.getValues()) {
-                                sb.append(s).append(";");
-                            }
-                            if (sb.length() > 0) {
-                                sb.deleteCharAt(sb.length() - 1);
-                            }
-                            sObjectValue = sb.toString();
-                        }
-                        break;
-                    case BOOLEAN:
-                        BooleanCaseField booleanCaseField = (BooleanCaseField) caseField;
-                        newCase.setSObjectField(caseField.getName(),
-                                Boolean.TRUE.equals(booleanCaseField.getValue()));
-                        break;
-                    case DOUBLE:
-                        DoubleCaseField doubleCaseField = (DoubleCaseField) caseField;
-                        if (doubleCaseField.getValue() != null) {
-                            sObjectValue = doubleCaseField.getValue().toString();
-                        }
-                        break;
-                    case DATETIME:
-                        DateTimeCaseField dateTimeCaseField = (DateTimeCaseField) caseField;
-                        if (dateTimeCaseField.getValue() != null) {
-                            newCase.setSObjectField(caseField.getName(),
-                                    dateTimeCaseField.getValue().toDate());
-                        }
-                        break;
-                    case DATE:
-                        DateCaseField dateCaseField = (DateCaseField) caseField;
-                        if (dateCaseField.getValue() != null) {
-                            newCase.setSObjectField(caseField.getName(),
-                                    dateCaseField.getValue().toDate());
-                        }
-                        break;
-                    case REFERENCE:
-                        ReferenceCaseField referenceField = (ReferenceCaseField) caseField;
-                        if (StringUtils.isNotBlank(referenceField.getReferenceId())) {
-                            sObjectValue = referenceField.getReferenceId();
-                        }
-                        break;
-                    default:
-                        StringCaseField stringCaseField = (StringCaseField) caseField;
-                        if (StringUtils.isNotBlank(stringCaseField.getValue())) {
-                            sObjectValue = stringCaseField.getValue();
-                        }
-                        break;
+                sObjectFromCaseField(newCase, caseField);
+            }
+        }
+    }
 
+    /**
+     * Actually writes the SalesForce property for the selected value in the caseField.
+     *
+     * @param newCase   to be written to
+     * @param caseField to find the options
+     */
+    private void sObjectFromCaseField(SObject newCase, CaseField caseField) {
+        String sObjectValue = null;
+        switch (caseField.getType()) {
+            case PICK_LIST:
+                PickListCaseField pickListCaseField = (PickListCaseField) caseField;
+                if (!pickListCaseField.isMultiSelect()) {
+                    if (!CollectionUtils.isEmpty(pickListCaseField.getValues())) {
+                        sObjectValue = pickListCaseField.getValues().get(0);
+                    }
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    if (!CollectionUtils.isEmpty(pickListCaseField.getValues())) {
+                        for (String s : pickListCaseField.getValues()) {
+                            sb.append(s).append(";");
+                        }
+                        if (sb.length() > 0) {
+                            sb.deleteCharAt(sb.length() - 1);
+                        }
+                        sObjectValue = sb.toString();
+                    }
                 }
-                if (sObjectValue != null) {
-                    newCase.setSObjectField(caseField.getName(), sObjectValue);
+                sObjectFromDependentPickListCaseFields(newCase, pickListCaseField);
+                break;
+            case BOOLEAN:
+                BooleanCaseField booleanCaseField = (BooleanCaseField) caseField;
+                boolean choice = Boolean.TRUE.equals(booleanCaseField.getValue());
+                newCase.setSObjectField(caseField.getName(), choice);
+                if (choice) {
+                    for (PickListCaseField trueDependentPickList : booleanCaseField.getRequiredPicklistsWhenTrue()) {
+                        sObjectFromCaseField(newCase, trueDependentPickList);
+                    }
+                } else {
+                    for (PickListCaseField falseDependentPickList : booleanCaseField.getRequiredPicklistsWhenFalse()) {
+                        sObjectFromCaseField(newCase, falseDependentPickList);
+                    }
+                }
+                break;
+            case DOUBLE:
+                DoubleCaseField doubleCaseField = (DoubleCaseField) caseField;
+                if (doubleCaseField.getValue() != null) {
+                    sObjectValue = doubleCaseField.getValue().toString();
+                }
+                break;
+            case DATETIME:
+                DateTimeCaseField dateTimeCaseField = (DateTimeCaseField) caseField;
+                if (dateTimeCaseField.getValue() != null) {
+                    newCase.setSObjectField(caseField.getName(),
+                            dateTimeCaseField.getValue().toDate());
+                }
+                break;
+            case DATE:
+                DateCaseField dateCaseField = (DateCaseField) caseField;
+                if (dateCaseField.getValue() != null) {
+                    newCase.setSObjectField(caseField.getName(),
+                            dateCaseField.getValue().toDate());
+                }
+                break;
+            case REFERENCE:
+                ReferenceCaseField referenceField = (ReferenceCaseField) caseField;
+                if (StringUtils.isNotBlank(referenceField.getReferenceId())) {
+                    sObjectValue = referenceField.getReferenceId();
+                }
+                break;
+            default:
+                StringCaseField stringCaseField = (StringCaseField) caseField;
+                if (StringUtils.isNotBlank(stringCaseField.getValue())) {
+                    sObjectValue = stringCaseField.getValue();
+                }
+                break;
+
+        }
+        if (sObjectValue != null) {
+            newCase.setSObjectField(caseField.getName(), sObjectValue);
+        }
+    }
+
+    /**
+     * Populates the newCase from dependent pick list fields
+     *
+     * @param newCase           to populate
+     * @param pickListCaseField to find the chosen option
+     */
+    private void sObjectFromDependentPickListCaseFields(SObject newCase, PickListCaseField pickListCaseField) {
+        List<DependentPickListPossibleValue> selectedOptions = pickListCaseField.getSelectedOptions();
+        if (!CollectionUtils.isEmpty(selectedOptions)) {
+            for (DependentPickListPossibleValue selectedOption : selectedOptions) {
+                if (!CollectionUtils.isEmpty(selectedOption.getRequiredWhenChosen())) {
+                    for (PickListCaseField requiredCaseField : selectedOption.getRequiredWhenChosen()) {
+                        sObjectFromCaseField(newCase, requiredCaseField);
+                    }
                 }
             }
         }
@@ -309,11 +349,8 @@ public class CaseManagerImpl implements CaseManager {
                         if (li.isEditableForNew()) {
                             if (ArrayUtils.isNotEmpty(li.getLayoutComponents())) {
                                 Field baseField = fieldMap.get(li.getLayoutComponents()[0].getValue());
-                                CaseField emmiCaseField = createCaseField(baseField, pickListOverrides);
-                                emmiCaseField.setLabel(baseField.getLabel());
-                                emmiCaseField.setName(baseField.getName());
-                                emmiCaseField.setRequired(li.getRequired());
-                                emmiCaseField.setType(fromString(baseField.getType().toString()));
+                                CaseField emmiCaseField =
+                                        createCaseField(baseField, pickListOverrides, li.getRequired());
                                 section.addField(emmiCaseField);
 
                                 // create any dependent fields from the options of the base field
@@ -372,7 +409,7 @@ public class CaseManagerImpl implements CaseManager {
                             pickListForOneSelectedOptionMap.get(dependentPickListPossibleValue.getValue()));
                     if (pickListCaseField != null) {
                         // add this picklist field to the dependent list for this option
-                        dependentPickListPossibleValue.getRequiredWhenChosen().add(pickListCaseField);
+                        dependentPickListPossibleValue.addRequiredWhenChosen(pickListCaseField);
                     }
                 }
                 break;
@@ -443,7 +480,8 @@ public class CaseManagerImpl implements CaseManager {
      * @param pickListOverrides a Map keyed by baseField name that has overrides by record type
      * @return CaseField with options
      */
-    private CaseField createCaseField(Field baseField, Map<String, PicklistForRecordType> pickListOverrides) {
+    private CaseField createCaseField(Field baseField, Map<String, PicklistForRecordType> pickListOverrides,
+                                      boolean required) {
         CaseField emmiCaseField;
         switch (baseField.getType()) {
             case picklist:
@@ -481,6 +519,10 @@ public class CaseManagerImpl implements CaseManager {
                 emmiCaseField = new StringCaseField();
                 break;
         }
+        emmiCaseField.setType(fromSalesForceTypeString(baseField.getType().toString()));
+        emmiCaseField.setLabel(baseField.getLabel());
+        emmiCaseField.setName(baseField.getName());
+        emmiCaseField.setRequired(required);
         return emmiCaseField;
     }
 

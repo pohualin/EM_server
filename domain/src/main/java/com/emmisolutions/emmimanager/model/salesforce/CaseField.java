@@ -57,10 +57,9 @@ public abstract class CaseField {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
+                "\"type\":\"" + getType() + "\"" +
                 ", \"name\":\"" + name + "\"" +
                 ", \"label\":\"" + label + "\"" +
-                ", \"type\":\"" + getType() + "\"" +
                 ", \"required\":" + required +
                 '}';
     }

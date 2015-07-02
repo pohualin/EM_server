@@ -34,8 +34,7 @@ public class Section {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"name\":\"" + name + "\"" +
+                "\"name\":\"" + name + "\"" +
                 ", \"fields\":" + caseFields +
                 '}';
     }

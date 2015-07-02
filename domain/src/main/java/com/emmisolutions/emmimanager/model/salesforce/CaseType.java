@@ -27,8 +27,7 @@ public class CaseType {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"id\":\"" + id + "\"" +
+                "\"id\":\"" + id + "\"" +
                 ", \"name\":\"" + name + "\"" +
                 '}';
     }

@@ -9,7 +9,7 @@ import java.util.List;
 public class DependentPickListPossibleValue {
 
     private String value;
-    private List<PickListCaseField> requiredWhenChosen = new ArrayList<>();
+    private List<PickListCaseField> requiredWhenChosen;
 
     public String getValue() {
         return value;
@@ -25,6 +25,13 @@ public class DependentPickListPossibleValue {
 
     public void setRequiredWhenChosen(List<PickListCaseField> requiredWhenChosen) {
         this.requiredWhenChosen = requiredWhenChosen;
+    }
+
+    public void addRequiredWhenChosen(PickListCaseField toAdd) {
+        if (requiredWhenChosen == null) {
+            requiredWhenChosen = new ArrayList<>();
+        }
+        requiredWhenChosen.add(toAdd);
     }
 
     @Override

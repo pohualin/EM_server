@@ -7,9 +7,9 @@ import static com.emmisolutions.emmimanager.model.salesforce.FieldType.REFERENCE
  */
 public class ReferenceCaseField extends CaseField {
 
-    private String referenceId;
+    private String referenceId = "";
 
-    private String referenceName;
+    private String referenceName = "";
 
     private String referenceType;
 
@@ -45,8 +45,7 @@ public class ReferenceCaseField extends CaseField {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"type\":\"" + getType() + "\"" +
+                "\"type\":\"" + getType() + "\"" +
                 ", \"name\":\"" + getName() + "\"" +
                 ", \"label\":\"" + getLabel() + '"' +
                 ", \"required\":" + isRequired() +

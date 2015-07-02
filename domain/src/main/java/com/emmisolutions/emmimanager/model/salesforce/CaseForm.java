@@ -34,8 +34,7 @@ public class CaseForm {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"type\":" + type +
+                "\"type\":" + type +
                 ", \"sections\":" + sections +
                 '}';
     }

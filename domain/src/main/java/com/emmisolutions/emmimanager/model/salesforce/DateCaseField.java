@@ -27,8 +27,7 @@ public class DateCaseField extends CaseField {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"type\":\"" + getType() + "\"" +
+                "\"type\":\"" + getType() + "\"" +
                 ", \"name\":\"" + getName() + "\"" +
                 ", \"label\":\"" + getLabel() + "\"" +
                 ", \"required\":" + isRequired() +

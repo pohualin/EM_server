@@ -5,7 +5,7 @@ package com.emmisolutions.emmimanager.model.salesforce;
  */
 public class StringCaseField extends CaseField {
 
-    private String value;
+    private String value = "";
 
     private Integer maxLength;
 
@@ -28,8 +28,7 @@ public class StringCaseField extends CaseField {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"type\":\"" + getType() + "\"" +
+                "\"type\":\"" + getType() + "\"" +
                 ", \"name\":\"" + getName() + "\"" +
                 ", \"label\":\"" + getLabel() + "\"" +
                 ", \"required\":" + isRequired() +

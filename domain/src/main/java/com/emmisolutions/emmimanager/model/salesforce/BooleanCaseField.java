@@ -10,7 +10,7 @@ import static com.emmisolutions.emmimanager.model.salesforce.FieldType.BOOLEAN;
  */
 public class BooleanCaseField extends CaseField {
 
-    private Boolean value;
+    private Boolean value = Boolean.FALSE;
 
     private List<PickListCaseField> requiredPicklistsWhenTrue = new ArrayList<>();
 
@@ -48,8 +48,7 @@ public class BooleanCaseField extends CaseField {
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"type\":\"" + getType() + "\"" +
+                "\"type\":\"" + getType() + "\"" +
                 ", \"name\":\"" + getName() + "\"" +
                 ", \"label\":\"" + getLabel() + "\"" +
                 ", \"required\":" + isRequired() +

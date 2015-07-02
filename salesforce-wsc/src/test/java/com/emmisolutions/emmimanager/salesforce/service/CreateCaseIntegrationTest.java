@@ -13,7 +13,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.*;
 
@@ -35,7 +34,6 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
             CaseForm aCase = caseManager.newCase(caseType);
 
             for (Section section : aCase.getSections()) {
-                List<CaseField> dependentFieldsToAddToSection = new ArrayList<>();
                 for (CaseField caseField : section.getCaseFields()) {
                     if (StringUtils.equalsIgnoreCase("AccountId", caseField.getName())) {
                         SalesForceSearchResponse salesForceSearchResponse = salesForceLookup.findAccounts("magee", 1);
@@ -71,7 +69,6 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
                             }});
                             if (!CollectionUtils.isEmpty(closedStatus.getRequiredWhenChosen())) {
                                 for (PickListCaseField listCaseField : closedStatus.getRequiredWhenChosen()) {
-                                    dependentFieldsToAddToSection.add(listCaseField);
                                     final String firstSelection = listCaseField.getOptions().get(0).getValue();
                                     listCaseField.setValues(new ArrayList<String>() {{
                                         add(firstSelection);
@@ -106,10 +103,6 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
                         BooleanCaseField booleanCaseField = (BooleanCaseField) caseField;
                         booleanCaseField.setValue(true);
                     }
-                }
-                // add dependent case fields to the section
-                for (CaseField caseField : dependentFieldsToAddToSection) {
-                    section.addField(caseField);
                 }
             }
             caseManager.saveCase(aCase, new UserAdmin("mfleming@emmisolutions.com", "****"));

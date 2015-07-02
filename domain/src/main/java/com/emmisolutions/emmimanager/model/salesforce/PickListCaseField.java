@@ -1,8 +1,12 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
-import java.util.List;
+import org.springframework.util.CollectionUtils;
 
-import static com.emmisolutions.emmimanager.model.salesforce.FieldType.MULTI_PICK_LIST;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.PICK_LIST;
 
 /**
@@ -18,7 +22,7 @@ public class PickListCaseField extends CaseField {
 
     @Override
     public FieldType getType() {
-        return !multiSelect ? PICK_LIST : MULTI_PICK_LIST;
+        return PICK_LIST;
     }
 
     public boolean isMultiSelect() {
@@ -45,11 +49,27 @@ public class PickListCaseField extends CaseField {
         this.options = options;
     }
 
+    public List<DependentPickListPossibleValue> getSelectedOptions() {
+        List<DependentPickListPossibleValue> ret = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(values) && !CollectionUtils.isEmpty(options)) {
+            Map<String, DependentPickListPossibleValue> stringOptionMap = new HashMap<>();
+            for (DependentPickListPossibleValue option : options) {
+                stringOptionMap.put(option.getValue(), option);
+            }
+            for (String value : values) {
+                DependentPickListPossibleValue dependentPickListPossibleValue = stringOptionMap.get(value);
+                if (dependentPickListPossibleValue != null) {
+                    ret.add(dependentPickListPossibleValue);
+                }
+            }
+        }
+        return ret;
+    }
+
     @Override
     public String toString() {
         return "{" +
-                "\"class\": \"" + getClass().getSimpleName() + "\"" +
-                ", \"type\":\"" + getType() + "\"" +
+                "\"type\":\"" + getType() + "\"" +
                 ", \"name\":\"" + getName() + "\"" +
                 ", \"label\":\"" + getLabel() + "\"" +
                 ", \"required\":" + isRequired() +
