@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create default_client_team_scheduling_configuration table" author="Paul">
+    	<createTable tableName="default_client_team_scheduling_configuration">
+    		<column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_default_client_team_scheduling_configuration"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="active" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="name" type="nvarchar(255)">
+            	<constraints nullable="false"  />
+            </column>
+            <column name="default_view_by_days" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="view_by_days_min" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="view_by_days_max" type="int">
+                <constraints nullable="false" />
+            </column>
+			<column name="default_use_providers" type="boolean">
+                <constraints nullable="false" />
+            </column>
+			<column name="default_use_locations" type="boolean">
+                <constraints nullable="false" />
+            </column>	
+    	</createTable>
+    	
+    	<createTable tableName="default_client_team_scheduling_configuration_audit">
+    		<column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="active" type="boolean" />
+            <column name="name" type="nvarchar(255)" />
+            <column name="default_view_by_days" type="int" />
+            <column name="view_by_days_min" type="int" />
+            <column name="view_by_days_max" type="int" />
+			<column name="default_use_providers" type="boolean" />
+			<column name="default_use_locations" type="boolean" />
+    	</createTable>
+    	
+    	<addPrimaryKey tableName="default_client_team_scheduling_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_default_client_team_scheduling_configuration_audit"/>
+		
+		<addForeignKeyConstraint baseTableName="default_client_team_scheduling_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_default_client_team_scheduling_configuration_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+		<createIndex indexName="ix_default_client_team_scheduling_configuration_audit_revision"
+               tableName="default_client_team_scheduling_configuration_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="create client password configuration table" author="Paul">
+    	
+    </changeSet>
+    
+    <changeSet id="load default client team scheduling configuration reference data" author="Paul">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_23/data/em-959/default-client-team-scheduling-configuration.csv"
+                  separator=";"
+                  tableName="default_client_team_scheduling_configuration"/>
+    </changeSet>
+    
+    <changeSet id="alter tables to have rowver" author="Paul" dbms="mssql">
+		<addColumn tableName="default_client_team_scheduling_configuration">
+			<column name="rowver" type="rowversion">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+		<addColumn tableName="default_client_team_scheduling_configuration_audit">
+			<column name="rowver" type="rowversion">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+    </changeSet>
+    
+</databaseChangeLog>

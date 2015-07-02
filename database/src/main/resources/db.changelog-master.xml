@@ -237,5 +237,7 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-add-rowver.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-em-714-update.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-959.xml"/>
 
 </databaseChangeLog>
