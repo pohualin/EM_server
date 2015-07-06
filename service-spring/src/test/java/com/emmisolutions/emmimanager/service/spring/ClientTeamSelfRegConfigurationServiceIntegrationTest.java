@@ -7,13 +7,12 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientTeamSelfRegConfigurationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import org.junit.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolationException;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -91,7 +90,7 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
         assertThat("the saved self reg config is found:", foundSelfRegConfiguration2, is(selfRegConfigurationUpdated));
     }
 
-    @Test(expected = DataIntegrityViolationException.class)
+    @Test
     public void testDuplicateCodeName(){
         Client client = makeNewRandomClient();
         Team team = makeNewRandomTeam(client);
@@ -99,6 +98,7 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
         selfRegConfiguration.setTeam(team);
         selfRegConfiguration.setCode("CODE_FOR_TEAM_ONE_DUP_TEST");
         ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
+        assertThat("the saved self reg config is found:", selfRegConfigurationSaved.getId(), is(notNullValue()));
 
 
         Team teamTwo = makeNewRandomTeam(client);
@@ -106,6 +106,7 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
         selfRegConfigurationForTeamTwo.setTeam(teamTwo);
         selfRegConfigurationForTeamTwo.setCode("CODE_FOR_TEAM_ONE_DUP_TEST");
         ClientTeamSelfRegConfiguration selfRegConfigurationSavedForTeamTwo = clientTeamSelfRegConfigurationService.create(selfRegConfigurationForTeamTwo);
+        assertThat("the saved self reg config is found:", selfRegConfigurationSavedForTeamTwo, is(nullValue()));
     }
 
     @Test
