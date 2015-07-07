@@ -8,11 +8,11 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
- * Created by achavan on 6/30/15.
+ * A patient self registration configuration
  */
 @Entity
 @Audited
-@Table (name="patient_self_reg_config")
+@Table(name = "patient_self_reg_config")
 public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     @Id
@@ -28,31 +28,11 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
     @JoinColumn(name = "self_reg_id", nullable = false)
     private ClientTeamSelfRegConfiguration selfRegConfiguration;
 
-    @Size(max = 255)
-    @Column(name = "header_english")
-    @Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - ' ( ) , .")
-    private String patientInformationHeaderEnglish;
-
-    @Size(max = 255)
-    @Column(name = "header_spanish")
-    @Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - ' ( ) , .")
-    private String patientInformationHeaderSpanish;
-
     @Column(name = "expose_name", columnDefinition = "boolean", nullable = false)
     private boolean exposeName;
 
     @Column(name = "require_name", columnDefinition = "boolean", nullable = false)
     private boolean requireName;
-
-    @Size(max = 255)
-    @Column(name = "name_english_label")
-    @Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - ' ( ) , .")
-    private String patientNameLabelEnglish;
-
-    @Size(max = 255)
-    @Column(name = "name_spanish_label")
-    @Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - ' ( ) , .")
-    private String patientNameLabelSpanish;
 
     @Column(name = "expose_id", columnDefinition = "boolean", nullable = false)
     private boolean exposeId;
@@ -115,22 +95,6 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
         this.selfRegConfiguration = selfRegConfiguration;
     }
 
-    public String getPatientInformationHeaderEnglish() {
-        return patientInformationHeaderEnglish;
-    }
-
-    public void setPatientInformationHeaderEnglish(String patientInformationHeaderEnglish) {
-        this.patientInformationHeaderEnglish = patientInformationHeaderEnglish;
-    }
-
-    public String getPatientInformationHeaderSpanish() {
-        return patientInformationHeaderSpanish;
-    }
-
-    public void setPatientInformationHeaderSpanish(String patientInformationHeaderSpanish) {
-        this.patientInformationHeaderSpanish = patientInformationHeaderSpanish;
-    }
-
     public boolean isExposeName() {
         return exposeName;
     }
@@ -147,21 +111,6 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
         this.requireName = requireName;
     }
 
-    public String getPatientNameLabelEnglish() {
-        return patientNameLabelEnglish;
-    }
-
-    public void setPatientNameLabelEnglish(String patientNameLabelEnglish) {
-        this.patientNameLabelEnglish = patientNameLabelEnglish;
-    }
-
-    public String getPatientNameLabelSpanish() {
-        return patientNameLabelSpanish;
-    }
-
-    public void setPatientNameLabelSpanish(String patientNameLabelSpanish) {
-        this.patientNameLabelSpanish = patientNameLabelSpanish;
-    }
 
     public boolean isExposeId() {
         return exposeId;
@@ -282,12 +231,8 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
                 "id=" + id +
                 ", version=" + version +
                 ", selfRegConfiguration=" + selfRegConfiguration +
-                ", patientInformationHeaderEnglish='" + patientInformationHeaderEnglish + '\'' +
-                ", patientInformationHeaderSpanish='" + patientInformationHeaderSpanish + '\'' +
                 ", exposeName=" + exposeName +
                 ", requireName=" + requireName +
-                ", patientNameLabelEnglish='" + patientNameLabelEnglish + '\'' +
-                ", patientNameLabelSpanish='" + patientNameLabelSpanish + '\'' +
                 ", exposeId=" + exposeId +
                 ", requireId=" + requireId +
                 ", exposeDateOfBirth=" + exposeDateOfBirth +
