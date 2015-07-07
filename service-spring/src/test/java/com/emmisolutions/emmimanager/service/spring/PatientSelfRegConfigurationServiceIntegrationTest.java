@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.service.PatientSelfRegConfigurationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import javax.annotation.Resource;
 
@@ -99,5 +100,31 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         assertTrue(created.isExposeId());
         assertTrue(created.isExposeName());
         assertTrue(created.isExposePhone());
+
+        PatientSelfRegConfig updated = patientSelfRegConfigurationService.update(created);
+        assertThat("patient self registration configuration was updated:", updated.getId(), is(notNullValue()));
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testEmptyLabelForOtherPatientIdLabelType() {
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
+        selfRegConfiguration.setTeam(team);
+        selfRegConfiguration.setCode(RandomStringUtils.randomAlphanumeric(9));
+        ClientTeamSelfRegConfiguration selfRegConfigurationCreated = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
+        ClientTeamSelfRegConfiguration foundSelfRegConfiguration = clientTeamSelfRegConfigurationService.findByTeam(team);
+        assertThat("the created self reg config is found:", foundSelfRegConfiguration.getId(), is(notNullValue()));
+
+        PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
+
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER);
+        patientSelfRegConfig.setSelfRegConfiguration(selfRegConfigurationCreated);
+        PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testBadSave(){
+        PatientSelfRegConfig created = patientSelfRegConfigurationService.create(null);
     }
 }
