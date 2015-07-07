@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    
+    <changeSet id="Update team edit client tags modal title translate values" author="Paul">
+    	<update tableName="strings">
+    		<column name="message">Manage Client Groups</column>
+    		<where>key_path = 'team_edit.client_tags.modal_title'</where>
+    	</update>
+   	</changeSet>
+   	
+</databaseChangeLog>

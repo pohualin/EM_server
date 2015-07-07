@@ -40,6 +40,8 @@
 
     </changeSet>
     <changeSet id="modify_data_type_client_team_self_reg_config_code" author="Amrita">
+        <dropUniqueConstraint tableName="client_team_self_reg_config" constraintName="uk_client_team_self_reg_config_code"></dropUniqueConstraint>
         <modifyDataType columnName="code" newDataType="nvarchar(100)" tableName="client_team_self_reg_config"/>
+        <addUniqueConstraint tableName="client_team_self_reg_config" columnNames="code" constraintName="uk_client_team_self_reg_config_code"/>
     </changeSet>
 </databaseChangeLog>
