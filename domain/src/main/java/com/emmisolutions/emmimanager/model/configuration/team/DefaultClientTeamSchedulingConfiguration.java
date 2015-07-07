@@ -54,7 +54,10 @@ public class DefaultClientTeamSchedulingConfiguration extends
     private boolean defaultUseProviders;
 
     @Column(name = "default_use_locations", columnDefinition = "boolean", nullable = false)
-    private boolean default_use_locations;
+    private boolean defaultUseLocations;
+    
+    @Column(name = "default_use_view_by_days", columnDefinition = "boolean", nullable = false)
+    private boolean defaultUseViewByDays;
 
     /**
      * Default constructor
@@ -137,12 +140,20 @@ public class DefaultClientTeamSchedulingConfiguration extends
         this.defaultUseProviders = defaultUseProviders;
     }
 
-    public boolean isDefault_use_locations() {
-        return default_use_locations;
+    public boolean isDefaultUseLocations() {
+        return defaultUseLocations;
     }
 
-    public void setDefault_use_locations(boolean default_use_locations) {
-        this.default_use_locations = default_use_locations;
+    public void setDefaultUseLocations(boolean defaultUseLocations) {
+        this.defaultUseLocations = defaultUseLocations;
+    }
+
+    public boolean isDefaultUseViewByDays() {
+        return defaultUseViewByDays;
+    }
+
+    public void setDefaultUseViewByDays(boolean defaultUseViewByDays) {
+        this.defaultUseViewByDays = defaultUseViewByDays;
     }
 
 }

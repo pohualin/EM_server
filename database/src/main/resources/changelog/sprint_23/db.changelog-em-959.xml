@@ -36,6 +36,9 @@
             <column name="view_by_days_max" type="int">
                 <constraints nullable="false" />
             </column>
+            <column name="default_use_view_by_days" type="boolean">
+                <constraints nullable="false" />
+            </column>
 			<column name="default_use_providers" type="boolean">
                 <constraints nullable="false" />
             </column>
@@ -57,6 +60,7 @@
             <column name="default_view_by_days" type="int" />
             <column name="view_by_days_min" type="int" />
             <column name="view_by_days_max" type="int" />
+            <column name="default_use_view_by_days" type="boolean" />
 			<column name="default_use_providers" type="boolean" />
 			<column name="default_use_locations" type="boolean" />
     	</createTable>
@@ -73,10 +77,6 @@
                tableName="default_client_team_scheduling_configuration_audit">
             <column name="revision" type="BIGINT"/>
         </createIndex>
-    </changeSet>
-    
-    <changeSet id="create client password configuration table" author="Paul">
-    	
     </changeSet>
     
     <changeSet id="load default client team scheduling configuration reference data" author="Paul">
@@ -97,6 +97,50 @@
 				<constraints nullable="false" />
 			</column>
 		</addColumn>
+    </changeSet>
+    
+    <changeSet id="update client team scheduling configuration table" author="Paul">
+    	<addColumn tableName="client_team_scheduling_configuration">
+    		<column name="default_client_team_scheduling_configuration_id" type="BIGINT" />
+    		<column name="use_view_by_days" type="boolean"></column>
+    		<column name="view_by_days" type="int"></column>
+    	</addColumn>
+    	
+    	<update tableName="client_team_scheduling_configuration">
+    		<column name="default_client_team_scheduling_configuration_id">1</column>
+    		<column name="use_view_by_days">true</column>
+    		<column name="view_by_days">30</column>
+    	</update>
+    	
+    	<addNotNullConstraint tableName="client_team_scheduling_configuration" 
+    		columnName="default_client_team_scheduling_configuration_id"
+    		columnDataType="BIGINT"/>
+    		
+   		<addNotNullConstraint tableName="client_team_scheduling_configuration" 
+    		columnName="use_view_by_days"
+    		columnDataType="boolean"/>
+    		
+   		<addNotNullConstraint tableName="client_team_scheduling_configuration" 
+    		columnName="view_by_days"
+    		columnDataType="int"/>
+    	
+    	<addForeignKeyConstraint baseTableName="client_team_scheduling_configuration"
+                                 baseColumnNames="default_client_team_scheduling_configuration_id"
+                                 constraintName="fk_client_team_scheduling_configuration_default_client_team_scheduling_configuration"
+                                 referencedTableName="default_client_team_scheduling_configuration"
+                                 referencedColumnNames="id"/>
+		<createIndex indexName="ix_client_team_scheduling_configuration_default_client_team_scheduling_configuration"
+               tableName="client_team_scheduling_configuration">
+            <column name="default_client_team_scheduling_configuration_id" type="BIGINT"/>
+        </createIndex> 
+    </changeSet>
+    
+    <changeSet id="update client team scheduling configuration audit table" author="Paul">
+    	<addColumn tableName="client_team_scheduling_configuration_audit">
+    		<column name="default_client_team_scheduling_configuration_id" type="BIGINT" />
+    		<column name="use_view_by_days" type="boolean"></column>
+    		<column name="view_by_days" type="int"></column>
+    	</addColumn>
     </changeSet>
     
 </databaseChangeLog>
