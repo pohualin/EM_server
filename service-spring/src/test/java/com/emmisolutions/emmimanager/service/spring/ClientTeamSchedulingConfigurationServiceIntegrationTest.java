@@ -1,7 +1,8 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import javax.annotation.Resource;
 
@@ -24,7 +25,7 @@ public class ClientTeamSchedulingConfigurationServiceIntegrationTest extends
 
     @Resource
     ClientTeamSchedulingConfigurationService clientTeamSchedulingConfigurationService;
-    
+
     @Resource
     TeamService teamService;
 
@@ -41,7 +42,7 @@ public class ClientTeamSchedulingConfigurationServiceIntegrationTest extends
 
         ClientTeamSchedulingConfiguration schedulingConfig = clientTeamSchedulingConfigurationService
                 .findByTeam(team);
-        
+
         assertThat(
                 "should contain default client team scheduling configuration",
                 schedulingConfig.getDefaultClientTeamSchedulingConfiguration()
@@ -51,13 +52,14 @@ public class ClientTeamSchedulingConfigurationServiceIntegrationTest extends
                 schedulingConfig.isUseLocation(), is(true));
 
         schedulingConfig.setUseLocation(false);
-        schedulingConfig = clientTeamSchedulingConfigurationService.saveOrUpdate(schedulingConfig);
-        
+        schedulingConfig = clientTeamSchedulingConfigurationService
+                .saveOrUpdate(schedulingConfig);
+
         assertThat(
                 "should contain client team scheduling configuration with isUseLocation false",
                 schedulingConfig.isUseLocation(), is(false));
     }
-    
+
     /**
      * Test bad saveAndUpdate
      */
@@ -72,6 +74,42 @@ public class ClientTeamSchedulingConfigurationServiceIntegrationTest extends
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeFindNull() {
         clientTeamSchedulingConfigurationService.findByTeam(new Team());
+    }
+
+    /**
+     * Test value out of range
+     */
+    @Test
+    public void testOutofRange() {
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        ClientTeamSchedulingConfiguration schedulingConfig = clientTeamSchedulingConfigurationService
+                .findByTeam(team);
+
+        // greater than max
+        try {
+            schedulingConfig.setViewByDays(500);
+            clientTeamSchedulingConfigurationService
+                    .saveOrUpdate(schedulingConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            schedulingConfig.setViewByDays(-5);
+            clientTeamSchedulingConfigurationService
+                    .saveOrUpdate(schedulingConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        schedulingConfig.setViewByDays(120);
+        schedulingConfig = clientTeamSchedulingConfigurationService.saveOrUpdate(schedulingConfig);
+        schedulingConfig.setViewByDays(0);
+        schedulingConfig = clientTeamSchedulingConfigurationService.saveOrUpdate(schedulingConfig);
+
     }
 
 }

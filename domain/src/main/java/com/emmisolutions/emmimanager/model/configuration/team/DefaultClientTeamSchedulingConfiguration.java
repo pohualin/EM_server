@@ -15,9 +15,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.envers.Audited;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 
 /**
- * Model for default_client_team_scheduling_configuration table
+ * This model holds the global default scheduling configuration for all teams.
+ * Configurations contain default, minimum and maximum values.
+ * 
+ * @see ClientTeamSchedulingConfiguration
+ * 
  */
 @Audited
 @Entity
@@ -55,7 +60,7 @@ public class DefaultClientTeamSchedulingConfiguration extends
 
     @Column(name = "default_use_locations", columnDefinition = "boolean", nullable = false)
     private boolean defaultUseLocations;
-    
+
     @Column(name = "default_use_view_by_days", columnDefinition = "boolean", nullable = false)
     private boolean defaultUseViewByDays;
 

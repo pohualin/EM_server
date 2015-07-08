@@ -8,7 +8,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 /**
- * The scheduling configuration for the client's team.
+ * The scheduling configuration for the team. This model also hold a reference
+ * to DefaultClientTeamSchedulingConfiguration for validation purpose.
+ * 
+ * @see DefaultClientTeamSchedulingConfiguration
  */
 @Audited
 @Entity
@@ -54,7 +57,7 @@ public class ClientTeamSchedulingConfiguration extends AbstractAuditingEntity {
 
     @Column(name = "use_location", columnDefinition = "boolean", nullable = false)
     private boolean useLocation;
-    
+
     @Column(name = "use_view_by_days", columnDefinition = "boolean", nullable = false)
     private boolean useViewByDays;
 

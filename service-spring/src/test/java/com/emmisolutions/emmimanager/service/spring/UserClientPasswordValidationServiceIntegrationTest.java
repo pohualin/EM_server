@@ -226,8 +226,30 @@ public class UserClientPasswordValidationServiceIntegrationTest extends
                         .isPasswordNotRepeatsHistory(configuration, userClient,
                                 "currentPassword"), is(false));
 
-        configuration.setPasswordRepetitions(1);
+        configuration.setPasswordRepetitions(3);
         clientPasswordConfigurationService.save(configuration);
+        
+        userClient.setPassword("passwordC");
+        userClient = userClientPersistence
+                .saveOrUpdate(userClientPasswordService
+                        .encodePassword(userClient));
+
+        UserClientPasswordHistory historyC = new UserClientPasswordHistory();
+        historyC.setUserClient(userClient);
+        historyC.setPassword(userClient.getPassword());
+        historyC.setSalt(userClient.getSalt());
+        historyC = userClientPasswordHistoryService.save(historyC);
+        
+        userClient.setPassword("passwordD");
+        userClient = userClientPersistence
+                .saveOrUpdate(userClientPasswordService
+                        .encodePassword(userClient));
+
+        UserClientPasswordHistory historyD = new UserClientPasswordHistory();
+        historyD.setUserClient(userClient);
+        historyD.setPassword(userClient.getPassword());
+        historyD.setSalt(userClient.getSalt());
+        historyD = userClientPasswordHistoryService.save(historyD);
 
         assertThat("Password repeats",
                 userClientPasswordValidationService
