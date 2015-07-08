@@ -58,8 +58,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposePhone(true);
 
         patientSelfRegConfig.setIdLabelType(PatientIdLabelType.MEMBER_ID);
-        patientSelfRegConfig.setSelfRegConfiguration(selfRegConfigurationSaved);
-
+        patientSelfRegConfig.setTeam(teamPersistence.reload(team));
         PatientSelfRegConfig saved = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
         assertThat("patient self registration configuration was saved:", saved, is(patientSelfRegConfigurationPersistence.reload(saved.getId())));
     }
@@ -86,10 +85,10 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER);
         patientSelfRegConfig.setPatientIdLabelEnglish("label for id in english");
         patientSelfRegConfig.setPatientIdLabelSpanish("label for id in spanish");
-        patientSelfRegConfig.setSelfRegConfiguration(selfRegConfigurationSaved);
+        patientSelfRegConfig.setTeam(teamPersistence.reload(team));
 
         PatientSelfRegConfig saved = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
-        assertThat("patient self registration configuration was saved:", saved, is(patientSelfRegConfigurationPersistence.reload(saved.getId())));
+        assertThat("patient self registration configuration was saved:", saved, is(patientSelfRegConfigurationPersistence.findByTeamId(teamPersistence.reload(team).getId())));
         assertFalse(saved.isRequirePhone());
         assertFalse(saved.isRequireEmail());
         assertFalse(saved.isRequireDateOfBirth());

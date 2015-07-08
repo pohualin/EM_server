@@ -25,8 +25,16 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "self_reg_id", nullable = false)
-    private ClientTeamSelfRegConfiguration selfRegConfiguration;
+    @JoinColumn(name = "team_id", nullable = false)//change this column name later in liquibase too
+    private Team team;
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 
     @Column(name = "expose_name", columnDefinition = "boolean", nullable = false)
     private boolean exposeName;
@@ -85,14 +93,6 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     public void setVersion(Integer version) {
         this.version = version;
-    }
-
-    public ClientTeamSelfRegConfiguration getSelfRegConfiguration() {
-        return selfRegConfiguration;
-    }
-
-    public void setSelfRegConfiguration(ClientTeamSelfRegConfiguration selfRegConfiguration) {
-        this.selfRegConfiguration = selfRegConfiguration;
     }
 
     public boolean isExposeName() {
@@ -230,7 +230,7 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
         return "PatientSelfRegConfig{" +
                 "id=" + id +
                 ", version=" + version +
-                ", selfRegConfiguration=" + selfRegConfiguration +
+                ", team=" + team +
                 ", exposeName=" + exposeName +
                 ", requireName=" + requireName +
                 ", exposeId=" + exposeId +
@@ -241,7 +241,7 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
                 ", requireEmail=" + requireEmail +
                 ", exposePhone=" + exposePhone +
                 ", requirePhone=" + requirePhone +
-                ", type=" + idLabelType +
+                ", idLabelType=" + idLabelType +
                 ", patientIdLabelEnglish='" + patientIdLabelEnglish + '\'' +
                 ", patientIdLabelSpanish='" + patientIdLabelSpanish + '\'' +
                 '}';

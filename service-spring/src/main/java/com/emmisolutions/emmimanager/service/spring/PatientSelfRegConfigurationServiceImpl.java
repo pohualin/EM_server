@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.PatientIdLabelType;
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ClientTeamSelfRegConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.PatientSelfRegConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
@@ -49,7 +50,7 @@ public class PatientSelfRegConfigurationServiceImpl implements
         }
         patientSelfRegConfig.setId(null);
         patientSelfRegConfig.setVersion(null);
-        patientSelfRegConfig.setSelfRegConfiguration(clientTeamSelfRegConfigurationPersistence.reload(patientSelfRegConfig.getSelfRegConfiguration().getId()));
+        patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
         return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
 
@@ -67,7 +68,17 @@ public class PatientSelfRegConfigurationServiceImpl implements
                 && (patientSelfRegConfig.getPatientIdLabelEnglish() == null || patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
             throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
         }
-        patientSelfRegConfig.setSelfRegConfiguration(clientTeamSelfRegConfigurationPersistence.reload(patientSelfRegConfig.getSelfRegConfiguration().getId()));
+        patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
         return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
+
+    @Override
+    @Transactional
+    public PatientSelfRegConfig findByTeam(Team team){
+        if (team == null || team.getId() == null) {
+            throw new InvalidDataAccessApiUsageException("Team cannot be null" + "to find PatientSelfRegConfig");
+        }
+        return patientSelfRegConfigurationPersistence.findByTeamId(team.getId());
+    }
+
 }

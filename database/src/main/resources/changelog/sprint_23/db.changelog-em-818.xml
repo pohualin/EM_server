@@ -59,7 +59,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="id_label_type" type="int"/>
-            <column name="self_reg_id" type="bigint">
+            <column name="team_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -89,7 +89,7 @@
             <column name="name_english_label" type="nvarchar(255)"/>
             <column name="name_spanish_label" type="nvarchar(255)"/>
             <column name="id_label_type" type="int"/>
-            <column name="self_reg_id" type="bigint"/>
+            <column name="team_id" type="bigint"/>
         </createTable>
 
         <addPrimaryKey tableName="patient_self_reg_config_audit" columnNames="id, revision"
@@ -102,14 +102,14 @@
                                  referencedColumnNames="revision"/>
 
         <addForeignKeyConstraint baseTableName="patient_self_reg_config"
-                                 baseColumnNames="self_reg_id"
-                                 constraintName="fk_patient_self_reg_config_client_team_self_reg"
-                                 referencedTableName="client_team_self_reg_config"
+                                 baseColumnNames="team_id"
+                                 constraintName="fk_patient_self_reg_config_team"
+                                 referencedTableName="client_team"
                                  referencedColumnNames="id"/>
 
-        <createIndex indexName="ix_patient_self_reg_config_client_team_self_reg_id"
+        <createIndex indexName="ix_patient_self_reg_config_client_team_team_id"
                      tableName="patient_self_reg_config">
-            <column name="self_reg_id" type="BIGINT"/>
+            <column name="team_id" type="BIGINT"/>
         </createIndex>
 
     </changeSet>

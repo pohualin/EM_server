@@ -12,4 +12,6 @@ public interface PatientSelfRegConfigurationPersistence {
 
     PatientSelfRegConfig reload(Long id);
 
+    PatientSelfRegConfig findByTeamId(Long teamId);
+
 }

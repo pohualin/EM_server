@@ -57,7 +57,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         patientSelfRegConfig.setExposePhone(true);
 
         patientSelfRegConfig.setIdLabelType(PatientIdLabelType.MEMBER_ID);
-        patientSelfRegConfig.setSelfRegConfiguration(selfRegConfigurationCreated);
+        patientSelfRegConfig.setTeam(team);
 
         PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
         assertThat("patient self registration configuration was created:", created.getId(), is(notNullValue()));
@@ -85,7 +85,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER);
         patientSelfRegConfig.setPatientIdLabelEnglish("label for id in english");
         patientSelfRegConfig.setPatientIdLabelSpanish("label for id in spanish");
-        patientSelfRegConfig.setSelfRegConfiguration(selfRegConfigurationCreated);
+        patientSelfRegConfig.setTeam(team);
 
         PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
         assertThat("patient self registration configuration was created:", created.getId(), is(notNullValue()));
@@ -102,7 +102,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         assertTrue(created.isExposePhone());
 
         PatientSelfRegConfig updated = patientSelfRegConfigurationService.update(created);
-        assertThat("patient self registration configuration was updated:", updated.getId(), is(notNullValue()));
+        assertThat("patient self registration configuration was updated:", updated, is(patientSelfRegConfigurationService.findByTeam(team)));
     }
 
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -119,7 +119,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
 
         patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER);
-        patientSelfRegConfig.setSelfRegConfiguration(selfRegConfigurationCreated);
+        patientSelfRegConfig.setTeam(team);
         PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
     }
 

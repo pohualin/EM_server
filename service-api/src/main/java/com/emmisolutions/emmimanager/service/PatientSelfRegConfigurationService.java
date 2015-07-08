@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
+import com.emmisolutions.emmimanager.model.Team;
 
 /**
  * The PatientSelfRegConfiguration Service
@@ -24,5 +25,8 @@ public interface PatientSelfRegConfigurationService {
      */
     PatientSelfRegConfig update(
             PatientSelfRegConfig patientSelfRegConfig);
+
+    PatientSelfRegConfig findByTeam(Team team);
+
 
 }

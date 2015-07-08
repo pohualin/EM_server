@@ -31,4 +31,12 @@ public class PatientSelfRegConfigurationPersistenceImpl implements
         return patientSelfRegConfigurationRepository.findOne(id);
     }
 
+    @Override
+    public PatientSelfRegConfig findByTeamId(Long teamId) {
+        if (teamId == null) {
+            return null;
+        }
+        return patientSelfRegConfigurationRepository.findByTeamId(teamId);
+    }
+
 }
