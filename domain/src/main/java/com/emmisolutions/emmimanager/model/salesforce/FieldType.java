@@ -10,7 +10,7 @@ import java.util.Map;
  * The possible types of salesforce fields
  */
 public enum FieldType {
-    BOOLEAN("boolean"), STRING("string"), EMAIL("email"), PICK_LIST("picklist", "multipicklist"),
+    BOOLEAN("boolean"), STRING("string"), EMAIL("email"), PICK_LIST("picklist"), MULTI_PICK_LIST("multipicklist"),
     TEXTAREA("textarea"), DATETIME("datetime"), PHONE("phone"), DATE("date"), DOUBLE("double"),
     REFERENCE("reference");
 

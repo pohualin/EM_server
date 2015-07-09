@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientType;
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
+import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
@@ -65,6 +66,14 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         assertThat("response has same id as persisted account", salesForceSearchResponse.getAccounts().get(0).getId(), is(nullValue()));
         assertThat("response has same version as persisted account", salesForceSearchResponse.getAccounts().get(0).getVersion(), is(nullValue()));
         assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClientName(), is(nullValue()));
+    }
+
+    @Test
+    public void saveCase() {
+        CaseForm aCase = salesForceService.blankFormFor(salesForceService.possibleCaseTypes().get(0));
+        aCase.setType(null);
+        assertThat("blank case type doesn't save", salesForceService.saveCase(aCase).isSuccess(), is(false));
+
     }
 
     private Client makeClient(String clientName, String accountNumber){

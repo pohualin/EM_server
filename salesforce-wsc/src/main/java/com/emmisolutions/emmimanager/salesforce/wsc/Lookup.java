@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResult;
 import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
-import com.emmisolutions.emmimanager.salesforce.service.SalesForceLookup;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.partner.SearchRecord;
 import com.sforce.soap.partner.SearchResult;

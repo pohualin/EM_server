@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,13 +12,20 @@ import static com.emmisolutions.emmimanager.model.salesforce.FieldType.REFERENCE
 /**
  * A reference field. This is a reference to a different object type.
  */
+@XmlRootElement(name = "reference-case-field")
 public class ReferenceCaseField extends CaseField {
 
     private String referenceId = "";
 
     private String referenceName = "";
 
+    @XmlElement(name = "referenceTypes")
+    @XmlElementWrapper(name = "referenceTypes")
     private List<String> referenceTypes;
+
+    public ReferenceCaseField() {
+        setType(REFERENCE);
+    }
 
     public String getReferenceId() {
         return referenceId;
@@ -31,11 +41,6 @@ public class ReferenceCaseField extends CaseField {
 
     public void setReferenceName(String referenceName) {
         this.referenceName = referenceName;
-    }
-
-    @Override
-    public FieldType getType() {
-        return REFERENCE;
     }
 
     public List<String> getReferenceTypes() {

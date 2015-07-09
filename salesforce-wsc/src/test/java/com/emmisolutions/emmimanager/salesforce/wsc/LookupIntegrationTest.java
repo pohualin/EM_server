@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.salesforce.service;
+package com.emmisolutions.emmimanager.salesforce.wsc;
 
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.salesforce.BaseIntegrationTest;

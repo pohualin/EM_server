@@ -4,6 +4,8 @@ import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.List;
 
 /**
@@ -14,6 +16,8 @@ public class IdNameLookupResultContainer {
 
     boolean complete;
 
+    @XmlElement(name = "content")
+    @XmlElementWrapper(name = "content")
     List<IdNameLookupResult> content;
 
     public IdNameLookupResultContainer(boolean complete, List<IdNameLookupResult> content) {
@@ -31,5 +35,13 @@ public class IdNameLookupResultContainer {
 
     public List<IdNameLookupResult> getContent() {
         return content;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"complete\":\"" + complete + "\"" +
+                ", \"content\":" + content +
+                '}';
     }
 }

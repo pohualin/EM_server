@@ -2,14 +2,21 @@ package com.emmisolutions.emmimanager.model.salesforce;
 
 import org.joda.time.LocalDateTime;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import static com.emmisolutions.emmimanager.model.salesforce.FieldType.DATETIME;
 
 /**
  * A field that contains a double value
  */
+@XmlRootElement(name = "datetime-case-field")
 public class DateTimeCaseField extends CaseField {
 
     private LocalDateTime value;
+
+    public DateTimeCaseField() {
+        super.setType(DATETIME);
+    }
 
     public LocalDateTime getValue() {
         return value;
@@ -17,11 +24,6 @@ public class DateTimeCaseField extends CaseField {
 
     public void setValue(LocalDateTime value) {
         this.value = value;
-    }
-
-    @Override
-    public FieldType getType() {
-        return DATETIME;
     }
 
     @Override

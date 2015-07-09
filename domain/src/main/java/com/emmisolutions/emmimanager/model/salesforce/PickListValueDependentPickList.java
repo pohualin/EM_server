@@ -1,23 +1,18 @@
 package com.emmisolutions.emmimanager.model.salesforce;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Sometimes selecting one value enables more pick lists
  */
-public class DependentPickListPossibleValue {
+public class PickListValueDependentPickList extends PickListValue {
 
-    private String value;
+    @XmlElement(name = "requiredWhenChosen")
+    @XmlElementWrapper(name = "requiredWhenChosen")
     private List<PickListCaseField> requiredWhenChosen;
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 
     public List<PickListCaseField> getRequiredWhenChosen() {
         return requiredWhenChosen;
@@ -37,7 +32,7 @@ public class DependentPickListPossibleValue {
     @Override
     public String toString() {
         return "{" +
-                "\"value\":\"" + value + "\"" +
+                "\"value\":\"" + getValue() + "\"" +
                 ", \"requiredWhenChosen\":" + requiredWhenChosen +
                 '}';
     }

@@ -11,44 +11,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.emmisolutions.emmimanager.model.salesforce.FieldType.PICK_LIST;
+import static com.emmisolutions.emmimanager.model.salesforce.FieldType.MULTI_PICK_LIST;
 
 /**
- * For select fields.. single and multi
+ * For multi-select fields..
  */
-@XmlRootElement(name = "picklist-case-field")
-public class PickListCaseField extends CaseField implements PickList {
+@XmlRootElement(name = "multi-picklist-case-field")
+public class MultiPickListCaseField extends CaseField implements PickList {
 
-    private PickListValue value = new PickListValue();
+    @XmlElement(name = "values")
+    @XmlElementWrapper(name = "values")
+    private List<PickListValue> values;
 
     @XmlElement(name = "options")
     @XmlElementWrapper(name = "options")
     private List<PickListValueDependentPickList> options;
 
-    public PickListCaseField() {
-        setType(PICK_LIST);
+    public MultiPickListCaseField() {
+        setType(MULTI_PICK_LIST);
     }
 
-    public PickListValue getValue() {
-        return value;
-    }
-
-    public void setValue(PickListValue value) {
-        this.value = value;
+    public List<PickListValue> getValues() {
+        return values;
     }
 
     @Override
-    @XmlTransient
     public void setValues(List<PickListValue> values) {
-        if (!CollectionUtils.isEmpty(values)) {
-            setValue(values.get(0));
-        }
+        this.values = values;
     }
 
     public List<PickListValueDependentPickList> getOptions() {
         return options;
     }
 
+    @Override
     public void setOptions(List<PickListValueDependentPickList> options) {
         this.options = options;
     }
@@ -57,14 +53,16 @@ public class PickListCaseField extends CaseField implements PickList {
     @XmlTransient
     public List<PickListValueDependentPickList> getSelectedOptions() {
         List<PickListValueDependentPickList> ret = new ArrayList<>();
-        if (value != null && !CollectionUtils.isEmpty(options)) {
+        if (!CollectionUtils.isEmpty(values) && !CollectionUtils.isEmpty(options)) {
             Map<String, PickListValueDependentPickList> stringOptionMap = new HashMap<>();
             for (PickListValueDependentPickList option : options) {
                 stringOptionMap.put(option.getValue(), option);
             }
-            PickListValueDependentPickList dependentPickListPossibleValue = stringOptionMap.get(value.getValue());
-            if (dependentPickListPossibleValue != null) {
-                ret.add(dependentPickListPossibleValue);
+            for (PickListValue value : values) {
+                PickListValueDependentPickList dependentPickListPossibleValue = stringOptionMap.get(value.getValue());
+                if (dependentPickListPossibleValue != null) {
+                    ret.add(dependentPickListPossibleValue);
+                }
             }
         }
         return ret;
@@ -78,7 +76,7 @@ public class PickListCaseField extends CaseField implements PickList {
                 ", \"label\":\"" + getLabel() + "\"" +
                 ", \"required\":" + isRequired() +
                 ", \"options\":" + options +
-                ", \"value\":" + value +
+                ", \"values\":" + toJsonString(values) +
                 '}';
     }
 }

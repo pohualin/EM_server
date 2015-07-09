@@ -44,7 +44,7 @@
         <joda-time.version>2.3</joda-time.version>
         <jadira.version>3.2.0.GA</jadira.version>
         <commons.lang.version>3.3.2</commons.lang.version>
-        <jackson.version>2.4.1</jackson.version>
+        <jackson.version>2.4.4</jackson.version>
         <spring.hateoas>0.16.0.RELEASE</spring.hateoas>
         <javax.annotation.version>1.2</javax.annotation.version>
         <querydsl.version>3.4.1</querydsl.version>
