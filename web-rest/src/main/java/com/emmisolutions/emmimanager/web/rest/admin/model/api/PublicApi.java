@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.api;
 
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ApiResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.PatientSelfRegConfigurationsResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UsersResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +68,8 @@ public class PublicApi extends ResourceSupport {
             me.production = true;
         }
         me.add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));
+        me.add(linkTo(methodOn(PatientSelfRegConfigurationsResource.class).getReferenceData()).withRel("patientSelfRegReferenceData"));
+
         return me;
     }
 

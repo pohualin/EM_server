@@ -44,7 +44,7 @@ public class PatientSelfRegConfigurationServiceImpl implements
         }
 
         if (patientSelfRegConfig.getIdLabelType() != null
-                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.OTHER)
+                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.OTHER_ID_LABEL)
                 && (patientSelfRegConfig.getPatientIdLabelEnglish() == null || patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
             throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
         }
@@ -64,7 +64,7 @@ public class PatientSelfRegConfigurationServiceImpl implements
         }
 
         if (patientSelfRegConfig.getIdLabelType() != null
-                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.OTHER)
+                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.OTHER_ID_LABEL)
                 && (patientSelfRegConfig.getPatientIdLabelEnglish() == null || patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
             throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
         }

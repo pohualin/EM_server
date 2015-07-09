@@ -113,4 +113,32 @@
         </createIndex>
 
     </changeSet>
+
+    <changeSet id="Add translations for patient id label type enums" author="Amrita">
+        <insert tableName="strings">
+            <column name="key_path" value="MEMBER_ID"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Member ID"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="MEDICAL_RECORD_NUMBER"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Medical Record Number"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="MRN"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="MRN"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="OTHER_ID_LABEL"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Other"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

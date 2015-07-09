@@ -82,7 +82,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER_ID_LABEL);
         patientSelfRegConfig.setPatientIdLabelEnglish("label for id in english");
         patientSelfRegConfig.setPatientIdLabelSpanish("label for id in spanish");
         patientSelfRegConfig.setTeam(team);
@@ -118,7 +118,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
 
         PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER_ID_LABEL);
         patientSelfRegConfig.setTeam(team);
         PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
     }

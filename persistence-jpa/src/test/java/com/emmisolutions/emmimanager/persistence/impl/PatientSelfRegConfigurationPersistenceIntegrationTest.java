@@ -82,7 +82,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER_ID_LABEL);
         patientSelfRegConfig.setPatientIdLabelEnglish("label for id in english");
         patientSelfRegConfig.setPatientIdLabelSpanish("label for id in spanish");
         patientSelfRegConfig.setTeam(teamPersistence.reload(team));

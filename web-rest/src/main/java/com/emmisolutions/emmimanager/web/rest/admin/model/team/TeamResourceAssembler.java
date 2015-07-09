@@ -31,7 +31,6 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
         ret.add(linkTo(methodOn(ClientTeamSchedulingConfigurationsResource.class).findTeamSchedulingConfig(entity.getId(), null)).withRel("teamSchedulingConfig"));
         ret.add(linkTo(methodOn(ClientTeamSelfRegConfigurationsResource.class).findByTeam(entity.getId(), null)).withRel("selfRegConfig"));
         ret.add(linkTo(methodOn(PatientSelfRegConfigurationsResource.class).findByTeam(entity.getId(), null)).withRel("patientSelfRegConfig"));
-
         ret.add(addPageSizeAndSort(
                 linkTo(methodOn(TeamTagsResource.class).list(entity.getId(), null, null)).withRel("tags")));
 

@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.PatientSelfRegConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.PatientSelfRegConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.PatientSelfRegReferenceData;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
@@ -105,5 +106,15 @@ public class PatientSelfRegConfigurationsResource {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
+    }
+
+    /**
+     * GET to Retrieve reference data for patients self reg config.
+     *
+     * @return PatientSelfRegReferenceData
+     */
+    @RequestMapping(value = "/patients_self_reg/ref", method = RequestMethod.GET)
+    public PatientSelfRegReferenceData getReferenceData() {
+        return new PatientSelfRegReferenceData();
     }
 }
