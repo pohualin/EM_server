@@ -17,8 +17,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>salesforce</groupId>
-            <artifactId>salesforce</artifactId>
+            <groupId>com.emmisolutions.salesforce</groupId>
+            <artifactId>partner-wsc</artifactId>
         </dependency>
         <dependency>
             <groupId>com.emmisolutions.emmimanager</groupId>
