@@ -68,12 +68,25 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         assertThat("client name is correct", salesForceSearchResponse.getAccounts().get(0).getClientName(), is(nullValue()));
     }
 
+    /**
+     * Make sure we call salesforce save case, but instead of actually creating a case
+     * just make sure that without a type things don't save
+     */
     @Test
     public void saveCase() {
         CaseForm aCase = salesForceService.blankFormFor(salesForceService.possibleCaseTypes().get(0));
         aCase.setType(null);
         assertThat("blank case type doesn't save", salesForceService.saveCase(aCase).isSuccess(), is(false));
+    }
 
+    /**
+     * Query SF by name and type
+     */
+    @Test
+    public void findByNameInTypes() {
+        assertThat("find by name for an account type should yield results",
+                salesForceService.findByNameInTypes("magee", 1, "account").hasResults(),
+                is(true));
     }
 
     private Client makeClient(String clientName, String accountNumber){
