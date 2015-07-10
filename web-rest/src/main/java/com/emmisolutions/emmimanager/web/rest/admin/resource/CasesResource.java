@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.web.rest.admin.resource;
 import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
 import com.emmisolutions.emmimanager.model.salesforce.CaseSaveResult;
 import com.emmisolutions.emmimanager.model.salesforce.CaseType;
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
 import com.emmisolutions.emmimanager.service.SalesForceService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.case_management.CaseFormResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.case_management.CaseTypeResource;
@@ -88,5 +89,23 @@ public class CasesResource {
         return new ResponseEntity<>(caseSaveResult, caseSaveResult.isSuccess() ? OK : NOT_ACCEPTABLE);
     }
 
+
+    /**
+     * Queries salesforce to find any objects with a type matching types and a name matching q
+     *
+     * @param q        to find the name with
+     * @param pageSize the number requested
+     * @param types    to search for
+     * @return OK (200): containing IdNameLookupResultContainer with the search results
+     */
+    @RequestMapping(value = "/cases/reference_data/lookup", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<IdNameLookupResultContainer> query(@RequestParam(value = "q", required = false) String q,
+                                                             @RequestParam(value = "size", required = false,
+                                                                     defaultValue = "50") Integer pageSize,
+                                                             @RequestParam("type") List<String> types) {
+        return new ResponseEntity<>(salesForceService.findByNameInTypes(q, pageSize,
+                types.toArray(new String[types.size()])), OK);
+    }
 
 }

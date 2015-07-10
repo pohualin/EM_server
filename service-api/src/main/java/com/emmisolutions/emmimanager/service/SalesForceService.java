@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
 import com.emmisolutions.emmimanager.model.salesforce.CaseSaveResult;
 import com.emmisolutions.emmimanager.model.salesforce.CaseType;
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
 
 import java.util.List;
 
@@ -52,4 +53,16 @@ public interface SalesForceService {
      * @return the save results
      */
     CaseSaveResult saveCase(CaseForm caseForm);
+
+
+    /**
+     * Performs a salesforce search for the name across the passed types
+     *
+     * @param searchString to find
+     * @param pageSize     number to look for
+     * @param types        to search over (these are salesforce types)
+     * @return the results
+     */
+    IdNameLookupResultContainer findByNameInTypes(String searchString, Integer pageSize, String... types);
+
 }

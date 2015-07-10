@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
 import com.emmisolutions.emmimanager.model.salesforce.CaseSaveResult;
 import com.emmisolutions.emmimanager.model.salesforce.CaseType;
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.SalesForcePersistence;
 import com.emmisolutions.emmimanager.salesforce.wsc.CaseManager;
@@ -78,5 +79,10 @@ public class SalesForceServiceImpl implements SalesForceService {
     @Override
     public CaseSaveResult saveCase(CaseForm caseForm) {
         return caseManager.saveCase(caseForm, (UserAdmin) userDetailsService.getLoggedInUser());
+    }
+
+    @Override
+    public IdNameLookupResultContainer findByNameInTypes(String searchString, Integer pageSize, String... types) {
+        return salesForceLookup.find(searchString, pageSize != null ? pageSize : 50, types);
     }
 }
