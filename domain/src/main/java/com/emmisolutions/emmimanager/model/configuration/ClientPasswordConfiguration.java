@@ -21,7 +21,11 @@ import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
 
 /**
- * Client Password Configuration Domain Object
+ * ClientPasswordConfiguration Domain Object with a reference to
+ * DefaultPasswordConfiguration for validation purpose.
+ * 
+ * @see DefaultPasswordConfiguration
+ * 
  */
 @Audited
 @Entity
@@ -267,8 +271,10 @@ public class ClientPasswordConfiguration extends AbstractAuditingEntity
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         ClientPasswordConfiguration that = (ClientPasswordConfiguration) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }

@@ -1,0 +1,2 @@
+created_by;name;default_view_by_days;view_by_days_min;view_by_days_max;default_use_view_by_days;default_use_providers;default_use_locations;active
+system;System Default;30;0;120;true;true;true;true
