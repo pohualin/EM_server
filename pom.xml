@@ -44,12 +44,12 @@
         <joda-time.version>2.3</joda-time.version>
         <jadira.version>3.2.0.GA</jadira.version>
         <commons.lang.version>3.3.2</commons.lang.version>
-        <jackson.version>2.4.1</jackson.version>
+        <jackson.version>2.4.4</jackson.version>
         <spring.hateoas>0.16.0.RELEASE</spring.hateoas>
         <javax.annotation.version>1.2</javax.annotation.version>
         <querydsl.version>3.4.1</querydsl.version>
         <woodstox.version>4.4.0</woodstox.version>
-        <salesforce.version>31.1.0</salesforce.version>
+        <salesforce.version>34.1.0</salesforce.version>
         <json.simple.version>1.1.1</json.simple.version>
         <spring.rest.exception.handler.version>1.0.1</spring.rest.exception.handler.version>
         <thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
@@ -629,8 +629,8 @@
             </dependency>
 
             <dependency>
-                <groupId>salesforce</groupId>
-                <artifactId>salesforce</artifactId>
+                <groupId>com.emmisolutions.salesforce</groupId>
+                <artifactId>partner-wsc</artifactId>
                 <version>${salesforce.version}</version>
             </dependency>
 

@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import javax.annotation.Resource;
 
@@ -74,6 +75,192 @@ public class ClientPasswordConfigurationServiceIntegrationTest extends
     public void testNegativeReloadWithNullId() {
         clientPasswordConfigurationService
                 .reload(new ClientPasswordConfiguration());
+    }
+
+    /**
+     * Test value out of range
+     */
+    @Test
+    public void testOutofRange() {
+        Client client = makeNewRandomClient();
+        ClientPasswordConfiguration passwordConfig = clientPasswordConfigurationService
+                .get(client);
+
+        // greater than max
+        try {
+            passwordConfig.setPasswordExpirationDays(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setPasswordExpirationDays(0);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+        
+        // in range
+        passwordConfig.setPasswordExpirationDays(180);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setPasswordExpirationDays(1);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        
+        // greater than max
+        try {
+            passwordConfig.setPasswordExpirationDaysReminder(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setPasswordExpirationDaysReminder(0);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        passwordConfig.setPasswordExpirationDaysReminder(30);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setPasswordExpirationDaysReminder(5);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        
+        // greater than max
+        try {
+            passwordConfig.setPasswordLength(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setPasswordLength(0);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        passwordConfig.setPasswordLength(50);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setPasswordLength(8);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        
+        // greater than max
+        try {
+            passwordConfig.setPasswordRepetitions(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setPasswordRepetitions(0);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        passwordConfig.setPasswordRepetitions(20);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setPasswordRepetitions(3);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+ 
+        // greater than max
+        try {
+            passwordConfig.setDaysBetweenPasswordChange(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setDaysBetweenPasswordChange(0);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        passwordConfig.setDaysBetweenPasswordChange(50);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setDaysBetweenPasswordChange(1);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        
+        // greater than max
+        try {
+            passwordConfig.setIdleTime(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setIdleTime(0);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        passwordConfig.setIdleTime(90);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setIdleTime(1);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        
+        // greater than max
+        try {
+            passwordConfig.setLockoutAttemps(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setLockoutAttemps(0);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        passwordConfig.setLockoutAttemps(50);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setLockoutAttemps(3);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        
+        // greater than max
+        try {
+            passwordConfig.setLockoutReset(200);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // less than min
+        try {
+            passwordConfig.setLockoutReset(-1);
+            clientPasswordConfigurationService.save(passwordConfig);
+            fail("did not throw when it should");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        // in range
+        passwordConfig.setLockoutReset(120);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
+        passwordConfig.setLockoutReset(0);
+        passwordConfig = clientPasswordConfigurationService.save(passwordConfig);
     }
 
 }

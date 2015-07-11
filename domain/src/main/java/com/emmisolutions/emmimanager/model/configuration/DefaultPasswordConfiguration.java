@@ -17,7 +17,11 @@ import org.hibernate.envers.Audited;
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 
 /**
- * A client.
+ * This model holds the global default password configuration for all clients.
+ * Configurations contain default, minimum and maximum values.
+ * 
+ * @see ClientPasswordConfiguration
+ * 
  */
 @Audited
 @Entity

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.DefaultPasswordConfiguration;
 import com.emmisolutions.emmimanager.persistence.ClientPasswordConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.DefaultPasswordConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
@@ -80,6 +81,7 @@ public class ClientPasswordConfigurationServiceImpl implements
     @Transactional
     public ClientPasswordConfiguration save(
             ClientPasswordConfiguration clientPasswordConfiguration) {
+        validatePasswordConfiguration(clientPasswordConfiguration);
         clientPasswordConfiguration.setClient(clientService
                 .reload(clientPasswordConfiguration.getClient()));
         clientPasswordConfiguration
@@ -138,6 +140,69 @@ public class ClientPasswordConfigurationServiceImpl implements
                 .setPasswordReset(clientPasswordConfiguration
                         .getDefaultPasswordConfiguration()
                         .isDefaultPasswordReset());
+    }
+
+    private void validatePasswordConfiguration(
+            ClientPasswordConfiguration clientPasswordConfiguration) {
+        DefaultPasswordConfiguration defaultConfig = clientPasswordConfiguration
+                .getDefaultPasswordConfiguration();
+
+        if (clientPasswordConfiguration.getPasswordExpirationDays() < defaultConfig
+                .getPasswordExpirationDaysMin()
+                || clientPasswordConfiguration.getPasswordExpirationDays() > defaultConfig
+                        .getPasswordExpirationDaysMax()) {
+            throw new InvalidDataAccessApiUsageException("Password expiration days not in range.");
+        }
+        
+        if (clientPasswordConfiguration.getDaysBetweenPasswordChange() < defaultConfig
+                .getDaysBetweenPasswordChangeMin()
+                || clientPasswordConfiguration.getDaysBetweenPasswordChange() > defaultConfig
+                        .getDaysBetweenPasswordChangeMax()) {
+            throw new InvalidDataAccessApiUsageException("Days between password change not in range.");
+        }
+        
+        if (clientPasswordConfiguration.getIdleTime() < defaultConfig
+                .getIdleTimeMin()
+                || clientPasswordConfiguration.getIdleTime() > defaultConfig
+                        .getIdleTimeMax()) {
+            throw new InvalidDataAccessApiUsageException("Idle time not in range.");
+        }
+        
+        if (clientPasswordConfiguration.getLockoutAttemps() < defaultConfig
+                .getLockoutAttempsMin()
+                || clientPasswordConfiguration.getLockoutAttemps() > defaultConfig
+                        .getLockoutAttempsMax()) {
+            throw new InvalidDataAccessApiUsageException("Lockout attemps not in range.");
+        }
+        
+        if (clientPasswordConfiguration.getLockoutReset() < defaultConfig
+                .getLockoutResetMin()
+                || clientPasswordConfiguration.getLockoutReset() > defaultConfig
+                        .getLockoutResetMax()) {
+            throw new InvalidDataAccessApiUsageException("Lockout reset not in range.");
+        }
+        
+        if (clientPasswordConfiguration.getPasswordLength() < defaultConfig
+                .getPasswordLengthMin()
+                || clientPasswordConfiguration.getPasswordLength() > defaultConfig
+                        .getPasswordLengthMax()) {
+            throw new InvalidDataAccessApiUsageException("Password length not in range.");
+        }
+        
+        if (clientPasswordConfiguration.getPasswordExpirationDaysReminder() < defaultConfig
+                .getPasswordExpirationDaysReminderMin()
+                || clientPasswordConfiguration.getPasswordExpirationDaysReminder() > defaultConfig
+                        .getPasswordExpirationDaysReminderMax()) {
+            throw new InvalidDataAccessApiUsageException("Password expiration days reminder not in range.");
+        }
+        
+        if (clientPasswordConfiguration.getPasswordRepetitions() < defaultConfig
+                .getPasswordRepetitionsMin()
+                || clientPasswordConfiguration.getPasswordRepetitions() > defaultConfig
+                        .getPasswordRepetitionsMax()) {
+            throw new InvalidDataAccessApiUsageException("Password repetitions not in range.");
+        }
+
     }
 
 }
