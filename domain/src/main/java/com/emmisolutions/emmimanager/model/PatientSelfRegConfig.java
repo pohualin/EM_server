@@ -4,7 +4,6 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
@@ -25,7 +24,7 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)//change this column name later in liquibase too
+    @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
     public Team getTeam() {
@@ -71,12 +70,10 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     @Size(max = 255)
     @Column(name = "patient_id_english_label")
-    @Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - ' ( ) , .")
     private String patientIdLabelEnglish;
 
     @Size(max = 255)
     @Column(name = "patient_id_spanish_label")
-    @Pattern(regexp = "[A-Za-z- '(),.]*", message = "Name can only contain letters, spaces, and the following characters: - ' ( ) , .")
     private String patientIdLabelSpanish;
 
     public Long getId() {

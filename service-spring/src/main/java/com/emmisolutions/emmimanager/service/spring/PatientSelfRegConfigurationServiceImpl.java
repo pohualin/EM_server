@@ -65,7 +65,7 @@ public class PatientSelfRegConfigurationServiceImpl implements
 
         if (patientSelfRegConfig.getIdLabelType() != null
                 && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.OTHER_ID_LABEL)
-                && (patientSelfRegConfig.getPatientIdLabelEnglish() == null || patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
+                && (patientSelfRegConfig.getPatientIdLabelEnglish() == null && patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
             throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
         }
         patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
@@ -74,7 +74,7 @@ public class PatientSelfRegConfigurationServiceImpl implements
 
     @Override
     @Transactional
-    public PatientSelfRegConfig findByTeam(Team team){
+    public PatientSelfRegConfig findByTeam(Team team) {
         if (team == null || team.getId() == null) {
             throw new InvalidDataAccessApiUsageException("Team cannot be null" + "to find PatientSelfRegConfig");
         }
