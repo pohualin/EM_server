@@ -143,7 +143,7 @@ public class UserClientPasswordHistoryServiceIntegrationTest extends
         ClientPasswordConfiguration configuration = makeNewRandomClientPasswordConfiguration(client);
 
         // Client does not allow past one password
-        configuration.setPasswordRepetitions(1);
+        configuration.setPasswordRepetitions(3);
         configuration = clientPasswordConfigurationService.save(configuration);
 
         UserClientPasswordHistory history1 = new UserClientPasswordHistory();
@@ -151,11 +151,23 @@ public class UserClientPasswordHistoryServiceIntegrationTest extends
         history1.setPassword("password1");
         history1.setSalt("salt1");
         history1 = userClientPasswordHistoryService.save(history1);
+        
+        UserClientPasswordHistory history2 = new UserClientPasswordHistory();
+        history2.setUserClient(userClient);
+        history2.setPassword("password2");
+        history2.setSalt("salt2");
+        history2 = userClientPasswordHistoryService.save(history2);
+        
+        UserClientPasswordHistory history3 = new UserClientPasswordHistory();
+        history3.setUserClient(userClient);
+        history3.setPassword("password3");
+        history3.setSalt("salt3");
+        history3 = userClientPasswordHistoryService.save(history3);
 
         try {
             userClientPasswordHistoryService
                     .handleUserClientPasswordHistory(new UserClient());
-            fail("This method shold only used by existing UserClient");
+            fail("This method should only used by existing UserClient");
         } catch (InvalidDataAccessApiUsageException e) {
         }
 

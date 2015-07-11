@@ -154,10 +154,10 @@ public class SalesForce extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "SalesForce{" +
-                "accountNumber='" + accountNumber + '\'' +
-                ", name='" + name + '\'' +
-                ", id=" + id +
+        return "{" +
+                "\"accountNumber\"=\"" + accountNumber + "\"" +
+                ", \"name\"=\"" + name + "\"" +
+                ", \"id\"=" + id +
                 '}';
     }
 

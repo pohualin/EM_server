@@ -1,8 +1,10 @@
-package com.emmisolutions.emmimanager.salesforce.service;
+package com.emmisolutions.emmimanager.salesforce.wsc;
 
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.salesforce.BaseIntegrationTest;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 
@@ -18,6 +20,9 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
     private static final String SEARCH_RESPONSE_NOT_NULL = "search response is not null";
     private static final String SHOULD_HAVE_MORE_RESULTS = "should be more results";
     private static final String SHOULD_HAVE_NO_MORE_RESULTS = "should be more results";
+    private static final String RESULTS_SHOULD_BE_FOUND = "search response should have found at least one element";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LookupIntegrationTest.class);
 
     @Resource
     SalesForceLookup salesForceLookup;
@@ -65,10 +70,22 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void attemptToFindBlank(){
+    public void attemptToFindBlank() {
         SalesForceSearchResponse searchResponse = salesForceLookup.findAccounts("        ");
         assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
         assertThat(SHOULD_HAVE_MORE_RESULTS, searchResponse.isComplete(), is(true));
         assertThat("total should be zero", searchResponse.getAccounts().size(), is(0));
+    }
+
+    @Test
+    public void genericFind() {
+        assertThat(RESULTS_SHOULD_BE_FOUND,
+                salesForceLookup.find("matt", 5, "Contact").hasResults(), is(true));
+        assertThat(RESULTS_SHOULD_BE_FOUND,
+                salesForceLookup.find("magee", 5, "Account").hasResults(), is(true));
+        assertThat(RESULTS_SHOULD_BE_FOUND,
+                salesForceLookup.find("jeff", 5, "Group", "User").hasResults(), is(true));
+        assertThat(RESULTS_SHOULD_BE_FOUND,
+                salesForceLookup.find("Anti", 5, "Program__c").hasResults(), is(true));
     }
 }
