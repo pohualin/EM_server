@@ -56,7 +56,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.MEMBER_ID);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_MEMBER_ID);
         patientSelfRegConfig.setTeam(team);
 
         PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
@@ -64,7 +64,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
     }
 
     @Test
-    public void testcreateReloadUpdateDefaultFalse() {
+    public void testCreateReloadUpdateDefaultFalse() {
         Client client = makeNewRandomClient();
         Team team = makeNewRandomTeam(client);
         ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
@@ -82,7 +82,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER_ID_LABEL);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_OTHER);
         patientSelfRegConfig.setPatientIdLabelEnglish("label for id in english");
         patientSelfRegConfig.setPatientIdLabelSpanish("label for id in spanish");
         patientSelfRegConfig.setTeam(team);
@@ -91,7 +91,6 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         assertThat("patient self registration configuration was created:", created.getId(), is(notNullValue()));
         assertFalse(created.isRequirePhone());
         assertFalse(created.isRequireEmail());
-        assertFalse(created.isRequireDateOfBirth());
         assertFalse(created.isRequireName());
         assertFalse(created.isRequireId());
 
@@ -100,7 +99,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         assertTrue(created.isExposeId());
         assertTrue(created.isExposeName());
         assertTrue(created.isExposePhone());
-
+        assertTrue(created.isRequireDateOfBirth());
         PatientSelfRegConfig updated = patientSelfRegConfigurationService.update(created);
         assertThat("patient self registration configuration was updated:", updated, is(patientSelfRegConfigurationService.findByTeam(team)));
     }
@@ -118,7 +117,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
 
         PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER_ID_LABEL);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_OTHER);
         patientSelfRegConfig.setTeam(team);
         PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
     }

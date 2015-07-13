@@ -32,6 +32,26 @@ public class PatientSelfRegConfigurationsResource {
     ResourceAssembler<PatientSelfRegConfig, PatientSelfRegConfigurationResource> patientSelfRegConfigResourceAssembler;
 
     /**
+     * Get a patient self-reg configuration by given id
+     * @param toReload
+     * @return
+     */
+    @RequestMapping(value = "/teams/{teamId}/patient_self_reg_configuration_id", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<PatientSelfRegConfigurationResource> getById(@RequestBody PatientSelfRegConfig toReload) {
+
+        PatientSelfRegConfig patientSelfRegConfig = patientSelfRegConfigurationService.reload(toReload);
+
+        if (patientSelfRegConfig != null) {
+            return new ResponseEntity<>(patientSelfRegConfigResourceAssembler.toResource(
+                    patientSelfRegConfig),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    /**
      * Find patient self registration configuration if there is any
      *
      * @param teamId    for the self reg configuration

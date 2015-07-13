@@ -57,7 +57,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.MEMBER_ID);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_MEMBER_ID);
         patientSelfRegConfig.setTeam(teamPersistence.reload(team));
         PatientSelfRegConfig saved = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
         assertThat("patient self registration configuration was saved:", saved, is(patientSelfRegConfigurationPersistence.reload(saved.getId())));
@@ -82,7 +82,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
 
-        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.OTHER_ID_LABEL);
+        patientSelfRegConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_OTHER);
         patientSelfRegConfig.setPatientIdLabelEnglish("label for id in english");
         patientSelfRegConfig.setPatientIdLabelSpanish("label for id in spanish");
         patientSelfRegConfig.setTeam(teamPersistence.reload(team));

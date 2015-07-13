@@ -1,8 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration;
 
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.PatientSelfRegConfigurationsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Creates a PatientSelfRegConfigurationResource from a
@@ -17,7 +21,7 @@ public class PatientSelfRegConfigurationResourceAssembler
     public PatientSelfRegConfigurationResource toResource(
             PatientSelfRegConfig entity) {
         PatientSelfRegConfigurationResource ret = new PatientSelfRegConfigurationResource();
-
+        ret.add(linkTo(methodOn(PatientSelfRegConfigurationsResource.class).getById(entity)).withSelfRel());
         ret.setEntity(entity);
         return ret;
     }

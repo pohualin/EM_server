@@ -44,12 +44,14 @@ public class PatientSelfRegConfigurationServiceImpl implements
         }
 
         if (patientSelfRegConfig.getIdLabelType() != null
-                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.OTHER_ID_LABEL)
+                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.PATIENT_SELF_REG_LABEL_OTHER)
                 && (patientSelfRegConfig.getPatientIdLabelEnglish() == null || patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
             throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
         }
         patientSelfRegConfig.setId(null);
         patientSelfRegConfig.setVersion(null);
+        patientSelfRegConfig.setExposeName(true);
+        patientSelfRegConfig.setRequireDateOfBirth(true);
         patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
         return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
@@ -58,27 +60,29 @@ public class PatientSelfRegConfigurationServiceImpl implements
     @Transactional
     public PatientSelfRegConfig update(
             PatientSelfRegConfig patientSelfRegConfig) {
-        if (patientSelfRegConfig == null || patientSelfRegConfig.getId() == null) {
+        if (patientSelfRegConfig == null || patientSelfRegConfig.getId() == null || patientSelfRegConfig.getVersion() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "PatientSelfRegConfig can not be null.");
         }
 
         if (patientSelfRegConfig.getIdLabelType() != null
-                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.OTHER_ID_LABEL)
+                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.PATIENT_SELF_REG_LABEL_OTHER)
                 && (patientSelfRegConfig.getPatientIdLabelEnglish() == null && patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
             throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
         }
         patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
+        patientSelfRegConfig.setExposeName(true);
+        patientSelfRegConfig.setRequireDateOfBirth(true);
         return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
 
     @Override
-    @Transactional
     public PatientSelfRegConfig findByTeam(Team team) {
-        if (team == null || team.getId() == null) {
-            throw new InvalidDataAccessApiUsageException("Team cannot be null" + "to find PatientSelfRegConfig");
-        }
         return patientSelfRegConfigurationPersistence.findByTeamId(team.getId());
     }
 
+    @Override
+    public PatientSelfRegConfig reload(PatientSelfRegConfig patientSelfRegConfig) {
+        return patientSelfRegConfigurationPersistence.reload(patientSelfRegConfig.getId());
+    }
 }
