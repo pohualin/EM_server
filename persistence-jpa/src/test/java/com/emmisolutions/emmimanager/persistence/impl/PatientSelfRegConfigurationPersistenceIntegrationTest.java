@@ -101,4 +101,6 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         assertTrue(saved.isExposeName());
         assertTrue(saved.isExposePhone());
     }
+
+
 }

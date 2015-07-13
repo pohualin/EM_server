@@ -33,13 +33,16 @@ public class PatientSelfRegConfigurationsResource {
 
     /**
      * Get a patient self-reg configuration by given id
-     * @param toReload
+     *
+     * @param id to load
      * @return
      */
-    @RequestMapping(value = "/teams/{teamId}/patient_self_reg_configuration_id", method = RequestMethod.GET)
+    @RequestMapping(value = "/patient_self_reg_configuration/{id}", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<PatientSelfRegConfigurationResource> getById(@RequestBody PatientSelfRegConfig toReload) {
+    public ResponseEntity<PatientSelfRegConfigurationResource> getById(@PathVariable("id") Long id) {
 
+        PatientSelfRegConfig toReload = new PatientSelfRegConfig();
+        toReload.setId(id);
         PatientSelfRegConfig patientSelfRegConfig = patientSelfRegConfigurationService.reload(toReload);
 
         if (patientSelfRegConfig != null) {

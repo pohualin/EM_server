@@ -21,7 +21,7 @@ public class PatientSelfRegConfigurationResourceAssembler
     public PatientSelfRegConfigurationResource toResource(
             PatientSelfRegConfig entity) {
         PatientSelfRegConfigurationResource ret = new PatientSelfRegConfigurationResource();
-        ret.add(linkTo(methodOn(PatientSelfRegConfigurationsResource.class).getById(entity)).withSelfRel());
+        ret.add(linkTo(methodOn(PatientSelfRegConfigurationsResource.class).getById(entity.getId())).withSelfRel());
         ret.setEntity(entity);
         return ret;
     }
