@@ -143,4 +143,10 @@
     	</addColumn>
     </changeSet>
     
+    <changeSet id="update default view by days max to 360" author="Paul">
+    	<update tableName="default_client_team_scheduling_configuration">
+    		<column name="view_by_days_max">360</column>
+    	</update>
+    </changeSet>
+    
 </databaseChangeLog>
