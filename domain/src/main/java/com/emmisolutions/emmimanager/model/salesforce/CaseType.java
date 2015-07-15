@@ -9,6 +9,7 @@ public class CaseType {
 
     private String id;
     private String name;
+    private EmmiCaseType emmiCaseType;
 
     public CaseType() {
     }
@@ -36,6 +37,14 @@ public class CaseType {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public EmmiCaseType getEmmiCaseType() {
+        return emmiCaseType;
+    }
+
+    public void setEmmiCaseType(EmmiCaseType emmiCaseType) {
+        this.emmiCaseType = emmiCaseType;
     }
 
     @Override
