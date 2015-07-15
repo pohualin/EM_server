@@ -63,16 +63,19 @@ public class PersistenceConfiguration {
     private Boolean showSql;
 
     /**
-     * Transaction manager
+     * Add JNDI resolver for all properties.
      *
-     * @param emf the factory
-     * @return the transaction manager
+     * @param environment to add the source to
+     * @return the scanner
      */
-    @Bean(name = "transactionManager")
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(emf);
-        return transactionManager;
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyResolver(ConfigurableEnvironment environment) {
+        // allow for JNDI properties to be resolved
+        JndiPropertySource jndiPropertySource = new JndiPropertySource("jndiProperties");
+        environment.getPropertySources().addLast(jndiPropertySource);
+        PropertySourcesPlaceholderConfigurer ret = new PropertySourcesPlaceholderConfigurer();
+        ret.setPropertySources(environment.getPropertySources());
+        return ret;
     }
 
     /**
@@ -182,23 +185,8 @@ public class PersistenceConfiguration {
     }
 
     /**
-     * Add JNDI resolver for all properties.
-     *
-     * @param environment to add the source to
-     * @return the scanner
-     */
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyResolver(ConfigurableEnvironment environment) {
-        // allow for JNDI properties to be resolved
-        JndiPropertySource jndiPropertySource = new JndiPropertySource("jndiProperties");
-        environment.getPropertySources().addLast(jndiPropertySource);
-        PropertySourcesPlaceholderConfigurer ret = new PropertySourcesPlaceholderConfigurer();
-        ret.setPropertySources(environment.getPropertySources());
-        return ret;
-    }
-
-    /**
      * Datasource for testing
+     *
      * @return data source
      */
     @Bean
@@ -207,7 +195,7 @@ public class PersistenceConfiguration {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("org.h2.Driver");
         String dbName = env.acceptsProfiles(SPRING_PROFILE_TEST, SPRING_PROFILE_H2_IN_MEMORY) ?
-                    "mem:EmmiManager" : "./database/target/h2_runtime/EmmiManager";
+                "mem:EmmiManager" : "./database/target/h2_runtime/EmmiManager";
         ds.setUrl("jdbc:h2:" + dbName + ";DB_CLOSE_DELAY=-1");
         ds.setUsername("sa");
         ds.setPassword("");
@@ -223,8 +211,17 @@ public class PersistenceConfiguration {
         return ds;
     }
 
+    @Bean(name = "transactionManager")
+    @Profile({SPRING_PROFILE_TEST})
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(emf);
+        return transactionManager;
+    }
+
     /**
      * auto logging bean
+     *
      * @return the aspect
      */
     @Bean(name = "PersistenceLayerAutoLogger")

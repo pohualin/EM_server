@@ -2,12 +2,13 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
-import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
-import com.emmisolutions.emmimanager.model.salesforce.CaseSaveResult;
-import com.emmisolutions.emmimanager.model.salesforce.CaseType;
-import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
+import com.emmisolutions.emmimanager.model.salesforce.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.SalesForcePersistence;
+import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.salesforce.wsc.CaseManager;
 import com.emmisolutions.emmimanager.salesforce.wsc.SalesForceLookup;
 import com.emmisolutions.emmimanager.service.SalesForceService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +36,9 @@ public class SalesForceServiceImpl implements SalesForceService {
 
     @Resource(name = "adminUserDetailsService")
     UserDetailsService userDetailsService;
+
+    @Resource
+    UserClientPersistence userClientService;
 
     @Resource
     CaseManager caseManager;
@@ -84,5 +89,24 @@ public class SalesForceServiceImpl implements SalesForceService {
     @Override
     public IdNameLookupResultContainer findByNameInTypes(String searchString, Integer pageSize, String... types) {
         return salesForceLookup.find(searchString, pageSize != null ? pageSize : 50, types);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<IdNameLookupResult> possibleAccounts(UserClient userClient) {
+        List<IdNameLookupResult> ret = new ArrayList<>();
+        UserClient fromDb = userClientService.reload(userClient);
+        if (fromDb != null) {
+            SalesForce salesForce = fromDb.getClient().getSalesForceAccount();
+            ret.add(new IdNameLookupResult(salesForce.getAccountNumber(), salesForce.getName()));
+
+            // a little bit hacky but we need to reload via login to ensure the team roles have been loaded
+            for (UserClientUserClientTeamRole teamRole :
+                    userClientService.fetchUserWillFullPermissions(fromDb.getLogin()).getTeamRoles()) {
+                TeamSalesForce teamSalesForce = teamRole.getTeam().getSalesForceAccount();
+                ret.add(new IdNameLookupResult(teamSalesForce.getAccountNumber(), teamSalesForce.getName()));
+            }
+        }
+        return ret;
     }
 }

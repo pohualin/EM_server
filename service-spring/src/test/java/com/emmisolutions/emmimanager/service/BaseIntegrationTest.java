@@ -120,7 +120,7 @@ public abstract class BaseIntegrationTest {
     PatientService patientService;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         authenticationProvider.setUserDetailsService(userDetailsService);
         adminAuthenticationProvider.setUserDetailsService(adminUserDetailsService);
     }
@@ -338,9 +338,11 @@ public abstract class BaseIntegrationTest {
         userClientUserClientTeamRole.setUserClient(userClient);
         userClientUserClientTeamRole.setUserClientTeamRole(makeNewRandomUserClientTeamRole(client));
         userClientUserClientTeamRole.setTeam(makeNewRandomTeam(client));
-        userClientUserClientTeamRoleService.associate(new ArrayList<UserClientUserClientTeamRole>() {{
-            add(userClientUserClientTeamRole);
-        }});
+        userClient.setTeamRoles(
+                userClientUserClientTeamRoleService.associate(new ArrayList<UserClientUserClientTeamRole>() {{
+                    add(userClientUserClientTeamRole);
+                }})
+        );
 
         return savedUserClient;
     }
