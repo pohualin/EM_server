@@ -1,9 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
-import com.emmisolutions.emmimanager.model.salesforce.CaseSaveResult;
-import com.emmisolutions.emmimanager.model.salesforce.CaseType;
-import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
+import com.emmisolutions.emmimanager.model.salesforce.*;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.SalesForceService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.case_management.CaseFormResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.case_management.CaseTypeResource;
@@ -45,15 +43,16 @@ public class CasesResource {
      *
      * @return OK (200): containing a ReferenceData object
      */
-    @RequestMapping(value = "/cases/reference_data", method = RequestMethod.GET)
+    @RequestMapping(value = "/user_clients/{id}/cases/reference_data", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<ReferenceData> referenceData() {
+    public ResponseEntity<ReferenceData> referenceData(@PathVariable("id") Long userClientId) {
         List<CaseType> caseTypes = salesForceService.possibleCaseTypes();
         List<CaseTypeResource> caseTypeResources = new ArrayList<>();
         for (CaseType caseType : caseTypes) {
             caseTypeResources.add(caseTypeResourceAssembler.toResource(caseType));
         }
-        return new ResponseEntity<>(new ReferenceData(caseTypeResources), HttpStatus.OK);
+        List<IdNameLookupResult> possibleAccounts = salesForceService.possibleAccounts(new UserClient(userClientId));
+        return new ResponseEntity<>(new ReferenceData(caseTypeResources, possibleAccounts), HttpStatus.OK);
     }
 
     /**

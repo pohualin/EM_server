@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.case_management;
 
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResult;
+
 import javax.xml.bind.annotation.*;
 import java.util.List;
 
@@ -14,8 +16,13 @@ public class ReferenceData {
     @XmlElementWrapper(name = "types")
     List<CaseTypeResource> caseTypes;
 
-    public ReferenceData(List<CaseTypeResource> caseTypeResources) {
+    @XmlElement(name = "account")
+    @XmlElementWrapper(name = "accounts")
+    List<IdNameLookupResult> accounts;
+
+    public ReferenceData(List<CaseTypeResource> caseTypeResources, List<IdNameLookupResult> accounts) {
         this.caseTypes = caseTypeResources;
+        this.accounts = accounts;
     }
 
 }

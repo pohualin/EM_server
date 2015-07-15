@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.model.salesforce;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import java.util.Objects;
 
 /**
  * A generic search result
@@ -31,5 +32,18 @@ public class IdNameLookupResult {
                 "\"id\":\"" + id + "\"" +
                 ", \"name\":\"" + name + "\"" +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IdNameLookupResult that = (IdNameLookupResult) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
