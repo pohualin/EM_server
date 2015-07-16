@@ -77,7 +77,6 @@
         <class>com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamSchedulingConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.PatientSelfRegConfig</class>
-        <class>com.emmisolutions.emmimanager.model.Label</class>
         <class>com.emmisolutions.emmimanager.model.InfoHeaderConfig</class>
         <class>com.emmisolutions.emmimanager.model.PatientIdLabelConfig</class>
         <properties>

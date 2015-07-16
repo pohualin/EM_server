@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class InfoHeaderConfig extends AbstractAuditingEntity {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "patient_self_reg_config_id", nullable = false)
+    @JsonBackReference
     private PatientSelfRegConfig patientSelfRegConfig;
 
     @ManyToOne(optional = false)
