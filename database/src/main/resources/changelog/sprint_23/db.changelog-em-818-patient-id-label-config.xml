@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create patient_id_label_config and audit tables" author="Amrita">
+        <createTable tableName="patient_id_label_config">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patient_id_label_config"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="id_label_type" type="tinyint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="nvarchar(255)"/>
+            <column name="language_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient_self_reg_config_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="patient_id_label_config_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="id_label_type" type="tinyint"/>
+            <column name="value" type="nvarchar(255)"/>
+            <column name="language_id" type="bigint"/>
+            <column name="patient_self_reg_config_id" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="patient_id_label_config_audit" columnNames="id, revision"
+                       constraintName="pk_patient_id_label_config_audit"/>
+
+        <addForeignKeyConstraint baseTableName="patient_id_label_config_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_patient_id_label_config_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+        <addForeignKeyConstraint baseTableName="patient_id_label_config"
+                                 baseColumnNames="language_id"
+                                 constraintName="fk_patient_id_label_config_language"
+                                 referencedTableName="language"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="patient_id_label_config"
+                                 baseColumnNames="patient_self_reg_config_id"
+                                 constraintName="fk_patient_id_label_config_patient_self_reg_config"
+                                 referencedTableName="patient_self_reg_config"
+                                 referencedColumnNames="id"/>
+
+        <createIndex indexName="ix_patient_id_label_config_id_label_type_id"
+                     tableName="patient_id_label_config">
+            <column name="id_label_type" type="tinyint"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">
+        <addColumn tableName="patient_id_label_config">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="patient_id_label_config_audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

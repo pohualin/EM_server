@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.PatientIdLabelType;
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ClientTeamSelfRegConfigurationPersistence;
@@ -43,11 +42,6 @@ public class PatientSelfRegConfigurationServiceImpl implements
                     "PatientSelfRegConfig can not be null.");
         }
 
-        if (patientSelfRegConfig.getIdLabelType() != null
-                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.PATIENT_SELF_REG_LABEL_OTHER)
-                && (patientSelfRegConfig.getPatientIdLabelEnglish() == null || patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
-            throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
-        }
         patientSelfRegConfig.setId(null);
         patientSelfRegConfig.setVersion(null);
         patientSelfRegConfig.setExposeName(true);
@@ -63,12 +57,6 @@ public class PatientSelfRegConfigurationServiceImpl implements
         if (patientSelfRegConfig == null || patientSelfRegConfig.getId() == null || patientSelfRegConfig.getVersion() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "PatientSelfRegConfig can not be null.");
-        }
-
-        if (patientSelfRegConfig.getIdLabelType() != null
-                && patientSelfRegConfig.getIdLabelType().equals(PatientIdLabelType.PATIENT_SELF_REG_LABEL_OTHER)
-                && (patientSelfRegConfig.getPatientIdLabelEnglish() == null && patientSelfRegConfig.getPatientIdLabelSpanish() == null)) {
-            throw new InvalidDataAccessApiUsageException("Label cannot be null for patient id label type OTHER");
         }
         patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
         patientSelfRegConfig.setExposeName(true);

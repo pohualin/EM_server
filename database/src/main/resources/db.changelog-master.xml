@@ -244,4 +244,8 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818.xml"/>
 
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-info-header.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-id-label-config.xml"/>
+
 </databaseChangeLog>

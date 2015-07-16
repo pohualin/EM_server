@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create info_header_config and audit tables" author="Amrita">
+
+        <createTable tableName="info_header_config">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_info_header_config"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="value" type="nvarchar(255)"/>
+            <column name="language_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient_self_reg_config_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="info_header_config_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="value" type="nvarchar(255)"/>
+            <column name="language_id" type="bigint"/>
+            <column name="patient_self_reg_config_id" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="info_header_config_audit" columnNames="id, revision"
+                       constraintName="pk_info_header_config_audit"/>
+
+        <addForeignKeyConstraint baseTableName="info_header_config_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_info_header_config_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+        <addForeignKeyConstraint baseTableName="info_header_config"
+                                 baseColumnNames="language_id"
+                                 constraintName="fk_info_header_config_language_id"
+                                 referencedTableName="language"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="info_header_config"
+                                 baseColumnNames="patient_self_reg_config_id"
+                                 constraintName="fk_info_header_config_patient_self_reg_config"
+                                 referencedTableName="patient_self_reg_config"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+
+    <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">
+        <addColumn tableName="info_header_config">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="info_header_config_audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

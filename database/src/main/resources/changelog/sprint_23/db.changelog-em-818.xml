@@ -22,12 +22,6 @@
             <column name="last_modified_by" type="nvarchar(255)"/>
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
-            <column name="patient_id_english_label" type="nvarchar(255)"/>
-            <column name="patient_id_spanish_label" type="nvarchar(255)"/>
-            <column name="header_english" type="nvarchar(255)"/>
-            <column name="header_spanish" type="nvarchar(255)"/>
-            <column name="name_english_label" type="nvarchar(255)"/>
-            <column name="name_spanish_label" type="nvarchar(255)"/>
             <column name="require_phone" type="boolean">
                 <constraints nullable="false"/>
             </column>
@@ -58,7 +52,6 @@
             <column name="require_name" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="id_label_type" type="int"/>
             <column name="team_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -82,13 +75,6 @@
             <column name="expose_phone" type="boolean"/>
             <column name="require_id" type="boolean"/>
             <column name="require_name" type="boolean"/>
-            <column name="patient_id_english_label" type="nvarchar(255)"/>
-            <column name="patient_id_spanish_label" type="nvarchar(255)"/>
-            <column name="header_english" type="nvarchar(255)"/>
-            <column name="header_spanish" type="nvarchar(255)"/>
-            <column name="name_english_label" type="nvarchar(255)"/>
-            <column name="name_spanish_label" type="nvarchar(255)"/>
-            <column name="id_label_type" type="int"/>
             <column name="team_id" type="bigint"/>
         </createTable>
 
@@ -111,18 +97,17 @@
                      tableName="patient_self_reg_config">
             <column name="team_id" type="BIGINT"/>
         </createIndex>
-
     </changeSet>
 
     <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">
         <addColumn tableName="patient_self_reg_config">
             <column name="rowver" type="rowversion">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </addColumn>
         <addColumn tableName="patient_self_reg_config_audit">
             <column name="rowver" type="rowversion">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>

@@ -1,10 +1,15 @@
 package com.emmisolutions.emmimanager.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A patient self registration configuration
@@ -26,14 +31,6 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
 
     @Column(name = "expose_name", columnDefinition = "boolean", nullable = false)
     private boolean exposeName;
@@ -65,16 +62,22 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
     @Column(name = "require_phone", columnDefinition = "boolean", nullable = false)
     private boolean requirePhone;
 
-    @Column(name = "id_label_type")
-    private PatientIdLabelType idLabelType;
+    @JsonManagedReference
+    @XmlElement(name = "infoHeaderConfig")
+    @XmlElementWrapper(name = "infoHeaderConfigs")
+    @JsonProperty("infoHeaderConfig")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "patientSelfRegConfig")
+    private Set<InfoHeaderConfig> infoHeaderConfigs = new HashSet<>();
 
-    @Size(max = 255)
-    @Column(name = "patient_id_english_label")
-    private String patientIdLabelEnglish;
+    @JsonManagedReference
+    @XmlElement(name = "patientIdLabelConfig")
+    @XmlElementWrapper(name = "patientIdLabelConfigs")
+    @JsonProperty("patientIdLabelConfig")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "patientSelfRegConfig")
+    private Set<PatientIdLabelConfig> patientIdLabelConfigs = new HashSet<>();
 
-    @Size(max = 255)
-    @Column(name = "patient_id_spanish_label")
-    private String patientIdLabelSpanish;
+    public PatientSelfRegConfig() {
+    }
 
     public Long getId() {
         return id;
@@ -92,6 +95,14 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
         this.version = version;
     }
 
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
     public boolean isExposeName() {
         return exposeName;
     }
@@ -107,7 +118,6 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
     public void setRequireName(boolean requireName) {
         this.requireName = requireName;
     }
-
 
     public boolean isExposeId() {
         return exposeId;
@@ -173,28 +183,20 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
         this.requirePhone = requirePhone;
     }
 
-    public PatientIdLabelType getIdLabelType() {
-        return idLabelType;
+    public Set<InfoHeaderConfig> getInfoHeaderConfigs() {
+        return infoHeaderConfigs;
     }
 
-    public void setIdLabelType(PatientIdLabelType idLabelType) {
-        this.idLabelType = idLabelType;
+    public void setInfoHeaderConfigs(Set<InfoHeaderConfig> infoHeaderConfigs) {
+        this.infoHeaderConfigs = infoHeaderConfigs;
     }
 
-    public String getPatientIdLabelEnglish() {
-        return patientIdLabelEnglish;
+    public Set<PatientIdLabelConfig> getPatientIdLabelConfigs() {
+        return patientIdLabelConfigs;
     }
 
-    public void setPatientIdLabelEnglish(String patientIdLabelEnglish) {
-        this.patientIdLabelEnglish = patientIdLabelEnglish;
-    }
-
-    public String getPatientIdLabelSpanish() {
-        return patientIdLabelSpanish;
-    }
-
-    public void setPatientIdLabelSpanish(String patientIdLabelSpanish) {
-        this.patientIdLabelSpanish = patientIdLabelSpanish;
+    public void setPatientIdLabelConfigs(Set<PatientIdLabelConfig> patientIdLabelConfigs) {
+        this.patientIdLabelConfigs = patientIdLabelConfigs;
     }
 
     @Override
@@ -238,9 +240,8 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
                 ", requireEmail=" + requireEmail +
                 ", exposePhone=" + exposePhone +
                 ", requirePhone=" + requirePhone +
-                ", idLabelType=" + idLabelType +
-                ", patientIdLabelEnglish='" + patientIdLabelEnglish + '\'' +
-                ", patientIdLabelSpanish='" + patientIdLabelSpanish + '\'' +
+                ", infoHeaderConfigs=" + infoHeaderConfigs +
+                ", patientIdLabelConfigs=" + patientIdLabelConfigs +
                 '}';
     }
 }
