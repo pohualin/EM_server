@@ -309,10 +309,11 @@ public class CaseManagerImpl implements CaseManager {
             if (!StringUtils.equalsIgnoreCase("master", recordTypeInfo.getName())) {
 
                 // create a form for every non-master type
-                CaseForm caseForm = new CaseForm();
                 CaseType caseType = new CaseType();
                 caseType.setId(recordTypeInfo.getRecordTypeId());
+                caseType.setEmmiCaseType(EmmiCaseType.fromSalesForceId(recordTypeInfo.getRecordTypeId()));
                 caseType.setName(recordTypeInfo.getName());
+                CaseForm caseForm = new CaseForm();
                 caseForm.setType(caseType);
                 caseTypeCaseFormMap.put(caseType, caseForm);
 
