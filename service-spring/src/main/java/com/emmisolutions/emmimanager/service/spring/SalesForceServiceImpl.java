@@ -108,7 +108,9 @@ public class SalesForceServiceImpl implements SalesForceService {
         UserClient fromDb = userClientPersistence.reload(userClient);
         if (fromDb != null) {
             SalesForce salesForce = fromDb.getClient().getSalesForceAccount();
-            ret.add(new IdNameLookupResult(salesForce.getAccountNumber(), salesForce.getName()));
+            IdNameLookupResult clientResult = new IdNameLookupResult(salesForce.getAccountNumber(), salesForce.getName());
+            clientResult.setClient(true);
+            ret.add(clientResult);
 
             // a little bit hacky but we need to reload via login to ensure the team roles have been loaded
             for (UserClientUserClientTeamRole teamRole :
@@ -133,7 +135,9 @@ public class SalesForceServiceImpl implements SalesForceService {
         Patient fromDb = patientPersistence.reload(patient);
         if (fromDb != null) {
             SalesForce salesForce = fromDb.getClient().getSalesForceAccount();
-            ret.add(new IdNameLookupResult(salesForce.getAccountNumber(), salesForce.getName()));
+            IdNameLookupResult clientResult = new IdNameLookupResult(salesForce.getAccountNumber(), salesForce.getName());
+            clientResult.setClient(true);
+            ret.add(clientResult);
 
             Pageable pageable = new PageRequest(0, 50);
             Page<ScheduledProgram> programPage;

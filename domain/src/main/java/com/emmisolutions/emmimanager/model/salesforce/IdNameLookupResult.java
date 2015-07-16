@@ -12,6 +12,7 @@ public class IdNameLookupResult {
 
     private String id;
     private String name;
+    private boolean client;
 
     public IdNameLookupResult(String id, String name) {
         this.id = id;
@@ -24,6 +25,14 @@ public class IdNameLookupResult {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isClient() {
+        return client;
+    }
+
+    public void setClient(boolean isClient) {
+        this.client = isClient;
     }
 
     @Override

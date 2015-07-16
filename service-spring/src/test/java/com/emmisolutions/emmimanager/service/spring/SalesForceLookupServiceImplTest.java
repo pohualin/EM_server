@@ -98,7 +98,9 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
     public void findPossibleAccounts() {
         UserClient userClient = makeNewRandomUserClient(null);
         List<IdNameLookupResult> shouldBeFound = new ArrayList<>();
-        shouldBeFound.add(new IdNameLookupResult(userClient.getClient().getSalesForceAccount().getAccountNumber(), ""));
+        IdNameLookupResult clientResult =
+                new IdNameLookupResult(userClient.getClient().getSalesForceAccount().getAccountNumber(), "");
+        shouldBeFound.add(clientResult);
         for (UserClientUserClientTeamRole teamRole : userClient.getTeamRoles()) {
             shouldBeFound.add(new IdNameLookupResult(teamRole.getTeam().getSalesForceAccount().getAccountNumber(), ""));
         }
@@ -107,13 +109,16 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         assertThat("Client and all teams user has a role for should be found when searching by the user client",
                 sfAccounts,
                 hasItems(shouldBeFound.toArray(new IdNameLookupResult[shouldBeFound.size()])));
+
+        assertThat("Client result has flag set", sfAccounts.get(sfAccounts.indexOf(clientResult)).isClient(), is(true));
     }
 
     @Test
     public void findPossibleAccountsForPatient() {
         Patient patient = makeNewRandomPatient(null);
         List<IdNameLookupResult> shouldBeFound = new ArrayList<>();
-        shouldBeFound.add(new IdNameLookupResult(patient.getClient().getSalesForceAccount().getAccountNumber(), ""));
+        IdNameLookupResult clientResult = new IdNameLookupResult(patient.getClient().getSalesForceAccount().getAccountNumber(), "");
+        shouldBeFound.add(clientResult);
         for (int i = 0; i < 5; i++) {
             shouldBeFound.add(
                     new IdNameLookupResult(
@@ -123,6 +128,8 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
         assertThat("Patient client and all teams on which a patient was scheduled for a program should appear",
                 sfAccounts,
                 hasItems(shouldBeFound.toArray(new IdNameLookupResult[shouldBeFound.size()])));
+
+        assertThat("Client result has flag set", sfAccounts.get(sfAccounts.indexOf(clientResult)).isClient(), is(true));
     }
 
 
