@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermission;
@@ -22,6 +23,7 @@ import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.configuration.IntegrationTestConfiguration;
 import com.icegreen.greenmail.spring.GreenMailBean;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -118,6 +120,12 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     PatientService patientService;
+
+    @Resource
+    ScheduleService scheduleService;
+
+    @Resource
+    ProgramService programService;
 
     @PostConstruct
     private void init() {
@@ -415,6 +423,12 @@ public abstract class BaseIntegrationTest {
         return clientPasswordConfigurationService.save(configuration);
     }
 
+    /**
+     * Creates a new Patient
+     *
+     * @param client if not null will be used to create the patient otherwise a random new client will be used
+     * @return the Patient
+     */
     protected Patient makeNewRandomPatient(Client client) {
         Patient patient = new Patient();
         patient.setFirstName(RandomStringUtils.randomAlphabetic(18));
@@ -422,5 +436,26 @@ public abstract class BaseIntegrationTest {
         patient.setDateOfBirth(LocalDate.now());
         patient.setClient(client == null ? makeNewRandomClient() : client);
         return patientService.create(patient);
+    }
+
+    /**
+     * Creates a scheduled program using a new random team for the passed patient. If the
+     * passed patient is null a random patient will ge created at a random client.
+     *
+     * @param patient to be used or null
+     * @return a ScheduledProgram
+     */
+    protected ScheduledProgram makeNewScheduledProgram(Patient patient) {
+        ScheduledProgram scheduledProgram = new ScheduledProgram();
+        if (patient == null) {
+            patient = makeNewRandomPatient(null);
+        }
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC).plusYears(1));
+        scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setProvider(makeNewRandomProvider());
+        scheduledProgram.setProgram(programService.find(null, null).iterator().next());
+        scheduledProgram.setTeam(makeNewRandomTeam(patient.getClient()));
+        scheduledProgram.setPatient(patient);
+        return scheduleService.schedule(scheduledProgram);
     }
 }
