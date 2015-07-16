@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
 import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResult;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
@@ -111,6 +108,23 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
                 sfAccounts,
                 hasItems(shouldBeFound.toArray(new IdNameLookupResult[shouldBeFound.size()])));
     }
+
+    @Test
+    public void findPossibleAccountsForPatient() {
+        Patient patient = makeNewRandomPatient(null);
+        List<IdNameLookupResult> shouldBeFound = new ArrayList<>();
+        shouldBeFound.add(new IdNameLookupResult(patient.getClient().getSalesForceAccount().getAccountNumber(), ""));
+        for (int i = 0; i < 5; i++) {
+            shouldBeFound.add(
+                    new IdNameLookupResult(
+                            makeNewScheduledProgram(patient).getTeam().getSalesForceAccount().getAccountNumber(), ""));
+        }
+        List<IdNameLookupResult> sfAccounts = salesForceService.possibleAccounts(new Patient(patient.getId()));
+        assertThat("Patient client and all teams on which a patient was scheduled for a program should appear",
+                sfAccounts,
+                hasItems(shouldBeFound.toArray(new IdNameLookupResult[shouldBeFound.size()])));
+    }
+
 
     private Client makeClient(String clientName, String accountNumber) {
         Client client = new Client();

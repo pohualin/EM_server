@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.model.salesforce.*;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -66,8 +67,15 @@ public interface SalesForceService {
      * Finds possible salesforce accounts for a user client.
      *
      * @param userClient to find the accounts
-     * @return list of IdNameLookupResult
+     * @return list of IdNameLookupResult representing salesforce accounts
      */
     List<IdNameLookupResult> possibleAccounts(UserClient userClient);
 
+    /**
+     * Find possible salesforce accounts for a patient.
+     *
+     * @param patient to find accounts for
+     * @return list of IdNameLookupResult objects representing salesforce accounts
+     */
+    List<IdNameLookupResult> possibleAccounts(Patient patient);
 }

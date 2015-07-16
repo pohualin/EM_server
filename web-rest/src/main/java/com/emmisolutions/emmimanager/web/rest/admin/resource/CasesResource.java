@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.salesforce.*;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.SalesForceService;
@@ -39,19 +40,36 @@ public class CasesResource {
     ResourceAssembler<CaseForm, CaseFormResource> caseFormResourceAssembler;
 
     /**
-     * Retrieves reference data from
+     * Retrieves reference data for a user client form
      *
      * @return OK (200): containing a ReferenceData object
      */
     @RequestMapping(value = "/user_clients/{id}/cases/reference_data", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<ReferenceData> referenceData(@PathVariable("id") Long userClientId) {
+    public ResponseEntity<ReferenceData> userClientReferenceData(@PathVariable("id") Long userClientId) {
         List<CaseType> caseTypes = salesForceService.possibleCaseTypes();
         List<CaseTypeResource> caseTypeResources = new ArrayList<>();
         for (CaseType caseType : caseTypes) {
             caseTypeResources.add(caseTypeResourceAssembler.toResource(caseType));
         }
         List<IdNameLookupResult> possibleAccounts = salesForceService.possibleAccounts(new UserClient(userClientId));
+        return new ResponseEntity<>(new ReferenceData(caseTypeResources, possibleAccounts), HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves reference data for a user client form
+     *
+     * @return OK (200): containing a ReferenceData object
+     */
+    @RequestMapping(value = "/patients/{id}/cases/reference_data", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<ReferenceData> patientReferenceData(@PathVariable("id") Long patientId) {
+        List<CaseType> caseTypes = salesForceService.possibleCaseTypes();
+        List<CaseTypeResource> caseTypeResources = new ArrayList<>();
+        for (CaseType caseType : caseTypes) {
+            caseTypeResources.add(caseTypeResourceAssembler.toResource(caseType));
+        }
+        List<IdNameLookupResult> possibleAccounts = salesForceService.possibleAccounts(new Patient(patientId));
         return new ResponseEntity<>(new ReferenceData(caseTypeResources, possibleAccounts), HttpStatus.OK);
     }
 
