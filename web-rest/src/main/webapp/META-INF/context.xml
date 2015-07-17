@@ -1,7 +1,6 @@
 <Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2_ID" antiResourceLocking="true"
          unloadDelay="10000">
 
-
     <Manager pathname="" />
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
@@ -21,6 +20,7 @@
     <Environment name="salesforce.password" value="emmiapi12GG4e8wkXEik4FWXgNUkRLEVLV" type="java.lang.String"/>
     <Environment name="salesforce.url" value="https://cs13.salesforce.com/services/Soap/u/34.0"
                  type="java.lang.String"/>
+    <!--<Environment name="salesforce.formRefreshIntervalMillis" value="900000" type="java.lang.String"/>-->
 
     <!--
         client application entry point. This is the path for end users to see the client facing application.
@@ -44,7 +44,6 @@
     -->
     <!--<Environment name="admin.application.entry.point" value="/admin.html" type="java.lang.String" override="false"/>-->
 
-
     <!-- CAS settings... these are enabled by the spring profiles 'cas' or 'prod' -->
     <!--<Environment name="cas.server.url" value="https://devcas1.emmisolutions.com/cas" type="java.lang.String" override="false"/>-->
     <!--<Environment name="cas.server.login.url" value="https://devcas1.emmisolutions.com/cas/login" type="java.lang.String" override="false"/>-->
@@ -53,7 +52,6 @@
     <!--<Environment name="cas.provider.key" value="12234245632699" type="java.lang.String" override="false"/>-->
     <!--<Environment name="cas.username.suffix" value="@emmisolutions.com" type="java.lang.String" override="false"/>-->
     <!--<Environment name="cas.valid.server.suffixes" value="emmisolutions.com, localhost" type="java.lang.String" override="false"/>-->
-
 
     <!-- email server settings -->
     <Environment name="mail.server.use" value="false" type="java.lang.String" override="false"/>
@@ -69,6 +67,11 @@
     <!--<Environment name="mail.tls" value="false" type="java.lang.String" override="false"/>-->
     <!--<Environment name="mail.auth" value="false" type="java.lang.String" override="false"/>-->
 
+    <!-- Thread pool configurations for async and scheduled tasks -->
+    <!--<Environment name="scheduler.poolSize" value="2" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="async.corePoolSize" value="2" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="async.maxPoolSize" value="50" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="async.queueCapacity" value="10000" type="java.lang.String" override="false"/>-->
 
     <!-- For application logging but data source definition using the above resource/environment variables -->
     <!--Environment name="spring.profiles.active" value="dev,jndi" type="java.lang.String" override="false"/-->
