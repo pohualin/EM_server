@@ -31,4 +31,9 @@ public interface CaseManager {
      * @return List of case types
      */
     List<CaseType> caseTypes();
+
+    /**
+     * Retrieve forms from SalesForce
+     */
+    void fetchForms();
 }
