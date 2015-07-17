@@ -57,8 +57,8 @@
         <javax-mail.version>1.5.2</javax-mail.version>
         <sun-mail.version>${javax-mail.version}</sun-mail.version>
         <commons.codec.version>1.10</commons.codec.version>
-        <hazelcast.version>3.4.1</hazelcast.version>
-        <kryo.version>3.0.0</kryo.version>
+        <hazelcast.version>3.5</hazelcast.version>
+        <kryo.version>3.0.2</kryo.version>
     </properties>
 
     <build>
@@ -116,6 +116,9 @@
                                         <exclude>com.emmisolutions.emmimanager.persistence.configuration.*</exclude>
                                         <exclude>
                                             com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration
+                                        </exclude>
+                                        <exclude>
+                                            com.emmisolutions.emmimanager.service.configuration.SchedulerConfiguration
                                         </exclude>
                                         <exclude>com.emmisolutions.emmimanager.service.configuration.async.*</exclude>
                                     </excludes>
