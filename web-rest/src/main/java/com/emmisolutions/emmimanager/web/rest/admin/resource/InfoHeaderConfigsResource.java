@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.service.InfoHeaderConfigService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.InfoHeaderConfigAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.InfoHeaderConfigPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.InfoHeaderConfigResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
@@ -54,6 +52,66 @@ public class InfoHeaderConfigsResource {
 
         if (infoHeaderConfigPage.hasContent()) {
             return new ResponseEntity<>(new InfoHeaderConfigPage(assembler.toResource(infoHeaderConfigPage, infoHeaderConfigAssembler), infoHeaderConfigPage, infoHeaderConfigSearchFilter), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/info_header_config", method = RequestMethod.POST)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<InfoHeaderConfigResource> save(
+            @PathVariable("patientSelfRegConfigId") Long patientSelfRegConfigId,
+            @RequestBody InfoHeaderConfig infoHeaderConfig) {
+        infoHeaderConfig.setPatientSelfRegConfig(new PatientSelfRegConfig(patientSelfRegConfigId));
+        InfoHeaderConfig infoHeaderConfigCreated = infoHeaderConfigService.create(infoHeaderConfig);
+
+        if (infoHeaderConfigCreated != null) {
+            return new ResponseEntity<>(
+                    infoHeaderConfigAssembler
+                            .toResource(infoHeaderConfig),
+                    HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/info_header_config", method = RequestMethod.PUT)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<InfoHeaderConfigResource> update(
+            @PathVariable("patientSelfRegConfigId") Long patientSelfRegConfigId,
+            @RequestBody InfoHeaderConfig infoHeaderConfig) {
+        infoHeaderConfig.setPatientSelfRegConfig(new PatientSelfRegConfig(patientSelfRegConfigId));
+        InfoHeaderConfig infoHeaderConfigCreated = infoHeaderConfigService.update(infoHeaderConfig);
+
+        if (infoHeaderConfigCreated != null) {
+            return new ResponseEntity<>(
+                    infoHeaderConfigAssembler
+                            .toResource(infoHeaderConfig),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+
+    /**
+     * Get a info header configuration by given id
+     *
+     * @param id to load
+     * @return
+     */
+    @RequestMapping(value = "/info_header_config/{id}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<InfoHeaderConfigResource> getById(@PathVariable("id") Long id) {
+
+        InfoHeaderConfig toReload = new InfoHeaderConfig();
+        toReload.setId(id);
+        InfoHeaderConfig infoHeaderConfig = infoHeaderConfigService.reload(toReload);
+
+        if (infoHeaderConfig != null) {
+            return new ResponseEntity<>(infoHeaderConfigAssembler.toResource(
+                    infoHeaderConfig),
+                    HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

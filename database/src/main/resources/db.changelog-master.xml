@@ -242,7 +242,9 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-1429.xml"/>
 
-    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818.xml"/>
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-translations.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-self-reg.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-info-header.xml"/>
 

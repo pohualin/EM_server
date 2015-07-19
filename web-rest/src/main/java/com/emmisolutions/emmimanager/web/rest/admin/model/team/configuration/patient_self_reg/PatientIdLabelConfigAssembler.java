@@ -1,8 +1,13 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg;
 
 import com.emmisolutions.emmimanager.model.PatientIdLabelConfig;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.InfoHeaderConfigsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.PatientIdLabelConfigsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Responsible for creating a GroupResource (which has links) from a Group
@@ -14,8 +19,7 @@ public class PatientIdLabelConfigAssembler implements
 	@Override
     public PatientIdLabelConfigResource toResource(PatientIdLabelConfig entity) {
         PatientIdLabelConfigResource ret = new PatientIdLabelConfigResource();
-//    	ret.add(linkTo(methodOn(GroupsResource.class).getGroupById(entity.getId())).withSelfRel());
-//        ret.add(TagPage.createFullSearchLink(entity));
+        ret.add(linkTo(methodOn(PatientIdLabelConfigsResource.class).getById(entity.getId())).withSelfRel());
         ret.setEntity(entity);
         return ret;
     }

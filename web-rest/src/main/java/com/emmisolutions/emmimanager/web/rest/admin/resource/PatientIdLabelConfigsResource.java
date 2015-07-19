@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.service.PatientIdLabelConfigService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.PatientIdLabelConfigAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.PatientIdLabelConfigPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.PatientIdLabelConfigResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import org.springframework.data.domain.Page;
@@ -14,10 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
@@ -54,6 +52,66 @@ public class PatientIdLabelConfigsResource {
 
         if (patientIdLabelConfigPage.hasContent()) {
             return new ResponseEntity<>(new PatientIdLabelConfigPage(assembler.toResource(patientIdLabelConfigPage, patientIdLabelConfigAssembler), patientIdLabelConfigPage, patientIdLabelConfigSearchFilter), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/patient_id_label", method = RequestMethod.POST)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<PatientIdLabelConfigResource> save(
+            @PathVariable("patientSelfRegConfigId") Long patientSelfRegConfigId,
+            @RequestBody PatientIdLabelConfig patientIdLabelConfig) {
+        patientIdLabelConfig.setPatientSelfRegConfig(new PatientSelfRegConfig(patientSelfRegConfigId));
+        PatientIdLabelConfig infoHeaderConfigCreated = patientIdLabelConfigService.create(patientIdLabelConfig);
+
+        if (infoHeaderConfigCreated != null) {
+            return new ResponseEntity<>(
+                    patientIdLabelConfigAssembler
+                            .toResource(infoHeaderConfigCreated),
+                    HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/patient_id_label", method = RequestMethod.PUT)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<PatientIdLabelConfigResource> update(
+            @PathVariable("patientSelfRegConfigId") Long patientSelfRegConfigId,
+            @RequestBody PatientIdLabelConfig patientIdLabelConfig) {
+        patientIdLabelConfig.setPatientSelfRegConfig(new PatientSelfRegConfig(patientSelfRegConfigId));
+        PatientIdLabelConfig patientIdLabelConfigUpdated = patientIdLabelConfigService.update(patientIdLabelConfig);
+
+        if (patientIdLabelConfigUpdated != null) {
+            return new ResponseEntity<>(
+                    patientIdLabelConfigAssembler
+                            .toResource(patientIdLabelConfigUpdated),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+
+    /**
+     * Get a patient id label configuration by given id
+     *
+     * @param id to load
+     * @return
+     */
+    @RequestMapping(value = "/patient_id_label_config/{id}", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<PatientIdLabelConfigResource> getById(@PathVariable("id") Long id) {
+
+        PatientIdLabelConfig toReload = new PatientIdLabelConfig();
+        toReload.setId(id);
+        PatientIdLabelConfig patientIdLabelConfig = patientIdLabelConfigService.reload(toReload);
+
+        if (patientIdLabelConfig != null) {
+            return new ResponseEntity<>(patientIdLabelConfigAssembler.toResource(
+                    patientIdLabelConfig),
+                    HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

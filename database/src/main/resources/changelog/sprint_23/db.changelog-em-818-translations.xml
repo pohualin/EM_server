@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="add Spanish to the Language table" author="Amrita">
+        <insert tableName="language">
+            <column name="rfc5646_language_tag" value="sp"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Add translations for patient id label type enums" author="Amrita">
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MEMBER_ID"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Member ID"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MEDICAL_RECORD_NUMBER"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Medical Record Number"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MRN"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="MRN"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_OTHER"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Other"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_PATIENT_ID"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Patient ID"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_PATIENT_ID_SPANISH"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Identificación del paciente"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MEMBER_ID_SPANISH"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Identificación del miembro"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MEDICAL_RECORD_NUMBER_SPANISH"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Número de expediente médico"/>
+            <column name="created_by" value="system"/>
+        </insert>
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MRN_SPANISH"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="NEM"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

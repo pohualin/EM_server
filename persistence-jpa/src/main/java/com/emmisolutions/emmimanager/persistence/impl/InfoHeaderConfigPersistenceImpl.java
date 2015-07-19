@@ -2,9 +2,11 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.InfoHeaderConfig;
 import com.emmisolutions.emmimanager.model.InfoHeaderConfigSearchFilter;
+import com.emmisolutions.emmimanager.model.Language;
 import com.emmisolutions.emmimanager.persistence.InfoHeaderConfigPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.InfoHeaderConfigSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.InfoHeaderConfigRepository;
+import com.emmisolutions.emmimanager.persistence.repo.LanguageRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +27,17 @@ public class InfoHeaderConfigPersistenceImpl implements
     @Resource
     InfoHeaderConfigRepository infoHeaderConfigRepository;
 
+
+    @Resource
+    LanguageRepository languageRepository;
+
     @Resource
     InfoHeaderConfigSpecifications infoHeaderConfigSpecifications;
 
     @Override
     public InfoHeaderConfig save(
             InfoHeaderConfig infoHeaderConfig) {
+        infoHeaderConfig.setLanguage(languageRepository.findByLanguageTag(infoHeaderConfig.getLanguage().getLanguageTag()));
         return infoHeaderConfigRepository.save(infoHeaderConfig);
     }
 

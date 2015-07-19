@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Group;
 import com.emmisolutions.emmimanager.model.InfoHeaderConfig;
 import com.emmisolutions.emmimanager.web.rest.admin.model.client.TagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.GroupsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.InfoHeaderConfigsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +21,8 @@ public class InfoHeaderConfigAssembler implements
 	@Override
     public InfoHeaderConfigResource toResource(InfoHeaderConfig entity) {
         InfoHeaderConfigResource ret = new InfoHeaderConfigResource();
-//    	ret.add(linkTo(methodOn(GroupsResource.class).getGroupById(entity.getId())).withSelfRel());
-//        ret.add(TagPage.createFullSearchLink(entity));
         ret.setEntity(entity);
+        ret.add(linkTo(methodOn(InfoHeaderConfigsResource.class).getById(entity.getId())).withSelfRel());
         return ret;
     }
 }
