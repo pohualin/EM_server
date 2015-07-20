@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.InfoHeaderConfig;
+import com.emmisolutions.emmimanager.model.InfoHeaderConfigSearchFilter;
+import com.emmisolutions.emmimanager.model.InfoHeaderConfig_;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -10,15 +12,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 /**
- * This is the specification class that allows for filtering of Group objects.
+ * This is the specification class that allows for filtering of InfoHeaderConfig objects.
  */
 @Component
 public class InfoHeaderConfigSpecifications {
 
     /**
-     * match on clientId within the provided GroupSearchFilter
+     * match on patientSelfRegConfig within the provided InfoHeaderConfigSearchFilter
      *
-     * @param searchFilter GroupSearchFilter
+     * @param searchFilter InfoHeaderConfigSearchFilter
      * @return the specification as a filter predicate
      */
     public Specification<InfoHeaderConfig> byPatientSelfRegConfig(final InfoHeaderConfigSearchFilter searchFilter) {

@@ -245,8 +245,6 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
                 ", requireEmail=" + requireEmail +
                 ", exposePhone=" + exposePhone +
                 ", requirePhone=" + requirePhone +
-                ", infoHeaderConfigs=" + infoHeaderConfigs +
-                ", patientIdLabelConfigs=" + patientIdLabelConfigs +
                 '}';
     }
 }

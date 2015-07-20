@@ -63,12 +63,12 @@ public class PatientIdLabelConfigsResource {
             @PathVariable("patientSelfRegConfigId") Long patientSelfRegConfigId,
             @RequestBody PatientIdLabelConfig patientIdLabelConfig) {
         patientIdLabelConfig.setPatientSelfRegConfig(new PatientSelfRegConfig(patientSelfRegConfigId));
-        PatientIdLabelConfig infoHeaderConfigCreated = patientIdLabelConfigService.create(patientIdLabelConfig);
+        PatientIdLabelConfig patientIdLabelConfigCreated = patientIdLabelConfigService.create(patientIdLabelConfig);
 
-        if (infoHeaderConfigCreated != null) {
+        if (patientIdLabelConfigCreated != null) {
             return new ResponseEntity<>(
                     patientIdLabelConfigAssembler
-                            .toResource(infoHeaderConfigCreated),
+                            .toResource(patientIdLabelConfigCreated),
                     HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);

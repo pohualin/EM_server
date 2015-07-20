@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.PatientIdLabelConfig;
 import com.emmisolutions.emmimanager.model.PatientIdLabelConfigSearchFilter;
 import com.emmisolutions.emmimanager.persistence.PatientIdLabelConfigPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.PatientIdLabelConfigSpecifications;
+import com.emmisolutions.emmimanager.persistence.repo.LanguageRepository;
 import com.emmisolutions.emmimanager.persistence.repo.PatientIdLabelConfigRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,9 +29,13 @@ public class PatientIdLabelConfigPersistenceImpl implements
     @Resource
     PatientIdLabelConfigSpecifications patientIdLabelConfigSpecifications;
 
+    @Resource
+    LanguageRepository languageRepository;
+
     @Override
     public PatientIdLabelConfig save(
             PatientIdLabelConfig patientIdLabelConfig) {
+        patientIdLabelConfig.setLanguage(languageRepository.findByLanguageTag(patientIdLabelConfig.getLanguage().getLanguageTag()));
         return patientIdLabelConfigRepository.save(patientIdLabelConfig);
     }
 
