@@ -63,16 +63,10 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
     private boolean requirePhone;
 
     @JsonManagedReference
-//    @XmlElement(name = "infoHeaderConfig")
-//    @XmlElementWrapper(name = "infoHeaderConfigs")
-//    @JsonProperty("infoHeaderConfig")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "patientSelfRegConfig")
     private Set<InfoHeaderConfig> infoHeaderConfigs = new HashSet<>();
 
     @JsonManagedReference
-//    @XmlElement(name = "patientIdLabelConfig")
-//    @XmlElementWrapper(name = "patientIdLabelConfigs")
-//    @JsonProperty("patientIdLabelConfig")
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "patientSelfRegConfig")
     private Set<PatientIdLabelConfig> patientIdLabelConfigs = new HashSet<>();
 
