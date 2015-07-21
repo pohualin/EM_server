@@ -61,6 +61,28 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("find by patient works", scheduleService.findAllByPatient(scheduledProgram.getPatient(), null), hasItem(saved));
 
         assertThat("find by null patient should not find anything", scheduleService.findAllByPatient(null, null), is(nullValue()));
+
+        saved.setAccessCode("29999999999");
+        ScheduledProgram updated = scheduleService.update(saved);
+
+        assertThat("updated and original are the same", updated, is(saved));
+        assertThat("version is up by one", updated.getVersion(), is(saved.getVersion() + 1));
+    }
+
+    /**
+     * Make sure update fails when the scheduled program cannot be found
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badUpdate() {
+        scheduleService.update(new ScheduledProgram());
+    }
+
+    /**
+     * Update of null should throw error
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void nullUpdate() {
+        scheduleService.update(null);
     }
 
     /**
