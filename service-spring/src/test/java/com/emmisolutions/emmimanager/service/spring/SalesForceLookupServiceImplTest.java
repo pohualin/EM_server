@@ -1,11 +1,11 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResult;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.SalesForceService;
@@ -14,6 +14,8 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -38,7 +40,7 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
      * the first sf account was removed.
      */
     @Test
-    public void lifecycle(){
+    public void lifecycle() {
         String uniqueName = "Abbott Northwestern Hospital Heart Hospital";
 
         // search salesforce to make sure this account exists
@@ -89,7 +91,49 @@ public class SalesForceLookupServiceImplTest extends BaseIntegrationTest {
                 is(true));
     }
 
-    private Client makeClient(String clientName, String accountNumber){
+    /**
+     * Ensures that possible SF accounts can be found for a UserClient
+     */
+    @Test
+    public void findPossibleAccounts() {
+        UserClient userClient = makeNewRandomUserClient(null);
+        List<IdNameLookupResult> shouldBeFound = new ArrayList<>();
+        IdNameLookupResult clientResult =
+                new IdNameLookupResult(userClient.getClient().getSalesForceAccount().getAccountNumber(), "");
+        shouldBeFound.add(clientResult);
+        for (UserClientUserClientTeamRole teamRole : userClient.getTeamRoles()) {
+            shouldBeFound.add(new IdNameLookupResult(teamRole.getTeam().getSalesForceAccount().getAccountNumber(), ""));
+        }
+
+        List<IdNameLookupResult> sfAccounts = salesForceService.possibleAccounts(new UserClient(userClient.getId()));
+        assertThat("Client and all teams user has a role for should be found when searching by the user client",
+                sfAccounts,
+                hasItems(shouldBeFound.toArray(new IdNameLookupResult[shouldBeFound.size()])));
+
+        assertThat("Client result has flag set", sfAccounts.get(sfAccounts.indexOf(clientResult)).isClient(), is(true));
+    }
+
+    @Test
+    public void findPossibleAccountsForPatient() {
+        Patient patient = makeNewRandomPatient(null);
+        List<IdNameLookupResult> shouldBeFound = new ArrayList<>();
+        IdNameLookupResult clientResult = new IdNameLookupResult(patient.getClient().getSalesForceAccount().getAccountNumber(), "");
+        shouldBeFound.add(clientResult);
+        for (int i = 0; i < 5; i++) {
+            shouldBeFound.add(
+                    new IdNameLookupResult(
+                            makeNewScheduledProgram(patient).getTeam().getSalesForceAccount().getAccountNumber(), ""));
+        }
+        List<IdNameLookupResult> sfAccounts = salesForceService.possibleAccounts(new Patient(patient.getId()));
+        assertThat("Patient client and all teams on which a patient was scheduled for a program should appear",
+                sfAccounts,
+                hasItems(shouldBeFound.toArray(new IdNameLookupResult[shouldBeFound.size()])));
+
+        assertThat("Client result has flag set", sfAccounts.get(sfAccounts.indexOf(clientResult)).isClient(), is(true));
+    }
+
+
+    private Client makeClient(String clientName, String accountNumber) {
         Client client = new Client();
         client.setType(new ClientType(2l));
         client.setContractStart(LocalDate.now());

@@ -2,6 +2,8 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.patient;
 
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.AdminPatientsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.AdminSchedulesResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.CasesResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,9 @@ public class AdminPatientResourceAssembler implements ResourceAssembler<Patient,
         ret.setEntity(entity);
         ret.add(linkTo(methodOn(AdminPatientsResource.class).get(entity.getId())).withSelfRel());
         ret.add(linkTo(methodOn(AdminPatientsResource.class).getReferenceData()).withRel("referenceData"));
+        ret.add(linkTo(methodOn(CasesResource.class).patientReferenceData(entity.getId())).withRel("createCase"));
+        ret.add(linkTo(methodOn(AdminSchedulesResource.class)
+                .find(null, entity.getId(), true, null, null)).withRel("scheduledPrograms"));
         return ret;
     }
 }

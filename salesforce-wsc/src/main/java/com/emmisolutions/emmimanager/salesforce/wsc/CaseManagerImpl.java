@@ -12,10 +12,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
 
@@ -128,7 +128,12 @@ public class CaseManagerImpl implements CaseManager {
         return ret;
     }
 
-    @PostConstruct
+    @Scheduled(fixedDelayString = "${salesforce.formRefreshIntervalMillis:900000}")
+    public void fetchForms() {
+        forms = null;
+        init();
+    }
+
     private synchronized void init() {
         if (forms == null) {
             reUp(true);
@@ -142,6 +147,7 @@ public class CaseManagerImpl implements CaseManager {
      */
     private void reUp(boolean retry) {
         try {
+            LOGGER.debug("Loading case forms from SalesForce");
             forms = createForms();
         } catch (ConnectionException e) {
             if (retry) {
@@ -309,10 +315,11 @@ public class CaseManagerImpl implements CaseManager {
             if (!StringUtils.equalsIgnoreCase("master", recordTypeInfo.getName())) {
 
                 // create a form for every non-master type
-                CaseForm caseForm = new CaseForm();
                 CaseType caseType = new CaseType();
                 caseType.setId(recordTypeInfo.getRecordTypeId());
+                caseType.setEmmiCaseType(EmmiCaseType.fromSalesForceId(recordTypeInfo.getRecordTypeId()));
                 caseType.setName(recordTypeInfo.getName());
+                CaseForm caseForm = new CaseForm();
                 caseForm.setType(caseType);
                 caseTypeCaseFormMap.put(caseType, caseForm);
 

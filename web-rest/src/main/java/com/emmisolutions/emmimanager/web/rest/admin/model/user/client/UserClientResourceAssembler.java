@@ -38,7 +38,7 @@ public class UserClientResourceAssembler implements
                 .activate(entity.getId())).withRel("activate"));
         ret.add(linkTo(methodOn(UserClientsResource.class)
                 .resetPassword(entity.getId())).withRel("resetPassword"));
-        ret.add(linkTo(methodOn(CasesResource.class).referenceData()).withRel("createCase"));
+        ret.add(linkTo(methodOn(CasesResource.class).userClientReferenceData(entity.getId())).withRel("createCase"));
         ret.setEntity(entity);
         return ret;
     }

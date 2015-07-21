@@ -105,7 +105,7 @@ public class ClientTeamSchedulingConfigurationServiceIntegrationTest extends
         }
 
         // in range
-        schedulingConfig.setViewByDays(120);
+        schedulingConfig.setViewByDays(360);
         schedulingConfig = clientTeamSchedulingConfigurationService.saveOrUpdate(schedulingConfig);
         schedulingConfig.setViewByDays(0);
         schedulingConfig = clientTeamSchedulingConfigurationService.saveOrUpdate(schedulingConfig);

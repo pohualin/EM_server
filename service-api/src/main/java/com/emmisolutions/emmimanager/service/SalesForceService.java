@@ -1,10 +1,9 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
-import com.emmisolutions.emmimanager.model.salesforce.CaseForm;
-import com.emmisolutions.emmimanager.model.salesforce.CaseSaveResult;
-import com.emmisolutions.emmimanager.model.salesforce.CaseType;
-import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
+import com.emmisolutions.emmimanager.model.salesforce.*;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 
 import java.util.List;
 
@@ -54,7 +53,6 @@ public interface SalesForceService {
      */
     CaseSaveResult saveCase(CaseForm caseForm);
 
-
     /**
      * Performs a salesforce search for the name across the passed types
      *
@@ -65,4 +63,19 @@ public interface SalesForceService {
      */
     IdNameLookupResultContainer findByNameInTypes(String searchString, Integer pageSize, String... types);
 
+    /**
+     * Finds possible salesforce accounts for a user client.
+     *
+     * @param userClient to find the accounts
+     * @return list of IdNameLookupResult representing salesforce accounts
+     */
+    List<IdNameLookupResult> possibleAccounts(UserClient userClient);
+
+    /**
+     * Find possible salesforce accounts for a patient.
+     *
+     * @param patient to find accounts for
+     * @return list of IdNameLookupResult objects representing salesforce accounts
+     */
+    List<IdNameLookupResult> possibleAccounts(Patient patient);
 }

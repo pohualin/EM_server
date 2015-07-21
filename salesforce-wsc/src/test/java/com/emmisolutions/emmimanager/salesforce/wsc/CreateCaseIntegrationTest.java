@@ -34,6 +34,11 @@ public class CreateCaseIntegrationTest extends BaseIntegrationTest {
     ConnectionFactory salesForceConnection;
 
     @Test
+    public void fetchForms() {
+        caseManager.fetchForms();
+    }
+
+    @Test
     public void create() {
 
         CaseForm aCase = caseManager.newCase(caseManager.caseTypes().get(0));
