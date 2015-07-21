@@ -22,8 +22,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -116,5 +115,25 @@ public class AdminSchedulesResource {
             return new ResponseEntity<>(scheduledProgramResourceResourceAssembler.toResource(scheduledProgram), OK);
         }
         return new ResponseEntity<>(NO_CONTENT);
+    }
+
+    /**
+     * PUT to update a specific schedule program by id
+     *
+     * @param id to update
+     * @return OK (200): when the update is successful
+     * INTERNAL_SERVER_ERROR (500): if there isn't one found
+     * NOT_AUTHORIZED (403): if the user is not authorized
+     */
+    @RequestMapping(value = "/scheduled_programs/{id}", method = RequestMethod.PUT)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<ScheduledProgramResource> update(@PathVariable("id") Long id,
+                                                           @RequestBody ScheduledProgram scheduledProgram) {
+        scheduledProgram.setId(id);
+        ScheduledProgram updatedProgram = scheduleService.update(scheduledProgram);
+        if (updatedProgram != null) {
+            return new ResponseEntity<>(scheduledProgramResourceResourceAssembler.toResource(updatedProgram), OK);
+        }
+        return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
     }
 }

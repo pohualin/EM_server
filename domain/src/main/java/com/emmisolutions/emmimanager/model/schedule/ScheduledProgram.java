@@ -82,6 +82,9 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     @Column(name = "view_by_date_utc", nullable = false, columnDefinition = "date")
     private LocalDate viewByDate;
 
+    @Column(name = "active", nullable = false, columnDefinition = "boolean")
+    private boolean active = true;
+
     public ScheduledProgram() {
     }
 
@@ -183,6 +186,14 @@ public class ScheduledProgram extends AbstractAuditingEntity {
         this.provider = provider;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -194,5 +205,21 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduledProgram{" +
+                "id=" + id +
+                ", version=" + version +
+                ", accessCode='" + accessCode + '\'' +
+                ", program=" + program +
+                ", patient=" + patient +
+                ", team=" + team +
+                ", provider=" + provider +
+                ", location=" + location +
+                ", viewByDate=" + viewByDate +
+                ", active=" + active +
+                '}';
     }
 }
