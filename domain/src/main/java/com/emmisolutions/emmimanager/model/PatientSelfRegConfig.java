@@ -61,14 +61,22 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     @Column(name = "require_phone", columnDefinition = "boolean", nullable = false)
     private boolean requirePhone;
+/*
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "patientSelfRegConfig")
+    @OneToMany(*/
+/*cascade = CascadeType.ALL,*//*
+ */
+/*orphanRemoval = true,*//*
+ mappedBy = "patientSelfRegConfig")
     private Set<InfoHeaderConfig> infoHeaderConfigs = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "patientSelfRegConfig")
+    @OneToMany(*/
+/*cascade = CascadeType.ALL, orphanRemoval = true, *//*
+mappedBy = "patientSelfRegConfig")
     private Set<PatientIdLabelConfig> patientIdLabelConfigs = new HashSet<>();
+*/
 
     public PatientSelfRegConfig() {
     }
@@ -182,7 +190,7 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
         this.requirePhone = requirePhone;
     }
 
-    public Set<InfoHeaderConfig> getInfoHeaderConfigs() {
+/*    public Set<InfoHeaderConfig> getInfoHeaderConfigs() {
         return infoHeaderConfigs;
     }
 
@@ -196,7 +204,7 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     public void setPatientIdLabelConfigs(Set<PatientIdLabelConfig> patientIdLabelConfigs) {
         this.patientIdLabelConfigs = patientIdLabelConfigs;
-    }
+    }*/
 
     @Override
     public int hashCode() {

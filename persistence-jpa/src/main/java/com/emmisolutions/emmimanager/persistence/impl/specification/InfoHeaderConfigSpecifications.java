@@ -28,7 +28,7 @@ public class InfoHeaderConfigSpecifications {
             @Override
             public Predicate toPredicate(Root<InfoHeaderConfig> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (searchFilter != null && searchFilter.getPatientSelfRegConfig() != null) {
-                    return cb.equal(root.get(InfoHeaderConfig_.patientSelfRegConfig), searchFilter.getPatientSelfRegConfig());
+                    return cb.equal(root.get(InfoHeaderConfig_.id), searchFilter.getPatientSelfRegConfig().getId());
                 }
                 return null;
             }

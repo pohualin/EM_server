@@ -65,6 +65,24 @@
                                  referencedTableName="patient_self_reg_config"
                                  referencedColumnNames="id"/>
 
+        <createIndex indexName="ix_info_header_config_audit_revision"
+                     tableName="info_header_config_audit">
+            <column name="revision" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_info_header_config_language_id"
+                     tableName="info_header_config">
+            <column name="language_id" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_info_header_config_patient_self_reg_config_id"
+                     tableName="info_header_config">
+            <column name="patient_self_reg_config_id" type="bigint"/>
+        </createIndex>
+
+        <addUniqueConstraint tableName="info_header_config" columnNames="language_id, patient_self_reg_config_id"
+                             constraintName="uk_info_header_config_language_patient_self_reg_id"/>
+
     </changeSet>
 
     <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">

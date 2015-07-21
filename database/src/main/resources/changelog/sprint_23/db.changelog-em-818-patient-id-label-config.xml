@@ -73,6 +73,24 @@
             <column name="id_label_type" type="tinyint"/>
         </createIndex>
 
+        <createIndex indexName="ix_patient_id_label_config_patient_self_reg_config_id"
+                     tableName="patient_id_label_config">
+            <column name="patient_self_reg_config_id" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_id_label_config_language_id"
+                     tableName="patient_id_label_config">
+            <column name="language_id" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_id_label_config_audit_revision"
+                     tableName="patient_id_label_config_audit">
+            <column name="revision" type="bigint"/>
+        </createIndex>
+
+        <addUniqueConstraint tableName="patient_id_label_config" columnNames="language_id, patient_self_reg_config_id, id_label_type"
+                             constraintName="uk_patient_id_label_config_language_patient_self_reg__id_label_type"/>
+
     </changeSet>
 
     <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">

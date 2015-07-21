@@ -97,6 +97,11 @@
                      tableName="patient_self_reg_config">
             <column name="team_id" type="BIGINT"/>
         </createIndex>
+
+        <createIndex indexName="ix_patient_self_reg_config_revision"
+                     tableName="patient_self_reg_config_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex>
     </changeSet>
 
     <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">

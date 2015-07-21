@@ -9,12 +9,18 @@
 
     <changeSet id="add Spanish to the Language table" author="Amrita">
         <insert tableName="language">
-            <column name="rfc5646_language_tag" value="sp"/>
+            <column name="rfc5646_language_tag" value="es"/>
             <column name="created_by" value="system"/>
         </insert>
     </changeSet>
 
     <changeSet id="Add translations for patient id label type enums" author="Amrita">
+        <insert tableName="strings">
+            <column name="key_path" value="PATIENT_SELF_REG_LABEL_PATIENT_ID"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="Patient ID"/>
+            <column name="created_by" value="system"/>
+        </insert>
         <insert tableName="strings">
             <column name="key_path" value="PATIENT_SELF_REG_LABEL_MEMBER_ID"/>
             <column name="language_id" valueNumeric="1"/>
@@ -39,36 +45,22 @@
             <column name="message" value="Other"/>
             <column name="created_by" value="system"/>
         </insert>
-        <insert tableName="strings">
-            <column name="key_path" value="PATIENT_SELF_REG_LABEL_PATIENT_ID"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="message" value="Patient ID"/>
-            <column name="created_by" value="system"/>
-        </insert>
-        <insert tableName="strings">
-            <column name="key_path" value="PATIENT_SELF_REG_LABEL_PATIENT_ID_SPANISH"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="message" value="Identificación del paciente"/>
-            <column name="created_by" value="system"/>
-        </insert>
-        <insert tableName="strings">
-            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MEMBER_ID_SPANISH"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="message" value="Identificación del miembro"/>
-            <column name="created_by" value="system"/>
-        </insert>
-        <insert tableName="strings">
-            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MEDICAL_RECORD_NUMBER_SPANISH"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="message" value="Número de expediente médico"/>
-            <column name="created_by" value="system"/>
-        </insert>
-        <insert tableName="strings">
-            <column name="key_path" value="PATIENT_SELF_REG_LABEL_MRN_SPANISH"/>
-            <column name="language_id" valueNumeric="1"/>
-            <column name="message" value="NEM"/>
-            <column name="created_by" value="system"/>
-        </insert>
+        <sql><![CDATA[
+			  INSERT INTO strings (key_path, message, created_by, language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_PATIENT_ID', 'Identificación del paciente', 'system', (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message, created_by, language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MEMBER_ID', 'Identificación del miembro', 'system', (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message, created_by, language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MEDICAL_RECORD_NUMBER', 'Número de expediente médico', 'system', (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message, created_by, language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MRN', 'NEM', 'system', (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message, created_by, language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_OTHER', '', 'system', (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql>
     </changeSet>
 
 </databaseChangeLog>
