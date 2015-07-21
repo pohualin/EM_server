@@ -45,4 +45,12 @@ public interface ScheduleService {
      */
     Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page);
 
+    /**
+     * Update a scheduled program
+     *
+     * @param scheduledProgram to be updated
+     * @return the persistent ScheduledProgram
+     */
+    ScheduledProgram update(ScheduledProgram scheduledProgram);
+
 }

@@ -206,4 +206,20 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return "ScheduledProgram{" +
+                "id=" + id +
+                ", version=" + version +
+                ", accessCode='" + accessCode + '\'' +
+                ", program=" + program +
+                ", patient=" + patient +
+                ", team=" + team +
+                ", provider=" + provider +
+                ", location=" + location +
+                ", viewByDate=" + viewByDate +
+                ", active=" + active +
+                '}';
+    }
 }
