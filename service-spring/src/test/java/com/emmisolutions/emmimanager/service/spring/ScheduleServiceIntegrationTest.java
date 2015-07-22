@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests the schedule service
@@ -61,12 +62,35 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("find by patient works", scheduleService.findAllByPatient(scheduledProgram.getPatient(), null), hasItem(saved));
 
         assertThat("find by null patient should not find anything", scheduleService.findAllByPatient(null, null), is(nullValue()));
+    }
 
+    /**
+     * Ensure that only active and view-by-date can be updated
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void update() {
+        ScheduledProgram saved = makeNewScheduledProgram(null);
+
+        ScheduledProgram forUpdate = new ScheduledProgram(saved.getId());
+        forUpdate.setVersion(saved.getVersion());
         saved.setAccessCode("29999999999");
-        ScheduledProgram updated = scheduleService.update(saved);
+        saved.setActive(false);
+
+        ScheduledProgram updated = scheduleService.update(forUpdate);
 
         assertThat("updated and original are the same", updated, is(saved));
         assertThat("version is up by one", updated.getVersion(), is(saved.getVersion() + 1));
+        assertThat("access code is not overwritten on update",
+                updated.getAccessCode(),
+                is(saved.getAccessCode()));
+        assertThat("program is set from db",
+                updated.getProgram(),
+                is(saved.getProgram()));
+
+        // view-by-date should still be validated on update
+        updated.setViewByDate(LocalDate.now(DateTimeZone.UTC).minusDays(1));
+        scheduleService.update(updated);
+        fail("the update call should have failed due to invalid view-by-date");
     }
 
     /**
