@@ -67,14 +67,15 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
     /**
      * Ensure that only active and view-by-date can be updated
      */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
+    @Test
     public void update() {
         ScheduledProgram saved = makeNewScheduledProgram(null);
 
         ScheduledProgram forUpdate = new ScheduledProgram(saved.getId());
         forUpdate.setVersion(saved.getVersion());
-        saved.setAccessCode("29999999999");
-        saved.setActive(false);
+        forUpdate.setAccessCode("29999999999");
+        forUpdate.setActive(false);
+        forUpdate.setViewByDate(saved.getViewByDate());
 
         ScheduledProgram updated = scheduleService.update(forUpdate);
 
@@ -86,10 +87,18 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("program is set from db",
                 updated.getProgram(),
                 is(saved.getProgram()));
+    }
+
+    /**
+     * Make sure view by date is validated on update
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void updateInvalidDate() {
+        ScheduledProgram saved = makeNewScheduledProgram(null);
 
         // view-by-date should still be validated on update
-        updated.setViewByDate(LocalDate.now(DateTimeZone.UTC).minusDays(1));
-        scheduleService.update(updated);
+        saved.setViewByDate(LocalDate.now(DateTimeZone.UTC).minusDays(1));
+        scheduleService.update(saved);
         fail("the update call should have failed due to invalid view-by-date");
     }
 
