@@ -1,8 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration;
 
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.InfoHeaderConfigPage;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg.PatientIdLabelConfigPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.InfoHeaderConfigPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.PatientIdLabelConfigPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.PatientSelfRegConfigurationsResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;

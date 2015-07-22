@@ -1,13 +1,19 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.Language;
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.persistence.ClientTeamSelfRegConfigurationPersistence;
+import com.emmisolutions.emmimanager.persistence.LanguagePersistence;
 import com.emmisolutions.emmimanager.persistence.PatientSelfRegConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.service.PatientSelfRegConfigurationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +31,9 @@ public class PatientSelfRegConfigurationServiceImpl implements
 
     @Resource
     TeamPersistence teamPersistence;
+
+    @Resource
+    LanguagePersistence languagePersistence;
 
     @Resource
     PatientSelfRegConfigurationPersistence patientSelfRegConfigurationPersistence;
@@ -73,4 +82,16 @@ public class PatientSelfRegConfigurationServiceImpl implements
     public PatientSelfRegConfig reload(PatientSelfRegConfig patientSelfRegConfig) {
         return patientSelfRegConfigurationPersistence.reload(patientSelfRegConfig.getId());
     }
+
+    @Override()
+    public Page<Language> findAllAvailableLanguages(Pageable page) {
+        Pageable pageToFetch;
+        if (page == null) {
+            pageToFetch = new PageRequest(0, 50, Sort.Direction.ASC, "id");
+        } else {
+            pageToFetch = page;
+        }
+        return languagePersistence.list(pageToFetch);
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patient_self_reg;
+package com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg;
 
 import com.emmisolutions.emmimanager.model.InfoHeaderConfig;
 import com.emmisolutions.emmimanager.model.InfoHeaderConfigSearchFilter;

@@ -33,7 +33,7 @@ public class PatientIdLabelConfigSpecifications {
             @Override
             public Predicate toPredicate(Root<PatientIdLabelConfig> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (searchFilter != null && searchFilter.getPatientSelfRegConfig() != null) {
-                    return cb.equal(root.get(PatientIdLabelConfig_.id), searchFilter.getPatientSelfRegConfig().getId());
+                    return cb.equal(root.get(PatientIdLabelConfig_.patientSelfRegConfig), patientSelfRegConfigurationPersistence.reload(searchFilter.getPatientSelfRegConfig().getId()));
                 }
                 return null;
             }

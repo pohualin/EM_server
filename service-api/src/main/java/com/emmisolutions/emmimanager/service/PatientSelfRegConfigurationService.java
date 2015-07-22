@@ -1,7 +1,10 @@
 package com.emmisolutions.emmimanager.service;
 
+import com.emmisolutions.emmimanager.model.Language;
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.model.Team;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * The PatientSelfRegConfiguration Service
@@ -42,4 +45,11 @@ public interface PatientSelfRegConfigurationService {
      */
     PatientSelfRegConfig reload(PatientSelfRegConfig patientSelfRegConfig);
 
-}
+    /**
+     * finds all available languages
+     * @param page
+     * @return page of languages available
+     */
+    Page<Language> findAllAvailableLanguages(Pageable page);
+
+    }

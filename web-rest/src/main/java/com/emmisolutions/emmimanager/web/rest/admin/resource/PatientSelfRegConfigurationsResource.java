@@ -1,10 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
+import com.emmisolutions.emmimanager.model.Language;
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.PatientSelfRegConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.PatientSelfRegConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.PatientSelfRegReferenceData;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.LanguageResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.LanguageResourcePage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
@@ -30,6 +36,9 @@ public class PatientSelfRegConfigurationsResource {
 
     @Resource(name = "patientSelfRegConfigurationResourceAssembler")
     ResourceAssembler<PatientSelfRegConfig, PatientSelfRegConfigurationResource> patientSelfRegConfigResourceAssembler;
+
+    @Resource
+    LanguageResourceAssembler languageResourceAssembler;
 
     /**
      * Get a patient self-reg configuration by given id
@@ -139,5 +148,27 @@ public class PatientSelfRegConfigurationsResource {
     @RequestMapping(value = "/patients_self_reg/ref", method = RequestMethod.GET)
     public PatientSelfRegReferenceData getReferenceData() {
         return new PatientSelfRegReferenceData();
+    }
+
+
+    /**
+     * GET to retrieve all available languages
+     *
+     * @param pageable  the page specification
+     * @param assembler
+     * @return language resource page
+     */
+    @RequestMapping(value = "/availableLanguages", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<LanguageResourcePage> getAllAvailableLanguages(@PageableDefault(size = 1) Pageable pageable,
+                                                                         PagedResourcesAssembler<Language> assembler) {
+
+        Page<Language> languagePage = patientSelfRegConfigurationService.findAllAvailableLanguages(pageable);
+
+        if (languagePage.hasContent()) {
+            return new ResponseEntity<>(new LanguageResourcePage(assembler.toResource(languagePage, languageResourceAssembler), languagePage), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 }
