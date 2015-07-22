@@ -49,7 +49,7 @@ public class PatientIdLabelConfigServiceImpl implements
             PatientIdLabelConfig patientIdLabelConfig) {
         if (patientIdLabelConfig == null || patientIdLabelConfig.getId() == null || patientIdLabelConfig.getVersion() == null) {
             throw new InvalidDataAccessApiUsageException(
-                    "PatientSelfRegConfig can not be null.");
+                    "PatientIdLabelConfig can not be null.");
         }
         patientIdLabelConfig.setPatientSelfRegConfig(patientSelfRegConfigurationPersistence.reload(patientIdLabelConfig.getPatientSelfRegConfig().getId()));
         return patientIdLabelConfigPersistence.save(patientIdLabelConfig);
