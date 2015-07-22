@@ -9,13 +9,13 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * Responsible for creating a GroupResource (which has links) from a Group
+ * Responsible for creating a PatientIdLabelConfigResource (which has links) from a PatientIdLabelConfig
  */
 @Component
 public class PatientIdLabelConfigAssembler implements
-		ResourceAssembler<PatientIdLabelConfig, PatientIdLabelConfigResource> {
+        ResourceAssembler<PatientIdLabelConfig, PatientIdLabelConfigResource> {
 
-	@Override
+    @Override
     public PatientIdLabelConfigResource toResource(PatientIdLabelConfig entity) {
         PatientIdLabelConfigResource ret = new PatientIdLabelConfigResource();
         ret.add(linkTo(methodOn(PatientIdLabelConfigsResource.class).getById(entity.getId())).withSelfRel());

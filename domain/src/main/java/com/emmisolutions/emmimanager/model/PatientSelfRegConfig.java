@@ -1,15 +1,9 @@
 package com.emmisolutions.emmimanager.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A patient self registration configuration
@@ -61,22 +55,6 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
 
     @Column(name = "require_phone", columnDefinition = "boolean", nullable = false)
     private boolean requirePhone;
-/*
-
-    @JsonManagedReference
-    @OneToMany(*/
-/*cascade = CascadeType.ALL,*//*
- */
-/*orphanRemoval = true,*//*
- mappedBy = "patientSelfRegConfig")
-    private Set<InfoHeaderConfig> infoHeaderConfigs = new HashSet<>();
-
-    @JsonManagedReference
-    @OneToMany(*/
-/*cascade = CascadeType.ALL, orphanRemoval = true, *//*
-mappedBy = "patientSelfRegConfig")
-    private Set<PatientIdLabelConfig> patientIdLabelConfigs = new HashSet<>();
-*/
 
     public PatientSelfRegConfig() {
     }
@@ -189,22 +167,6 @@ mappedBy = "patientSelfRegConfig")
     public void setRequirePhone(boolean requirePhone) {
         this.requirePhone = requirePhone;
     }
-
-/*    public Set<InfoHeaderConfig> getInfoHeaderConfigs() {
-        return infoHeaderConfigs;
-    }
-
-    public void setInfoHeaderConfigs(Set<InfoHeaderConfig> infoHeaderConfigs) {
-        this.infoHeaderConfigs = infoHeaderConfigs;
-    }
-
-    public Set<PatientIdLabelConfig> getPatientIdLabelConfigs() {
-        return patientIdLabelConfigs;
-    }
-
-    public void setPatientIdLabelConfigs(Set<PatientIdLabelConfig> patientIdLabelConfigs) {
-        this.patientIdLabelConfigs = patientIdLabelConfigs;
-    }*/
 
     @Override
     public int hashCode() {

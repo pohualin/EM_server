@@ -23,7 +23,7 @@ public class LanguageResourcePage extends PagedResource<LanguageResource> {
     }
 
     /**
-     *
+     * Adds "page" parameter to a given link
      * @param toAugment
      * @return
      */

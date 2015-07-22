@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * A HATEOAS Language resource wrapper
  */
-@XmlRootElement(name = "specialty")
+@XmlRootElement(name = "language")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class LanguageResource extends BaseResource<Language> {
 
