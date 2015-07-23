@@ -47,22 +47,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
         ScheduledProgram savedScheduledProgram = null;
         if (toBeScheduled != null) {
-            if (toBeScheduled.getViewByDate() == null ||
-                    toBeScheduled.getViewByDate().isBefore(LocalDate.now(DateTimeZone.UTC))) {
-                throw new InvalidDataAccessApiUsageException("view-by-date (UTC) >= current date. Current UTC date is: " + LocalDate.now(DateTimeZone.UTC).toString());
-            }
-            toBeScheduled.setTeam(teamPersistence.reload(toBeScheduled.getTeam()));
-            toBeScheduled.setPatient(patientPersistence.reload(toBeScheduled.getPatient()));
-            if (toBeScheduled.getTeam() == null ||
-                    toBeScheduled.getTeam().getClient() == null ||
-                    toBeScheduled.getPatient() == null ||
-                    !toBeScheduled.getTeam().getClient().equals(toBeScheduled.getPatient().getClient())){
-                throw new InvalidDataAccessApiUsageException("Cannot schedule program for patient and team on different clients.");
-            }
-            toBeScheduled.setLocation(locationPersistence.reload(toBeScheduled.getLocation()));
-            toBeScheduled.setProvider(providerPersistence.reload(toBeScheduled.getProvider()));
+            hydrateValidProgram(toBeScheduled);
+            validateViewByDate(toBeScheduled);
             toBeScheduled.setAccessCode(accessCodeGenerator.next());
-
             savedScheduledProgram = schedulePersistence.save(toBeScheduled);
         }
         return savedScheduledProgram;
@@ -74,12 +61,55 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page){
+    public Page<ScheduledProgram> findAllByPatient(Patient patient, Pageable page) {
         return patient != null && patient.getId() != null ? find(with().patients(patient), page) : null;
     }
 
     @Override
     public Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page) {
         return schedulePersistence.find(filter, page);
+    }
+
+    @Override
+    @Transactional
+    public ScheduledProgram update(ScheduledProgram scheduledProgram) {
+        ScheduledProgram inDb = reload(scheduledProgram);
+        if (inDb == null) {
+            throw new InvalidDataAccessApiUsageException("Only can update persistent program");
+        }
+        if (!inDb.getViewByDate().equals(scheduledProgram.getViewByDate())) {
+            // validate view by date if it changes
+            validateViewByDate(scheduledProgram);
+        }
+
+        // only allow changes to view-by-date and active
+        scheduledProgram.setAccessCode(inDb.getAccessCode());
+        scheduledProgram.setPatient(inDb.getPatient());
+        scheduledProgram.setTeam(inDb.getTeam());
+        scheduledProgram.setLocation(inDb.getLocation());
+        scheduledProgram.setProvider(inDb.getProvider());
+        scheduledProgram.setProgram(inDb.getProgram());
+
+        return schedulePersistence.save(scheduledProgram);
+    }
+
+    private void hydrateValidProgram(ScheduledProgram scheduledProgram) {
+        scheduledProgram.setTeam(teamPersistence.reload(scheduledProgram.getTeam()));
+        scheduledProgram.setPatient(patientPersistence.reload(scheduledProgram.getPatient()));
+        if (scheduledProgram.getTeam() == null ||
+                scheduledProgram.getTeam().getClient() == null ||
+                scheduledProgram.getPatient() == null ||
+                !scheduledProgram.getTeam().getClient().equals(scheduledProgram.getPatient().getClient())) {
+            throw new InvalidDataAccessApiUsageException("Cannot schedule program for patient and team on different clients.");
+        }
+        scheduledProgram.setLocation(locationPersistence.reload(scheduledProgram.getLocation()));
+        scheduledProgram.setProvider(providerPersistence.reload(scheduledProgram.getProvider()));
+    }
+
+    private void validateViewByDate(ScheduledProgram scheduledProgram) {
+        if (scheduledProgram.getViewByDate() == null ||
+                scheduledProgram.getViewByDate().isBefore(LocalDate.now(DateTimeZone.UTC))) {
+            throw new InvalidDataAccessApiUsageException("view-by-date (UTC) >= current date. Current UTC date is: " + LocalDate.now(DateTimeZone.UTC).toString());
+        }
     }
 }

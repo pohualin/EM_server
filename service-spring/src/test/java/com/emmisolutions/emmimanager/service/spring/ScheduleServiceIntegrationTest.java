@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests the schedule service
@@ -61,6 +62,60 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("find by patient works", scheduleService.findAllByPatient(scheduledProgram.getPatient(), null), hasItem(saved));
 
         assertThat("find by null patient should not find anything", scheduleService.findAllByPatient(null, null), is(nullValue()));
+    }
+
+    /**
+     * Ensure that only active and view-by-date can be updated
+     */
+    @Test
+    public void update() {
+        ScheduledProgram saved = makeNewScheduledProgram(null);
+
+        ScheduledProgram forUpdate = new ScheduledProgram(saved.getId());
+        forUpdate.setVersion(saved.getVersion());
+        forUpdate.setAccessCode("29999999999");
+        forUpdate.setActive(false);
+        forUpdate.setViewByDate(saved.getViewByDate());
+
+        ScheduledProgram updated = scheduleService.update(forUpdate);
+
+        assertThat("updated and original are the same", updated, is(saved));
+        assertThat("version is up by one", updated.getVersion(), is(saved.getVersion() + 1));
+        assertThat("access code is not overwritten on update",
+                updated.getAccessCode(),
+                is(saved.getAccessCode()));
+        assertThat("program is set from db",
+                updated.getProgram(),
+                is(saved.getProgram()));
+    }
+
+    /**
+     * Make sure view by date is validated on update
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void updateInvalidDate() {
+        ScheduledProgram saved = makeNewScheduledProgram(null);
+
+        // view-by-date should still be validated on update
+        saved.setViewByDate(LocalDate.now(DateTimeZone.UTC).minusDays(1));
+        scheduleService.update(saved);
+        fail("the update call should have failed due to invalid view-by-date");
+    }
+
+    /**
+     * Make sure update fails when the scheduled program cannot be found
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void badUpdate() {
+        scheduleService.update(new ScheduledProgram());
+    }
+
+    /**
+     * Update of null should throw error
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void nullUpdate() {
+        scheduleService.update(null);
     }
 
     /**
