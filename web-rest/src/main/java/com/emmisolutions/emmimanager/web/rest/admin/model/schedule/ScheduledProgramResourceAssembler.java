@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.schedule;
 
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.web.rest.admin.model.client.ClientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.AdminSchedulesResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ public class ScheduledProgramResourceAssembler implements ResourceAssembler<Sche
     public ScheduledProgramResource toResource(ScheduledProgram entity) {
         ScheduledProgramResource ret = new ScheduledProgramResource();
         ret.add(linkTo(methodOn(AdminSchedulesResource.class).get(entity.getId())).withSelfRel());
+        ret.add(ClientResourceAssembler.createFullUsersSearchLink(entity.getTeam().getClient()).withRel("clientUsers"));
         ret.setEntity(entity);
         return ret;
     }

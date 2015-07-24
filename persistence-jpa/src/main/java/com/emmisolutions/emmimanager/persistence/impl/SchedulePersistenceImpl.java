@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.ScheduledProgramSpecifications;
+import com.emmisolutions.emmimanager.persistence.repo.ScheduledProgramExtensionRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ScheduledProgramRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -23,10 +26,15 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 public class SchedulePersistenceImpl implements SchedulePersistence {
 
     @Resource
+    ScheduledProgramExtensionRepository scheduledProgramExtensionRepository;
+
+    @Resource
     ScheduledProgramRepository scheduledProgramRepository;
 
     @Resource
     ScheduledProgramSpecifications specifications;
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Override
     public boolean isAccessCodeUnique(String toCheck) {
@@ -51,7 +59,7 @@ public class SchedulePersistenceImpl implements SchedulePersistence {
 
     @Override
     public Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page) {
-        return scheduledProgramRepository.findAll(where(specifications.id(filter))
+        return scheduledProgramExtensionRepository.findAll(where(specifications.id(filter))
                         .and(specifications.team(filter))
                         .and(specifications.expired(filter))
                         .and(specifications.patients(filter))

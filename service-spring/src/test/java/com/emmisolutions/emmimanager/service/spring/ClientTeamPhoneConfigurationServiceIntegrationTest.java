@@ -1,28 +1,21 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-
-import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.DefaultClientTeamPhoneConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientTeamPhoneConfigurationService;
 import com.emmisolutions.emmimanager.service.TeamService;
+import org.junit.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * An integration test for ClientTeamPhoneConfigurationServiceImpl
@@ -50,7 +43,7 @@ public class ClientTeamPhoneConfigurationServiceIntegrationTest extends
         DefaultClientTeamPhoneConfiguration defaultPhoneConfig = defaultClientTeamPhoneConfigurationPersistence.find();
         ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
         phoneConfig.setTeam(team);
-        phoneConfig.setCreatedBy("system");
+        phoneConfig.setCreatedBy(new UserAdmin(1l));
         phoneConfig.setCollectPhone(defaultPhoneConfig.isCollectPhone());
         phoneConfig.setRequirePhone(defaultPhoneConfig.isRequirePhone());
                 
@@ -83,7 +76,7 @@ public class ClientTeamPhoneConfigurationServiceIntegrationTest extends
            
             ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
             phoneConfig.setTeam(reloadTeam);
-            phoneConfig.setCreatedBy("system");
+            phoneConfig.setCreatedBy(new UserAdmin(1l));
             phoneConfig.setCollectPhone(defaultPhoneConfig.isCollectPhone());
             phoneConfig.setRequirePhone(defaultPhoneConfig.isRequirePhone());
        

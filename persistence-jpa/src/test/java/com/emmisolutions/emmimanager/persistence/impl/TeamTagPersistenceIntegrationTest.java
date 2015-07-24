@@ -157,7 +157,6 @@ public class TeamTagPersistenceIntegrationTest extends BaseIntegrationTest {
 
         TeamTag afterSaveTeamTag = teamTagPersistence.saveTeamTag(teamTag);
         assertThat("TeamTag was given an id", afterSaveTeamTag.getId(), is(notNullValue()));
-        assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
 
         Set<TeamTag> teamTagSet = new HashSet<>();
         teamTagSet.add(afterSaveTeamTag);

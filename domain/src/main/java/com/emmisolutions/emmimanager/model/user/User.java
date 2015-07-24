@@ -1,22 +1,17 @@
 package com.emmisolutions.emmimanager.model.user;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * A user represents a person who logs in to the system and uses it.
@@ -28,7 +23,7 @@ import java.util.Collection;
 @DiscriminatorColumn(name = "user_type",
         discriminatorType = DiscriminatorType.STRING)
 @XmlRootElement(name = "user")
-public abstract class User extends AbstractAuditingEntity implements Serializable, UserDetails {
+public class User extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +38,11 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     @Size(min = 0, max = 50)
     @Column(name = "first_name", length = 50, nullable = false, columnDefinition = "nvarchar(50)")
     private String firstName;
+
+    @Column(name = "user_type", length = 31,
+            insertable = false,
+            updatable = false)
+    private String type;
 
     private boolean active = true;
 
@@ -105,11 +105,12 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
         return id != null ? id.hashCode() : 0;
     }
 
-    @Override
-    public abstract Collection<? extends GrantedAuthority> getAuthorities();
-
     public String getFirstName() {
         return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     /**
@@ -120,10 +121,6 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     public String getFullName() {
         return WordUtils.capitalizeFully(StringUtils.trimToEmpty(StringUtils.defaultString(getFirstName()) +
                 " " + StringUtils.defaultString(getLastName())));
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
@@ -150,12 +147,10 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
         this.active = active;
     }
 
-    @Override
     public boolean isEnabled() {
         return active;
     }
 
-    @Override
     public boolean isAccountNonExpired() {
         return accountNonExpired;
     }
@@ -164,7 +159,6 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
         this.accountNonExpired = accountNonExpired;
     }
 
-    @Override
     public boolean isAccountNonLocked() {
         return accountNonLocked;
     }
@@ -173,7 +167,6 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
         this.accountNonLocked = accountNonLocked;
     }
 
-    @Override
     public boolean isCredentialsNonExpired() {
         return credentialsNonExpired;
     }
@@ -181,5 +174,12 @@ public abstract class User extends AbstractAuditingEntity implements Serializabl
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
     }
-    
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

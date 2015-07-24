@@ -1,8 +1,10 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
 
-import javax.annotation.Resource;
-
+import com.emmisolutions.emmimanager.model.user.User;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
+import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.emmisolutions.emmimanager.model.user.User;
-import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.service.security.UserDetailsService;
+import javax.annotation.Resource;
 
 /**
  * The UserDetailsService implementation used by client facing applications.
@@ -27,8 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public User loadUserByUsername(final String login) {
-        User ret = userClientPersistence.fetchUserWillFullPermissions(login);
+    public UserClient loadUserByUsername(final String login) {
+        UserClient ret = userClientPersistence.fetchUserWillFullPermissions(login);
         if (ret == null || CollectionUtils.isEmpty(ret.getAuthorities())){
             throw new UsernameNotFoundException("User " + login + " was not found.");
         }

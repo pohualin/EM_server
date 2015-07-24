@@ -63,7 +63,6 @@ public class ClientPersistenceIntegrationTest extends BaseIntegrationTest {
         client.setSalesForceAccount(new SalesForce(RandomStringUtils.randomAlphanumeric(18)));
         client = clientPersistence.save(client);
         assertThat("Client was given an id", client.getId(), is(notNullValue()));
-        assertThat("system is the created by", client.getCreatedBy(), is("system"));
     }
 
     /**

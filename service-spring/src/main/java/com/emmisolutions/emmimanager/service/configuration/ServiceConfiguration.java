@@ -1,6 +1,9 @@
 package com.emmisolutions.emmimanager.service.configuration;
 
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -13,8 +16,8 @@ import javax.persistence.EntityManagerFactory;
  * The service layer spring configuration
  */
 @Configuration
-@EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
-@EnableAspectJAutoProxy()
+@EnableTransactionManagement
+@EnableAspectJAutoProxy
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.salesforce.configuration",
         "com.emmisolutions.emmimanager.persistence.configuration",

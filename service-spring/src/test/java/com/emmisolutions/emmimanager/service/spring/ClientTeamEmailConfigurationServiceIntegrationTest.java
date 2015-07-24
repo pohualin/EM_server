@@ -1,37 +1,26 @@
 package com.emmisolutions.emmimanager.service.spring;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-import javax.transaction.Transactional;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.LocalDate;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
+import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
+import com.emmisolutions.emmimanager.service.TeamService;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientRegion;
-import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
-import com.emmisolutions.emmimanager.model.ClientTier;
-import com.emmisolutions.emmimanager.model.ClientType;
-import com.emmisolutions.emmimanager.model.SalesForce;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
-import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
-import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
-import com.emmisolutions.emmimanager.service.TeamService;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * An integration test for ClientTeamEmailConfigurationServiceImpl
@@ -63,19 +52,19 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
 
         ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
         emailConfig.setTeam(team);
-        emailConfig.setCreatedBy("system");
+        emailConfig.setCreatedBy(new UserAdmin(1l));
         emailConfig.setRank(defaultEmailConfig.getRank());
         emailConfig.setType(defaultEmailConfig.getType());
         emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
                 
         ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
         emailConfigTwo.setTeam(team);
-        emailConfigTwo.setCreatedBy("system");
+        emailConfigTwo.setCreatedBy(new UserAdmin(1l));
         emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
         emailConfigTwo.setType(defaultEmailConfigTwo.getType());
         emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
-               
-        List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
+
+        List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<>();
         emailConfigList.add(emailConfig);
         emailConfigList.add(emailConfigTwo);
         
@@ -109,7 +98,6 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
         
         if(!listOfEmailConfig.hasContent()){
         	Team reloadTeam = teamService.reload(team);
-            List<ClientTeamEmailConfiguration> list = new ArrayList<ClientTeamEmailConfiguration> ();
             
             Page<DefaultClientTeamEmailConfiguration> defaultEmailConfigList =  defaultClientTeamEmailConfigurationPersistence.findActive(new PageRequest(0, 10));
             
@@ -118,19 +106,19 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
 
             ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
             emailConfig.setTeam(reloadTeam);
-            emailConfig.setCreatedBy("system");
+            emailConfig.setCreatedBy(new UserAdmin(1l));
             emailConfig.setRank(defaultEmailConfig.getRank());
             emailConfig.setType(defaultEmailConfig.getType());
             emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
                         
             ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
             emailConfigTwo.setTeam(reloadTeam);
-            emailConfigTwo.setCreatedBy("system");
+            emailConfigTwo.setCreatedBy(new UserAdmin(1l));
             emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
             emailConfigTwo.setType(defaultEmailConfigTwo.getType());
             emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
-                        
-            List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<ClientTeamEmailConfiguration>();
+
+            List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<>();
             emailConfigList.add(emailConfig);
             emailConfigList.add(emailConfigTwo);
             

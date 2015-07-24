@@ -394,7 +394,6 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
                 is(2));
 
         assertThat("Client was given an id", questionResponse.getId(), is(notNullValue()));
-        assertThat("system is the created by", questionResponse.getCreatedBy(), is("system"));
         assertThat("system is the response", questionResponse.getResponse(), is("Toyota"));
         assertThat("Should return null", userClientSecretQuestionResponseService.reload(questionResponseToo), is(notNullValue()));
         assertThat("user client secret question created is true", user.isSecretQuestionCreated(), is(false));

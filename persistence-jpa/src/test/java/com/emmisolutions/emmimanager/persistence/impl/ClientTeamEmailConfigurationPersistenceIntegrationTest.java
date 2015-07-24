@@ -1,27 +1,22 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.RandomStringUtils;
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.ClientTeamEmailConfigurationPersistence;
+import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
-import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientRestrictConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.ClientTeamEmailConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.EmailRestrictConfigurationPersistence;
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for EmailRestrictConfigurationPersistence
@@ -50,14 +45,14 @@ public class ClientTeamEmailConfigurationPersistenceIntegrationTest extends
         
         ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
         emailConfig.setTeam(team);
-        emailConfig.setCreatedBy("system");
+        emailConfig.setCreatedBy(new UserAdmin(1l));
         emailConfig.setRank(defaultEmailConfig.getRank());
         emailConfig.setType(defaultEmailConfig.getType());
         emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
                 
         ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
         emailConfigTwo.setTeam(team);
-        emailConfigTwo.setCreatedBy("system");
+        emailConfigTwo.setCreatedBy(new UserAdmin(1l));
         emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
         emailConfigTwo.setType(defaultEmailConfigTwo.getType());
         emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());

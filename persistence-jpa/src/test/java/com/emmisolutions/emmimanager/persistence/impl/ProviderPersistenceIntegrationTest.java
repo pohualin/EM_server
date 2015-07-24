@@ -68,8 +68,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 		provider.setSpecialty(getSpecialty());
 		provider = providerPersistence.save(provider);
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
-		assertThat("system is the created by", provider.getCreatedBy(), is("system"));
-
         assertThat("can reload it", providerPersistence.reload(provider), is(provider));
 	}
 
@@ -126,8 +124,6 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
 
 		provider = providerPersistence.save(provider);
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
-		assertThat("system is the created by", provider.getCreatedBy(),
-				is("system"));
 	}
 
  	/**
@@ -192,9 +188,9 @@ public class ProviderPersistenceIntegrationTest extends BaseIntegrationTest {
  	    Client client = makeNewRandomClient();
  	    Provider provider = makeNewRandomProvider();
  	    ClientProvider clientProvider = new ClientProvider(client, provider);
- 	    clientProvider = clientProviderRepository.save(clientProvider);
- 	    
- 	    Client clientB = makeNewRandomClient();
+		clientProviderRepository.save(clientProvider);
+
+		Client clientB = makeNewRandomClient();
  	    ProviderSearchFilter filter = new ProviderSearchFilter(provider.getLastName());
  	    filter.setNotUsingThisClient(clientB);
  	    Page<Provider> possibles = providerPersistence.list(null, filter);
