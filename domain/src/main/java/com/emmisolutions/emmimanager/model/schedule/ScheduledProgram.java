@@ -125,7 +125,7 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     }
 
     @Override
-    @XmlElement(name = "created_by")
+    @XmlElement(name = "createdBy")
     public User getCreatedBy() {
         return super.getCreatedBy();
     }
