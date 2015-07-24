@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
+import com.emmisolutions.emmimanager.model.user.AnonymousUser;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.persistence.logging.LoggingAspect;
 import liquibase.integration.spring.SpringLiquibase;
@@ -128,7 +129,8 @@ public class PersistenceConfiguration {
             @Override
             public User getCurrentAuditor() {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (authentication == null || !authentication.isAuthenticated()) {
+                if (authentication == null || !authentication.isAuthenticated() ||
+                        authentication.getPrincipal() instanceof AnonymousUser) {
                     return null;
                 }
                 return (User) authentication.getPrincipal();
