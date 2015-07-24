@@ -1,12 +1,14 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.UserAdminSaveRequest;
 import com.emmisolutions.emmimanager.model.configuration.ImpersonationHolder;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminRole;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName;
+import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserAdminService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -104,6 +106,7 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
             // no - op
         }
         final Client client = makeNewRandomClient();
+        final Team team = makeNewRandomTeam(client);
         ImpersonationHolder.setClientId(client.getId());
         UserDetails impersonatedDetails = impersonationUserDetailsService.loadUserByUsername(aUser.getUsername());
         ImpersonationHolder.clear();
@@ -111,9 +114,12 @@ public class UserDetailsServiceTest extends BaseIntegrationTest {
         assertThat("impersonated user is UserClient", impersonatedDetails, is(instanceOf(UserClient.class)));
         assertThat("impersonated user is an admin at the client",
                 Collections.unmodifiableCollection(impersonatedDetails.getAuthorities()),
-                hasItem(new SimpleGrantedAuthority(UserClientPermissionName.PERM_CLIENT_SUPER_USER.toString() + "_" +  client.getId())));
+                hasItem(new SimpleGrantedAuthority(UserClientPermissionName.PERM_CLIENT_SUPER_USER.toString() + "_" + client.getId())));
         assertThat("impersonated user set impersonated", ((UserClient) impersonatedDetails).isImpersonated(), is(true));
 
+        assertThat("impersonated user has the team permissions",
+                Collections.unmodifiableCollection(impersonatedDetails.getAuthorities()),
+                hasItem(new SimpleGrantedAuthority(UserClientTeamPermissionName.PERM_CLIENT_TEAM_SCHEDULE_PROGRAM.toString() + "_" + team.getId() + "_" + client.getId())));
     }
 
     /**

@@ -66,31 +66,27 @@ public interface TeamLocationService {
      * @return the number deleted
      */
     long delete(Client client, Location location);
-    
+
     /**
      * Associate all locations associated with client to the team we passed in.
      * Locations with id contained in excludeSet will be excluded.
-     * 
-     * @param team
-     *            to associated to
-     * @param excludeSet
-     *            contains a set of location id to be excluded
+     *
+     * @param team       to associated to
+     * @param excludeSet contains a set of location id to be excluded
      * @return a set of associated TeamLocations
      */
     Set<TeamLocation> associateAllClientLocationsExcept(Team team,
-            Set<Long> excludeSet);
+                                                        Set<Long> excludeSet);
 
     /**
      * Find possible locations to be added to team. Possible locations are
      * locations associated to the team's client
-     * 
-     * @param team
-     *            to find
-     * @param pageable
-     *            to use
+     *
+     * @param team     to find
+     * @param pageable to use
      * @return a page of potential TeamLocations
      */
     Page<TeamLocation> findPossibleClientLocationsToAdd(Team team,
-            Pageable pageable);
+                                                        Pageable pageable);
 
 }

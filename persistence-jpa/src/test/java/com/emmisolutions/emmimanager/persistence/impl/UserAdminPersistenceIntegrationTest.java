@@ -59,7 +59,6 @@ public class UserAdminPersistenceIntegrationTest extends BaseIntegrationTest {
 
         UserAdmin user1 = userAdminPersistence.reload(user);
         assertThat("the users saved should be the same as the user fetched", user, is(user1));
-        assertThat("auditor is set properly", user.getCreatedBy(), is("some user"));
         
         Page<UserAdminRole> roles = userAdminPersistence.listRolesWithoutSystem(null);
         List<UserAdminUserAdminRole> userAdminUserAdminRoles = new ArrayList<>();

@@ -1,11 +1,11 @@
 package com.emmisolutions.emmimanager.model.audit;
 
+import com.emmisolutions.emmimanager.model.user.User;
 import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -26,16 +26,9 @@ public class UsernameRevisionEntity {
     @RevisionTimestamp
     private long timestamp;
 
-    @Size(min = 0, max = 255)
-    private String username;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    @ManyToOne
+    @JoinColumn(name = "created_by", updatable = false, columnDefinition = "bigint", nullable = false)
+    private User user;
 
     public long getId() {
         return id;
@@ -71,7 +64,15 @@ public class UsernameRevisionEntity {
         return "UsernameRevisionEntity{" +
                 "id=" + id +
                 ", revisionDate=" + DateFormat.getDateTimeInstance().format(new Date(timestamp)) +
-                ", username='" + username + '\'' +
+                ", user='" + user + '\'' +
                 '}';
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

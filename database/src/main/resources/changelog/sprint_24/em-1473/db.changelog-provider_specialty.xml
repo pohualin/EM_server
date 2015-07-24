@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="change created_by and updated_by provider_specialty" author="Matt">
+        <dropColumn tableName="provider_specialty" columnName="created_by"/>
+        <dropColumn tableName="provider_specialty" columnName="last_modified_by"/>
+        <addColumn tableName="provider_specialty">
+            <column name="created_by" type="bigint"/>
+            <column name="last_modified_by" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="provider_specialty"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_provider_specialty_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="provider_specialty"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_provider_specialty_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="provider_specialty" indexName="ix_provider_specialty_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="provider_specialty" indexName="ix_provider_specialty_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
