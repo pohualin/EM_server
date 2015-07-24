@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model.audit;
 
+import com.emmisolutions.emmimanager.model.user.AnonymousUser;
 import com.emmisolutions.emmimanager.model.user.User;
 import org.hibernate.envers.RevisionListener;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,8 @@ public class UsernameRevisionListener implements RevisionListener {
 
     private User getCurrentLogin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null || !authentication.isAuthenticated() ||
+                authentication.getPrincipal() instanceof AnonymousUser) {
             return null;
         }
         return (User) authentication.getPrincipal();
