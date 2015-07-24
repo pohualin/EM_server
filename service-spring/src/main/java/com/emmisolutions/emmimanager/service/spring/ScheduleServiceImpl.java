@@ -47,7 +47,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     UserDetailsService userDetailsService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
         ScheduledProgram savedScheduledProgram = null;
         if (toBeScheduled != null) {
