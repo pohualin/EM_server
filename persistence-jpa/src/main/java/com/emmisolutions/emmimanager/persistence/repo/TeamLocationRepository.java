@@ -44,5 +44,15 @@ public interface TeamLocationRepository extends JpaRepository<TeamLocation, Long
      */
     @Query("select tl.team from TeamLocation tl where tl.team.client = :client and tl.location = :location")
     Page<Team> findTeamsByClientAndLocation(@Param("client") Client client, @Param("location") Location location, Pageable page);
-
+    
+    /**
+     * Find TeamLocation by teamId and locationId
+     * 
+     * @param teamId
+     *            to lookup
+     * @param locationId
+     *            to lookup
+     * @return null or an existing TeamLocation
+     */
+    TeamLocation findByTeamIdAndLocationId(Long teamId, Long locationId);
 }

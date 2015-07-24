@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.team;
 
-import com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderPage;
@@ -43,8 +42,21 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
                         .list(entity.getId(), null, null)).withRel("teamProviders")));
         ret.add(TeamProviderPage.createAssociationLink(entity));
         ret.add(TeamResource.getByProviderAndTeam(entity));
+        ret.add(createPossibleClientLocationsLink(entity));
+        ret.add(linkTo(
+                methodOn(TeamLocationsResource.class)
+                        .associateAllClientLocationsExcept(entity.getId(), null))
+                .withRel("associateAllClientLocationsExcept"));
         ret.setEntity(entity);
         return ret;
+    }
+    
+    public static Link createPossibleClientLocationsLink(Team team) {
+        Link link = linkTo(methodOn(TeamLocationsResource.class).possible(team.getId(), null, null)).withRel("possibleClientLocations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(uriTemplate, link.getRel());
     }
 
     private Link addPageSizeAndSort(Link toAugment) {
