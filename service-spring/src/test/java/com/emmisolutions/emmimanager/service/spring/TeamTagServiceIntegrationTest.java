@@ -235,7 +235,6 @@ public class TeamTagServiceIntegrationTest extends BaseIntegrationTest {
 
         TeamTag afterSaveTeamTag = teamTagService.saveSingleTeamTag(team, tag);
         assertThat("TeamTag was given an id", afterSaveTeamTag.getId(), is(notNullValue()));
-        assertThat("system is the created by", afterSaveTeamTag.getCreatedBy(), is("system"));
 
         TeamTagSearchFilter searchFilter = new TeamTagSearchFilter();
         HashSet<Tag> tagSet= new HashSet<>();

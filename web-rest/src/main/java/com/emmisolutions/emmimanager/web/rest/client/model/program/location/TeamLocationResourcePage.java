@@ -21,6 +21,12 @@ public class TeamLocationResourcePage extends PagedResource<TeamLocationResource
     public TeamLocationResourcePage() {
     }
 
+    public TeamLocationResourcePage(
+            PagedResources<TeamLocationResource> pagedResources,
+            Page<TeamLocation> teamLocationPage) {
+        pageDefaults(pagedResources, teamLocationPage);
+    }
+
     /**
      * Make a new resource page
      *

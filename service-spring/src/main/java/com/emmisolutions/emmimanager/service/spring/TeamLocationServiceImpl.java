@@ -5,12 +5,10 @@ import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
-import com.emmisolutions.emmimanager.service.ClientService;
-import com.emmisolutions.emmimanager.service.LocationService;
-import com.emmisolutions.emmimanager.service.TeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
+import com.emmisolutions.emmimanager.service.*;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +44,9 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     ClientLocationPersistence clientLocationPersistence;
 
     @Resource
+    ClientLocationService clientLocationService;
+
+    @Resource
     TeamProviderTeamLocationPersistence teamProviderTeamLocationPersistence;
 
     @Override
@@ -56,15 +57,15 @@ public class TeamLocationServiceImpl implements TeamLocationService {
     @Override
     @Transactional
     public Set<TeamProviderTeamLocation> save(Team team, Set<TeamLocationTeamProviderSaveRequest> request) {
-    	Set<TeamProviderTeamLocation> savedTptls = new HashSet<TeamProviderTeamLocation>();
-    	Team teamToFind = teamPersistence.reload(team);
+        Set<TeamProviderTeamLocation> savedTptls = new HashSet<>();
+        Team teamToFind = teamPersistence.reload(team);
         if(teamToFind != null && request != null) {
             for (TeamLocationTeamProviderSaveRequest req : request) {
             	Location location = req.getLocation();
                 TeamLocation teamLocation = new TeamLocation(location, teamToFind);
                 teamLocationPersistence.saveTeamLocation(teamLocation);
 
-                List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<TeamProviderTeamLocation>();
+                List<TeamProviderTeamLocation> teamProviderTeamLocationsToSave = new ArrayList<>();
 
 				for (TeamProvider teamProvider : req.getProviders()) {
 					TeamProviderTeamLocation tptl = new TeamProviderTeamLocation();
@@ -122,4 +123,75 @@ public class TeamLocationServiceImpl implements TeamLocationService {
         teamProviderTeamLocationPersistence.removeAllByClientLocation(client, location);
         return teamLocationPersistence.delete(dbClient, dbLocation);
     }
+
+    @Override
+    @Transactional
+    public Set<TeamLocation> associateAllClientLocationsExcept(Team team,
+                                                               Set<Long> excludeSet) {
+        Set<TeamLocation> added = new HashSet<>();
+        team = teamPersistence.reload(team);
+
+        Page<ClientLocation> page = null;
+        Pageable pageable = null;
+        do {
+            if (page != null) {
+                pageable = page.nextPageable();
+            }
+            // Find a page of ClientLocation to use
+            page = clientLocationPersistence.findByClient(team.getClient()
+                    .getId(), pageable);
+
+            if (page.hasContent()) {
+                for (ClientLocation clientLocation : page.getContent()) {
+                    // if location id is not in exclusion set
+                    if (!excludeSet.contains(clientLocation.getLocation()
+                            .getId())) {
+                        // TeamLocation association does not exist
+                        if (teamLocationPersistence.findByTeamAndLocation(team
+                                .getId(), clientLocation.getLocation().getId()) == null) {
+                            Location location = locationService
+                                    .reload(new Location(clientLocation
+                                            .getLocation().getId()));
+                            // Associate Team with Location
+                            added.add(teamLocationPersistence
+                                    .saveTeamLocation(new TeamLocation(
+                                            location, team)));
+                        }
+                    }
+                }
+            }
+        } while (page.hasNext());
+        return added;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TeamLocation> findPossibleClientLocationsToAdd(Team team,
+                                                               Pageable pageable) {
+        Team toFindPossible = teamPersistence.reload(team);
+        if (toFindPossible == null) {
+            throw new InvalidDataAccessApiUsageException("Team cannot be null");
+        }
+
+        // find matching ClientLocations
+        Page<ClientLocation> potentials = clientLocationPersistence
+                .findByClient(toFindPossible.getClient().getId(), pageable);
+
+        // find TeamLocations for the page of ClientLocations
+        List<TeamLocation> teamLocations = new ArrayList<>();
+        for (ClientLocation potentialClientLocation : potentials) {
+            TeamLocation foundTeamLocation = teamLocationPersistence
+                    .findByTeamAndLocation(toFindPossible.getId(),
+                            potentialClientLocation.getLocation().getId());
+            if (foundTeamLocation != null) {
+                teamLocations.add(foundTeamLocation);
+            } else {
+                teamLocations.add(new TeamLocation(potentialClientLocation
+                        .getLocation(), null));
+            }
+        }
+        return new PageImpl<>(teamLocations, pageable,
+                potentials.getTotalElements());
+    }
+
 }

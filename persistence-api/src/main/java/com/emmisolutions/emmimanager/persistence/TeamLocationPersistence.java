@@ -62,4 +62,13 @@ public interface TeamLocationPersistence {
      */
     long delete(Client client, Location location);
 
+    /**
+     * Find existing TeamLocation by teamId and locationId
+     *
+     * @param teamId     to use
+     * @param locationId to use
+     * @return null or existing TeamLocation
+     */
+    TeamLocation findByTeamAndLocation(Long teamId, Long locationId);
+
 }

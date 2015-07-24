@@ -81,4 +81,12 @@ public class TeamLocationPersistenceImpl implements TeamLocationPersistence {
         }
     }
 
+    @Override
+    public TeamLocation findByTeamAndLocation(Long teamId, Long locationId) {
+        if (teamId == null || locationId == null) {
+            throw new IllegalArgumentException("team id and location id are required");
+        }
+        return teamLocationRepository.findByTeamIdAndLocationId(teamId, locationId);
+    }
+
 }

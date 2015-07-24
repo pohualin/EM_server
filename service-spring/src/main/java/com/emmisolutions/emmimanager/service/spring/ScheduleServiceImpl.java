@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ScheduleService;
+import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -12,9 +13,9 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
 
 import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 
@@ -42,8 +43,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Resource
     SchedulePersistence schedulePersistence;
 
+    @Resource(name = "clientUserDetailsService")
+    UserDetailsService userDetailsService;
+
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
         ScheduledProgram savedScheduledProgram = null;
         if (toBeScheduled != null) {

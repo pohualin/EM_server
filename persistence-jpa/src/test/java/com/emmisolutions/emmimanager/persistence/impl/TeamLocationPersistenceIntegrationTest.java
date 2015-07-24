@@ -61,7 +61,9 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
 
         TeamLocation afterSaveTeamLocation = teamLocationPersistence.saveTeamLocation(teamLocation);
         assertThat("TeamLocation was given an id", afterSaveTeamLocation.getId(), is(notNullValue()));
-        assertThat("system is the created by", afterSaveTeamLocation.getCreatedBy(), is("system"));
+        assertThat("found TeamLocation with team id and location id",
+                teamLocationPersistence.findByTeamAndLocation(team.getId(),
+                        location.getId()), is(teamLocation));
     }
 
     /*
@@ -138,7 +140,6 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
 
         TeamLocation afterSaveTeamLocation = teamLocationPersistence.saveTeamLocation(teamLocation);
         assertThat("TeamLocation was given an id", afterSaveTeamLocation.getId(), is(notNullValue()));
-        assertThat("system is the created by", afterSaveTeamLocation.getCreatedBy(), is("system"));
 
         teamLocationPersistence.deleteTeamLocation(teamLocation);
         teamLocation = teamLocationPersistence.reload(teamLocation);
@@ -192,6 +193,5 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
        TeamLocation teamLocation = new TeamLocation(new Location(location.getId()), new Team(team.getId()));
        TeamLocation afterSaveTeamLocation = teamLocationPersistence.saveTeamLocation(teamLocation);
        assertThat("TeamLocation was given an id", afterSaveTeamLocation.getId(), is(notNullValue()));
-       assertThat("system is the created by", afterSaveTeamLocation.getCreatedBy(), is("system"));
     }    
 }

@@ -9,12 +9,15 @@ import org.hibernate.validator.constraints.Email;
 import org.joda.time.LocalDateTime;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.*;
+
+import static com.emmisolutions.emmimanager.model.user.client.UserClientPermissionName.PERM_CLIENT_SUPER_USER;
 
 /**
  * A user for a single client.
@@ -30,7 +33,7 @@ import java.util.*;
                 @UniqueConstraint(columnNames = {"login"}, name = "uk_user_client_login")
         }
 )
-public class UserClient extends User {
+public class UserClient extends User implements UserDetails {
 
     @NotNull
     @Size(min = 0, max = 255)
@@ -119,6 +122,10 @@ public class UserClient extends User {
 
     @Column(name = "security_questions_not_required_for_reset", nullable = false)
     private boolean securityQuestionsNotRequiredForReset;
+    @Transient
+    @XmlTransient
+    private transient boolean superUser;
+    private transient volatile List<GrantedAuthority> authorities;
 
     public UserClient() {
 
@@ -157,8 +164,6 @@ public class UserClient extends User {
         this.teamRoles = teamRoles;
     }
 
-    private transient volatile List<GrantedAuthority> authorities;
-
     /**
      * The client level authorities are in the form of:
      * PERM_CLIENT_LEVEL_PERMISSION_NAME_XX where XX is the Client Id for which the permission is valid.
@@ -174,6 +179,9 @@ public class UserClient extends User {
             List<GrantedAuthority> authorityList = new ArrayList<>();
             for (UserClientUserClientRole clientRole : getClientRoles()) {
                 for (UserClientPermission permission : clientRole.getUserClientRole().getUserClientPermissions()) {
+                    if (permission.getName().equals(PERM_CLIENT_SUPER_USER)) {
+                        setSuperUser(true);
+                    }
                     authorityList.add(
                             new SimpleGrantedAuthority(String.format("%s_%s",
                                     permission.getName().toString(),
@@ -214,13 +222,13 @@ public class UserClient extends User {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String getUsername() {
         return login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getSalt() {
@@ -366,5 +374,13 @@ public class UserClient extends User {
 
     public void setSecurityQuestionsNotRequiredForReset(boolean securityQuestionsNotRequiredForReset) {
         this.securityQuestionsNotRequiredForReset = securityQuestionsNotRequiredForReset;
+    }
+
+    public boolean isSuperUser() {
+        return superUser;
+    }
+
+    public void setSuperUser(boolean superUser) {
+        this.superUser = superUser;
     }
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="change created_by and updated_by user_client_user_client_team_role" author="Matt">
+        <dropColumn tableName="user_client_user_client_team_role" columnName="created_by"/>
+        <dropColumn tableName="user_client_user_client_team_role" columnName="last_modified_by"/>
+        <addColumn tableName="user_client_user_client_team_role">
+            <column name="created_by" type="bigint"/>
+            <column name="last_modified_by" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_user_client_user_client_team_role_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_client_user_client_team_role"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_user_client_user_client_team_role_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="user_client_user_client_team_role"
+                     indexName="ix_user_client_user_client_team_role_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="user_client_user_client_team_role"
+                     indexName="ix_user_client_user_client_team_role_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -9,7 +9,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
@@ -69,7 +68,6 @@ public class LocationPersistenceIntegrationTest extends BaseIntegrationTest {
         location.setState(State.IL);
         locationPersistence.save(location);
         assertThat("Location was given an id", location.getId(), is(notNullValue()));
-        assertThat("system is the created by", location.getCreatedBy(), is("system"));
         assertThat("Normalized Name", location.getNormalizedName(), is("validname1"));
     }
 

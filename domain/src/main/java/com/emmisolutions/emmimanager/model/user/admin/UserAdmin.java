@@ -5,6 +5,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Email;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ import java.util.*;
                 @UniqueConstraint(columnNames = {"login"}, name = "uk_user_admin_login")
         }
 )
-public class UserAdmin extends User {
+public class UserAdmin extends User implements UserDetails {
 
     @NotNull
     @Size(min = 0, max = 255)
@@ -53,6 +54,7 @@ public class UserAdmin extends User {
 
     @Column(name = "web_api_user", nullable = false, columnDefinition = "boolean")
     private boolean webApiUser;
+    private transient volatile List<GrantedAuthority> authorities;
 
     /**
      * Calls super()
@@ -87,6 +89,15 @@ public class UserAdmin extends User {
      * Constructor with ID only
      *
      * @param id      the id
+     */
+    public UserAdmin(Long id) {
+        setId(id);
+    }
+
+    /**
+     * Constructor with ID and version
+     *
+     * @param id      the id
      * @param version the version
      */
     public UserAdmin(Long id, Integer version) {
@@ -101,8 +112,6 @@ public class UserAdmin extends User {
     public void setRoles(Set<UserAdminUserAdminRole> roles) {
         this.roles = roles;
     }
-
-    private transient volatile List<GrantedAuthority> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -131,13 +140,13 @@ public class UserAdmin extends User {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String getUsername() {
         return login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getSalt() {

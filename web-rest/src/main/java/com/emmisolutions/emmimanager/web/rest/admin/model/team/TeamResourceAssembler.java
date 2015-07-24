@@ -1,11 +1,9 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.team;
 
-import com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
-
 import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +16,14 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @Component
 public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResource> {
 
+    public static Link createPossibleClientLocationsLink(Team team) {
+        Link link = linkTo(methodOn(TeamLocationsResource.class).possible(team.getId(), null, null)).withRel("possibleClientLocations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(uriTemplate, link.getRel());
+    }
+    
     @Override
     public TeamResource toResource(Team entity) {
         TeamResource ret = new TeamResource();
@@ -25,7 +31,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
 
         ret.add(ProviderPage.createProviderReferenceDataLink().withRel("providerReferenceData"));
         ret.add(ProviderPage.createProviderLink(entity.getClient().getId(), entity.getId()).withRel("provider"));
-       
+
         ret.add(linkTo(methodOn(ClientTeamEmailConfigurationsResource.class).findTeamEmailConfig(entity.getId(), null, null)).withRel("teamEmailConfig"));
         ret.add(linkTo(methodOn(ClientTeamPhoneConfigurationsResource.class).findTeamPhoneConfig(entity.getId(), null)).withRel("teamPhoneConfig"));
         ret.add(linkTo(methodOn(ClientTeamSchedulingConfigurationsResource.class).findTeamSchedulingConfig(entity.getId(), null)).withRel("teamSchedulingConfig"));
@@ -43,6 +49,11 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
                         .list(entity.getId(), null, null)).withRel("teamProviders")));
         ret.add(TeamProviderPage.createAssociationLink(entity));
         ret.add(TeamResource.getByProviderAndTeam(entity));
+        ret.add(createPossibleClientLocationsLink(entity));
+        ret.add(linkTo(
+                methodOn(TeamLocationsResource.class)
+                        .associateAllClientLocationsExcept(entity.getId(), null))
+                .withRel("associateAllClientLocationsExcept"));
         ret.setEntity(entity);
         return ret;
     }

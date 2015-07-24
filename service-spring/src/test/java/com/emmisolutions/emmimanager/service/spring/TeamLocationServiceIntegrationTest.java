@@ -3,12 +3,11 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.ClientLocationPersistence;
-import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceGroupTypeRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ReferenceTagRepository;
 import com.emmisolutions.emmimanager.service.*;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -16,7 +15,6 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +64,9 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
 	
 	@Resource
 	TeamProviderTeamLocationService teamProviderTeamLocationService;
+
+    @Resource
+    TeamLocationPersistence teamLocationPersistence;
 
 	/**
      * Create a Team associated to a new client, then add location to the team and those locations
@@ -270,4 +271,31 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         specialty.setName(RandomStringUtils.randomAlphanumeric(18));
         return providerService.saveSpecialty(specialty);
 	}
+
+    @Test
+    public void associateAllClientLocationExcept() {
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        Location locationA = makeNewRandomLocation();
+        Location locationB = makeNewRandomLocation();
+        Location locationC = makeNewRandomLocation();
+
+        // ClientLocations
+        clientLocationPersistence.create(
+                locationA.getId(), client.getId());
+        clientLocationPersistence.create(
+                locationB.getId(), client.getId());
+        clientLocationPersistence.create(
+                locationC.getId(), client.getId());
+
+        // TeamLocation
+        teamLocationPersistence
+                .saveTeamLocation(new TeamLocation(locationA, team));
+
+        Page<TeamLocation> potentials = teamLocationService.findPossibleClientLocationsToAdd(team, null);
+
+        Set<Long> excludeSet = new HashSet<>();
+        excludeSet.add(locationC.getId());
+        teamLocationService.associateAllClientLocationsExcept(team, excludeSet);
+    }
 }

@@ -1,24 +1,19 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-
-import org.junit.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
-
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientTeamPhoneConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.DefaultClientTeamPhoneConfigurationPersistence;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for PhoneRestrictConfigurationPersistence
@@ -45,7 +40,7 @@ public class ClientTeamPhoneConfigurationPersistenceIntegrationTest extends
                    
         ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
         phoneConfig.setTeam(team);
-        phoneConfig.setCreatedBy("system");
+        phoneConfig.setCreatedBy(new UserAdmin(1l));
         phoneConfig.setCollectPhone(defaultPhoneConfig.isCollectPhone());
         phoneConfig.setRequirePhone(defaultPhoneConfig.isRequirePhone());
                 
