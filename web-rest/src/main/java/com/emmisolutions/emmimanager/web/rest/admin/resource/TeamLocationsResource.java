@@ -8,7 +8,6 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +50,7 @@ public class TeamLocationsResource {
 
     @Resource
     TeamProviderTeamLocationService teamProviderTeamLocationService;
-    
+
     @Resource
     ResourceAssembler<TeamLocation, TeamLocationResource> teamLocationFinderResourceAssembler;
 
@@ -204,19 +202,17 @@ public class TeamLocationsResource {
         teamLocationService.delete(toFind);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
     /**
      * Associate all client locations to team with exclude list.
-     * 
-     * @param teamId
-     *            the id of the team to associate to
-     * @param excludeSet
-     *            a set of location ids to be excluded
+     *
+     * @param teamId     the id of the team to associate to
+     * @param excludeSet a set of location ids to be excluded
      * @return OK
      */
     @RequestMapping(value = "/teams/{teamId}/associateAllClientLocationsExcept/", method = RequestMethod.POST, consumes = {
-            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> associateAllClientLocationsExcept(
             @PathVariable("teamId") Long teamId,
             @RequestBody Set<Long> excludeSet) {
@@ -224,25 +220,22 @@ public class TeamLocationsResource {
                 excludeSet);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
     /**
      * Find possible ClientLocations that can be associate with the team
-     * 
-     * @param teamId
-     *            the id of the team to associate to
-     * @param pageable
-     *            to use
-     * @param assembler
-     *            to use
+     *
+     * @param teamId    the id of the team to associate to
+     * @param pageable  to use
+     * @param assembler to use
      * @return a page of TeamLocationResource with OK or NO_CONTENT
      */
     @RequestMapping(value = "/teams/{teamId}/locations/associate", method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible client locations that can be associated to a team", notes = "The object will come back with a link, if it is currently associated to the passed team. If it is not currently in use at the passed team, the link will be null.")
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "location.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
+            @ApiImplicitParam(name = "sort", defaultValue = "location.name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")})
     public ResponseEntity<TeamLocationResourcePage> possible(
             @PathVariable Long teamId,
             @PageableDefault(size = 10, sort = "location.name", direction = Sort.Direction.ASC) Pageable pageable,

@@ -140,7 +140,7 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
 
         TeamLocation afterSaveTeamLocation = teamLocationPersistence.saveTeamLocation(teamLocation);
         assertThat("TeamLocation was given an id", afterSaveTeamLocation.getId(), is(notNullValue()));
-        
+
         teamLocationPersistence.deleteTeamLocation(teamLocation);
         teamLocation = teamLocationPersistence.reload(teamLocation);
         assertThat("TeamLocation was deleted", teamLocation, is(nullValue()));
