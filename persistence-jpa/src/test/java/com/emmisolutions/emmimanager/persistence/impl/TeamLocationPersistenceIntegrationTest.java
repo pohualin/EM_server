@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTypeRepository;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest {
 
@@ -66,6 +68,20 @@ public class TeamLocationPersistenceIntegrationTest extends BaseIntegrationTest 
         assertThat("found TeamLocation with team id and location id",
                 teamLocationPersistence.findByTeamAndLocation(team.getId(),
                         location.getId()), is(teamLocation));
+        
+        try {
+            teamLocationPersistence.findByTeamAndLocation(null,
+                    location.getId());
+            fail("Should fail when team id is null but it is not");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
+        try {
+            teamLocationPersistence.findByTeamAndLocation(team.getId(), null);
+            fail("Should fail when provider id is null but it is not");
+        } catch (InvalidDataAccessApiUsageException e) {
+        }
+
     }
 
     /*

@@ -4,7 +4,9 @@ import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.service.*;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +25,7 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -51,6 +55,9 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 
 	@Resource
 	TeamProviderTeamLocationService teamProviderTeamLocationService;
+	
+	@Resource
+	TeamProviderPersistence teamProviderPersistence;
 
 	/**
 	 * Testing a provider save without a persistent team.
@@ -438,6 +445,38 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         location.setPhone("555-422-1212");
         location.setState(State.IL);
         return location;
+    }
+    
+    @Test
+    public void associateAllClientProviderExcept() {
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        Provider providerA = makeNewRandomProvider();
+        Provider providerB = makeNewRandomProvider();
+        Provider providerC = makeNewRandomProvider();
+
+        // ClientProviders
+        clientProviderService.create(new ClientProvider(client, providerA));
+        clientProviderService.create(new ClientProvider(client, providerB));
+        clientProviderService.create(new ClientProvider(client, providerC));
+
+        // TeamProvider
+        teamProviderPersistence.save(new TeamProvider(team, providerA));
+
+        // find possible ClientProviders with team not found
+        try {
+            teamProviderService.findPossibleClientProvidersToAdd(null, null);
+            fail("Should throw InvalidDataAccessApiUsageException where it is not");
+        } catch (InvalidDataAccessApiUsageException e) {
+
+        }
+
+        Page<TeamProvider> potentials = teamProviderService
+                .findPossibleClientProvidersToAdd(team, null);
+
+        Set<Long> excludeSet = new HashSet<Long>();
+        excludeSet.add(providerC.getId());
+        teamProviderService.associateAllClientProvidersExcept(team, excludeSet);
     }
 
 }

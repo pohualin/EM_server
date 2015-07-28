@@ -23,6 +23,7 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Team Location Service Integration test
@@ -291,6 +292,14 @@ public class TeamLocationServiceIntegrationTest extends BaseIntegrationTest {
         clientLocationPersistence.create(
                 locationC.getId(), client.getId());
 
+        // find possible ClientLocations with team not found
+        try {
+            teamLocationService.findPossibleClientLocationsToAdd(null, null);
+            fail("Should throw InvalidDataAccessApiUsageException where it is not");
+        } catch (InvalidDataAccessApiUsageException e) {
+
+        }
+        
         // TeamLocation
         teamLocationPersistence
                 .saveTeamLocation(new TeamLocation(locationA, team));

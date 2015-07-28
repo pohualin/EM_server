@@ -8,6 +8,8 @@ import com.emmisolutions.emmimanager.persistence.LocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamLocationPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.TeamLocationRepository;
+
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -84,7 +86,7 @@ public class TeamLocationPersistenceImpl implements TeamLocationPersistence {
     @Override
     public TeamLocation findByTeamAndLocation(Long teamId, Long locationId) {
         if(teamId == null || locationId == null){
-            throw new IllegalArgumentException("team id and location id are required");
+            throw new InvalidDataAccessApiUsageException("team id and location id are required");
         }
         return teamLocationRepository.findByTeamIdAndLocationId(teamId, locationId);
     }

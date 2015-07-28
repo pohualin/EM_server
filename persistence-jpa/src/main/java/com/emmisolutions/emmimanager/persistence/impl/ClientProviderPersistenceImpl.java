@@ -3,9 +3,11 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.impl.specification.ClientProviderSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.ClientProviderRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ClientRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ProviderRepository;
+
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +35,9 @@ public class ClientProviderPersistenceImpl implements ClientProviderPersistence 
 
     @Resource
     ProviderRepository providerRepository;
+    
+    @Resource
+    ClientProviderSpecifications clientProviderSpecifications;
 
     @Override
     public Page<ClientProvider> findByClientId(Long clientId, Pageable pageable) {
@@ -39,7 +45,7 @@ public class ClientProviderPersistenceImpl implements ClientProviderPersistence 
             throw new InvalidDataAccessApiUsageException("Client Id cannot be null");
         }
         return clientProviderRepository.findByClientId(clientId,
-                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "createdDate"));
+                pageable != null ? pageable : new PageRequest(0, 10, Sort.Direction.DESC, "specialty.name"));
     }
     
 	@Override

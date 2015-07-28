@@ -43,16 +43,29 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
         ret.add(TeamProviderPage.createAssociationLink(entity));
         ret.add(TeamResource.getByProviderAndTeam(entity));
         ret.add(createPossibleClientLocationsLink(entity));
+        ret.add(createPossibleClientProvidersLink(entity));
         ret.add(linkTo(
                 methodOn(TeamLocationsResource.class)
                         .associateAllClientLocationsExcept(entity.getId(), null))
                 .withRel("associateAllClientLocationsExcept"));
+        ret.add(linkTo(
+                methodOn(TeamProvidersResource.class)
+                        .associateProvidersToTeam(entity.getId(), null))
+                .withRel("associateAllClientProvidersExcept"));
         ret.setEntity(entity);
         return ret;
     }
     
     public static Link createPossibleClientLocationsLink(Team team) {
         Link link = linkTo(methodOn(TeamLocationsResource.class).possible(team.getId(), null, null)).withRel("possibleClientLocations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+            .with(new TemplateVariables(
+                new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(uriTemplate, link.getRel());
+    }
+    
+    public static Link createPossibleClientProvidersLink(Team team) {
+        Link link = linkTo(methodOn(TeamProvidersResource.class).possible(team.getId(), null, null)).withRel("possibleClientProviders");
         UriTemplate uriTemplate = new UriTemplate(link.getHref())
             .with(new TemplateVariables(
                 new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM)));

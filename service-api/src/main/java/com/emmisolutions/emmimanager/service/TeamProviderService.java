@@ -106,5 +106,11 @@ public interface TeamProviderService {
      * @return
      */
     Page<TeamProvider> findPossibleProvidersToAdd(Team team, ProviderSearchFilter providerSearchFilter, Pageable pageable);
+    
+    Page<TeamProvider> findPossibleClientProvidersToAdd(Team team,
+            Pageable pageable);
+
+    Set<TeamProvider> associateAllClientProvidersExcept(Team team,
+            Set<Long> excludeSet);
 
 }

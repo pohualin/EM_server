@@ -91,5 +91,7 @@ public interface TeamProviderPersistence {
      * @return
      */
     List<TeamProvider> getByTeamIdAndProviders(Long teamId, Page<Provider> matchedProviders);
+    
+    TeamProvider findTeamProviderByTeamAndProvider(Long teamId, Long providerId);
 
 }
