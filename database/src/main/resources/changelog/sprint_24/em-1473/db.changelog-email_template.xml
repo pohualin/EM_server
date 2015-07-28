@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="change created_by and updated_by email_template" author="Matt">
+        <dropColumn tableName="email_template" columnName="created_by"/>
+        <dropColumn tableName="email_template" columnName="last_modified_by"/>
+        <addColumn tableName="email_template">
+            <column name="created_by" type="bigint"/>
+            <column name="last_modified_by" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="email_template"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_email_template_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="email_template"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_email_template_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="email_template" indexName="ix_email_template_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="email_template" indexName="ix_email_template_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

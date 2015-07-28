@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.model.schedule;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.program.Program;
+import com.emmisolutions.emmimanager.model.user.User;
 import org.hibernate.envers.Audited;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -28,11 +29,20 @@ import java.util.Objects;
                 @Index(name = "ix_scheduled_program_patient_id", columnList = "patient_id"),
                 @Index(name = "ix_scheduled_program_team_id", columnList = "team_id"),
                 @Index(name = "ix_scheduled_program_location_id", columnList = "location_id"),
-                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id"),
+                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id")
         }
 )
 @XmlRootElement(name = "scheduled_program")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NamedEntityGraphs({
+        // eagerly fetches created by when used
+        @NamedEntityGraph(
+                name = "scheduledProgramsWithCreatedBy",
+                attributeNodes = {
+                        @NamedAttributeNode("createdBy")
+                }
+        )
+})
 public class ScheduledProgram extends AbstractAuditingEntity {
 
     @Id
@@ -112,6 +122,12 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     @XmlElement(name = "created_date")
     public DateTime getCreatedDate() {
         return super.getCreatedDate();
+    }
+
+    @Override
+    @XmlElement(name = "createdBy")
+    public User getCreatedBy() {
+        return super.getCreatedBy();
     }
 
     public Long getId() {

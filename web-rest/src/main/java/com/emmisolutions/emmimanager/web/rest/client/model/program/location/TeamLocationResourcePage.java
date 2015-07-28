@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.web.rest.client.model.program.location;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
-
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.*;
 import org.springframework.util.CollectionUtils;
@@ -21,7 +20,7 @@ public class TeamLocationResourcePage extends PagedResource<TeamLocationResource
 
     public TeamLocationResourcePage() {
     }
-    
+
     public TeamLocationResourcePage(
             PagedResources<TeamLocationResource> pagedResources,
             Page<TeamLocation> teamLocationPage) {

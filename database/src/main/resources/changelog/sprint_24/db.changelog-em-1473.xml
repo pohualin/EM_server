@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="remove default constraints" author="Matt" dbms="mssql">
+        <dropDefaultValue tableName="email_restrict_configuration" columnName="created_by"/>
+        <dropDefaultValue tableName="client_restrict_configuration" columnName="created_by"/>
+        <dropDefaultValue tableName="user_client_password_history" columnName="created_by"/>
+        <dropDefaultValue tableName="provider_specialty" columnName="created_by"/>
+        <dropDefaultValue tableName="default_password_configuration" columnName="created_by"/>
+        <dropDefaultValue tableName="client_password_configuration" columnName="created_by"/>
+        <dropDefaultValue tableName="ip_restrict_configuration" columnName="created_by"/>
+    </changeSet>
+
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_group.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_group_tag.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_location.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_note.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_password_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_patient.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_provider.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_restrict_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_team.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_team_email_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_team_location.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_team_phone_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_team_scheduling_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_team_self_reg_config.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-client_team_tag.xml"/>
+    <include relativeToChangelogFile="true"
+             file="em-1473/db.changelog-default_client_team_scheduling_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-default_password_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-default_team_email_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-default_team_phone_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-email_restrict_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-email_template.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-ip_restrict_configuration.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-language.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-location.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-provider.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-provider_specialty.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-reference_group.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-reference_group_type.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-reference_tag.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-salesforce_client.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-salesforce_team.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-scheduled_program.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-secret_question.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-strings.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-team_provider.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-team_provider_team_location.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_admin_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_admin_user_admin_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_password_history.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_reference_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_reference_role_permission.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_reference_role_type.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_reference_team_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_reference_team_role_permission.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_reference_team_role_type.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_secret_question_response.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_team_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_user_client_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-user_client_user_client_team_role.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-users.xml"/>
+    <include relativeToChangelogFile="true" file="em-1473/db.changelog-revision_info.xml"/>
+
+</databaseChangeLog>

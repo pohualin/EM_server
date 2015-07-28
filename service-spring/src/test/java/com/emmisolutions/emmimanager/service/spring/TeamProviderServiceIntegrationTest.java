@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter.StatusFilter;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.ProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.service.*;
 
@@ -98,8 +97,6 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         provider.setSpecialty(getSpecialty());
 		provider = providerService.create(provider, savedTeam);
 		assertThat("Provider was saved", provider.getId(), is(notNullValue()));
-		assertThat("system is the created by", provider.getCreatedBy(),
-				is("system"));
 
 		Page<TeamProvider> providerPage = teamProviderService.findTeamProvidersByTeam(null, savedTeam);
 		assertThat("TeamProvider was created", providerPage.getContent().iterator().next().getId(), is(notNullValue()));
@@ -124,9 +121,8 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
 	private ProviderSpecialty getSpecialty(){
         ProviderSpecialty specialty = new ProviderSpecialty();
         specialty.setName(RandomStringUtils.randomAlphanumeric(18));
-        ProviderSpecialty savedSpecialty = providerService.saveSpecialty(specialty);
-        return savedSpecialty;
-	}
+        return providerService.saveSpecialty(specialty);
+    }
 
 	/**
 	 * Test deletion of TeamProvider, verify Provider still exists
@@ -427,7 +423,7 @@ public class TeamProviderServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("Team was saved", savedTeam.getId(), is(notNullValue()));
         
         TeamProviderTeamLocationSaveRequest request = new TeamProviderTeamLocationSaveRequest();
-        List<TeamProviderTeamLocationSaveRequest> requestList = new ArrayList<TeamProviderTeamLocationSaveRequest>();
+        List<TeamProviderTeamLocationSaveRequest> requestList = new ArrayList<>();
         
         request.setProvider(new Provider(provider.getId()));
         requestList.add(request);

@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.configuration;
 
-import com.emmisolutions.emmimanager.config.Constants;
+import com.emmisolutions.emmimanager.model.user.AnonymousUser;
+import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.persistence.logging.LoggingAspect;
 import liquibase.integration.spring.SpringLiquibase;
 import org.h2.tools.Server;
@@ -24,9 +25,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.naming.NamingException;
@@ -124,22 +123,17 @@ public class PersistenceConfiguration {
      * @return the auditor
      */
     @Bean(name = "springDataAuditor")
-    public AuditorAware<String> getAuditorAware() {
-        return new AuditorAware<String>() {
+    public AuditorAware<User> getAuditorAware() {
+        return new AuditorAware<User>() {
+
             @Override
-            public String getCurrentAuditor() {
-                SecurityContext securityContext = SecurityContextHolder.getContext();
-                Authentication authentication = securityContext.getAuthentication();
-                String userName = null;
-                if (authentication != null) {
-                    if (authentication.getPrincipal() instanceof UserDetails) {
-                        UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
-                        userName = springSecurityUser.getUsername();
-                    } else if (authentication.getPrincipal() instanceof String) {
-                        userName = (String) authentication.getPrincipal();
-                    }
+            public User getCurrentAuditor() {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication == null || !authentication.isAuthenticated() ||
+                        authentication.getPrincipal() instanceof AnonymousUser) {
+                    return null;
                 }
-                return (userName != null ? userName : Constants.SYSTEM_ACCOUNT);
+                return (User) authentication.getPrincipal();
             }
         };
     }

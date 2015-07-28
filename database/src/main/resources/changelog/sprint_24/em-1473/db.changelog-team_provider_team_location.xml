@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="change created_by and updated_by team_provider_team_location" author="Matt">
+        <dropColumn tableName="team_provider_team_location" columnName="created_by"/>
+        <dropColumn tableName="team_provider_team_location" columnName="last_modified_by"/>
+        <addColumn tableName="team_provider_team_location">
+            <column name="created_by" type="bigint"/>
+            <column name="last_modified_by" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="team_provider_team_location"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_team_provider_team_location_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="team_provider_team_location"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_team_provider_team_location_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="team_provider_team_location" indexName="ix_team_provider_team_location_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="team_provider_team_location"
+                     indexName="ix_team_provider_team_location_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

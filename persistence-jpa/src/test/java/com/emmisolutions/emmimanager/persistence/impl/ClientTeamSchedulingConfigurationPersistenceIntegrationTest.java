@@ -1,19 +1,19 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import javax.annotation.Resource;
-
-import org.junit.Test;
-
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamSchedulingConfiguration;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientTeamSchedulingConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.DefaultClientTeamSchedulingConfigurationPersistence;
+import org.junit.Test;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for ClientTeamSchedulingConfigurationPersistence
@@ -41,7 +41,7 @@ public class ClientTeamSchedulingConfigurationPersistenceIntegrationTest extends
         ClientTeamSchedulingConfiguration SchedulingConfig = new ClientTeamSchedulingConfiguration();
         SchedulingConfig.setTeam(team);
         SchedulingConfig.setDefaultClientTeamSchedulingConfiguration(defaultConfig);
-        SchedulingConfig.setCreatedBy("system");
+        SchedulingConfig.setCreatedBy(new UserAdmin(1l));
         SchedulingConfig.setUseProvider(true);
         SchedulingConfig.setUseLocation(true);
 

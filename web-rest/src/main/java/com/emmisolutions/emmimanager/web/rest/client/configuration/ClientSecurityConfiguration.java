@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration;
 
+import com.emmisolutions.emmimanager.model.user.AnonymousUser;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.DelegateRememberMeServices;
@@ -221,6 +222,10 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .and()
                 .requestMatchers()
                     .antMatchers("/webapi-client/**")
+                .and()
+                .anonymous()
+                .principal(new AnonymousUser() {
+                })
                     .and()
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(authenticationEntryPoint,
