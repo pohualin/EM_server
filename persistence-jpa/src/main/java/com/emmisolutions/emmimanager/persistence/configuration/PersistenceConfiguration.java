@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.user.AnonymousUser;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.persistence.logging.LoggingAspect;
 import liquibase.integration.spring.SpringLiquibase;
+import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.Server;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
@@ -150,18 +151,8 @@ public class PersistenceConfiguration {
         SpringLiquibase springLiquibase = new SpringLiquibase();
         springLiquibase.setDataSource(dataSource);
         springLiquibase.setChangeLog("classpath:db.changelog-master.xml");
-        if (env.acceptsProfiles(SPRING_PROFILE_TEST)) {
-            springLiquibase.setContexts("test");
-        }
-        if (env.acceptsProfiles(SPRING_PROFILE_DEVELOPMENT)) {
-            springLiquibase.setContexts("dev");
-        }
-        if (env.acceptsProfiles(SPRING_PROFILE_QA)) {
-            springLiquibase.setContexts("qa");
-        }
-        if (env.acceptsProfiles(SPRING_PROFILE_PRODUCTION)) {
-            springLiquibase.setContexts("prod");
-        }
+        // add all active profiles as liquibase contexts
+        springLiquibase.setContexts(StringUtils.join(env.getActiveProfiles(), ","));
         return springLiquibase;
     }
 
