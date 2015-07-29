@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
@@ -22,6 +23,7 @@ import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAut
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.configuration.IntegrationTestConfiguration;
 import com.icegreen.greenmail.spring.GreenMailBean;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -36,6 +38,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.mail.internet.MimeMessage;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -108,6 +111,12 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     UserDetailsConfigurableAuthenticationProvider adminAuthenticationProvider;
+    
+    @Resource
+    ClientTeamPhoneConfigurationService teamPhoneConfig;
+    
+    @Resource
+    ClientTeamEmailConfigurationService teamEmailConfig;
 
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
@@ -275,6 +284,37 @@ public abstract class BaseIntegrationTest {
         team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
                 .randomAlphanumeric(18)));
         return teamService.create(team);
+    }
+    
+    /**
+     * Creates a brand new team that shouldn't already be inserted
+     *
+     * @return random team with configuration
+     */
+    protected Team makeNewRandomTeamWithConfiguration(Client client) {
+        Team team = new Team();
+        team.setName("a" + RandomStringUtils.randomAlphabetic(49));
+        team.setDescription(RandomStringUtils.randomAlphabetic(50));
+        team.setActive(true);
+        team.setClient(client != null ? client : makeNewRandomClient());
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
+                .randomAlphanumeric(18)));
+        teamService.create(team);
+        
+        ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
+                           
+        phoneConfig.setTeam(team);
+        phoneConfig.setCreatedBy(new UserAdmin(1l));
+        phoneConfig.setRequirePhone(true);
+        phoneConfig.setCollectPhone(true);
+        teamPhoneConfig.saveOrUpdate(phoneConfig);
+                        
+        ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
+        emailConfig.setTeam(team);
+        emailConfig.setType(EmailReminderType.REQUIRE_EMAIL);
+        emailConfig.setEmailConfig(true);
+        teamEmailConfig.saveOrUpdate(emailConfig);
+        return team;
     }
 
     /**

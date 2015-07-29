@@ -11,6 +11,7 @@ import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -135,7 +136,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         ClientTeamPhoneConfiguration teamPhoneConfigDB = clientTeamPhoneConfigurationPersistence.find(toBeScheduled.getTeam().getId());
         if((teamPhoneConfigDB != null) &&
            (teamPhoneConfigDB.isRequirePhone())){
-        		if(toBeScheduled.getPatient().getPhone() == null){
+        		if(StringUtils.isEmpty(toBeScheduled.getPatient().getPhone())){
         			throw new InvalidDataAccessApiUsageException("Patient's phone is required for the team");	
         		}
         }
@@ -147,7 +148,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         	 for(ClientTeamEmailConfiguration emailConfig : teamEmailConfigDB){
         		if((emailConfig.getType().name().equalsIgnoreCase("REQUIRE_EMAIL"))&&
 					(emailConfig.isEmailConfig())){	 
-					 	if(toBeScheduled.getPatient().getEmail() == null){
+					 	if(StringUtils.isEmpty(toBeScheduled.getPatient().getEmail())){
 					 		throw new InvalidDataAccessApiUsageException("Patient's email is required for the team");
 					 	}
 				 	}
