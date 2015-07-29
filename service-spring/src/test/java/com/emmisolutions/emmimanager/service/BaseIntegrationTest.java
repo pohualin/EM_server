@@ -302,7 +302,6 @@ public abstract class BaseIntegrationTest {
         teamService.create(team);
         
         ClientTeamPhoneConfiguration phoneConfig = new ClientTeamPhoneConfiguration();
-                           
         phoneConfig.setTeam(team);
         phoneConfig.setCreatedBy(new UserAdmin(1l));
         phoneConfig.setRequirePhone(true);
@@ -311,6 +310,7 @@ public abstract class BaseIntegrationTest {
                         
         ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
         emailConfig.setTeam(team);
+        emailConfig.setCreatedBy(new UserAdmin(1l));
         emailConfig.setType(EmailReminderType.REQUIRE_EMAIL);
         emailConfig.setEmailConfig(true);
         teamEmailConfig.saveOrUpdate(emailConfig);
