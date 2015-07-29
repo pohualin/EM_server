@@ -57,7 +57,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
                 .withRel("associateAllClientLocationsExcept"));
         ret.add(linkTo(
                 methodOn(TeamProvidersResource.class)
-                        .associateProvidersToTeam(entity.getId(), null))
+                        .associateAllClientLocationsExcept(entity.getId(), null))
                 .withRel("associateAllClientProvidersExcept"));
         ret.setEntity(entity);
         return ret;

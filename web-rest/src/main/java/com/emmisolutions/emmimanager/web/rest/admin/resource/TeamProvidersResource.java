@@ -290,6 +290,17 @@ public class TeamProvidersResource {
         }
     }
     
+    @RequestMapping(value = "/teams/{teamId}/associateAllClientProvidersExcept/", method = RequestMethod.POST, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    public ResponseEntity<Void> associateAllClientLocationsExcept(
+            @PathVariable("teamId") Long teamId,
+            @RequestBody Set<Long> excludeSet) {
+        teamProviderService.associateAllClientProvidersExcept(new Team(teamId),
+                excludeSet);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
     @RequestMapping(value = "/teams/{teamId}/clientProviders/associate", method = RequestMethod.GET)
     @ApiOperation(value = "finds all possible client providers that can be associated to a team", notes = "The object will come back with a link, if it is currently associated to the passed team. If it is not currently in use at the passed team, the link will be null.")
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
