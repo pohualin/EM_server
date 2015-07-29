@@ -1,16 +1,21 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +47,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Resource
     SchedulePersistence schedulePersistence;
+    
+    @Resource
+    ClientTeamPhoneConfigurationPersistence clientTeamPhoneConfigurationPersistence;
+    
+    @Resource
+    ClientTeamEmailConfigurationPersistence clientTeamEmailConfigurationPersistence;
 
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
@@ -50,9 +61,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
         ScheduledProgram savedScheduledProgram = null;
+        
         if (toBeScheduled != null) {
             hydrateValidProgram(toBeScheduled);
             validateViewByDate(toBeScheduled);
+            validatePhone(toBeScheduled);
+            validateEmail(toBeScheduled);
             toBeScheduled.setAccessCode(accessCodeGenerator.next());
             savedScheduledProgram = schedulePersistence.save(toBeScheduled);
         }
@@ -116,4 +130,28 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new InvalidDataAccessApiUsageException("view-by-date (UTC) >= current date. Current UTC date is: " + LocalDate.now(DateTimeZone.UTC).toString());
         }
     }
+    
+    private void validatePhone(ScheduledProgram toBeScheduled) {
+        ClientTeamPhoneConfiguration teamPhoneConfigDB = clientTeamPhoneConfigurationPersistence.find(toBeScheduled.getTeam().getId());
+        if((teamPhoneConfigDB != null) &&
+           (teamPhoneConfigDB.isRequirePhone())){
+        		if(toBeScheduled.getPatient().getPhone() == null){
+        			throw new InvalidDataAccessApiUsageException("Patient's phone is required for the team");	
+        		}
+        }
+   }
+    
+    private void validateEmail(ScheduledProgram toBeScheduled) {
+        Page<ClientTeamEmailConfiguration> teamEmailConfigDB = clientTeamEmailConfigurationPersistence.find(toBeScheduled.getTeam().getId(), new PageRequest(0, 10));
+        if(teamEmailConfigDB.hasContent()){
+        	 for(ClientTeamEmailConfiguration emailConfig : teamEmailConfigDB){
+        		if((emailConfig.getType().name().equalsIgnoreCase("REQUIRE_EMAIL"))&&
+					(emailConfig.isEmailConfig())){	 
+					 	if(toBeScheduled.getPatient().getEmail() == null){
+					 		throw new InvalidDataAccessApiUsageException("Patient's email is required for the team");
+					 	}
+				 	}
+		     }
+        }
+   }
 }
