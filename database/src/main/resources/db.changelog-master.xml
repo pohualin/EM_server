@@ -4,6 +4,11 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <changeSet id="wipe db" author="Matt" dbms="mssql" context="wipe-db-on-start"
+               runAlways="true" failOnError="true">
+        <sql>exec delete_all_objects_in_DB</sql>
+    </changeSet>
+
     <include relativeToChangelogFile="true" file="changelog/sprint_1/db.changelog-em-12.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_1/db.changelog-em-3.xml"/>
@@ -87,28 +92,28 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_8/db.changelog-em-532.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_8/db.changelog-em-539.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_9/db.changelog-em-289.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_9/db.changelog-em-440.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_9/db.changelog-em-447.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_9/db.changelog-em-528.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-fix-keys.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-em-491.xml"/>
-	
-	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-fix-fks.xml"/>
-	
-	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-add-indexes.xml"/>
-	
-	<include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-em-665.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-fix-fks.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-add-indexes.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_10/db.changelog-em-665.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-581.xml"/>
-    
-	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-295.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-295.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-294.xml"/>
 
@@ -117,21 +122,21 @@
     <!-- Don't run this anymore after em-874 has gone into effect
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-admin-passwords.xml"/>
     -->
-	
-	<include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-570.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_11/db.changelog-em-570.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-655.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-305.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-299.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-729.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-836.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_12/db.changelog-em-297.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-761.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-730.xml"/>
@@ -139,11 +144,11 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-765.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_13/db.changelog-em-591.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-em-652.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-admin.super.user.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-719.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-em-874.xml"/>
@@ -153,11 +158,11 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-862.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_14/db.changelog-em-291.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-877.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-297.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-922.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-890.xml"/>
@@ -171,11 +176,11 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_16/db.changelog-em-939.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_15/db.changelog-em-649.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_16/db.changelog-em-978.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_16/db.changelog-em-920.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_16/db.changelog-em-893.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_17/db.changelog-em-1023.xml"/>
@@ -186,20 +191,20 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_17/db.changelog-em-1086.xml"/>
 
-	<include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1143.xml"/>
+    <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1143.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1016.xml"/>
 
-	<include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1065.xml"/>
+    <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1065.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-884.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1208.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-932.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1227.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-1215.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-897.xml"/>
@@ -213,21 +218,21 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-900.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-1347.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-932-fix.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-972.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-933.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-913.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_21/db.changelog-em-1182.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-em-1386.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-em-1382.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-em-942.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-em-714.xml"/>
@@ -237,7 +242,7 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-add-rowver.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_22/db.changelog-em-714-update.xml"/>
-    
+
     <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-959.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-1429.xml"/>
