@@ -27,9 +27,7 @@ import java.util.Objects;
                 @Index(name = "ak_scheduled_program_access_code", columnList = "access_code", unique = true),
                 @Index(name = "ix_scheduled_program_program_id", columnList = "program_id"),
                 @Index(name = "ix_scheduled_program_patient_id", columnList = "patient_id"),
-                @Index(name = "ix_scheduled_program_team_id", columnList = "team_id"),
-                @Index(name = "ix_scheduled_program_location_id", columnList = "location_id"),
-                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id")
+                @Index(name = "ix_scheduled_program_team_id", columnList = "team_id")
         }
 )
 @XmlRootElement(name = "scheduled_program")
@@ -77,14 +75,14 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     private Team team;
 
     @NotNull
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "provider_id", nullable = false, columnDefinition = "bigint",
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "provider_id", nullable = true, columnDefinition = "bigint",
             foreignKey = @ForeignKey(name = "fk_scheduled_program_provider"))
     private Provider provider;
 
     @NotNull
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "location_id", nullable = false, columnDefinition = "bigint",
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "location_id", nullable = true, columnDefinition = "bigint",
             foreignKey = @ForeignKey(name = "fk_scheduled_program_location"))
     private Location location;
 
