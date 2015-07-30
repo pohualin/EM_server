@@ -210,7 +210,7 @@ public class TeamLocationsResource {
      * @param excludeSet a set of location ids to be excluded
      * @return OK
      */
-    @RequestMapping(value = "/teams/{teamId}/associateAllClientLocationsExcept/", method = RequestMethod.POST, consumes = {
+    @RequestMapping(value = "/teams/{teamId}/associate_all_client_locations_except/", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<Void> associateAllClientLocationsExcept(
