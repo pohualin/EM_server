@@ -2,10 +2,13 @@ package com.emmisolutions.emmimanager.persistence.repo;
 
 import com.emmisolutions.emmimanager.model.ClientProvider;
 import com.emmisolutions.emmimanager.model.Provider;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,8 +25,11 @@ public interface ClientProviderRepository extends JpaRepository<ClientProvider, 
      * @param page     the page specification
      * @return a page of matching ClientProvider objects
      */
-    Page<ClientProvider> findByClientId(Long clientId, Pageable page);
-    
+    @Query("select cp from ClientProvider cp " +
+            "left join cp.provider provider left join provider.specialty specialty " +
+            "where cp.client.id = :clientId")
+    Page<ClientProvider> findByClientId(@Param("clientId") Long clientId, Pageable page);
+
     /**
      * Finds a page of providers by provider id
      *

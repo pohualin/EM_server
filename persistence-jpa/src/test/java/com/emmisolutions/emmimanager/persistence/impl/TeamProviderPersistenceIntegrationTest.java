@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  *  TeamProviderPersistence integration test
@@ -43,12 +44,32 @@ public class TeamProviderPersistenceIntegrationTest extends BaseIntegrationTest 
      */
     @Test
     public void save() {
+        Team team = makeNewRandomTeam(null);
+        Provider provider = makeNewRandomProvider();
         TeamProvider tp = new TeamProvider();
-        tp.setTeam(makeNewRandomTeam(null));
-        tp.setProvider(makeNewRandomProvider());
+        tp.setTeam(team);
+        tp.setProvider(provider);
         TeamProvider saved = teamProviderPersistence.save(tp);
-        assertThat("save was successful",
-            saved, is(notNullValue()));
+        assertThat("save was successful", saved, is(notNullValue()));
+
+        assertThat(
+                "found TeamProvider with team id and provider id",
+                teamProviderPersistence.findTeamProviderByTeamAndProvider(
+                        team.getId(), provider.getId()), is(saved));
+        
+        try{
+            teamProviderPersistence.findTeamProviderByTeamAndProvider(
+                    null, provider.getId());
+            fail("Should fail when team id is null but it is not");
+        }catch(InvalidDataAccessApiUsageException e){
+        }
+        
+        try{
+            teamProviderPersistence.findTeamProviderByTeamAndProvider(
+                    team.getId(), null);
+            fail("Should fail when provider id is null but it is not");
+        }catch(InvalidDataAccessApiUsageException e){
+        }
 
         assertThat("reload works", teamProviderPersistence.reload(saved.getId()), is(saved));
 
