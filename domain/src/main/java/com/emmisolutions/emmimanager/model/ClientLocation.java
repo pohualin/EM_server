@@ -23,12 +23,12 @@ public class ClientLocation extends AbstractAuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "client_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_client_client_id"))
     private Client client;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "location_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_location_location_id"))
     private Location location;
