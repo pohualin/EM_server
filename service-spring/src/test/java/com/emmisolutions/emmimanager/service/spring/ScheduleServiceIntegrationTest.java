@@ -148,5 +148,21 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         scheduledProgram.setPatient(makeNewRandomPatient(client));
         scheduleService.schedule(scheduledProgram);
     }
+    
+    /**
+     * Phone and Email is required
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void phoneNotProvided() {
+        ScheduledProgram scheduledProgram = new ScheduledProgram();
+        Client client = makeNewRandomClient();
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
+        scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setProvider(makeNewRandomProvider());
+        scheduledProgram.setProgram(programService.find(null, null).iterator().next());
+        scheduledProgram.setTeam(makeNewRandomTeamWithConfiguration(client));
+        scheduledProgram.setPatient(makeNewRandomPatient(client));
+        scheduleService.schedule(scheduledProgram);
+    }
 
 }

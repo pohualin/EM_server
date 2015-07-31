@@ -8,21 +8,25 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderP
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.TeamProviderResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamLocationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamLocationResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamProviderTeamLocationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamProviderTeamLocationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+
 import java.util.List;
 import java.util.Set;
 
@@ -283,6 +287,62 @@ public class TeamProvidersResource {
             return new ResponseEntity<>(NO_CONTENT);
         } else {
             return new ResponseEntity<>(teamProviderResourceAssembler.toResource(teamProvider), OK);
+        }
+    }
+    
+    /**
+     * Associate all (client) providers to a team except those in exclude set
+     * 
+     * @param teamId
+     *            for the team to associate with
+     * @param excludeSet
+     *            providers to exclude
+     * @return OK
+     */
+    @RequestMapping(value = "/teams/{teamId}/associate_all_client_providers_except/", method = RequestMethod.POST, consumes = {
+            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    public ResponseEntity<Void> associateAllClientLocationsExcept(
+            @PathVariable("teamId") Long teamId,
+            @RequestBody Set<Long> excludeSet) {
+        teamProviderService.associateAllClientProvidersExcept(new Team(teamId),
+                excludeSet);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    /**
+     * Find (client) providers for a team to associate with
+     * 
+     * @param teamId
+     *            for the team to associate with
+     * @param pageable
+     *            to use
+     * @param assembler
+     *            to assemble return resource
+     * @return TeamProviderPage contains TeamProviders
+     */
+    @RequestMapping(value = "/teams/{teamId}/client_providers/associate", method = RequestMethod.GET)
+    @ApiOperation(value = "finds all possible client providers that can be associated to a team", notes = "The object will come back with a link, if it is currently associated to the passed team. If it is not currently in use at the passed team, the link will be null.")
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
+            @ApiImplicitParam(name = "sort", defaultValue = "provider.normalizedName,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query") })
+    public ResponseEntity<TeamProviderPage> possible(
+            @PathVariable Long teamId,
+            @PageableDefault(size = 10, sort = "provider.normalizedName", direction = Sort.Direction.ASC) Pageable pageable,
+            PagedResourcesAssembler<TeamProvider> assembler) {
+
+        Page<TeamProvider> teamProviderPage = teamProviderService
+                .findPossibleClientProvidersToAdd(new Team(teamId), pageable);
+
+        if (teamProviderPage.hasContent()) {
+            return new ResponseEntity<>(new TeamProviderPage(
+                    assembler.toResource(teamProviderPage,
+                            teamProviderFinderResourceAssembler),
+                    teamProviderPage), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 }
