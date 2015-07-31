@@ -8,7 +8,6 @@ import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLo
 import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginErrorResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginErrorResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
-
 import org.joda.time.LocalDateTime;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -24,7 +23,6 @@ import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 /**
@@ -79,7 +77,7 @@ public class AjaxAuthenticationFailureHandler extends
                                     .getAuthentication().getPrincipal());
                     userClient = userClientService
                             .handleLoginFailure(userClient);
-                    if (userClient.isAccountNonLocked() == true) {
+                    if (userClient.isAccountNonLocked()) {
                         failure = new UserClientLoginError(
                                 UserClientLoginError.Reason.BAD, userClient);
                     } else {
