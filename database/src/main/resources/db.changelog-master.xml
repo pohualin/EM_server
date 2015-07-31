@@ -4,11 +4,6 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="wipe db" author="Matt" dbms="mssql" context="wipe-db-on-start"
-               runAlways="true" failOnError="true">
-        <sql>exec delete_all_objects_in_DB</sql>
-    </changeSet>
-
     <include relativeToChangelogFile="true" file="changelog/sprint_1/db.changelog-em-12.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_1/db.changelog-em-3.xml"/>
