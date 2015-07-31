@@ -37,40 +37,45 @@ public class IpRangeAuthorizationRequest {
     public boolean withinClientAllowedRange(UserClient userClient, HttpProxyAwareAuthenticationDetails details) {
         boolean isWithinAllowedRange;
 
-        ClientRestrictConfiguration clientRestrictConfiguration =
-                clientRestrictConfigurationService.getByClient(userClient.getClient());
-        if (clientRestrictConfiguration != null && clientRestrictConfiguration.isIpConfigRestrict()) {
-            // pull the first page of restrictions
-            Page<IpRestrictConfiguration> pageOfRestrictions =
-                    ipRestrictConfigurationService.getByClient(null, userClient.getClient());
-            if (pageOfRestrictions.getTotalElements() > 0) {
-                Boolean userValidForPage = null;
-                while (pageOfRestrictions != null) {
-                    userValidForPage = processPageOfRestrictions(userClient, details, pageOfRestrictions);
-                    if (!Boolean.TRUE.equals(userValidForPage)) {
-                        // ip address was not valid for page of rules, get next page if we can
-                        pageOfRestrictions = pageOfRestrictions.hasNext() ?
-                                ipRestrictConfigurationService.getByClient(
-                                        pageOfRestrictions.nextPageable(), userClient.getClient()) : null;
-                    } else {
-                        // ip address was valid within the page, no need to get next page
-                        pageOfRestrictions = null;
+        if (userClient.isImpersonated()) {
+            LOGGER.debug("{} is an impersonated user and will bypass ip address restrictions", userClient.getClient());
+            isWithinAllowedRange = true;
+        } else {
+            ClientRestrictConfiguration clientRestrictConfiguration =
+                    clientRestrictConfigurationService.getByClient(userClient.getClient());
+            if (clientRestrictConfiguration != null && clientRestrictConfiguration.isIpConfigRestrict()) {
+                // pull the first page of restrictions
+                Page<IpRestrictConfiguration> pageOfRestrictions =
+                        ipRestrictConfigurationService.getByClient(null, userClient.getClient());
+                if (pageOfRestrictions.getTotalElements() > 0) {
+                    Boolean userValidForPage = null;
+                    while (pageOfRestrictions != null) {
+                        userValidForPage = processPageOfRestrictions(userClient, details, pageOfRestrictions);
+                        if (!Boolean.TRUE.equals(userValidForPage)) {
+                            // ip address was not valid for page of rules, get next page if we can
+                            pageOfRestrictions = pageOfRestrictions.hasNext() ?
+                                    ipRestrictConfigurationService.getByClient(
+                                            pageOfRestrictions.nextPageable(), userClient.getClient()) : null;
+                        } else {
+                            // ip address was valid within the page, no need to get next page
+                            pageOfRestrictions = null;
+                        }
                     }
-                }
-                if (userValidForPage == null) {
-                    LOGGER.info("{} has ip range restriction enabled but has no valid ranges configured", userClient.getClient());
-                    isWithinAllowedRange = true;
+                    if (userValidForPage == null) {
+                        LOGGER.info("{} has ip range restriction enabled but has no valid ranges configured", userClient.getClient());
+                        isWithinAllowedRange = true;
+                    } else {
+                        // all pages have been processed, set the return value
+                        isWithinAllowedRange = Boolean.TRUE.equals(userValidForPage);
+                    }
                 } else {
-                    // all pages have been processed, set the return value
-                    isWithinAllowedRange = Boolean.TRUE.equals(userValidForPage);
+                    LOGGER.debug("{} has ip range restriction enabled but no ip ranges configured", userClient.getClient());
+                    isWithinAllowedRange = true;
                 }
             } else {
-                LOGGER.debug("{} has ip range restriction enabled but no ip ranges configured", userClient.getClient());
+                LOGGER.debug("{} has ip range restriction disabled", userClient.getClient());
                 isWithinAllowedRange = true;
             }
-        } else {
-            LOGGER.debug("{} has ip range restriction disabled", userClient.getClient());
-            isWithinAllowedRange = true;
         }
         return isWithinAllowedRange;
     }

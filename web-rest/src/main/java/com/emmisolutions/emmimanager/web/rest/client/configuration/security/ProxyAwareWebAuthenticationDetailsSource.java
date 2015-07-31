@@ -7,11 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A WebAuthenticationDetails builder that understands proxied requests
  */
-public class ProxyAwareWebAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, HttpProxyAwareAuthenticationDetails> {
+public class ProxyAwareWebAuthenticationDetailsSource implements
+        AuthenticationDetailsSource<HttpServletRequest, HttpProxyAwareAuthenticationDetails> {
 
     @Override
     public HttpProxyAwareAuthenticationDetails buildDetails(HttpServletRequest request) {
-        return new HttpProxyAwareAuthenticationDetails(request);
+        return new HttpProxyAwareAuthenticationDetailsImpl(request);
     }
 
 }

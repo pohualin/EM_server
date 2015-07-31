@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security.cas;
 
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.HttpProxyAwareAuthenticationDetails;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.security.HttpProxyAwareAuthenticationDetailsImpl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetails;
@@ -17,8 +19,9 @@ import static com.emmisolutions.emmimanager.web.rest.admin.configuration.CasSecu
  * Allows us to save the query string and retrieve it later.
  * The query string has the originally requested URL in it as a parameter.
  */
-public class SavedUrlServiceAuthenticationDetails implements ServiceAuthenticationDetails {
+public class SavedUrlServiceAuthenticationDetails implements ServiceAuthenticationDetails, HttpProxyAwareAuthenticationDetails {
 
+    private final HttpProxyAwareAuthenticationDetails proxyAwareAuthenticationDetails;
     private String redirectUrl;
     private String serviceUrl;
     private String encodedRedirectUrl;
@@ -44,6 +47,7 @@ public class SavedUrlServiceAuthenticationDetails implements ServiceAuthenticati
             // no redirect url, use straight up service url
             this.serviceUrl = serviceUrl;
         }
+        proxyAwareAuthenticationDetails = new HttpProxyAwareAuthenticationDetailsImpl(request);
     }
 
     public String getRedirectUrl() {
@@ -58,16 +62,28 @@ public class SavedUrlServiceAuthenticationDetails implements ServiceAuthenticati
     private Map<String, String> splitQuery(HttpServletRequest request) {
         Map<String, String> query_pairs = new LinkedHashMap<>();
         String query = request.getQueryString();
-        String[] pairs = query.split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
-            try {
-                query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"),
-                        URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                // no-op
+        if (StringUtils.isNotBlank(query)) {
+            String[] pairs = query.split("&");
+            for (String pair : pairs) {
+                int idx = pair.indexOf("=");
+                try {
+                    query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"),
+                            URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    // no-op
+                }
             }
         }
         return query_pairs;
+    }
+
+    @Override
+    public String getIp() {
+        return proxyAwareAuthenticationDetails.getIp();
+    }
+
+    @Override
+    public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
+        return proxyAwareAuthenticationDetails.checkBoundaries(lowerBoundary, upperBoundary);
     }
 }
