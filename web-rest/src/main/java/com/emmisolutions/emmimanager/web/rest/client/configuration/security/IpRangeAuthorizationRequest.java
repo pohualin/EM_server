@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.IpRestrictConfigurationService;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.HttpProxyAwareAuthenticationDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;

@@ -1,11 +1,11 @@
-package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
+package com.emmisolutions.emmimanager.web.rest.client.configuration.audit;
 
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Pattern;
 
-import static com.emmisolutions.emmimanager.web.rest.client.configuration.security.HttpProxyAwareAuthenticationDetails.RANGES.*;
+import static com.emmisolutions.emmimanager.web.rest.client.configuration.audit.HttpProxyAwareAuthenticationDetails.RANGES.*;
 
 
 /**

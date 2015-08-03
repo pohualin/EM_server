@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.model.audit.login;
+package com.emmisolutions.emmimanager.model.audit.logout;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -7,12 +7,12 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * A login attempt status
+ * A logout source.. the trigger for the logout
  */
 @Entity
-@Table(name = "users_login_attempt_status")
+@Table(name = "users_logout_source")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LoginAttemptStatus implements Serializable {
+public class LogoutSource implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class LoginAttemptStatus implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
-    private LoginAttemptStatusName name;
+    private LogoutSourceName name;
 
     public Long getId() {
         return id;
@@ -30,11 +30,11 @@ public class LoginAttemptStatus implements Serializable {
         this.id = id;
     }
 
-    public LoginAttemptStatusName getName() {
+    public LogoutSourceName getName() {
         return name;
     }
 
-    public void setName(LoginAttemptStatusName name) {
+    public void setName(LogoutSourceName name) {
         this.name = name;
     }
 
@@ -42,7 +42,7 @@ public class LoginAttemptStatus implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LoginAttemptStatus that = (LoginAttemptStatus) o;
+        LogoutSource that = (LogoutSource) o;
         return Objects.equals(id, that.id);
     }
 
@@ -53,7 +53,7 @@ public class LoginAttemptStatus implements Serializable {
 
     @Override
     public String toString() {
-        return "LoginAttemptStatus{" +
+        return "LogoutSource{" +
                 "id=" + id +
                 ", name=" + name +
                 '}';

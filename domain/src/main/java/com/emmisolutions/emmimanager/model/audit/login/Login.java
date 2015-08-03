@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * A login attempt by a user
+ * A login record
  */
 @Entity
-@Table(name = "users_login_attempt")
+@Table(name = "users_login")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LoginAttempt implements Serializable {
+public class Login implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +30,13 @@ public class LoginAttempt implements Serializable {
     private String ipAddress;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "users_login_attempt_status_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_users_login_attempt_users_login_attempt_status"))
-    private LoginAttemptStatus status;
+    @JoinColumn(name = "users_login_status_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_users_login_users_login_status"))
+    private LoginStatus status;
 
     @ManyToOne
     @JoinColumn(name = "user_id",
-            foreignKey = @ForeignKey(name = "fk_users_login_attempt_users"))
+            foreignKey = @ForeignKey(name = "fk_users_login_users"))
     private User user;
 
     @NotNull
@@ -67,11 +67,11 @@ public class LoginAttempt implements Serializable {
         this.ipAddress = ipAddress;
     }
 
-    public LoginAttemptStatus getStatus() {
+    public LoginStatus getStatus() {
         return status;
     }
 
-    public void setStatus(LoginAttemptStatus status) {
+    public void setStatus(LoginStatus status) {
         this.status = status;
     }
 
@@ -95,7 +95,7 @@ public class LoginAttempt implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LoginAttempt that = (LoginAttempt) o;
+        Login that = (Login) o;
         return Objects.equals(id, that.id);
     }
 
@@ -106,7 +106,7 @@ public class LoginAttempt implements Serializable {
 
     @Override
     public String toString() {
-        return "LoginAttempt{" +
+        return "Login{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +

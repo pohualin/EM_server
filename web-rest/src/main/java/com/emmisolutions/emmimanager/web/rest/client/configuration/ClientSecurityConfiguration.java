@@ -10,10 +10,10 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeni
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.ProxyAwareWebAuthenticationDetailsSource;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.client.configuration.security.ProxyAwareWebAuthenticationDetailsSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +51,8 @@ import static com.emmisolutions.emmimanager.web.rest.client.configuration.Impers
 @Configuration
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.web.rest.admin.security",
-        "com.emmisolutions.emmimanager.web.rest.client.configuration.security"
+        "com.emmisolutions.emmimanager.web.rest.client.configuration.security",
+        "com.emmisolutions.emmimanager.web.rest.client.configuration.audit"
 })
 @EnableWebSecurity
 @Order(200)

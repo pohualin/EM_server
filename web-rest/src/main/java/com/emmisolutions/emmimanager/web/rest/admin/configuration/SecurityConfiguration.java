@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeni
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.ProxyAwareWebAuthenticationDetailsSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -107,7 +108,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         rootTokenBasedRememberMeServices.setAlwaysRemember(true);
         rootTokenBasedRememberMeServices.setParameter("remember-me");
         rootTokenBasedRememberMeServices.setCookieName(AUTHENTICATION_TOKEN_NAME);
+        rootTokenBasedRememberMeServices.setAuthenticationDetailsSource(authenticationDetailsSource());
         return rootTokenBasedRememberMeServices;
+    }
+
+    /**
+     * The authentication details source knows how to read the proxied
+     * ipv4 address properly.
+     *
+     * @return the ProxyAwareWebAuthenticationDetailsSource
+     */
+    @Bean
+    public ProxyAwareWebAuthenticationDetailsSource authenticationDetailsSource() {
+        return new ProxyAwareWebAuthenticationDetailsSource();
     }
 
     /**
