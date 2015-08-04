@@ -1,6 +1,5 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.Language;
 import com.emmisolutions.emmimanager.model.PatientIdLabelType;
 import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
 import com.emmisolutions.emmimanager.model.Strings;
@@ -56,16 +55,6 @@ public class PatientSelfRegConfigurationPersistenceImpl implements
     @Override
     public Collection<PatientIdLabelType> getAllPatientIdLabelTypes() {
         return patientIdLabelTypeRepository.findAll();
-    }
-
-    @Override
-    public Strings findByLanguageAndString(Language language, String string) {
-        return stringsRepository.findByLanguageAndKey(language, string);
-    }
-
-    @Override
-    public PatientIdLabelType reloadPatientIdLabelType(PatientIdLabelType patientIdLabelType) {
-        return patientIdLabelTypeRepository.findOne(patientIdLabelType.getId());
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.emmisolutions.emmimanager.service.spring;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.InfoHeaderConfigService;
-import com.emmisolutions.emmimanager.service.PatientIdLabelConfigService;
 import com.emmisolutions.emmimanager.service.PatientSelfRegConfigurationService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 /**
- * An integration test for PatientSelfRegConfigurationServiceImpl
+ * An integration test for InfoHeaderConfigService
  */
 public class InfoHeaderConfigServiceIntegrationTest extends
         BaseIntegrationTest {
@@ -28,13 +27,10 @@ public class InfoHeaderConfigServiceIntegrationTest extends
     InfoHeaderConfigService infoHeaderConfigService;
 
     @Resource
-    PatientIdLabelConfigService patientIdLabelConfigService;
-
-    @Resource
     PatientSelfRegConfigurationService patientSelfRegConfigurationService;
 
     @Test
-    public void testSaveLabels() {
+    public void testInfoHeaderConfigService() {
         Client client = makeNewRandomClient();
         Team team = makeNewRandomTeam(client);
         PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
@@ -65,36 +61,10 @@ public class InfoHeaderConfigServiceIntegrationTest extends
 
         Page<InfoHeaderConfig> configPageOnePerPage = infoHeaderConfigService.list(new PageRequest(0, 1, Sort.Direction.ASC, "id"), infoHeaderConfigSearchFilter);
         assertFalse("configPage found is not null:", configPageOnePerPage.getContent().isEmpty());
-
-        PatientIdLabelConfig patientIdLabelConfig = new PatientIdLabelConfig();
-        patientIdLabelConfig.setLanguage(english);
-        patientIdLabelConfig.setValue(RandomStringUtils.randomAlphabetic(10));
-        patientIdLabelConfig.setPatientSelfRegConfig(patientSelfRegConfigCreated);
-//        patientIdLabelConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_MEMBER_ID);
-        PatientIdLabelConfig savedPatientIdLabelConfig = patientIdLabelConfigService.create(patientIdLabelConfig);
-        assertThat("PatientIdLabelConfig was saved for the given patient self reg config:", savedPatientIdLabelConfig, is(patientIdLabelConfigService.reload(savedPatientIdLabelConfig)));
-
-        savedPatientIdLabelConfig.setValue("update patient id label value");
-        PatientIdLabelConfig updatedPatientIdLabelConfig = patientIdLabelConfigService.update(savedPatientIdLabelConfig);
-        assertThat("PatientIdLabelConfig was updated for the given patient self reg config:", updatedPatientIdLabelConfig, is(patientIdLabelConfigService.reload(updatedPatientIdLabelConfig)));
-
-        PatientIdLabelConfigSearchFilter patientIdLabelConfigSearchFilter = new PatientIdLabelConfigSearchFilter(patientSelfRegConfigCreated);
-        Page<PatientIdLabelConfig> patientIdLabelConfigs = patientIdLabelConfigService.list(null, patientIdLabelConfigSearchFilter);
-
-        assertFalse("configPage found is not null:", patientIdLabelConfigs.getContent().isEmpty());
-        assertThat("configPage found is not null:", patientIdLabelConfigs.getContent().iterator().next().getPatientSelfRegConfig().getId(), is(patientSelfRegConfigCreated.getId()));
-
-        Page<PatientIdLabelConfig> page = patientIdLabelConfigService.list(new PageRequest(0, 1, Sort.Direction.ASC, "id"), patientIdLabelConfigSearchFilter);
-        assertFalse("configPage found is not null:", page.getContent().isEmpty());
-
     }
 
     @Test
     public void testUnsavedReload() {
-        PatientIdLabelConfig patientIdLabelConfig = new PatientIdLabelConfig();
-        PatientIdLabelConfig reloadedPatientIdLabelConfig = patientIdLabelConfigService.reload(patientIdLabelConfig);
-        assertThat("reloaded is null", reloadedPatientIdLabelConfig, is(nullValue()));
-
         InfoHeaderConfig infoHeaderConfig = new InfoHeaderConfig();
         InfoHeaderConfig reloadedInfoHeaderConfig = infoHeaderConfigService.reload(infoHeaderConfig);
         assertThat("reloaded is null", reloadedInfoHeaderConfig, is(nullValue()));
@@ -102,16 +72,8 @@ public class InfoHeaderConfigServiceIntegrationTest extends
 
     @Test
     public void testNullReload() {
-        PatientIdLabelConfig reloadedPatientIdLabelConfig = patientIdLabelConfigService.reload(null);
-        assertThat("reloaded is null", reloadedPatientIdLabelConfig, is(nullValue()));
-
         InfoHeaderConfig reloadedInfoHeaderConfig = infoHeaderConfigService.reload(null);
         assertThat("reloaded is null", reloadedInfoHeaderConfig, is(nullValue()));
-    }
-
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadSaveIdLabel() {
-        patientIdLabelConfigService.create(null);
     }
 
     @Test(expected = InvalidDataAccessApiUsageException.class)
@@ -124,8 +86,4 @@ public class InfoHeaderConfigServiceIntegrationTest extends
         infoHeaderConfigService.update(null);
     }
 
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testBadUpdateIdLabel() {
-        patientIdLabelConfigService.update(null);
-    }
 }

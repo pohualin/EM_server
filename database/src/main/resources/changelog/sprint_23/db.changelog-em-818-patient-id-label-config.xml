@@ -12,9 +12,7 @@
             <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patient_id_label_config"/>
             </column>
-            <column name="created_by" type="nvarchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="created_by" type="bigint"/>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
                 <constraints nullable="false"/>
             </column>
@@ -68,6 +66,12 @@
                                  referencedTableName="patient_self_reg_config"
                                  referencedColumnNames="id"/>
 
+        <addForeignKeyConstraint baseTableName="patient_id_label_config"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_patient_id_label_config_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
         <createIndex indexName="ix_patient_id_label_config_id_label_type_id"
                      tableName="patient_id_label_config">
             <column name="id_label_type" type="bigint"/>
@@ -86,6 +90,11 @@
         <createIndex indexName="ix_patient_id_label_config_audit_revision"
                      tableName="patient_id_label_config_audit">
             <column name="revision" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_id_label_config_created_by"
+                     tableName="patient_id_label_config">
+            <column name="created_by" type="bigint"/>
         </createIndex>
 
         <addUniqueConstraint tableName="patient_id_label_config" columnNames="language_id, patient_self_reg_config_id, id_label_type"

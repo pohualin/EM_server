@@ -1,21 +1,14 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
-import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
-import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.persistence.ClientTeamSelfRegConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.PatientSelfRegConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
-import com.emmisolutions.emmimanager.persistence.repo.InfoHeaderConfigRepository;
-import com.emmisolutions.emmimanager.persistence.repo.LanguageRepository;
-import com.emmisolutions.emmimanager.persistence.repo.PatientIdLabelConfigRepository;
-import org.apache.commons.lang3.RandomStringUtils;
+import com.emmisolutions.emmimanager.persistence.*;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
 /**
@@ -34,13 +27,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
     PatientSelfRegConfigurationPersistence patientSelfRegConfigurationPersistence;
 
     @Resource
-    LanguageRepository languageRepository;
-
-    @Resource
-    InfoHeaderConfigRepository infoHeaderConfigRepository;
-
-    @Resource
-    PatientIdLabelConfigRepository patientIdLabelConfigRepository;
+    LanguagePersistence languagePersistence;
 
     /**
      * Test CRUD
@@ -68,7 +55,6 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposeId(true);
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
-        patientSelfRegConfig.setCreatedBy(new UserAdmin(1l));
         patientSelfRegConfig.setTeam(teamPersistence.reload(team));
         PatientSelfRegConfig saved = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
         assertThat("patient self registration configuration was reloaded:", saved, is(patientSelfRegConfigurationPersistence.reload(saved.getId())));
@@ -85,7 +71,6 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposeId(true);
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
-        patientSelfRegConfig.setCreatedBy(new UserAdmin(1l));
         patientSelfRegConfig.setTeam(teamPersistence.reload(team));
         PatientSelfRegConfig saved = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
 
@@ -103,33 +88,25 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         assertTrue(saved.isExposePhone());
     }
 
+    @Test
+    public void testListLanguages() {
+        Page<Language> languagePage = languagePersistence.list(null);
+        assertFalse("languages exist:", languagePage.getContent().isEmpty());
+    }
 
     @Test
-    public void testSaveLabels() {
-        Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam(client);
-        PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
-        patientSelfRegConfig.setTeam(team);
-        patientSelfRegConfig.setCreatedBy(new UserAdmin(1l));
-        PatientSelfRegConfig created = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
-        assertThat("patient self registration configuration was created:", created.getId(), is(notNullValue()));
-
-        Language english = languageRepository.findOne(1l);
-
-        InfoHeaderConfig infoHeaderConfig = new InfoHeaderConfig();
-        infoHeaderConfig.setPatientSelfRegConfig(created);
-        infoHeaderConfig.setLanguage(english);
-        infoHeaderConfig.setValue(RandomStringUtils.randomAlphabetic(10));
-        InfoHeaderConfig saved = infoHeaderConfigRepository.save(infoHeaderConfig);
-
-        assertThat("InfoHeaderConfig was saved for the given patient self reg config:", saved.getId(), is(notNullValue()));
-
-        PatientIdLabelConfig patientIdLabelConfig = new PatientIdLabelConfig();
-        patientIdLabelConfig.setLanguage(english);
-        patientIdLabelConfig.setValue(RandomStringUtils.randomAlphabetic(10));
-        patientIdLabelConfig.setPatientSelfRegConfig(created);
-//        patientIdLabelConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_MEMBER_ID);
-        PatientIdLabelConfig savedPatientIdLabelConfig = patientIdLabelConfigRepository.save(patientIdLabelConfig);
-        assertThat("PatientIdLabelConfig was saved for the given patient self reg config:", savedPatientIdLabelConfig.getId(), is(notNullValue()));
+    public void testGetAllPatientIdLabelTypes() {
+        Collection<PatientIdLabelType> types = patientSelfRegConfigurationPersistence.getAllPatientIdLabelTypes();
+        assertFalse("languages exist:", types.isEmpty());
+        assertThat("There are currently 5 patient id types", types.size(), is(5));
     }
+
+    @Test
+    public void testTranslations() {
+        Collection<PatientIdLabelType> types = patientSelfRegConfigurationPersistence.getAllPatientIdLabelTypes();
+        PatientIdLabelType patientIdLabelType = types.iterator().next();
+        Page<Strings> strings = patientSelfRegConfigurationPersistence.findByString(patientIdLabelType.getTypeKey(), null);
+        assertFalse("translation is not null", strings.getContent().isEmpty());
+    }
+
 }

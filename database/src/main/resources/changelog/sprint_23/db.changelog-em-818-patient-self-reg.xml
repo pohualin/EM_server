@@ -13,9 +13,7 @@
             <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patient_self_reg_config"/>
             </column>
-            <column name="created_by" type="nvarchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="created_by" type="bigint"/>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
                 <constraints nullable="false"/>
             </column>
@@ -95,6 +93,12 @@
                                  referencedTableName="client_team"
                                  referencedColumnNames="id"/>
 
+        <addForeignKeyConstraint baseTableName="patient_self_reg_config"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_patient_self_reg_config_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
         <createIndex indexName="ix_patient_self_reg_config_client_team_team_id"
                      tableName="patient_self_reg_config">
             <column name="team_id" type="BIGINT"/>
@@ -103,6 +107,11 @@
         <createIndex indexName="ix_patient_self_reg_config_revision"
                      tableName="patient_self_reg_config_audit">
             <column name="revision" type="BIGINT"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_self_reg_config_created_by"
+                     tableName="patient_self_reg_config">
+            <column name="created_by" type="bigint"/>
         </createIndex>
     </changeSet>
 

@@ -13,9 +13,7 @@
             <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_info_header_config"/>
             </column>
-            <column name="created_by" type="nvarchar(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="created_by" type="bigint"/>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
                 <constraints nullable="false"/>
             </column>
@@ -65,6 +63,12 @@
                                  referencedTableName="patient_self_reg_config"
                                  referencedColumnNames="id"/>
 
+        <addForeignKeyConstraint baseTableName="info_header_config"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_info_header_config_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
         <createIndex indexName="ix_info_header_config_audit_revision"
                      tableName="info_header_config_audit">
             <column name="revision" type="bigint"/>
@@ -78,6 +82,11 @@
         <createIndex indexName="ix_info_header_config_patient_self_reg_config_id"
                      tableName="info_header_config">
             <column name="patient_self_reg_config_id" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_info_header_config_created_by"
+                     tableName="info_header_config">
+            <column name="created_by" type="bigint"/>
         </createIndex>
 
         <addUniqueConstraint tableName="info_header_config" columnNames="language_id, patient_self_reg_config_id"
