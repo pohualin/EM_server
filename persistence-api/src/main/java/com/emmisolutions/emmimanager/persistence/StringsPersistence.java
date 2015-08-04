@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import com.emmisolutions.emmimanager.model.Language;
 import com.emmisolutions.emmimanager.model.Strings;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -19,4 +20,7 @@ public interface StringsPersistence {
      */
     @Cacheable("fetchAllStringsByLocale")
     List<Strings> fetchAllStrings(Locale locale);
+
+    Strings findByLanguageAndString(Language language, String string);
+
 }

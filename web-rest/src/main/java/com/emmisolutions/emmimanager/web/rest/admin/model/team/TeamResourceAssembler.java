@@ -23,7 +23,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
                         new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM)));
         return new Link(uriTemplate, link.getRel());
     }
-    
+
     @Override
     public TeamResource toResource(Team entity) {
         TeamResource ret = new TeamResource();
@@ -36,7 +36,7 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
         ret.add(linkTo(methodOn(ClientTeamPhoneConfigurationsResource.class).findTeamPhoneConfig(entity.getId(), null)).withRel("teamPhoneConfig"));
         ret.add(linkTo(methodOn(ClientTeamSchedulingConfigurationsResource.class).findTeamSchedulingConfig(entity.getId(), null)).withRel("teamSchedulingConfig"));
         ret.add(linkTo(methodOn(ClientTeamSelfRegConfigurationsResource.class).findByTeam(entity.getId(), null)).withRel("selfRegConfig"));
-
+        ret.add(linkTo(methodOn(PatientSelfRegConfigurationsResource.class).findByTeam(entity.getId(), null)).withRel("patientSelfRegConfig"));
         ret.add(addPageSizeAndSort(
                 linkTo(methodOn(TeamTagsResource.class).list(entity.getId(), null, null)).withRel("tags")));
 
@@ -54,7 +54,9 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
                 methodOn(TeamLocationsResource.class)
                         .associateAllClientLocationsExcept(entity.getId(), null))
                 .withRel("associateAllClientLocationsExcept"));
+//        ret.add(createTranslationsLink(entity));
         ret.setEntity(entity);
+
         return ret;
     }
 
@@ -67,5 +69,17 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
         return new Link(uriTemplate, toAugment.getRel());
     }
 
+    //dont really need team id except to verify permissions
+    public static Link createTranslationsLink() {
+        Link link = linkTo(
+                methodOn(PatientSelfRegConfigurationsResource.class).findByString(
+                        null, null, null)).withRel(
+                "translations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("key", TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
 
 }

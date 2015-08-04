@@ -76,6 +76,10 @@
         <class>com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamSchedulingConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.PatientSelfRegConfig</class>
+        <class>com.emmisolutions.emmimanager.model.InfoHeaderConfig</class>
+        <class>com.emmisolutions.emmimanager.model.PatientIdLabelConfig</class>
+        <class>com.emmisolutions.emmimanager.model.PatientIdLabelType</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>

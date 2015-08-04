@@ -246,4 +246,14 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_24/db.changelog-em-1473.xml"/>
 
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-translations.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-self-reg.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-id-label-types.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-info-header.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-id-label-config.xml"/>
+
 </databaseChangeLog>

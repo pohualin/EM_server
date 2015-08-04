@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="patient_self_reg_config_tables" author="Amrita">
+
+        <createTable tableName="patient_self_reg_config">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_patient_self_reg_config"/>
+            </column>
+            <column name="created_by" type="nvarchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="require_phone" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_dob" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_dob" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_email" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_email" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_id" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_name" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expose_phone" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_id" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_name" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="team_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient_id_label_type_id" type="bigint"/>
+        </createTable>
+        <!--patient_id_label_type_id int8,-->
+
+        <createTable tableName="patient_self_reg_config_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="require_phone" type="boolean"/>
+            <column name="expose_dob" type="boolean"/>
+            <column name="require_dob" type="boolean"/>
+            <column name="expose_email" type="boolean"/>
+            <column name="require_email" type="boolean"/>
+            <column name="expose_id" type="boolean"/>
+            <column name="expose_name" type="boolean"/>
+            <column name="expose_phone" type="boolean"/>
+            <column name="require_id" type="boolean"/>
+            <column name="require_name" type="boolean"/>
+            <column name="team_id" type="bigint"/>
+            <column name="patient_id_label_type_id" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="patient_self_reg_config_audit" columnNames="id, revision"
+                       constraintName="pk_patient_self_reg_config_audit"/>
+
+        <addForeignKeyConstraint baseTableName="patient_self_reg_config_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_patient_self_reg_config_audit_revision"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+
+        <addForeignKeyConstraint baseTableName="patient_self_reg_config"
+                                 baseColumnNames="team_id"
+                                 constraintName="fk_patient_self_reg_config_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>
+
+        <createIndex indexName="ix_patient_self_reg_config_client_team_team_id"
+                     tableName="patient_self_reg_config">
+            <column name="team_id" type="BIGINT"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_self_reg_config_revision"
+                     tableName="patient_self_reg_config_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">
+        <addColumn tableName="patient_self_reg_config">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="patient_self_reg_config_audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
