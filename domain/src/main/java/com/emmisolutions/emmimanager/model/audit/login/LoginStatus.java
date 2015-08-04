@@ -22,6 +22,18 @@ public class LoginStatus implements Serializable {
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
     private LoginStatusName name;
 
+    public LoginStatus() {
+    }
+
+    /**
+     * Create by id
+     *
+     * @param id of the status
+     */
+    public LoginStatus(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

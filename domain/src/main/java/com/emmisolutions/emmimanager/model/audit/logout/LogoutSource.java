@@ -22,6 +22,13 @@ public class LogoutSource implements Serializable {
     @Column(length = 100, columnDefinition = "varchar(100)", nullable = false)
     private LogoutSourceName name;
 
+    public LogoutSource() {
+    }
+
+    public LogoutSource(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

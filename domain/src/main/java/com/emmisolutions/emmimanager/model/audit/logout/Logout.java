@@ -1,12 +1,12 @@
 package com.emmisolutions.emmimanager.model.audit.logout;
 
 import com.emmisolutions.emmimanager.model.user.User;
+import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import java.time.LocalDateTime;
 
 /**
  * A user logout record
@@ -30,13 +30,13 @@ public class Logout {
     private LogoutSource source;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",
-            foreignKey = @ForeignKey(name = "fk_users_logout_users"))
+    @JoinColumn(name = "users_id",
+            foreignKey = @ForeignKey(name = "fk_users_logout_users"), nullable = false)
     private User user;
 
     @NotNull
     @Column(name = "timestamp_utc", columnDefinition = "timestamp", nullable = false)
-    private LocalDateTime time;
+    private DateTime time;
 
     public Long getId() {
         return id;
@@ -70,11 +70,11 @@ public class Logout {
         this.user = user;
     }
 
-    public LocalDateTime getTime() {
+    public DateTime getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(DateTime time) {
         this.time = time;
     }
 }

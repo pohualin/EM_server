@@ -1,13 +1,13 @@
 package com.emmisolutions.emmimanager.model.audit.login;
 
 import com.emmisolutions.emmimanager.model.user.User;
+import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -35,13 +35,13 @@ public class Login implements Serializable {
     private LoginStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",
+    @JoinColumn(name = "users_id",
             foreignKey = @ForeignKey(name = "fk_users_login_users"))
     private User user;
 
     @NotNull
     @Column(name = "timestamp_utc", columnDefinition = "timestamp", nullable = false)
-    private LocalDateTime time;
+    private DateTime time;
 
     public Long getId() {
         return id;
@@ -83,11 +83,11 @@ public class Login implements Serializable {
         this.user = user;
     }
 
-    public LocalDateTime getTime() {
+    public DateTime getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(DateTime time) {
         this.time = time;
     }
 
