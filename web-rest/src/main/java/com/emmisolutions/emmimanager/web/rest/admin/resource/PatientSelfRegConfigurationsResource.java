@@ -179,8 +179,9 @@ public class PatientSelfRegConfigurationsResource {
     }
 
     /**
-     * finds a page of stringsresource by given keypath
-     * @param key the search specification
+     * Finds a page of stringsresource by given keypath
+     *
+     * @param key       the search specification
      * @param assembler
      * @param pageable
      * @return a page of stringsresource

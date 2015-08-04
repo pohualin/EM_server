@@ -34,6 +34,14 @@ public class InfoHeaderConfigsResource {
     @Resource
     InfoHeaderConfigAssembler infoHeaderConfigAssembler;
 
+    /**
+     * GET to list all info header configs for a given patient self reg config
+     *
+     * @param pageable
+     * @param assembler
+     * @param patientSelfRegConfigId
+     * @return infoHeaderConfigPage
+     */
     @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/info_header_config", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
@@ -57,6 +65,13 @@ public class InfoHeaderConfigsResource {
         }
     }
 
+    /**
+     * POST to save a given info header config
+     *
+     * @param patientSelfRegConfigId
+     * @param infoHeaderConfig       to save
+     * @return infoHeaderConfigResource
+     */
     @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/info_header_config", method = RequestMethod.POST)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<InfoHeaderConfigResource> save(
@@ -75,6 +90,13 @@ public class InfoHeaderConfigsResource {
         }
     }
 
+    /**
+     * PUT to update a given info header config
+     *
+     * @param patientSelfRegConfigId
+     * @param infoHeaderConfig
+     * @return infoHeaderConfigResource
+     */
     @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/info_header_config", method = RequestMethod.PUT)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<InfoHeaderConfigResource> update(
