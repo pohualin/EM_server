@@ -121,10 +121,10 @@ public class SchedulesResource {
                                                              @RequestBody ScheduledProgram toBeScheduled) {
 
         // caller has permission to schedule programs for the client and team
-        Team securedTeam = new Team(teamId);
+    	Team securedTeam = new Team(teamId);
         securedTeam.setClient(new Client(clientId));
         toBeScheduled.setTeam(securedTeam);
-
+       
         // schedule program
         ScheduledProgram scheduledProgram = scheduleService.schedule(toBeScheduled);
         if (scheduledProgram != null) {

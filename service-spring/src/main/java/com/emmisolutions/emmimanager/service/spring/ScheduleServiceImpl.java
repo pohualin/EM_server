@@ -2,11 +2,13 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
+import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.*;
+import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
@@ -48,6 +50,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Resource
     SchedulePersistence schedulePersistence;
+    
+    @Resource
+    ClientTeamSchedulingConfigurationService teamSchedulingConfigurationService;
     
     @Resource
     ClientTeamPhoneConfigurationPersistence clientTeamPhoneConfigurationPersistence;
@@ -121,8 +126,13 @@ public class ScheduleServiceImpl implements ScheduleService {
                 !scheduledProgram.getTeam().getClient().equals(scheduledProgram.getPatient().getClient())) {
             throw new InvalidDataAccessApiUsageException("Cannot schedule program for patient and team on different clients.");
         }
-        scheduledProgram.setLocation(locationPersistence.reload(scheduledProgram.getLocation()));
-        scheduledProgram.setProvider(providerPersistence.reload(scheduledProgram.getProvider()));
+        ClientTeamSchedulingConfiguration schedulingConfig = teamSchedulingConfigurationService.findByTeam(scheduledProgram.getTeam());
+        if(schedulingConfig.isUseLocation()){
+        	scheduledProgram.setLocation(locationPersistence.reload(scheduledProgram.getLocation()));
+        }
+        if(schedulingConfig.isUseProvider()){
+        	scheduledProgram.setProvider(providerPersistence.reload(scheduledProgram.getProvider()));
+        }
     }
 
     private void validateViewByDate(ScheduledProgram scheduledProgram) {
