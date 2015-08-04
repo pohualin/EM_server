@@ -55,8 +55,8 @@ public class Provider extends AbstractAuditingEntity implements Serializable {
 	@Column(length = 100)
 	private String email;
 
-	@ManyToOne
-	@JoinColumn(name = "provider_specialty")
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "provider_specialty", nullable=true)
 	private ProviderSpecialty specialty;
 
 

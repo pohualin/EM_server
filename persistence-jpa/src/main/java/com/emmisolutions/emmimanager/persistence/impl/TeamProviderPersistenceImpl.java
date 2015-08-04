@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.annotations.QueryHints;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -121,5 +122,14 @@ public class TeamProviderPersistenceImpl implements TeamProviderPersistence {
             return new ArrayList<>();
         }
         return teamProviderRepository.findByTeamIdAndProviderIn(teamId, matchedProviders.getContent());
+    }
+
+    @Override
+    public TeamProvider findTeamProviderByTeamAndProvider(Long teamId,
+            Long providerId) {
+        if(teamId == null || providerId == null){
+            throw new InvalidDataAccessApiUsageException("team id and provider id are required");
+        }
+        return teamProviderRepository.findByTeamIdAndProviderId(teamId, providerId);
     }
 }

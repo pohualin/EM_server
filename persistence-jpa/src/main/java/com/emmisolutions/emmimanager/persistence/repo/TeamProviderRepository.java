@@ -68,4 +68,15 @@ public interface TeamProviderRepository extends JpaRepository<TeamProvider, Long
      * @return a List of TeamProvider objects
      */
     List<TeamProvider> findByTeamIdAndProviderIn(Long teamId, Collection<Provider> providers);
+    
+    /**
+     * Find TeamProvider by team id and provider id
+     * 
+     * @param teamId
+     *            to use
+     * @param providerId
+     *            to use
+     * @return an existing TeamProvider or null
+     */
+    TeamProvider findByTeamIdAndProviderId(Long teamId, Long providerId);
 }

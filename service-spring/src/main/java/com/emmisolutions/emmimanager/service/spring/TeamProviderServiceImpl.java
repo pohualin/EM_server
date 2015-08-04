@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientLocation;
 import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.Location;
 import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
 import com.emmisolutions.emmimanager.model.Team;
@@ -25,6 +27,8 @@ import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProviderTeamLocationSaveRequest;
+import com.emmisolutions.emmimanager.persistence.ClientProviderPersistence;
+import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamProviderTeamLocationPersistence;
 import com.emmisolutions.emmimanager.service.ClientProviderService;
@@ -64,6 +68,12 @@ public class TeamProviderServiceImpl implements TeamProviderService {
 
     @Resource
     TeamProviderTeamLocationPersistence teamProviderTeamLocationPersistence;
+    
+    @Resource
+    TeamPersistence teamPersistence;
+    
+    @Resource
+    ClientProviderPersistence clientProviderPersistence;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -219,6 +229,77 @@ public class TeamProviderServiceImpl implements TeamProviderService {
         	teamProviders.add(alreadyAssociated != null ? alreadyAssociated : new TeamProvider(null, matchingProvider));
         }
         return new PageImpl<>(teamProviders, pageable, matchedProviders.getTotalElements());
+    }
+	
+    @Override
+    @Transactional
+    public Set<TeamProvider> associateAllClientProvidersExcept(Team team,
+            Set<Long> excludeSet) {
+        Set<TeamProvider> added = new HashSet<TeamProvider>();
+        team = teamPersistence.reload(team);
+
+        Page<ClientProvider> page = null;
+        Pageable pageable = null;
+        do {
+            if (page != null) {
+                pageable = page.nextPageable();
+            }
+            // Find a page of ClientLocation to use
+            page = clientProviderPersistence.findByClientId(team.getClient()
+                    .getId(), pageable);
+
+            if (page.hasContent()) {
+                for (ClientProvider clientProvider : page.getContent()) {
+                    // if provider id is not in exclusion set
+                    if (!excludeSet.contains(clientProvider.getProvider()
+                            .getId())) {
+                        // TeamProvider association does not exist
+                        if (teamProviderPersistence
+                                .findTeamProviderByTeamAndProvider(
+                                        team.getId(), clientProvider
+                                                .getProvider().getId()) == null) {
+                            Provider provider = providerService
+                                    .reload(new Provider(clientProvider
+                                            .getProvider().getId()));
+                            // Associate Team with Provider
+                            added.add(teamProviderPersistence
+                                    .save(new TeamProvider(team, provider)));
+                        }
+                    }
+                }
+            }
+        } while (page.hasNext());
+        return added;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TeamProvider> findPossibleClientProvidersToAdd(Team team,
+            Pageable pageable) {
+        Team toFindPossible = teamPersistence.reload(team);
+        if (toFindPossible == null) {
+            throw new InvalidDataAccessApiUsageException("Team cannot be null");
+        }
+
+        // find matching ClientProviders
+        Page<ClientProvider> potentials = clientProviderPersistence
+                .findByClientId(toFindPossible.getClient().getId(), pageable);
+
+        // find TeamProviders for the page of ClientProviders
+        List<TeamProvider> teamProviders = new ArrayList<>();
+        for (ClientProvider potentialClientProvider : potentials) {
+            TeamProvider foundTeamProvider = teamProviderPersistence
+                    .findTeamProviderByTeamAndProvider(toFindPossible.getId(),
+                            potentialClientProvider.getProvider().getId());
+            if (foundTeamProvider != null) {
+                teamProviders.add(foundTeamProvider);
+            } else {
+                teamProviders.add(new TeamProvider(null,
+                        potentialClientProvider.getProvider()));
+            }
+        }
+        return new PageImpl<>(teamProviders, pageable,
+                potentials.getTotalElements());
     }
 
 }
