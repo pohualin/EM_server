@@ -15,6 +15,4 @@ public interface PatientIdLabelTypeRepository extends JpaRepository<PatientIdLab
     @Override
     @Cacheable(value = "allPatientIdLabelTypes")
     List<PatientIdLabelType> findAll();
-
-//    PatientIdLabelType findByKeyPath(String keyPath);
 }

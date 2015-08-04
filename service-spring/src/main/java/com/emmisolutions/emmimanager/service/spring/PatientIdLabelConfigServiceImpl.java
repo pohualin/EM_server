@@ -4,9 +4,7 @@ import com.emmisolutions.emmimanager.model.PatientIdLabelConfig;
 import com.emmisolutions.emmimanager.model.PatientIdLabelConfigSearchFilter;
 import com.emmisolutions.emmimanager.persistence.PatientIdLabelConfigPersistence;
 import com.emmisolutions.emmimanager.persistence.PatientSelfRegConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.TeamPersistence;
 import com.emmisolutions.emmimanager.service.PatientIdLabelConfigService;
-import com.emmisolutions.emmimanager.service.TeamService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,8 +45,6 @@ public class PatientIdLabelConfigServiceImpl implements
     @Transactional
     public PatientIdLabelConfig update(
             PatientIdLabelConfig patientIdLabelConfig) {
-
-//        PatientIdLabelConfig reloadedPatientIdLabelConfig = patientIdLabelConfigPersistence.reload(patientIdLabelConfig);
 
         if (patientIdLabelConfig == null || patientIdLabelConfig.getId() == null || patientIdLabelConfig.getVersion() == null) {
             throw new InvalidDataAccessApiUsageException(

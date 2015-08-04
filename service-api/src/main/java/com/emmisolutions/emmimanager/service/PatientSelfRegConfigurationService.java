@@ -53,10 +53,20 @@ public interface PatientSelfRegConfigurationService {
      */
     Page<Language> findAllAvailableLanguages(Pageable page);
 
+    /**
+     * returns a collection of patient id label types for reference data
+     *
+     * @return a collection of patient id label types
+     */
     Collection<PatientIdLabelType> getAllPatientIdLabelTypes();
 
-    Strings findByLanguageAndString(Language language, PatientIdLabelType type);
-
+    /**
+     * returns strings for given key
+     *
+     * @param key  to search on
+     * @param page page size
+     * @return a page of strings
+     */
     Page<Strings> findByString(String key, Pageable page);
 
 }

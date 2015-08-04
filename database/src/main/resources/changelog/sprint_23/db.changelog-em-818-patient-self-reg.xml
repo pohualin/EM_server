@@ -57,7 +57,6 @@
             </column>
             <column name="patient_id_label_type_id" type="bigint"/>
         </createTable>
-        <!--patient_id_label_type_id int8,-->
 
         <createTable tableName="patient_self_reg_config_audit">
             <column name="id" type="bigint">

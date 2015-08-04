@@ -11,7 +11,7 @@ import org.springframework.hateoas.PagedResources;
 public class StringsResourcePage extends PagedResource<StringsResource> {
 
     /**
-     * Creates a page of LanguageResource objects for serialization to
+     * Creates a page of StringsResource objects for serialization to
      * the front
      *
      * @param stringsResources
@@ -25,15 +25,4 @@ public class StringsResourcePage extends PagedResource<StringsResource> {
     public StringsResourcePage() {
     }
 
-    /*    *//**
-     * Adds "page" parameter to a given link
-     * @param toAugment
-     * @return
-     *//*
-    public static Link getAllLanguagesLink(Link toAugment) {
-        UriTemplate uriTemplate = new UriTemplate(toAugment.getHref())
-                .with(new TemplateVariables(
-                        new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM)));
-        return new Link(uriTemplate, toAugment.getRel());
-    }*/
 }

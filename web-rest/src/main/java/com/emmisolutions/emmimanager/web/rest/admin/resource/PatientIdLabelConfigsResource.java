@@ -34,6 +34,13 @@ public class PatientIdLabelConfigsResource {
     @Resource
     PatientIdLabelConfigAssembler patientIdLabelConfigAssembler;
 
+    /**
+     * GET for a page of patient id label configuration objects based on search criteria
+     * @param pageable  page size
+     * @param assembler
+     * @param patientSelfRegConfigId
+     * @return a page of patient id label configuration objects
+     */
     @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/patient_id_label", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     @ApiImplicitParams(value = {
@@ -57,6 +64,12 @@ public class PatientIdLabelConfigsResource {
         }
     }
 
+    /**
+     * POST to save a given patient id label config
+     * @param patientSelfRegConfigId
+     * @param patientIdLabelConfig to save
+     * @return patient if label config resource if created, NOT_ACCEPTABLE if errors out
+     */
     @RequestMapping(value = "/patient_self_reg/{patientSelfRegConfigId}/patient_id_label", method = RequestMethod.POST)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<PatientIdLabelConfigResource> save(
@@ -75,14 +88,19 @@ public class PatientIdLabelConfigsResource {
         }
     }
 
+    /**
+     * PUT to update a given patient id label config
+     * @param patientIdLabelConfigId
+     * @param patientSelfRegConfigId
+     * @param patientIdLabelConfig to update
+     * @return a patient id label config resource
+     */
     @RequestMapping(value = "/patient_self_reg_config/{patientSelfRegConfigId}/patient_id_label/{patientIdLabelConfigId}", method = RequestMethod.PUT)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<PatientIdLabelConfigResource> update(
             @PathVariable("patientIdLabelConfigId") Long patientIdLabelConfigId,
             @PathVariable("patientSelfRegConfigId") Long patientSelfRegConfigId,
             @RequestBody PatientIdLabelConfig patientIdLabelConfig) {
-//        patientIdLabelConfig.setPatientSelfRegConfig(new PatientSelfRegConfig(patientSelfRegConfigId));
-//        PatientIdLabelConfig PatientIdLabelConfigToUpdate = new PatientIdLabelConfig();
         patientIdLabelConfig.setPatientSelfRegConfig(new PatientSelfRegConfig(patientSelfRegConfigId));
         PatientIdLabelConfig patientIdLabelConfigUpdated = patientIdLabelConfigService.update(patientIdLabelConfig);
 

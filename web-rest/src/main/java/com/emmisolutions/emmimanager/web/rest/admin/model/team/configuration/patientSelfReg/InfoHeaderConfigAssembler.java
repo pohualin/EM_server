@@ -9,13 +9,13 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * Responsible for creating a GroupResource (which has links) from a Group
+ * Responsible for creating a InfoHeaderConfigResource (which has links) from a InfoHeaderConfig
  */
 @Component
 public class InfoHeaderConfigAssembler implements
-		ResourceAssembler<InfoHeaderConfig, InfoHeaderConfigResource> {
+        ResourceAssembler<InfoHeaderConfig, InfoHeaderConfigResource> {
 
-	@Override
+    @Override
     public InfoHeaderConfigResource toResource(InfoHeaderConfig entity) {
         InfoHeaderConfigResource ret = new InfoHeaderConfigResource();
         ret.setEntity(entity);

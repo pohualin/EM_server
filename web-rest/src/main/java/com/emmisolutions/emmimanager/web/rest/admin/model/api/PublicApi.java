@@ -2,7 +2,10 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.api;
 
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.LanguageResourcePage;
-import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ApiResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.PatientSelfRegConfigurationsResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.UsersResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -63,7 +66,7 @@ public class PublicApi extends ResourceSupport {
             // add location to redirect to after logout
             me.add(new Link(casServerLogoutUrl, "redirectOnLogout"));
         }
-        if (env.acceptsProfiles(SPRING_PROFILE_PRODUCTION)){
+        if (env.acceptsProfiles(SPRING_PROFILE_PRODUCTION)) {
             me.production = true;
         }
         me.add(linkTo(methodOn(InternationalizationResource.class).createStringsForLanguage(null)).withRel("messages"));

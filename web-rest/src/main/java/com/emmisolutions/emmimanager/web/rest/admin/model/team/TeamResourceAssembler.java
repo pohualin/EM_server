@@ -54,7 +54,6 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
                 methodOn(TeamLocationsResource.class)
                         .associateAllClientLocationsExcept(entity.getId(), null))
                 .withRel("associateAllClientLocationsExcept"));
-//        ret.add(createTranslationsLink(entity));
         ret.setEntity(entity);
 
         return ret;
@@ -69,7 +68,6 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
         return new Link(uriTemplate, toAugment.getRel());
     }
 
-    //dont really need team id except to verify permissions
     public static Link createTranslationsLink() {
         Link link = linkTo(
                 methodOn(PatientSelfRegConfigurationsResource.class).findByString(

@@ -39,12 +39,33 @@ public interface PatientSelfRegConfigurationPersistence {
      */
     PatientSelfRegConfig findByTeamId(Long teamId);
 
+    /**
+     * returns a collection of all patient id label types for reference data
+     * @return
+     */
     Collection<PatientIdLabelType> getAllPatientIdLabelTypes();
 
+    /**
+     * finds strings (translations) by given language and key path
+     * @param language
+     * @param string
+     * @return strings
+     */
     Strings findByLanguageAndString(Language language, String string);
 
+    /**
+     * reloads patientItLabelType
+     * @param patientIdLabelType to reload
+     * @return patientIdLabelType
+     */
     PatientIdLabelType reloadPatientIdLabelType(PatientIdLabelType patientIdLabelType);
 
+    /**
+     * returns a page of strings for a given key
+     * @param key
+     * @param page
+     * @return
+     */
     Page<Strings> findByString(String key, Pageable page);
 
 

@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 /**
- * Persistence implementation for ClientTeamSelfRegConfiguration entity.
+ * Persistence implementation for PatientIdLabelConfig entity.
  */
 @Repository
 public class PatientIdLabelConfigPersistenceImpl implements

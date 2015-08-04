@@ -1,10 +1,16 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.Language;
+import com.emmisolutions.emmimanager.model.PatientSelfRegConfig;
+import com.emmisolutions.emmimanager.model.Strings;
+import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.PatientSelfRegConfigurationService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.PatientSelfRegConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.PatientSelfRegReferenceData;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.*;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.LanguageResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.LanguageResourcePage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.StringsResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.StringsResourcePage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -39,6 +45,7 @@ public class PatientSelfRegConfigurationsResource {
 
     @Resource
     StringsResourceAssembler stringsResourceAssembler;
+
     /**
      * Get a patient self-reg configuration by given id
      *
@@ -171,9 +178,13 @@ public class PatientSelfRegConfigurationsResource {
         }
     }
 
-
-//add page params to the link params
-    //or send back a StringsResource
+    /**
+     * finds a page of stringsresource by given keypath
+     * @param key the search specification
+     * @param assembler
+     * @param pageable
+     * @return a page of stringsresource
+     */
     @RequestMapping(value = "/translations", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<StringsResourcePage> findByString(

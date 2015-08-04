@@ -112,6 +112,6 @@ public class PatientSelfRegConfigurationServiceImpl implements
         } else {
             pageToFetch = page;
         }
-        return patientSelfRegConfigurationPersistence.findByString(key, page);
+        return patientSelfRegConfigurationPersistence.findByString(key, pageToFetch);
     }
 }

@@ -58,17 +58,13 @@ public class PatientSelfRegConfigurationPersistenceImpl implements
         return patientIdLabelTypeRepository.findAll();
     }
 
-//    find translations for given enum// 'PATIENT_ID', brings back page of string for english, string for spanish, set it back up on PILT and send it back.
-//    two individual calls.
-//    gettranslationforStringForGivenLanguage -- send in PATIENTID and 1 or 2 for lang
-
     @Override
     public Strings findByLanguageAndString(Language language, String string) {
         return stringsRepository.findByLanguageAndKey(language, string);
     }
 
     @Override
-    public PatientIdLabelType reloadPatientIdLabelType(PatientIdLabelType patientIdLabelType){
+    public PatientIdLabelType reloadPatientIdLabelType(PatientIdLabelType patientIdLabelType) {
         return patientIdLabelTypeRepository.findOne(patientIdLabelType.getId());
     }
 

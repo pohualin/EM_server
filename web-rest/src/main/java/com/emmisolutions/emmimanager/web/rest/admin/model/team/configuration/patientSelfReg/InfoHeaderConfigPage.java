@@ -15,7 +15,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * A HATEOAS wrapper for a page of GroupResource objects.
+ * A HATEOAS wrapper for a page of InfoHeaderConfigResource objects.
  */
 @XmlRootElement(name = "info-header-config-page")
 public class InfoHeaderConfigPage extends PagedResource<InfoHeaderConfigResource> {

@@ -27,8 +27,7 @@ public class PatientIdLabelConfig extends AbstractAuditingEntity {
     private Integer version;
 
     @NotNull
-//    @Column(name = "id_label_type")
-    @JoinColumn(name="id_label_type", nullable = false)
+    @JoinColumn(name = "id_label_type", nullable = false)
     @ManyToOne
     private PatientIdLabelType idLabelType;
 

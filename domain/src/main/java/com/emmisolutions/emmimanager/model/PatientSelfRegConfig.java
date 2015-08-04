@@ -56,9 +56,8 @@ public class PatientSelfRegConfig extends AbstractAuditingEntity {
     @Column(name = "require_phone", columnDefinition = "boolean", nullable = false)
     private boolean requirePhone;
 
-//    @NotNull
     @ManyToOne
-    @JoinColumn(name = "patient_id_label_type_id"/*, nullable = false*/)
+    @JoinColumn(name = "patient_id_label_type_id")
     private PatientIdLabelType patientIdLabelType;
 
 

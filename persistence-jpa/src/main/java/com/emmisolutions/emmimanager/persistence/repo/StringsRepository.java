@@ -21,7 +21,21 @@ public interface StringsRepository extends JpaRepository<Strings, Long> {
      */
     List<Strings> findByLanguageLanguageTag(String languageTag);
 
+    /**
+     * finds Strings by given language and keypath
+     *
+     * @param language to search on
+     * @param string   to search on
+     * @return string
+     */
     Strings findByLanguageAndKey(Language language, String string);
 
+    /**
+     * returns a page of strings by given key and page size
+     *
+     * @param key
+     * @param pageable
+     * @return a page of strings
+     */
     Page<Strings> findByKey(String key, Pageable pageable);
 }
