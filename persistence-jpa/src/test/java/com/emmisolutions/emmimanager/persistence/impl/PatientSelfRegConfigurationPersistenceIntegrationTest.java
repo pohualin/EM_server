@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientTeamSelfRegConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.PatientSelfRegConfigurationPersistence;
@@ -67,7 +68,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposeId(true);
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
-
+        patientSelfRegConfig.setCreatedBy(new UserAdmin(1l));
         patientSelfRegConfig.setTeam(teamPersistence.reload(team));
         PatientSelfRegConfig saved = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
         assertThat("patient self registration configuration was reloaded:", saved, is(patientSelfRegConfigurationPersistence.reload(saved.getId())));
@@ -84,6 +85,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         patientSelfRegConfig.setExposeId(true);
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setExposePhone(true);
+        patientSelfRegConfig.setCreatedBy(new UserAdmin(1l));
         patientSelfRegConfig.setTeam(teamPersistence.reload(team));
         PatientSelfRegConfig saved = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
 
@@ -108,6 +110,7 @@ public class PatientSelfRegConfigurationPersistenceIntegrationTest extends
         Team team = makeNewRandomTeam(client);
         PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
         patientSelfRegConfig.setTeam(team);
+        patientSelfRegConfig.setCreatedBy(new UserAdmin(1l));
         PatientSelfRegConfig created = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
         assertThat("patient self registration configuration was created:", created.getId(), is(notNullValue()));
 

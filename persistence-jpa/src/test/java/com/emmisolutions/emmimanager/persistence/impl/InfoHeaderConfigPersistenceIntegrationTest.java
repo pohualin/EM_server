@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.InfoHeaderConfigPersistence;
 import com.emmisolutions.emmimanager.persistence.PatientIdLabelConfigPersistence;
@@ -42,6 +43,7 @@ public class InfoHeaderConfigPersistenceIntegrationTest extends
         Team team = makeNewRandomTeam(client);
         PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
         patientSelfRegConfig.setTeam(team);
+        patientSelfRegConfig.setCreatedBy(new UserAdmin(1l));
         PatientSelfRegConfig patientSelfRegConfigCreated = patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
         assertThat("patient self registration configuration was created:", patientSelfRegConfigCreated.getId(), is(notNullValue()));
 
@@ -68,7 +70,6 @@ public class InfoHeaderConfigPersistenceIntegrationTest extends
         patientIdLabelConfig.setLanguage(english);
         patientIdLabelConfig.setValue(RandomStringUtils.randomAlphabetic(10));
         patientIdLabelConfig.setPatientSelfRegConfig(patientSelfRegConfigCreated);
-//        patientIdLabelConfig.setIdLabelType(PatientIdLabelType.PATIENT_SELF_REG_LABEL_MEMBER_ID);
         PatientIdLabelConfig savedPatientIdLabelConfig = patientIdLabelConfigPersistence.save(patientIdLabelConfig);
         assertThat("PatientIdLabelConfig was saved for the given patient self reg config:", savedPatientIdLabelConfig, is(patientIdLabelConfigPersistence.reload(savedPatientIdLabelConfig)));
 

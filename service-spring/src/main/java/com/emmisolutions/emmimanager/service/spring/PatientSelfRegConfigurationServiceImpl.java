@@ -98,13 +98,6 @@ public class PatientSelfRegConfigurationServiceImpl implements
     }
 
     @Override
-    public Strings findByLanguageAndString(Language language, PatientIdLabelType type) {
-        Language reloadedLanguage = languagePersistence.reload(language);
-        PatientIdLabelType reloadedPatientIdLabelType = patientSelfRegConfigurationPersistence.reloadPatientIdLabelType(type);
-        return patientSelfRegConfigurationPersistence.findByLanguageAndString(reloadedLanguage, reloadedPatientIdLabelType.getTypeKey());
-    }
-
-    @Override
     public Page<Strings> findByString(String key, Pageable page) {
         Pageable pageToFetch;
         if (page == null) {
