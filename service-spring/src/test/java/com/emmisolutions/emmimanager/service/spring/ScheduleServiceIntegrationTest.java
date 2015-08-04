@@ -1,10 +1,13 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
 import com.emmisolutions.emmimanager.service.ProgramService;
 import com.emmisolutions.emmimanager.service.ScheduleService;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -26,6 +29,9 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ProgramService programService;
+    
+    @Resource
+    ClientTeamSchedulingConfigurationService teamSchedulingConfigurationService;
 
     /**
      * Call the method with a null.
@@ -51,6 +57,14 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         scheduledProgram.setProgram(programService.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));
         scheduledProgram.setPatient(makeNewRandomPatient(client));
+        
+        ClientTeamSchedulingConfiguration schedulingConfig = teamSchedulingConfigurationService.findByTeam(scheduledProgram.getTeam());
+        if(schedulingConfig.isUseLocation()){
+        	scheduledProgram.setLocation(makeNewRandomLocation());
+        }
+        if(schedulingConfig.isUseProvider()){
+        	scheduledProgram.setProvider(makeNewRandomProvider());
+        }
 
         ScheduledProgram saved = scheduleService.schedule(scheduledProgram);
         assertThat("save happens successfully, access code is generated/overwritten",
