@@ -11,8 +11,7 @@ import org.springframework.data.domain.Sort;
 import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 /**
  * Integration test for PatientIdLabelConfigPersistence
@@ -65,9 +64,6 @@ public class PatientIdLabelConfigPersistenceIntegrationTest extends
         PatientIdLabelConfig reloadedPatientIdLabelConfig = patientIdLabelConfigPersistence.reload(patientIdLabelConfig);
         assertThat("reloaded is null", reloadedPatientIdLabelConfig, is(nullValue()));
 
-        InfoHeaderConfig infoHeaderConfig = new InfoHeaderConfig();
-        InfoHeaderConfig reloadedInfoHeaderConfig = infoHeaderConfigPersistence.reload(infoHeaderConfig);
-        assertThat("reloaded is null", reloadedInfoHeaderConfig, is(nullValue()));
     }
 
     @Test
@@ -75,8 +71,13 @@ public class PatientIdLabelConfigPersistenceIntegrationTest extends
         PatientIdLabelConfig reloadedPatientIdLabelConfig = patientIdLabelConfigPersistence.reload(null);
         assertThat("reloaded is null", reloadedPatientIdLabelConfig, is(nullValue()));
 
-        InfoHeaderConfig reloadedInfoHeaderConfig = infoHeaderConfigPersistence.reload(null);
-        assertThat("reloaded is null", reloadedInfoHeaderConfig, is(nullValue()));
+    }
+
+    @Test
+    public void testNullReloadList() {
+        PatientIdLabelConfigSearchFilter searchFilter = new PatientIdLabelConfigSearchFilter();
+        Page<PatientIdLabelConfig> types = patientIdLabelConfigPersistence.list(null, searchFilter);
+        assertTrue("reloaded is null", types.getContent().isEmpty());
     }
 
 }

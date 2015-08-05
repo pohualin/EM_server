@@ -25,6 +25,9 @@ public class PatientIdLabelConfigSearchFilter {
         this.patientSelfRegConfig = patientSelfRegConfig;
     }
 
+    public PatientIdLabelConfigSearchFilter() {
+    }
+
     @Override
     public String toString() {
         return "PatientIdLabelConfigSearchFilter{" +
