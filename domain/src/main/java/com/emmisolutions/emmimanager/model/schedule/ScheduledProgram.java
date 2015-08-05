@@ -27,7 +27,9 @@ import java.util.Objects;
                 @Index(name = "ak_scheduled_program_access_code", columnList = "access_code", unique = true),
                 @Index(name = "ix_scheduled_program_program_id", columnList = "program_id"),
                 @Index(name = "ix_scheduled_program_patient_id", columnList = "patient_id"),
-                @Index(name = "ix_scheduled_program_team_id", columnList = "team_id")
+                @Index(name = "ix_scheduled_program_team_id", columnList = "team_id"),
+                @Index(name = "ix_scheduled_program_location_id", columnList = "location_id"),
+                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id")
         }
 )
 @XmlRootElement(name = "scheduled_program")

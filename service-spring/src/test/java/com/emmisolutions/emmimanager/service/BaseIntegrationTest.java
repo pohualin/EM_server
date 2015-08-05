@@ -117,6 +117,9 @@ public abstract class BaseIntegrationTest {
     
     @Resource
     ClientTeamEmailConfigurationService teamEmailConfig;
+    
+    @Resource
+    ClientTeamSchedulingConfigurationService teamSchedulingConfig;
 
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
@@ -316,6 +319,30 @@ public abstract class BaseIntegrationTest {
         teamEmailConfig.saveOrUpdate(emailConfig);
         return team;
     }
+    
+    /**
+     * Creates a brand new team that shouldn't already be inserted
+     *
+     * @return random team with scheduling configuration
+     */
+    protected Team makeNewRandomTeamWithSchedulingConfiguration(Client client) {
+        Team team = new Team();
+        team.setName("a" + RandomStringUtils.randomAlphabetic(49));
+        team.setDescription(RandomStringUtils.randomAlphabetic(50));
+        team.setActive(true);
+        team.setClient(client != null ? client : makeNewRandomClient());
+        team.setSalesForceAccount(new TeamSalesForce(RandomStringUtils
+                .randomAlphanumeric(18)));
+        teamService.create(team);
+        
+        teamSchedulingConfig.findByTeam(team);
+        
+        ClientTeamSchedulingConfiguration schedulingConfig = teamSchedulingConfig.findByTeam(team);
+              
+        teamSchedulingConfig.saveOrUpdate(schedulingConfig);
+        return team;
+    }
+
 
     /**
      * Create a brand new UserClientRole with given client
