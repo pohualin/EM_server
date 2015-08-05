@@ -56,7 +56,6 @@ public class InfoHeaderConfigServiceIntegrationTest extends
 
         InfoHeaderConfigSearchFilter infoHeaderConfigSearchFilter = new InfoHeaderConfigSearchFilter(patientSelfRegConfigCreated);
         Page<InfoHeaderConfig> configPage = infoHeaderConfigService.list(null, infoHeaderConfigSearchFilter);
-        assertFalse("configPage found is not null:", configPage.getContent().isEmpty());
         assertThat("configPage found is not null:", configPage.getContent().iterator().next().getPatientSelfRegConfig().getId(), is(notNullValue()));
 
         Page<InfoHeaderConfig> configPageOnePerPage = infoHeaderConfigService.list(new PageRequest(0, 1, Sort.Direction.ASC, "id"), infoHeaderConfigSearchFilter);
