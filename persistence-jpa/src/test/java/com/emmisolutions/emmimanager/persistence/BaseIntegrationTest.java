@@ -76,6 +76,9 @@ public abstract class BaseIntegrationTest {
     @Resource
     ProgramPersistence programPersistence;
 
+    @Resource
+    PatientSelfRegConfigurationPersistence patientSelfRegConfigurationPersistence;
+
     /**
      * Login as a user
      *
@@ -275,6 +278,12 @@ public abstract class BaseIntegrationTest {
                 RandomStringUtils.randomNumeric(4));
         patient.setClient(client == null ? makeNewRandomClient() : client);
         return patientPersistence.save(patient);
+    }
+
+    protected PatientSelfRegConfig makeNewRandomPatientSelfRegConfig(Team team) {
+        PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
+        patientSelfRegConfig.setTeam(team == null ? makeNewRandomTeam(makeNewRandomClient()) : team);
+        return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
 
     /**

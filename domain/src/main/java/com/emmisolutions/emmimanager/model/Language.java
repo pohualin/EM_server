@@ -41,4 +41,11 @@ public class Language extends AbstractAuditingEntity implements Serializable {
     public void setLanguageTag(String languageTag) {
         this.languageTag = languageTag;
     }
+
+    public Language(Long id) {
+        this.id = id;
+    }
+
+    public Language() {
+    }
 }

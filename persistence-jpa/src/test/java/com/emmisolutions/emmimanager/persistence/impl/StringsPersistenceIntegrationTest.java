@@ -36,6 +36,7 @@ public class StringsPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void getStrings(){
         Language english = languageRepository.findOne(1l);
+        Language spanish = languageRepository.findByLanguageTag("es");
 
         String enUtfValue = "ℬusiness time";
         Strings en = new Strings();
@@ -44,9 +45,6 @@ public class StringsPersistenceIntegrationTest extends BaseIntegrationTest {
         en.setValue(enUtfValue);
         en =stringsRepository.save(en);
 
-        Language spanish = new Language();
-        spanish.setLanguageTag("es");
-        languageRepository.save(spanish);
         Strings es = new Strings();
         es.setLanguage(spanish);
         es.setKey("a.value.to.fetch");
