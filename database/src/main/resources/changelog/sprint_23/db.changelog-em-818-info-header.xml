@@ -17,7 +17,7 @@
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_by" type="bigint"/>
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
             <column name="value" type="nvarchar(255)"/>
@@ -69,6 +69,12 @@
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
 
+        <addForeignKeyConstraint baseTableName="info_header_config"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_info_header_config_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
         <createIndex indexName="ix_info_header_config_audit_revision"
                      tableName="info_header_config_audit">
             <column name="revision" type="bigint"/>
@@ -87,6 +93,11 @@
         <createIndex indexName="ix_info_header_config_created_by"
                      tableName="info_header_config">
             <column name="created_by" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_info_header_config_last_modified_by"
+                     tableName="info_header_config">
+            <column name="last_modified_by" type="bigint"/>
         </createIndex>
 
         <addUniqueConstraint tableName="info_header_config" columnNames="language_id, patient_self_reg_config_id"

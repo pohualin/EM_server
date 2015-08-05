@@ -16,7 +16,7 @@
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_modified_by" type="nvarchar(255)"/>
+            <column name="last_modified_by" type="bigint"/>
             <column name="last_modified_date" type="timestamp"/>
             <column name="version" type="int"/>
             <column name="id_label_type" type="bigint">
@@ -72,6 +72,12 @@
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
 
+        <addForeignKeyConstraint baseTableName="patient_id_label_config"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_patient_id_label_config_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
         <createIndex indexName="ix_patient_id_label_config_id_label_type_id"
                      tableName="patient_id_label_config">
             <column name="id_label_type" type="bigint"/>
@@ -95,6 +101,11 @@
         <createIndex indexName="ix_patient_id_label_config_created_by"
                      tableName="patient_id_label_config">
             <column name="created_by" type="bigint"/>
+        </createIndex>
+
+        <createIndex indexName="ix_patient_id_label_config_last_modified_by"
+                     tableName="patient_id_label_config">
+            <column name="last_modified_by" type="bigint"/>
         </createIndex>
 
         <addUniqueConstraint tableName="patient_id_label_config" columnNames="language_id, patient_self_reg_config_id, id_label_type"

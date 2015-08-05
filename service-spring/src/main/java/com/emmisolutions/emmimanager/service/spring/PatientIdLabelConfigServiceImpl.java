@@ -56,7 +56,7 @@ public class PatientIdLabelConfigServiceImpl implements
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+//    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<PatientIdLabelConfig> list(Pageable pageable, PatientIdLabelConfigSearchFilter searchFilter) {
         return patientIdLabelConfigPersistence.list(pageable, searchFilter);
     }
