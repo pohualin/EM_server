@@ -256,4 +256,6 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-id-label-config.xml"/>
 
+    <include relativeToChangelogFile="true" file="changelog/sprint_25/db.changelog-em-1344.xml"/>
+
 </databaseChangeLog>

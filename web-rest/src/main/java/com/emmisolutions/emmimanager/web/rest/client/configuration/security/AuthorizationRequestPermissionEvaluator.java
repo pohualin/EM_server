@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.password.ResetPasswordRequest;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.HttpProxyAwareAuthenticationDetails;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;

@@ -22,13 +22,39 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Dynamically creates an authentication details that allows us retain the original url requested across
- * CAS redirets.
+ * CAS redirects.
  */
 @Component
 @Scope(value = "prototype")
 public class DynamicAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, ServiceAuthenticationDetails> {
 
     private List<String> validCasServerHostEndings;
+    private ServiceProperties serviceProperties;
+
+    /**
+     * This creates a URL string which points back
+     *
+     * @param request           to get parameters from
+     * @param serviceProperties to get the 'service' url that was authenticated against
+     * @return url string
+     */
+    public static String makeDynamicUrlFromRequest(HttpServletRequest request, ServiceProperties serviceProperties) {
+        // ensure URL is from a known service
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(
+                linkTo(methodOn(UserClientsPasswordResource.class)
+                        .forgotPassword(null)).withSelfRel().getHref())
+                .replacePath(serviceProperties.getService());
+
+        // add impersonation query params, if necessary
+        if (StringUtils.isNotBlank(request.getParameter(TRIGGER_VALUE))) {
+            builder
+                    .queryParam(TRIGGER_VALUE,
+                            request.getParameter(TRIGGER_VALUE));
+        }
+        return builder
+                .build(false)
+                .toString();
+    }
 
     @Value("${cas.valid.server.suffixes:emmisolutions.com, localhost}")
     private void setValidCasServerHostEndings(String endings) {
@@ -40,9 +66,7 @@ public class DynamicAuthenticationDetailsSource implements AuthenticationDetails
         }
     }
 
-    private ServiceProperties serviceProperties;
-
-    public void setServiceProperties(ServiceProperties serviceProperties){
+    public void setServiceProperties(ServiceProperties serviceProperties) {
         this.serviceProperties = serviceProperties;
     }
 
@@ -65,29 +89,5 @@ public class DynamicAuthenticationDetailsSource implements AuthenticationDetails
             throw new AccessDeniedException("The server is unable to authenticate the requested url.");
         }
         return new SavedUrlServiceAuthenticationDetails(context, uriComponents.toString());
-    }
-
-    /**
-     * This mehod
-     * @param request
-     * @param serviceProperties
-     * @return
-     */
-    public static String makeDynamicUrlFromRequest(HttpServletRequest request, ServiceProperties serviceProperties) {
-        // ensure URL is from a known service
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(
-                linkTo(methodOn(UserClientsPasswordResource.class)
-                        .forgotPassword(null)).withSelfRel().getHref())
-                .replacePath(serviceProperties.getService());
-
-        // add impersonation query params, if necessary
-        if (StringUtils.isNotBlank(request.getParameter(TRIGGER_VALUE))){
-            builder
-                    .queryParam(TRIGGER_VALUE,
-                            request.getParameter(TRIGGER_VALUE));
-        }
-        return  builder
-                .build(false)
-                .toString();
     }
 }

@@ -1,24 +1,13 @@
 package com.emmisolutions.emmimanager.model.configuration;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.envers.Audited;
-
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * ClientPasswordConfiguration Domain Object with a reference to
@@ -282,5 +271,29 @@ public class ClientPasswordConfiguration extends AbstractAuditingEntity
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "ClientPasswordConfiguration{" +
+                "client=" + client +
+                ", id=" + id +
+                ", version=" + version +
+                ", defaultPasswordConfiguration=" + defaultPasswordConfiguration +
+                ", name='" + name + '\'' +
+                ", passwordExpirationDays=" + passwordExpirationDays +
+                ", passwordRepetitions=" + passwordRepetitions +
+                ", daysBetweenPasswordChange=" + daysBetweenPasswordChange +
+                ", passwordLength=" + passwordLength +
+                ", uppercaseLetters=" + uppercaseLetters +
+                ", lowercaseLetters=" + lowercaseLetters +
+                ", numbers=" + numbers +
+                ", specialChars=" + specialChars +
+                ", passwordReset=" + passwordReset +
+                ", lockoutAttemps=" + lockoutAttemps +
+                ", lockoutReset=" + lockoutReset +
+                ", idleTime=" + idleTime +
+                ", passwordExpirationDaysReminder=" + passwordExpirationDaysReminder +
+                '}';
     }
 }

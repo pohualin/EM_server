@@ -80,6 +80,10 @@
         <class>com.emmisolutions.emmimanager.model.InfoHeaderConfig</class>
         <class>com.emmisolutions.emmimanager.model.PatientIdLabelConfig</class>
         <class>com.emmisolutions.emmimanager.model.PatientIdLabelType</class>
+        <class>com.emmisolutions.emmimanager.model.audit.login.Login</class>
+        <class>com.emmisolutions.emmimanager.model.audit.login.LoginStatus</class>
+        <class>com.emmisolutions.emmimanager.model.audit.logout.Logout</class>
+        <class>com.emmisolutions.emmimanager.model.audit.logout.LogoutSource</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
