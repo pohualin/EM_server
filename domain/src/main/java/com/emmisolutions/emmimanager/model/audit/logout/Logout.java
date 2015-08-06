@@ -38,6 +38,9 @@ public class Logout {
     @Column(name = "timestamp_utc", columnDefinition = "timestamp", nullable = false)
     private DateTime time;
 
+    @Column(name = "admin_facing_application", nullable = false)
+    private boolean adminFacingApplication;
+
     public Long getId() {
         return id;
     }
@@ -76,5 +79,13 @@ public class Logout {
 
     public void setTime(DateTime time) {
         this.time = time;
+    }
+
+    public boolean isAdminFacingApplication() {
+        return adminFacingApplication;
+    }
+
+    public void setAdminFacingApplication(boolean adminFacingApplication) {
+        this.adminFacingApplication = adminFacingApplication;
     }
 }
