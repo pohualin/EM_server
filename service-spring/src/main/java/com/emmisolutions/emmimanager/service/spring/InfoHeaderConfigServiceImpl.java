@@ -62,7 +62,6 @@ public class InfoHeaderConfigServiceImpl implements
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<InfoHeaderConfig> list(Pageable pageable, InfoHeaderConfigSearchFilter searchFilter) {
         return infoHeaderConfigPersistence.list(pageable, searchFilter);
     }

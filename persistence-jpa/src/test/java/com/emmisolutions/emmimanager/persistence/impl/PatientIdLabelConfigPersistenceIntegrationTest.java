@@ -50,6 +50,11 @@ public class PatientIdLabelConfigPersistenceIntegrationTest extends
         PatientIdLabelConfigSearchFilter patientIdLabelConfigSearchFilter = new PatientIdLabelConfigSearchFilter(patientSelfRegConfig);
         Page<PatientIdLabelConfig> patientIdLabelConfigs = patientIdLabelConfigPersistence.list(null, patientIdLabelConfigSearchFilter);
 
+
+        PatientIdLabelConfigSearchFilter searchFilter = new PatientIdLabelConfigSearchFilter();
+        Page<PatientIdLabelConfig> idLabelsPage = patientIdLabelConfigPersistence.list(null, searchFilter);
+        assertThat("configPage found is not null:", idLabelsPage.getContent().iterator().next().getPatientSelfRegConfig().getId(), is(notNullValue()));
+
         assertFalse("configPage found is not null:", patientIdLabelConfigs.getContent().isEmpty());
         assertThat("configPage found is not null:", patientIdLabelConfigs.getContent().iterator().next().getPatientSelfRegConfig().getId(), is(patientSelfRegConfig.getId()));
 
