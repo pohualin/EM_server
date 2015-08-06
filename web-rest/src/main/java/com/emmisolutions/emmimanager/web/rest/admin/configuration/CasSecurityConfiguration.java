@@ -9,7 +9,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.util.CommonUtils;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -65,6 +64,8 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Resource(name = "adminTokenBasedRememberMeServices")
     TokenBasedRememberMeServices adminTokenBasedRememberMeServices;
     @Resource
+    CasVariables casVariables;
+    @Resource
     private CasAuthenticationSuccessHandler casAuthenticationSuccessHandler;
     @Resource
     private CasAuthenticationFailureHandler casAuthenticationFailureHandler;
@@ -74,16 +75,6 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     @Resource(name = "adminCsrfTokenRepository")
     private DoubleSubmitSignedCsrfTokenRepository adminCsrfTokenRepository;
-    @Value("${cas.server.url:https://devcas1.emmisolutions.com/cas}")
-    private String casServerUrl;
-    @Value("${cas.server.login.url:https://devcas1.emmisolutions.com/cas/login}")
-    private String casServerLoginUrl;
-    @Value("${cas.service.validation.uri:/webapi/j_spring_cas_security_check}")
-    private String casValidationUri;
-    @Value("${cas.provider.key:12234245632699}")
-    private String casProviderKey;
-    @Value("${cas.username.suffix:@emmisolutions.com}")
-    private String userNameSuffix;
     private Base64 urlSafeBase64;
 
     /**
@@ -95,7 +86,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService(casValidationUri);
+        serviceProperties.setService(casVariables.getCasAdminValidationUri());
         serviceProperties.setSendRenew(false);
         serviceProperties.setAuthenticateAllArtifacts(true);
         return serviceProperties;
@@ -113,7 +104,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
         casAuthenticationProvider.setAuthenticationUserDetailsService(authenticationUserDetailsService());
         casAuthenticationProvider.setServiceProperties(serviceProperties());
         casAuthenticationProvider.setTicketValidator(cas20ServiceTicketValidator());
-        casAuthenticationProvider.setKey(casProviderKey);
+        casAuthenticationProvider.setKey(casVariables.getCasProviderKey());
         return casAuthenticationProvider;
     }
 
@@ -131,7 +122,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
             @Override
             public UserDetails loadUserDetails(CasAssertionAuthenticationToken token) throws UsernameNotFoundException {
                 String username = (token.getPrincipal() == null) ? "NONE_PROVIDED" : token.getName();
-                return userDetailsService.loadUserByUsername(username + userNameSuffix);
+                return userDetailsService.loadUserByUsername(username + casVariables.getUserNameSuffix());
             }
         };
     }
@@ -143,7 +134,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public Cas20ServiceTicketValidator cas20ServiceTicketValidator() {
-        return new Cas20ServiceTicketValidator(casServerUrl);
+        return new Cas20ServiceTicketValidator(casVariables.getCasServerUrl());
     }
 
     /**
@@ -241,7 +232,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             }
         };
-        casAuthenticationEntryPoint.setLoginUrl(casServerLoginUrl);
+        casAuthenticationEntryPoint.setLoginUrl(casVariables.getCasServerLoginUrl());
         casAuthenticationEntryPoint.setServiceProperties(serviceProperties());
         return casAuthenticationEntryPoint;
     }

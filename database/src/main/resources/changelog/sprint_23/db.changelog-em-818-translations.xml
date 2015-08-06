@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="add Spanish to the Language table" author="Amrita">
+        <insert tableName="language">
+            <column name="rfc5646_language_tag" value="es"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Add translations for patient id label type enums" author="Amrita">
+        <sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_PATIENT_ID', 'Identificación del paciente',   (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MEMBER_ID', 'Identificación del miembro',   (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MEDICAL_RECORD_NUMBER', 'Número de expediente médico',   (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MRN', 'NEM',   (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_OTHER', '',   (SELECT id FROM language WHERE rfc5646_language_tag='es'))
+        ]]></sql>
+
+        <sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_PATIENT_ID', 'Patient ID',   (SELECT id FROM language WHERE rfc5646_language_tag='en'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MEMBER_ID', 'Member ID',   (SELECT id FROM language WHERE rfc5646_language_tag='en'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MEDICAL_RECORD_NUMBER', 'Medical Record Number',   (SELECT id FROM language WHERE rfc5646_language_tag='en'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_MRN', 'MRN',   (SELECT id FROM language WHERE rfc5646_language_tag='en'))
+        ]]></sql><sql><![CDATA[
+			  INSERT INTO strings (key_path, message,   language_id)
+			 values( 'PATIENT_SELF_REG_LABEL_OTHER', 'Other',   (SELECT id FROM language WHERE rfc5646_language_tag='en'))
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>

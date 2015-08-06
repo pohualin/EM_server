@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create tables for authentication logging" author="Matt">
+
+        <createTable tableName="users_login">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_users_login"/>
+            </column>
+            <column name="ip_address" type="nvarchar(512)"/>
+            <column name="login" type="nvarchar(512)"/>
+            <column name="timestamp_utc" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_login_status_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_id" type="bigint"/>
+            <column name="admin_facing_application" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="users_login_status">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_users_login_status"/>
+            </column>
+            <column name="name" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="users_logout">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_users_logout"/>
+            </column>
+            <column name="ip_address" type="nvarchar(512)"/>
+            <column name="login" type="nvarchar(512)"/>
+            <column name="timestamp_utc" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_logout_source_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="admin_facing_application" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="users_logout_source">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_users_logout_source"/>
+            </column>
+            <column name="name" type="nvarchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="add fks and indexes" author="Matt">
+
+        <addForeignKeyConstraint baseTableName="users_login"
+                                 baseColumnNames="users_login_status_id"
+                                 constraintName="fk_users_login_users_login_status"
+                                 referencedTableName="users_login_status"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="users_login" indexName="ix_users_login_users_login_status_id">
+            <column name="users_login_status_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="users_login"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_users_login_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="users_login" indexName="ix_users_login_users_id">
+            <column name="users_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="users_logout"
+                                 baseColumnNames="users_logout_source_id"
+                                 constraintName="fk_users_logout_users_logout_source"
+                                 referencedTableName="users_logout_source"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="users_logout" indexName="ix_users_logout_users_logout_source_id">
+            <column name="users_logout_source_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="users_logout"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_users_logout_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="users_login" indexName="ix_users_logout_users_id">
+            <column name="users_id"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="add type data" author="Matt">
+
+        <insert tableName="users_login_status">
+            <column name="name" value="SUCCESS"/>
+        </insert>
+        <insert tableName="users_login_status">
+            <column name="name" value="INVALID_CREDENTIALS"/>
+        </insert>
+        <insert tableName="users_login_status">
+            <column name="name" value="LOCKED_OUT"/>
+        </insert>
+        <insert tableName="users_login_status">
+            <column name="name" value="EXPIRED"/>
+        </insert>
+        <insert tableName="users_login_status">
+            <column name="name" value="EXPIRED_CANT_CHANGE"/>
+        </insert>
+        <insert tableName="users_login_status">
+            <column name="name" value="INACTIVE"/>
+        </insert>
+
+        <insert tableName="users_logout_source">
+            <column name="name" value="USER"/>
+        </insert>
+        <insert tableName="users_logout_source">
+            <column name="name" value="TIMEOUT"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet id="add rowver for sql server" author="Matt" dbms="mssql">
+
+        <addColumn tableName="users_login">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="users_login_status">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="users_logout">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="users_logout_source">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>
