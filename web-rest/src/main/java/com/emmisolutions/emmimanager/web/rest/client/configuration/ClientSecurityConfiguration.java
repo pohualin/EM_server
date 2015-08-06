@@ -242,6 +242,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .loginProcessingUrl(loginProcessingUrl)
                     .successHandler(ajaxAuthenticationSuccessHandler)
                     .failureHandler(ajaxAuthenticationFailureHandler)
+                .authenticationDetailsSource(authenticationDetailsSource())
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
                 .permitAll()

@@ -5,6 +5,6 @@ package com.emmisolutions.emmimanager.model.audit.login;
  */
 public enum LoginStatusName {
 
-    SUCCESS, INVALID_CREDENTIALS, LOCKED_OUT, EXPIRED, EXPIRED_CANT_CHANGE
+    SUCCESS, INVALID_CREDENTIALS, LOCKED_OUT, EXPIRED, EXPIRED_CANT_CHANGE, INACTIVE
 
 }

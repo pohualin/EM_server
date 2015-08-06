@@ -129,4 +129,45 @@
 
     </changeSet>
 
+    <changeSet id="add rowver for sql server" author="Matt" dbms="mssql">
+
+        <addColumn tableName="users_login">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="users_login_status">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="users_logout">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="users_logout_source">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="add inactive" author="Matt">
+
+        <insert tableName="users_login_status">
+            <column name="name" value="INACTIVE"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet id="add app discriminator" author="Matt">
+        <addColumn tableName="users_login">
+            <column name="admin_facing_application" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

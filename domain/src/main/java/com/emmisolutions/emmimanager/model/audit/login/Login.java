@@ -43,6 +43,9 @@ public class Login implements Serializable {
     @Column(name = "timestamp_utc", columnDefinition = "timestamp", nullable = false)
     private DateTime time;
 
+    @Column(name = "admin_facing_application", nullable = false)
+    private boolean adminFacingApplication;
+
     public Long getId() {
         return id;
     }
@@ -91,6 +94,14 @@ public class Login implements Serializable {
         this.time = time;
     }
 
+    public boolean isAdminFacingApplication() {
+        return adminFacingApplication;
+    }
+
+    public void setAdminFacingApplication(boolean adminApplication) {
+        this.adminFacingApplication = adminApplication;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -113,6 +124,8 @@ public class Login implements Serializable {
                 ", status=" + status +
                 ", user=" + user +
                 ", time=" + time +
+                ", adminFacingApplication=" + adminFacingApplication +
                 '}';
     }
+
 }

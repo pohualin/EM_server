@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.model.audit.login;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,6 +15,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "users_login_status")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class LoginStatus implements Serializable {
 
     @Id
@@ -26,12 +30,12 @@ public class LoginStatus implements Serializable {
     }
 
     /**
-     * Create by id
+     * Create by name
      *
-     * @param id of the status
+     * @param name of the status
      */
-    public LoginStatus(Long id) {
-        this.id = id;
+    public LoginStatus(LoginStatusName name) {
+        this.name = name;
     }
 
     public Long getId() {

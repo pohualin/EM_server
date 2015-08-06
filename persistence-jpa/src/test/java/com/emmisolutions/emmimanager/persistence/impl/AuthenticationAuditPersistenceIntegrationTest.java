@@ -13,6 +13,9 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
+import static com.emmisolutions.emmimanager.model.audit.login.LoginStatusName.EXPIRED;
+import static com.emmisolutions.emmimanager.model.audit.login.LoginStatusName.SUCCESS;
+import static com.emmisolutions.emmimanager.model.audit.logout.LogoutSourceName.USER;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -30,7 +33,7 @@ public class AuthenticationAuditPersistenceIntegrationTest extends BaseIntegrati
         loginAttempt.setIpAddress("12.24.33.145");
         loginAttempt.setLogin("login@login.com");
         loginAttempt.setUser(new UserAdmin(1l));
-        loginAttempt.setStatus(new LoginStatus(1l));
+        loginAttempt.setStatus(new LoginStatus(SUCCESS));
         loginAttempt.setTime(DateTime.now(DateTimeZone.UTC));
         assertThat("save was successful", authenticationAuditPersistence.login(loginAttempt), is(notNullValue()));
     }
@@ -40,7 +43,7 @@ public class AuthenticationAuditPersistenceIntegrationTest extends BaseIntegrati
         Logout logout = new Logout();
         logout.setTime(DateTime.now(DateTimeZone.UTC));
         logout.setUser(new UserAdmin(1l));
-        logout.setSource(new LogoutSource(1l));
+        logout.setSource(new LogoutSource(USER));
         assertThat("save was successful", authenticationAuditPersistence.logout(logout), is(notNullValue()));
     }
 
@@ -50,7 +53,7 @@ public class AuthenticationAuditPersistenceIntegrationTest extends BaseIntegrati
         loginAttempt.setIpAddress("12.24.33.145");
         loginAttempt.setLogin("login@login.com");
         loginAttempt.setUser(new UserAdmin()); // user without an id should be ignored
-        loginAttempt.setStatus(new LoginStatus(1l));
+        loginAttempt.setStatus(new LoginStatus(EXPIRED));
         loginAttempt.setTime(DateTime.now(DateTimeZone.UTC));
         assertThat("save was successful", authenticationAuditPersistence.login(loginAttempt), is(notNullValue()));
     }

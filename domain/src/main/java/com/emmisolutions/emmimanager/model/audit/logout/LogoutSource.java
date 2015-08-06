@@ -1,5 +1,8 @@
 package com.emmisolutions.emmimanager.model.audit.logout;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,6 +15,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "users_logout_source")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class LogoutSource implements Serializable {
 
     @Id
@@ -25,8 +29,13 @@ public class LogoutSource implements Serializable {
     public LogoutSource() {
     }
 
-    public LogoutSource(Long id) {
-        this.id = id;
+    /**
+     * LogoutSource by name
+     *
+     * @param name to use
+     */
+    public LogoutSource(LogoutSourceName name) {
+        this.name = name;
     }
 
     public Long getId() {

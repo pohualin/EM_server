@@ -11,4 +11,5 @@ public interface AuthenticationAuditPersistence {
     Login login(Login attempt);
 
     Logout logout(Logout attempt);
+
 }
