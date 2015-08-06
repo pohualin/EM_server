@@ -35,6 +35,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import static com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService.APPLICATION.CLIENT_FACING;
 import static com.emmisolutions.emmimanager.web.rest.client.configuration.ClientSecurityConfiguration.CLIENT_RMC_HASH_KEY_SECRET;
 
 /**
@@ -117,6 +118,7 @@ public class ImpersonationConfiguration extends WebSecurityConfigurerAdapter {
         rootTokenBasedRememberMeServices.setUseSessionCookieOnly(true);
         rootTokenBasedRememberMeServices.setCookieName(IMP_AUTHORIZATION_COOKIE_NAME);
         rootTokenBasedRememberMeServices.setAuthenticationDetailsSource(impersonationAuthenticationDetailsSource(casVariables));
+        rootTokenBasedRememberMeServices.setApplication(CLIENT_FACING);
         return rootTokenBasedRememberMeServices;
     }
 
