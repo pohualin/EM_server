@@ -3,6 +3,9 @@ package com.emmisolutions.emmimanager.service.spring.audit;
 import com.emmisolutions.emmimanager.model.audit.login.Login;
 import com.emmisolutions.emmimanager.model.audit.login.LoginStatus;
 import com.emmisolutions.emmimanager.model.audit.login.LoginStatusName;
+import com.emmisolutions.emmimanager.model.audit.logout.Logout;
+import com.emmisolutions.emmimanager.model.audit.logout.LogoutSource;
+import com.emmisolutions.emmimanager.model.audit.logout.LogoutSourceName;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.persistence.AuthenticationAuditPersistence;
 import com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService;
@@ -38,10 +41,23 @@ public class AuthenticationAuditServiceImpl implements AuthenticationAuditServic
             login.setStatus(new LoginStatus(status));
         }
         login.setTime(DateTime.now(DateTimeZone.UTC));
-        if (ADMIN_FACING.equals(application)) {
-            login.setAdminFacingApplication(true);
-        }
+        login.setAdminFacingApplication(ADMIN_FACING.equals(application));
         return authenticationAuditPersistence.login(login);
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public Logout logout(User user, String ipAddress, LogoutSourceName source, APPLICATION application) {
+        Logout logout = new Logout();
+        logout.setUser(user);
+        logout.setIpAddress(ipAddress);
+        if (source != null) {
+            logout.setSource(new LogoutSource(source));
+        }
+        logout.setTime(DateTime.now(DateTimeZone.UTC));
+        logout.setAdminFacingApplication(ADMIN_FACING.equals(application));
+        return authenticationAuditPersistence.logout(logout);
     }
 
 }
