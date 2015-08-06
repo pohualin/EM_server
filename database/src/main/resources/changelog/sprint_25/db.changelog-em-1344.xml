@@ -163,4 +163,8 @@
 
     </changeSet>
 
+    <changeSet id="drop column from logout" author="Matt">
+        <dropColumn tableName="users_logout" columnName="login"/>
+    </changeSet>
+
 </databaseChangeLog>

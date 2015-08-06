@@ -43,6 +43,7 @@ import javax.inject.Inject;
 
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
+import static com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService.APPLICATION.CLIENT_FACING;
 import static com.emmisolutions.emmimanager.web.rest.client.configuration.ImpersonationConfiguration.IMP_AUTHORIZATION_COOKIE_NAME;
 
 /**
@@ -142,6 +143,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         rootTokenBasedRememberMeServices.setParameter("remember-me");
         rootTokenBasedRememberMeServices.setCookieName(AUTHORIZATION_COOKIE_NAME);
         rootTokenBasedRememberMeServices.setAuthenticationDetailsSource(authenticationDetailsSource());
+        rootTokenBasedRememberMeServices.setApplication(CLIENT_FACING);
         return rootTokenBasedRememberMeServices;
     }
 
