@@ -98,9 +98,14 @@ public class PersistenceConfiguration {
      */
     @Bean(name = "entityManagerFactory")
     @DependsOn("cacheManager")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaDialect jpaDialect, Environment env) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(JpaDialect jpaDialect, Environment env)
+            throws NamingException {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(dataSource);
+        if (env.acceptsProfiles(SPRING_PROFILE_JNDI_PERSISTENCE, SPRING_PROFILE_PRODUCTION)) {
+            entityManagerFactoryBean.setDataSource(getDataSource());
+        } else {
+            entityManagerFactoryBean.setDataSource(getTestingDataSource(env));
+        }
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         entityManagerFactoryBean.setPackagesToScan("com.emmisolutions.emmimanager.model");
         entityManagerFactoryBean.setPersistenceUnitName("EmmiManagerPersistenceUnit");
@@ -143,14 +148,17 @@ public class PersistenceConfiguration {
     /**
      * Liquibase hook
      *
-     * @param dataSource to use
      * @param env        in which we are in
      * @return the liquibase bean
      */
     @Bean
-    public SpringLiquibase getDbUpdater(DataSource dataSource, Environment env) {
+    public SpringLiquibase getDbUpdater(Environment env) throws NamingException {
         SpringLiquibase springLiquibase = new SpringLiquibase();
-        springLiquibase.setDataSource(dataSource);
+        if (env.acceptsProfiles(SPRING_PROFILE_JNDI_PERSISTENCE, SPRING_PROFILE_PRODUCTION)) {
+            springLiquibase.setDataSource(getDdlDataSource());
+        } else {
+            springLiquibase.setDataSource(getTestingDataSource(env));
+        }
         springLiquibase.setChangeLog("classpath:db.changelog-master.xml");
         // add all active profiles (or default) as liquibase contexts
         String[] profiles = ArrayUtils.isNotEmpty(env.getActiveProfiles()) ? env.getActiveProfiles() : env.getDefaultProfiles();
@@ -169,6 +177,19 @@ public class PersistenceConfiguration {
     public DataSource getDataSource() throws NamingException {
         JndiTemplate jndi = new JndiTemplate();
         return jndi.lookup("java:comp/env/jdbc/EmmiManagerDS", DataSource.class);
+    }
+
+    /**
+     * The data source
+     *
+     * @return the datasource
+     * @throws NamingException if there isn't a jndi bean
+     */
+    @Bean
+    @Profile({SPRING_PROFILE_JNDI_PERSISTENCE, SPRING_PROFILE_PRODUCTION})
+    public DataSource getDdlDataSource() throws NamingException {
+        JndiTemplate jndi = new JndiTemplate();
+        return jndi.lookup("java:comp/env/jdbc/EmmiManagerDdlDS", DataSource.class);
     }
 
     /**
@@ -225,6 +246,7 @@ public class PersistenceConfiguration {
         properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
         properties.setProperty("javax.persistence.validation.mode", "ddl, callback");
         properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
+        properties.setProperty("org.hibernate.envers.default_schema", "audit");
         properties.setProperty("org.hibernate.envers.revision_field_name", "revision");
         properties.setProperty("org.hibernate.envers.revision_type_field_name", "revision_type");
         properties.setProperty("hibernate.cache.use_second_level_cache", "true");
