@@ -8,6 +8,8 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.patient.AdminPatientRe
 import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.schedule.ScheduledProgramResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.LanguageResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
 import org.springframework.hateoas.*;
@@ -81,6 +83,12 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
         ret.add(AdminPatientResourcePage.searchLink());
         ret.add(createPatientByIdLink());
         ret.add(ScheduledProgramResourcePage.searchLink());
+        ret.add(linkTo(methodOn(PatientSelfRegConfigurationsResource.class).getReferenceData()).withRel("patientSelfRegReferenceData"));
+        ret.add(LanguageResourcePage.getAllLanguagesLink(
+                linkTo(methodOn(PatientSelfRegConfigurationsResource.class)
+                        .getAllAvailableLanguages(null, null)).withRel("languages")));
+        ret.add(TeamResourceAssembler.createTranslationsLink());
+
         if (perms.contains(PERM_GOD) || perms.contains(PERM_ADMIN_SUPER_USER)) {
             ret.add(referenceTagsLinkForAdmin());
         }

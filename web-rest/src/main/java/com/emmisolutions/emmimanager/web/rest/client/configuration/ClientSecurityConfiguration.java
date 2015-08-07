@@ -10,10 +10,10 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeni
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.ProxyAwareWebAuthenticationDetailsSource;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationFailureHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxAuthenticationSuccessHandler;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.security.AjaxLogoutSuccessHandler;
-import com.emmisolutions.emmimanager.web.rest.client.configuration.security.ProxyAwareWebAuthenticationDetailsSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +43,7 @@ import javax.inject.Inject;
 
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
+import static com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService.APPLICATION.CLIENT_FACING;
 import static com.emmisolutions.emmimanager.web.rest.client.configuration.ImpersonationConfiguration.IMP_AUTHORIZATION_COOKIE_NAME;
 
 /**
@@ -51,7 +52,8 @@ import static com.emmisolutions.emmimanager.web.rest.client.configuration.Impers
 @Configuration
 @ComponentScan(basePackages = {
         "com.emmisolutions.emmimanager.web.rest.admin.security",
-        "com.emmisolutions.emmimanager.web.rest.client.configuration.security"
+        "com.emmisolutions.emmimanager.web.rest.client.configuration.security",
+        "com.emmisolutions.emmimanager.web.rest.client.configuration.audit"
 })
 @EnableWebSecurity
 @Order(200)
@@ -141,6 +143,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
         rootTokenBasedRememberMeServices.setParameter("remember-me");
         rootTokenBasedRememberMeServices.setCookieName(AUTHORIZATION_COOKIE_NAME);
         rootTokenBasedRememberMeServices.setAuthenticationDetailsSource(authenticationDetailsSource());
+        rootTokenBasedRememberMeServices.setApplication(CLIENT_FACING);
         return rootTokenBasedRememberMeServices;
     }
 
@@ -241,6 +244,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .loginProcessingUrl(loginProcessingUrl)
                     .successHandler(ajaxAuthenticationSuccessHandler)
                     .failureHandler(ajaxAuthenticationFailureHandler)
+                .authenticationDetailsSource(authenticationDetailsSource())
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
                 .permitAll()
