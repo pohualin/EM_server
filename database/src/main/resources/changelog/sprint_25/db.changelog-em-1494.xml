@@ -5,6 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet id="mark phi fields" author="Matt" dbms="mssql">
+
         <!-- client_patient -->
         <sql><![CDATA[
             EXEC sp_addextendedproperty
@@ -59,7 +60,7 @@
         <sql><![CDATA[
             EXEC sp_addextendedproperty
                 @name = N'MS_Description', @value = '*PHI*',
-                @level0type = N'Schema', @level0name = 'dbo',
+                @level0type = N'Schema', @level0name = 'audit',
                 @level1type = N'Table', @level1name = 'client_patient_audit',
                 @level2type = N'Column', @level2name = 'first_name'
             ]]>
@@ -67,7 +68,7 @@
         <sql><![CDATA[
             EXEC sp_addextendedproperty
                 @name = N'MS_Description', @value = '*PHI*',
-                @level0type = N'Schema', @level0name = 'dbo',
+                @level0type = N'Schema', @level0name = 'audit',
                 @level1type = N'Table', @level1name = 'client_patient_audit',
                 @level2type = N'Column', @level2name = 'last_name'
             ]]>
@@ -75,7 +76,7 @@
         <sql><![CDATA[
             EXEC sp_addextendedproperty
                 @name = N'MS_Description', @value = '*PHI*',
-                @level0type = N'Schema', @level0name = 'dbo',
+                @level0type = N'Schema', @level0name = 'audit',
                 @level1type = N'Table', @level1name = 'client_patient_audit',
                 @level2type = N'Column', @level2name = 'date_of_birth'
             ]]>
@@ -83,7 +84,7 @@
         <sql><![CDATA[
             EXEC sp_addextendedproperty
                 @name = N'MS_Description', @value = '*PHI*',
-                @level0type = N'Schema', @level0name = 'dbo',
+                @level0type = N'Schema', @level0name = 'audit',
                 @level1type = N'Table', @level1name = 'client_patient_audit',
                 @level2type = N'Column', @level2name = 'email'
             ]]>
@@ -91,7 +92,7 @@
         <sql><![CDATA[
             EXEC sp_addextendedproperty
                 @name = N'MS_Description', @value = '*PHI*',
-                @level0type = N'Schema', @level0name = 'dbo',
+                @level0type = N'Schema', @level0name = 'audit',
                 @level1type = N'Table', @level1name = 'client_patient_audit',
                 @level2type = N'Column', @level2name = 'phone'
             ]]>
@@ -109,7 +110,7 @@
         <sql><![CDATA[
             EXEC sp_addextendedproperty
                 @name = N'MS_Description', @value = '*PHI*',
-                @level0type = N'Schema', @level0name = 'dbo',
+                @level0type = N'Schema', @level0name = 'audit',
                 @level1type = N'Table', @level1name = 'scheduled_program_audit',
                 @level2type = N'Column', @level2name = 'access_code'
             ]]>
