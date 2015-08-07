@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="mark phi fields" author="Matt" dbms="mssql">
+        <!-- client_patient -->
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient',
+                @level2type = N'Column', @level2name = 'first_name'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient',
+                @level2type = N'Column', @level2name = 'last_name'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient',
+                @level2type = N'Column', @level2name = 'normalized_name'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient',
+                @level2type = N'Column', @level2name = 'date_of_birth'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient',
+                @level2type = N'Column', @level2name = 'email'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient',
+                @level2type = N'Column', @level2name = 'phone'
+            ]]>
+        </sql>
+
+        <!-- client_patient_audit -->
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient_audit',
+                @level2type = N'Column', @level2name = 'first_name'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient_audit',
+                @level2type = N'Column', @level2name = 'last_name'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient_audit',
+                @level2type = N'Column', @level2name = 'date_of_birth'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient_audit',
+                @level2type = N'Column', @level2name = 'email'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'client_patient_audit',
+                @level2type = N'Column', @level2name = 'phone'
+            ]]>
+        </sql>
+
+        <!-- scheduled_program and audit-->
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'scheduled_program',
+                @level2type = N'Column', @level2name = 'access_code'
+            ]]>
+        </sql>
+        <sql><![CDATA[
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description', @value = '*PHI*',
+                @level0type = N'Schema', @level0name = 'dbo',
+                @level1type = N'Table', @level1name = 'scheduled_program_audit',
+                @level2type = N'Column', @level2name = 'access_code'
+            ]]>
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>
