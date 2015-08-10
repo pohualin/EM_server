@@ -1,5 +1,7 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
+import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
+import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.TeamLocation;
 import com.emmisolutions.emmimanager.model.TeamProvider;
@@ -7,6 +9,7 @@ import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.program.Program;
 import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
 import com.emmisolutions.emmimanager.model.program.Specialty;
+import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
 import com.emmisolutions.emmimanager.service.ProgramService;
 import com.emmisolutions.emmimanager.service.TeamLocationService;
 import com.emmisolutions.emmimanager.service.TeamProviderService;
@@ -20,8 +23,12 @@ import com.emmisolutions.emmimanager.web.rest.client.model.program.provider.Team
 import com.emmisolutions.emmimanager.web.rest.client.model.program.provider.TeamProviderResourcePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.specialty.SpecialtyResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.specialty.SpecialtyResourcePage;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamSchedulingConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamSchedulingConfigurationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -33,6 +40,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -71,6 +80,12 @@ public class ProgramsResource {
 
     @Resource(name = "specialtyResourceAssembler")
     ResourceAssembler<Specialty, SpecialtyResource> specialtyResourceAssembler;
+    
+    @Resource
+    ClientTeamSchedulingConfigurationService teamSchedulingConfigurationService;
+    
+    @Resource
+    TeamSchedulingConfigurationResourceAssembler schedulingConfigurationAssembler;
 
     public static final String SPECIALTY_ID_REQUEST_PARAM = "s";
 
@@ -273,4 +288,33 @@ public class ProgramsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+    
+    /**
+     * Find team scheduling configuration if there are any
+     *
+     * @param teamId    for the scheduling configuration
+     * @param assembler makes a page for TeamSchedulingConfiguration
+     * @return a TeamSchedulingConfiguration response entity
+     */
+    @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/scheduling_configuration", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
+            "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
+    public ResponseEntity<TeamSchedulingConfigurationResource> findTeamSchedulingConfig(
+    		@PathVariable("clientId") Long clientId,
+            @PathVariable("teamId") Long teamId,
+            PagedResourcesAssembler<ClientTeamSchedulingConfiguration> assembler) {
+    	
+        ClientTeamSchedulingConfiguration clientTeamSchedulingConfiguration = teamSchedulingConfigurationService
+                .findByTeam(new Team(teamId));
+        
+    	if (clientTeamSchedulingConfiguration != null) {
+      	 return new ResponseEntity<>(schedulingConfigurationAssembler.toResource(
+    			 clientTeamSchedulingConfiguration),
+                 HttpStatus.OK);
+    	}else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+     }
+    
+    
 }

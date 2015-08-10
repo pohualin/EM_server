@@ -13,7 +13,7 @@ import java.util.Date;
  * Store the username/login who made each revision
  */
 @Entity
-@Table(name = "revision_info")
+@Table(name = "revision_info", schema = "audit")
 @RevisionEntity(UsernameRevisionListener.class)
 public class UsernameRevisionEntity {
 

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create audit schema" author="Matt" dbms="mysql,h2,postgresql">
+        <sql>
+            <![CDATA[
+            create schema audit
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="create audit schema sql server" author="Matt" dbms="mssql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT count(*) FROM sys.schemas WHERE name = 'audit'</sqlCheck>
+        </preConditions>
+        <sql>
+            <![CDATA[
+            create schema audit authorization dbo
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="move audit tables sqlserver" author="Matt" dbms="mssql">
+        <sqlFile relativeToChangelogFile="true"
+                 path="data/move-audit-tables-sqlserver.sql"/>
+    </changeSet>
+
+    <changeSet id="move audit tables postgres" author="Matt" dbms="postgresql">
+        <sqlFile relativeToChangelogFile="true"
+                 path="data/move-audit-tables-postgres.sql"/>
+    </changeSet>
+
+    <changeSet id="move audit tables h2" author="Matt" dbms="h2">
+        <createTable tableName="revision_info" schemaName="audit">
+            <column autoIncrement="true" name="revision" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_revision_info"/>
+            </column>
+            <column name="timestamp" type="BIGINT"/>
+            <column name="created_by" type="bigint"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="revision_info"
+                                 baseTableSchemaName="audit"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_revision_info_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="revision_info"
+                     schemaName="audit"
+                     indexName="ix_revision_info_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <sqlFile relativeToChangelogFile="true"
+                 path="data/move-audit-tables-h2.sql"/>
+    </changeSet>
+
+</databaseChangeLog>
