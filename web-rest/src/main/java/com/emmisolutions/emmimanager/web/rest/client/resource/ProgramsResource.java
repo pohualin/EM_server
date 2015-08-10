@@ -84,8 +84,8 @@ public class ProgramsResource {
     @Resource
     ClientTeamSchedulingConfigurationService teamSchedulingConfigurationService;
     
-    @Resource
-    TeamSchedulingConfigurationResourceAssembler schedulingConfigurationAssembler;
+    @Resource(name = "schedulingConfigurationAssembler")
+    ResourceAssembler<ClientTeamSchedulingConfiguration, TeamSchedulingConfigurationResource> schedulingConfigurationAssembler;
 
     public static final String SPECIALTY_ID_REQUEST_PARAM = "s";
 
