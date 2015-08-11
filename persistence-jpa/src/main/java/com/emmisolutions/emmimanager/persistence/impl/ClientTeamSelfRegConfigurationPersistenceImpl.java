@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration;
 import com.emmisolutions.emmimanager.persistence.ClientTeamSelfRegConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTeamSelfRegConfigurationRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -39,6 +40,11 @@ public class ClientTeamSelfRegConfigurationPersistenceImpl implements
 
     @Override
     public ClientTeamSelfRegConfiguration findByCode(String code) {
-        return clientTeamSelfRegConfigurationRepository.findByCodeIgnoreCase(code);
+        String toSearch = code;
+        ClientTeamSelfRegConfiguration ret = null;
+        if (StringUtils.isNotBlank(toSearch)) {
+            ret = clientTeamSelfRegConfigurationRepository.findByCodeIgnoreCase(toSearch);
+        }
+        return ret;
     }
 }
