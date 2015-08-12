@@ -1,7 +1,7 @@
 <Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2_ID" antiResourceLocking="true"
          unloadDelay="10000">
 
-    <Manager pathname="" />
+    <Manager pathname=""/>
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
@@ -10,7 +10,7 @@
               url="jdbc:postgresql://localhost:5432/emmimanager"
               maxActive="20"
               maxIdle="10"
-              validationQuery="select 1" />
+              validationQuery="select 1"/>
 
     <Resource name="jdbc/EmmiManagerDdlDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
@@ -30,6 +30,9 @@
     <Environment name="salesforce.url" value="https://cs13.salesforce.com/services/Soap/u/34.0"
                  type="java.lang.String"/>
     <!--<Environment name="salesforce.formRefreshIntervalMillis" value="900000" type="java.lang.String"/>-->
+
+    <!-- HLI settins -->
+    <!--<Environment name="hli.search.url" value="http://192.168.101.65:8080/hliservice/search" type="java.lang.String"/>-->
 
     <!--
         client application entry point. This is the path for end users to see the client facing application.

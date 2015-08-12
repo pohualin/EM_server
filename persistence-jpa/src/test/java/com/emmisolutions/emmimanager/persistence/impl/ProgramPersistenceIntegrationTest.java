@@ -64,4 +64,11 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
     public void specialties(){
         assertThat("we can get a page", programPersistence.findSpecialties(null).hasContent(), is(true));
     }
+
+    @Test
+    public void description() {
+        assertThat("passing a search term finds a program",
+                programPersistence.find(new ProgramSearchFilter().addTerm("heart"), null),
+                hasItems(new Program(1), new Program(542)));
+    }
 }
