@@ -25,13 +25,16 @@ import java.util.Objects;
 })
 public class HliProgram implements Serializable {
 
-    @ManyToOne
-    @JoinColumn(name = "emmi_code", insertable = false, updatable = false)
-    Program program;
     @Id
     @Column(name = "emmi_code")
     private String code;
+
     private int weight;
+
+    @ManyToOne
+    @SuppressWarnings("unused")
+    @JoinColumn(name = "emmi_code", insertable = false, updatable = false)
+    private Program program;
 
     /**
      * This is the emmi code
