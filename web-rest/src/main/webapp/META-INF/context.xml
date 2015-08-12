@@ -23,6 +23,7 @@
 
     <Environment name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect" type="java.lang.String"/>
     <Environment name="hibernate.show_sql" value="true" type="java.lang.String"/>
+    <!--<Environment name="hibernate.jdbc.batch_size" value="50" type="java.lang.String"/>-->
 
     <!-- salesforce settings -->
     <Environment name="salesforce.username" value="sfdcapi@emmisolutions.com.test" type="java.lang.String"/>

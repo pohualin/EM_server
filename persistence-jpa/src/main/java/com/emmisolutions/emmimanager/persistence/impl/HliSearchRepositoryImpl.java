@@ -14,8 +14,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Repository for HLI searches
@@ -27,7 +28,7 @@ public class HliSearchRepositoryImpl implements HliSearchRepository {
     private String baseUrl;
 
     @Cacheable(value = "hliSearch", key = "#p0.terms", condition = "#p0 != null && #p0.terms.size() > 0")
-    public List<HliProgram> find(ProgramSearchFilter filter) {
+    public Set<HliProgram> find(ProgramSearchFilter filter) {
         if (filter == null || CollectionUtils.isEmpty(filter.getTerms())) {
             return null;
         }
@@ -43,17 +44,17 @@ public class HliSearchRepositoryImpl implements HliSearchRepository {
                 restTemplate.exchange(searchUrl.toUriString(),
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<HliProgram>>() {
                         });
-        int order = 0;
+        int weight = 0;
         if (hliSearchResponseEntity.getStatusCode().is2xxSuccessful()) {
-            List<HliProgram> ret = null;
+            Set<HliProgram> ret = null;
             for (HliProgram aProgram : hliSearchResponseEntity.getBody()) {
                 if (StringUtils.isNumeric(aProgram.getCode())) {
                     if (ret == null) {
-                        ret = new ArrayList<>();
+                        ret = new HashSet<>();
                     }
-                    aProgram.setOrder(order);
+                    aProgram.setWeight(weight);
                     ret.add(aProgram);
-                    order++;
+                    weight++;
                 }
             }
             return ret;

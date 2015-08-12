@@ -9,8 +9,7 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -72,6 +71,32 @@ public class ProgramServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void specialties(){
         assertThat("we can get a page", programService.findSpecialties(null).hasContent(), is(true));
+    }
+
+    /**
+     * Searching by a term should call HLI and narrow the list of programs properly
+     */
+    @Test
+    public void searchByTerm() {
+        assertThat("heart program should match term 'heart'", programService.find(new ProgramSearchFilter().addTerm("heart"), null),
+                hasItem(new Program(10)));
+
+        assertThat("no programs should match term 'soul'", programService.find(new ProgramSearchFilter().addTerm("soul"), null),
+                not(hasItem(new Program(10))));
+    }
+
+    /**
+     * Using both specialty and term should narrow even further
+     */
+    @Test
+    public void searchByTermAndSpecialty() {
+        assertThat("we can find programs by term and specialty", programService.find(
+                        new ProgramSearchFilter().addTerm("heart").addSpecialty(new Specialty(23)), null),
+                hasItem(new Program(10)));
+
+        assertThat("term matches but specialty doesn't.. should yield no results", programService.find(
+                        new ProgramSearchFilter().addTerm("heart").addSpecialty(new Specialty(10)), null),
+                not(hasItem(new Program(10))));
     }
 
 }

@@ -1,11 +1,11 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.program.Program;
-import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
-import com.emmisolutions.emmimanager.model.program.Specialty;
+import com.emmisolutions.emmimanager.model.program.*;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ProgramPersistence;
+import com.emmisolutions.emmimanager.persistence.repo.ProgramRepository;
 import org.junit.Test;
+import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 
@@ -21,6 +21,9 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
     @Resource
     ProgramPersistence programPersistence;
 
+    @Resource
+    ProgramRepository programRepository;
+
     /**
      * Make sure the db is hooked up and sample data loads properly
      */
@@ -35,7 +38,7 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
      * two programs.
      */
     @Test
-    public void findViaSpecialties(){
+    public void findViaSpecialties() {
         assertThat("found programs using filter", programPersistence.find(new ProgramSearchFilter()
                         .addSpecialty(new Specialty(16)).addSpecialty(new Specialty(24)), null),
                 hasItems(new Program(23), new Program(10)));
@@ -45,7 +48,7 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
      * Make sure specialties without IDs are ignored for the search purposes
      */
     @Test
-    public void ignoreSpecialtiesWithIds(){
+    public void ignoreSpecialtiesWithIds() {
         assertThat("specialty without id isn't added to filter, so all programs are returned",
                 programPersistence.find(new ProgramSearchFilter().addSpecialty(new Specialty()), null).hasContent(),
                 is(true));
@@ -61,14 +64,22 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
      * Make sure specialties come back
      */
     @Test
-    public void specialties(){
+    public void specialties() {
         assertThat("we can get a page", programPersistence.findSpecialties(null).hasContent(), is(true));
     }
 
     @Test
     public void description() {
-        assertThat("passing a search term finds a program",
-                programPersistence.find(new ProgramSearchFilter().addTerm("heart"), null),
-                hasItems(new Program(1), new Program(542)));
+        Program p5320 = new Program(5320);
+        p5320.setName("first heart program");
+        p5320.setBrand(new Brand(1));
+        p5320.setType(new Type(1));
+        p5320.setSource(new Source(1));
+        programRepository.save(p5320);
+
+        assertThat("make sure ordering of found program is based upon HLI ordering",
+                programPersistence.find(new ProgramSearchFilter().addTerm("heart").addTerm("repair"),
+                        new PageRequest(0, 1)),
+                hasItems(new Program(5320)));
     }
 }

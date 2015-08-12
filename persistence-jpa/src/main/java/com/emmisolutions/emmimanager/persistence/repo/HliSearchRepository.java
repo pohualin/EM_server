@@ -3,7 +3,7 @@ package com.emmisolutions.emmimanager.persistence.repo;
 import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
 import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
 
-import java.util.List;
+import java.util.Set;
 
 public interface HliSearchRepository {
 
@@ -13,5 +13,5 @@ public interface HliSearchRepository {
      * @param filter used to narrow the query
      * @return List of program ids
      */
-    List<HliProgram> find(ProgramSearchFilter filter);
+    Set<HliProgram> find(ProgramSearchFilter filter);
 }

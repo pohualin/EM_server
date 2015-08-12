@@ -1,18 +1,37 @@
 package com.emmisolutions.emmimanager.model.program.hli;
 
+import com.emmisolutions.emmimanager.model.program.Program;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * An HLI program
  */
+@Entity
+@Table(name = "\"#hli_search_results\"")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "org.hibernate.dialect.H2Dialect",
+                query = "CREATE LOCAL TEMPORARY TABLE " +
+                        "\"#hli_search_results\"(emmi_code VARCHAR(255) PRIMARY KEY, weight INT) TRANSACTIONAL"),
+        @NamedNativeQuery(name = "org.hibernate.dialect.PostgreSQL9Dialect",
+                query = "CREATE LOCAL TEMPORARY TABLE " +
+                        "\"#hli_search_results\"(emmi_code VARCHAR(255) PRIMARY KEY, weight INT) ON COMMIT DROP"),
+        @NamedNativeQuery(name = "org.hibernate.dialect.SQLServer2012Dialect",
+                query = "CREATE TABLE \"#hli_search_results\"(emmi_code VARCHAR(255) PRIMARY KEY, weight INT)"),
+})
 public class HliProgram implements Serializable {
 
+    @ManyToOne
+    @JoinColumn(name = "emmi_code", insertable = false, updatable = false)
+    Program program;
+    @Id
+    @Column(name = "emmi_code")
     private String code;
-
-    private int order;
+    private int weight;
 
     /**
      * This is the emmi code
@@ -27,19 +46,33 @@ public class HliProgram implements Serializable {
         this.code = code;
     }
 
-    public int getOrder() {
-        return order;
+    public int getWeight() {
+        return weight;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
     @Override
     public String toString() {
         return "HliProgram{" +
                 "code='" + code + '\'' +
-                ", order=" + order +
+                ", weight=" + weight +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HliProgram that = (HliProgram) o;
+        return Objects.equals(code, that.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
+    }
+
 }

@@ -3,15 +3,20 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 import com.emmisolutions.emmimanager.model.program.*;
 import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import static org.hibernate.cfg.AvailableSettings.DIALECT;
 
 /**
  * Specifications holder for Program objects
@@ -19,8 +24,13 @@ import java.util.List;
 @Component
 public class ProgramSpecifications {
 
+    private static ThreadLocal<Boolean> performedHliSearch = new ThreadLocal<>();
     @Resource
     HliSearchRepository hliSearchRepository;
+    @PersistenceContext
+    EntityManager entityManager;
+    @Value("${hibernate.jdbc.batch_size:50}")
+    private int batchSize;
 
     /**
      * Adds an OR clause for each specialty in the filter. This ensures that both
@@ -61,24 +71,52 @@ public class ProgramSpecifications {
      * @return a specification for program narrowing using ids found from terms
      * or null if there are no terms
      */
-    public Specification<Program> matchesTerms(final ProgramSearchFilter filter, final Pageable pageable) {
+    public Specification<Program> matchesTerms(final ProgramSearchFilter filter) {
         return new Specification<Program>() {
             @Override
             public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (filter != null && !CollectionUtils.isEmpty(filter.getTerms())) {
-                    // get the page of ids from full list
-                    List<HliProgram> fullList = hliSearchRepository.find(filter);
 
-                    // create temporary table
+                    // only load HLI searches one time per thread
+                    if (!Boolean.TRUE.equals(performedHliSearch.get())) {
 
+                        performedHliSearch.set(Boolean.TRUE);
 
-                    // insert full list into temporary table
+                        // search HLI and get full set
+                        Set<HliProgram> hliPrograms = hliSearchRepository.find(filter);
 
+                        // create temporary table (even if there are no programs found)
+                        createTempTable();
 
-                    return root.get(Program_.id).in();
+                        if (!CollectionUtils.isEmpty(hliPrograms)) {
+                            // insert full set into temporary table
+                            int i = 0;
+                            for (HliProgram hliProgram : hliPrograms) {
+                                entityManager.persist(hliProgram);
+                                i++;
+                                if (i % batchSize == 0) {
+                                    // Flush a batch of inserts and release memory.
+                                    entityManager.flush();
+                                    entityManager.clear();
+                                }
+                            }
+                        }
+                    }
+
+                    // inner join to the search table to only allow HLI codes
+                    root.join(Program_.hliProgram, JoinType.INNER);
                 }
                 return null;
             }
         };
+    }
+
+    private void createTempTable() {
+        String dialect = (String) entityManager.getEntityManagerFactory().getProperties().get(DIALECT);
+        entityManager.createNamedQuery(dialect).executeUpdate();
+    }
+
+    public void resetThread() {
+        performedHliSearch.remove();
     }
 }
