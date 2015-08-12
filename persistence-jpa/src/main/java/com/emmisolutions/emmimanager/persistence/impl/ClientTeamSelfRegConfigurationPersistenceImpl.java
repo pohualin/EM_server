@@ -40,10 +40,9 @@ public class ClientTeamSelfRegConfigurationPersistenceImpl implements
 
     @Override
     public ClientTeamSelfRegConfiguration findByCode(String code) {
-        String toSearch = code;
         ClientTeamSelfRegConfiguration ret = null;
-        if (StringUtils.isNotBlank(toSearch)) {
-            ret = clientTeamSelfRegConfigurationRepository.findByCodeIgnoreCase(toSearch);
+        if (StringUtils.isNotBlank(code)) {
+            ret = clientTeamSelfRegConfigurationRepository.findByCodeIgnoreCase(code);
         }
         return ret;
     }
