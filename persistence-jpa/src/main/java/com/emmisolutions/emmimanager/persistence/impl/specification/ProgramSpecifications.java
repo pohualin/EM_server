@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 import com.emmisolutions.emmimanager.model.program.*;
 import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,7 @@ import static org.hibernate.cfg.AvailableSettings.DIALECT;
 public class ProgramSpecifications {
 
     private static ThreadLocal<Boolean> performedHliSearch = new ThreadLocal<>();
+    private transient final Logger LOGGER = LoggerFactory.getLogger(ProgramSpecifications.class);
     @Resource
     HliSearchRepository hliSearchRepository;
     @PersistenceContext
@@ -112,6 +115,7 @@ public class ProgramSpecifications {
 
     private void createTempTable() {
         String dialect = (String) entityManager.getEntityManagerFactory().getProperties().get(DIALECT);
+        LOGGER.debug("Attempting to create temp tables for '{}'", dialect);
         entityManager.createNamedQuery(dialect).executeUpdate();
     }
 
