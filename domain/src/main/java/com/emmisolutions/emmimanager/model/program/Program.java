@@ -1,9 +1,12 @@
 package com.emmisolutions.emmimanager.model.program;
 
+import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Objects;
 import java.util.Set;
 
@@ -62,6 +65,12 @@ public class Program {
 
     @Column(name = "release_dt")
     private LocalDateTime releaseDate;
+
+    @NotAudited
+    @XmlTransient
+    @SuppressWarnings("unused")
+    @OneToMany(mappedBy = "program")
+    private Set<HliProgram> hliProgram; // don't give this field a getter and setter ever
 
     public Program() {
     }
@@ -209,4 +218,5 @@ public class Program {
                 ", type=" + type +
                 '}';
     }
+
 }

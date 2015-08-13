@@ -60,6 +60,9 @@ public class PersistenceConfiguration {
     @Value("${hibernate.dialect:org.hibernate.dialect.H2Dialect}")
     private String dialect;
 
+    @Value("${hibernate.jdbc.batch_size:50}")
+    private String batchSize;
+
     @Value("${hibernate.show_sql:true}")
     private Boolean showSql;
 
@@ -92,8 +95,8 @@ public class PersistenceConfiguration {
     /**
      * The factory
      *
-     * @param dataSource used by the factory
      * @param jpaDialect the dialect
+     * @param env        the environment
      * @return the factory
      */
     @Bean(name = "entityManagerFactory")
@@ -148,7 +151,7 @@ public class PersistenceConfiguration {
     /**
      * Liquibase hook
      *
-     * @param env        in which we are in
+     * @param env in which we are in
      * @return the liquibase bean
      */
     @Bean
@@ -238,7 +241,6 @@ public class PersistenceConfiguration {
         return new LoggingAspect();
     }
 
-
     private Properties getCommonJpaProperties(Environment env) {
         Properties properties = new Properties();
         properties.setProperty(DIALECT, dialect);
@@ -254,6 +256,7 @@ public class PersistenceConfiguration {
         properties.setProperty("hibernate.generate_statistics", "true");
         properties.setProperty("hibernate.cache.region.factory_class", "com.emmisolutions.emmimanager.persistence.configuration.HazelcastCacheRegionFactory");
         properties.setProperty("hibernate.cache.use_minimal_puts", "true");
+        properties.setProperty("hibernate.jdbc.batch_size", batchSize);
         properties.setProperty("hibernate.cache.hazelcast.use_lite_member", "true");
         return properties;
     }
