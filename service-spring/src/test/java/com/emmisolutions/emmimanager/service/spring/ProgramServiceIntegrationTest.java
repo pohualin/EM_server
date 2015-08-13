@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.program.Specialty;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ProgramService;
 import org.junit.Test;
+import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 
@@ -81,7 +82,9 @@ public class ProgramServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("heart program should match term 'heart'", programService.find(new ProgramSearchFilter().addTerm("heart"), null),
                 hasItem(new Program(10)));
 
-        assertThat("no programs should match term 'soul'", programService.find(new ProgramSearchFilter().addTerm("soul"), null),
+        Page<Program> programPage = programService.find(new ProgramSearchFilter().addTerm("soul"), null);
+
+        assertThat("no programs should match term 'soul'", programPage,
                 not(hasItem(new Program(10))));
     }
 
