@@ -1,6 +1,9 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.program.*;
+import com.emmisolutions.emmimanager.model.program.Program;
+import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
+import com.emmisolutions.emmimanager.model.program.ProgramSpecialty;
+import com.emmisolutions.emmimanager.model.program.Specialty;
 import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +51,6 @@ public class ProgramSpecifications {
                     for (Specialty specialty : filter.getSpecialties()) {
                         if (specialty.getId() != null) {
                             SetJoin<Program, ProgramSpecialty> join = root.join(Program_.programSpecialty);
-                            root.join(Program_.type, JoinType.INNER);
                             predicates.add(
                                     cb.and(
                                             cb.isTrue(join.get(ProgramSpecialty_.active)),
