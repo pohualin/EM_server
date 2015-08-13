@@ -1,9 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.program.Program;
-import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
-import com.emmisolutions.emmimanager.model.program.ProgramSpecialty;
-import com.emmisolutions.emmimanager.model.program.Specialty;
+import com.emmisolutions.emmimanager.model.program.*;
 import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
 import org.springframework.beans.factory.annotation.Value;
