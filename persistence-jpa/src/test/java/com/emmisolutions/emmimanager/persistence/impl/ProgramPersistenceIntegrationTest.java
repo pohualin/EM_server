@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.persistence.ProgramPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ProgramRepository;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import javax.annotation.Resource;
 
@@ -42,6 +43,10 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("found programs using filter", programPersistence.find(new ProgramSearchFilter()
                         .addSpecialty(new Specialty(16)).addSpecialty(new Specialty(24)), null),
                 hasItems(new Program(23), new Program(10)));
+
+        assertThat("found programs using filter", programPersistence.find(new ProgramSearchFilter()
+                        .addSpecialty(new Specialty(16)).addSpecialty(new Specialty(24)), new PageRequest(0, 10)),
+                hasItems(new Program(23), new Program(10)));
     }
 
     /**
@@ -68,6 +73,10 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
         assertThat("we can get a page", programPersistence.findSpecialties(null).hasContent(), is(true));
     }
 
+    /**
+     * Make sure that we find a program that isn't first in ID, ensure that the default
+     * sort ordering is by HLI order.
+     */
     @Test
     public void description() {
         Program p5320 = new Program(5320);
@@ -81,5 +90,17 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
                 programPersistence.find(new ProgramSearchFilter().addTerm("heart").addTerm("repair"),
                         new PageRequest(0, 1)),
                 hasItems(new Program(5320)));
+    }
+
+    /**
+     * Ensures that when/if the client side only specifies type.weight we make sure to
+     * add the HLI sorting.
+     */
+    @Test
+    public void sort() {
+        assertThat("make default sort happen",
+                programPersistence.find(new ProgramSearchFilter().addTerm("heart").addTerm("repair"),
+                        new PageRequest(0, 1, new Sort("type.weight"))),
+                hasItems(new Program(10)));
     }
 }
