@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create hli search tables" author="Matt">
+
+        <createTable tableName="hli_search_request" schemaName="program">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_hli_search_request"/>
+            </column>
+            <column name="search_term" type="nvarchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date_utc" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="hli_search_response" schemaName="program">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints primaryKey="true" primaryKeyName="pk_hli_search_response"/>
+            </column>
+            <column name="emmi_code" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weight" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hli_search_request_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="add indexes and constraints to hli tables" author="Matt">
+
+        <createIndex tableName="hli_search_request" schemaName="program"
+                     indexName="ix_hli_search_request_search_term">
+            <column name="search_term"/>
+        </createIndex>
+
+        <createIndex tableName="hli_search_response" schemaName="program"
+                     indexName="ix_hli_search_response_hli_search_request_id_emmi_code">
+            <column name="hli_search_request_id"/>
+            <column name="emmi_code"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="hli_search_response"
+                                 baseColumnNames="hli_search_request_id"
+                                 baseTableSchemaName="program"
+                                 constraintName="fk_hli_search_response_hli_search_request"
+                                 referencedTableName="hli_search_request"
+                                 referencedColumnNames="id"
+                                 referencedTableSchemaName="program"/>
+        <addForeignKeyConstraint baseTableName="hli_search_response"
+                                 baseColumnNames="emmi_code"
+                                 baseTableSchemaName="program"
+                                 constraintName="fk_hli_search_response_program"
+                                 referencedTableName="rf_emmi"
+                                 referencedColumnNames="emmi_cd"
+                                 referencedTableSchemaName="program"/>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -84,7 +84,8 @@
         <class>com.emmisolutions.emmimanager.model.audit.login.LoginStatus</class>
         <class>com.emmisolutions.emmimanager.model.audit.logout.Logout</class>
         <class>com.emmisolutions.emmimanager.model.audit.logout.LogoutSource</class>
-        <class>com.emmisolutions.emmimanager.model.program.hli.HliProgram</class>
+        <class>com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest</class>
+        <class>com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
