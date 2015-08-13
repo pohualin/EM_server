@@ -11,17 +11,17 @@ import java.util.Objects;
  * An HLI program
  */
 @Entity
-@Table(name = "\"@hli_search_results\"")
+@Table(name = "\"#hli_search_results\"")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedNativeQueries({
         @NamedNativeQuery(name = "org.hibernate.dialect.H2Dialect",
                 query = "CREATE LOCAL TEMPORARY TABLE " +
-                        "\"@hli_search_results\"(emmi_code INT PRIMARY KEY, weight INT) TRANSACTIONAL"),
+                        "\"#hli_search_results\"(emmi_code INT PRIMARY KEY, weight INT) TRANSACTIONAL"),
         @NamedNativeQuery(name = "org.hibernate.dialect.PostgreSQL9Dialect",
                 query = "CREATE LOCAL TEMPORARY TABLE " +
-                        "\"@hli_search_results\"(emmi_code INT PRIMARY KEY, weight INT) ON COMMIT DROP"),
+                        "\"#hli_search_results\"(emmi_code INT PRIMARY KEY, weight INT) ON COMMIT DROP"),
         @NamedNativeQuery(name = "org.hibernate.dialect.SQLServer2012Dialect",
-                query = "CREATE TABLE @hli_search_results(emmi_code INT PRIMARY KEY, weight INT)"),
+                query = "CREATE TABLE #hli_search_results(emmi_code INT PRIMARY KEY, weight INT)"),
 })
 public class HliProgram implements Serializable {
 
