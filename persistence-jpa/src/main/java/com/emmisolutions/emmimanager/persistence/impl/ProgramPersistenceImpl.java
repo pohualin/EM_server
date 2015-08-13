@@ -58,9 +58,9 @@ public class ProgramPersistenceImpl implements ProgramPersistence {
     public Page<Program> find(ProgramSearchFilter filter, Pageable pageable) {
         Sort sort = pageable != null ? pageable.getSort() : null;
         boolean hasSearchTerms = filter != null && !CollectionUtils.isEmpty(filter.getTerms());
-        if (hasSearchTerms && sort == null) {
+        if (hasSearchTerms && (sort == null || sort.equals(new Sort("type.weight")))) {
             // default of sorting by weight, if there are search terms and no other sorts are present
-            sort = new Sort("hliProgram.weight");
+            sort = new Sort("type.weight", "hliProgram.weight");
         }
         try {
             return programRepository.findAll(where(programSpecifications

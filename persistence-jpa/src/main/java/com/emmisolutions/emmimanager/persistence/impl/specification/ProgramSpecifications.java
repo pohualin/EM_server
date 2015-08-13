@@ -48,6 +48,7 @@ public class ProgramSpecifications {
                     for (Specialty specialty : filter.getSpecialties()) {
                         if (specialty.getId() != null) {
                             SetJoin<Program, ProgramSpecialty> join = root.join(Program_.programSpecialty);
+                            root.join(Program_.type, JoinType.INNER);
                             predicates.add(
                                     cb.and(
                                             cb.isTrue(join.get(ProgramSpecialty_.active)),
@@ -102,7 +103,6 @@ public class ProgramSpecifications {
                             }
                         }
                     }
-
                     // inner join to the search table to only allow HLI codes
                     root.join(Program_.hliProgram, JoinType.INNER);
                 }

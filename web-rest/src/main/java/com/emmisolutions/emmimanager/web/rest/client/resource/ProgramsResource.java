@@ -1,19 +1,10 @@
 package com.emmisolutions.emmimanager.web.rest.client.resource;
 
-import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
-import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
-import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.model.TeamLocation;
-import com.emmisolutions.emmimanager.model.TeamProvider;
-import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.program.Program;
 import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
 import com.emmisolutions.emmimanager.model.program.Specialty;
-import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
-import com.emmisolutions.emmimanager.service.ProgramService;
-import com.emmisolutions.emmimanager.service.TeamLocationService;
-import com.emmisolutions.emmimanager.service.TeamProviderService;
-import com.emmisolutions.emmimanager.service.TeamProviderTeamLocationService;
+import com.emmisolutions.emmimanager.service.*;
 import com.emmisolutions.emmimanager.web.rest.admin.model.PagedResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.ProgramResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.ProgramResourcePage;
@@ -23,12 +14,10 @@ import com.emmisolutions.emmimanager.web.rest.client.model.program.provider.Team
 import com.emmisolutions.emmimanager.web.rest.client.model.program.provider.TeamProviderResourcePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.specialty.SpecialtyResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.program.specialty.SpecialtyResourcePage;
-import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamSchedulingConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamSchedulingConfigurationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
-
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -40,8 +29,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,37 +44,36 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
         APPLICATION_XML_VALUE})
 public class ProgramsResource {
 
+    public static final String SPECIALTY_ID_REQUEST_PARAM = "s";
+    public static final String TERM_REQUEST_PARAM = "q";
+    /**
+     * This is the request parameter name for the team provider id
+     */
+    public static final String TEAM_PROVIDER_ID_REQUEST_PARAM = "teamProviderId";
+    /**
+     * This is the request parameter for team location id
+     */
+    public static final String TEAM_LOCATION_ID_REQUEST_PARAM = "teamLocationId";
     @Resource
     ProgramService programService;
-
     @Resource
     TeamLocationService teamLocationService;
-
     @Resource
     TeamProviderService teamProviderService;
-
     @Resource
     TeamProviderTeamLocationService teamProviderTeamLocationService;
-
     @Resource(name = "programResourceAssembler")
     ResourceAssembler<Program, ProgramResource> programResourceResourceAssembler;
-
     @Resource(name = "clientTeamLocationResourceAssembler")
     ResourceAssembler<TeamLocation, TeamLocationResource> teamLocationResourceResourceAssembler;
-
     @Resource(name = "clientTeamProviderResourceAssembler")
     ResourceAssembler<TeamProvider, TeamProviderResource> teamProviderResourceResourceAssembler;
-
     @Resource(name = "specialtyResourceAssembler")
     ResourceAssembler<Specialty, SpecialtyResource> specialtyResourceAssembler;
-    
     @Resource
     ClientTeamSchedulingConfigurationService teamSchedulingConfigurationService;
-    
     @Resource
     TeamSchedulingConfigurationResourceAssembler schedulingConfigurationAssembler;
-
-    public static final String SPECIALTY_ID_REQUEST_PARAM = "s";
 
     /**
      * Find possible programs that can be scheduled for a team
@@ -110,11 +96,12 @@ public class ProgramsResource {
     public ProgramResourcePage possiblePrograms(
             @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
-            @PageableDefault(size = 10, sort = {"type.weight", "name"}) Pageable pageable,
+            @PageableDefault(size = 10) Pageable pageable,
             PagedResourcesAssembler<Program> assembler,
-            @RequestParam(value = SPECIALTY_ID_REQUEST_PARAM, required = false) Set<Integer> specialtyIds) {
+            @RequestParam(value = SPECIALTY_ID_REQUEST_PARAM, required = false) Set<Integer> specialtyIds,
+            @RequestParam(value = TERM_REQUEST_PARAM, required = false) String term) {
 
-        ProgramSearchFilter programSearchFilter = new ProgramSearchFilter();
+        ProgramSearchFilter programSearchFilter = new ProgramSearchFilter().addTerm(term);
         if (!CollectionUtils.isEmpty(specialtyIds)) {
             for (Integer specialtyId : specialtyIds) {
                 programSearchFilter.addSpecialty(new Specialty(specialtyId));
@@ -139,7 +126,7 @@ public class ProgramsResource {
             @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
             @PageableDefault(size = 10, sort = "id") Pageable pageable,
-            PagedResourcesAssembler<Specialty> assembler){
+            PagedResourcesAssembler<Specialty> assembler) {
 
         Page<Specialty> specialtyPage = programService.findSpecialties(pageable);
 
@@ -147,11 +134,6 @@ public class ProgramsResource {
                 assembler.toResource(specialtyPage, specialtyResourceAssembler),
                 specialtyPage);
     }
-
-    /**
-     * This is the request parameter name for the team provider id
-     */
-    public static final String TEAM_PROVIDER_ID_REQUEST_PARAM = "teamProviderId";
 
     /**
      * Find possible locations for a team using a team provider as a possible filter
@@ -202,7 +184,7 @@ public class ProgramsResource {
             // change to non-provider based search if we are searching the first page
             searchWithoutProvider = !tptlPageSpec.hasPrevious();
         }
-        if (ret == null && searchWithoutProvider){
+        if (ret == null && searchWithoutProvider) {
             // not trying to search by provider id or first page of provider based search returned nothing
             Page<TeamLocation> teamLocationPage =
                     teamLocationService.findAllTeamLocationsWithTeam(pageable, new Team(teamId));
@@ -217,11 +199,6 @@ public class ProgramsResource {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-
-    /**
-     * This is the request parameter for team location id
-     */
-    public static final String TEAM_LOCATION_ID_REQUEST_PARAM = "teamLocationId";
 
     /**
      * Find possible providers that can be scheduled for a team

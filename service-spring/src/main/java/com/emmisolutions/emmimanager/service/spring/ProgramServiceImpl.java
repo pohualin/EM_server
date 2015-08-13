@@ -22,7 +22,7 @@ public class ProgramServiceImpl implements ProgramService {
     ProgramPersistence programPersistence;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional // not read-only due to temp table creation and insertion
     public Page<Program> find(ProgramSearchFilter filter, Pageable pageable) {
         return programPersistence.find(filter, pageable);
     }

@@ -14,7 +14,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,9 +48,9 @@ public class HliSearchRepositoryImpl implements HliSearchRepository {
         if (hliSearchResponseEntity.getStatusCode().is2xxSuccessful()) {
             Set<HliProgram> ret = null;
             for (HliProgram aProgram : hliSearchResponseEntity.getBody()) {
-                if (StringUtils.isNumeric(aProgram.getCode())) {
+                if (aProgram.getCode() != null) {
                     if (ret == null) {
-                        ret = new HashSet<>();
+                        ret = new LinkedHashSet<>();
                     }
                     aProgram.setWeight(weight);
                     ret.add(aProgram);
