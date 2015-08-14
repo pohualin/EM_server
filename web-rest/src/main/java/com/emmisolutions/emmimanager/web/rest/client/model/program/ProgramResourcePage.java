@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource.SPECIALTY_ID_REQUEST_PARAM;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource.TERM_REQUEST_PARAM;
+import static org.springframework.hateoas.TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED;
 
 /**
  * A page of ProgramResource objects
@@ -48,7 +50,8 @@ public class ProgramResourcePage extends PagedResource<ProgramResource> {
                 // add args to template
                 UriTemplate uriTemplate = new UriTemplate(link.getHref())
                         .with(new TemplateVariables(
-                                new TemplateVariable(SPECIALTY_ID_REQUEST_PARAM, TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)
+                                new TemplateVariable(SPECIALTY_ID_REQUEST_PARAM, TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                                new TemplateVariable(TERM_REQUEST_PARAM, REQUEST_PARAM_CONTINUED)
                         ));
                 this.links.add(new Link(uriTemplate.toString(), rel));
             } else {
@@ -56,6 +59,11 @@ public class ProgramResourcePage extends PagedResource<ProgramResource> {
                 if (!CollectionUtils.isEmpty(filter.getSpecialties())) {
                     for (Specialty s : filter.getSpecialties()) {
                         builder.queryParam(SPECIALTY_ID_REQUEST_PARAM, s.getId());
+                    }
+                }
+                if (!CollectionUtils.isEmpty(filter.getTerms())) {
+                    for (String term : filter.getTerms()) {
+                        builder.queryParam(TERM_REQUEST_PARAM, term);
                     }
                 }
                 this.links.add(new Link(builder.build().encode().toUriString(), rel));

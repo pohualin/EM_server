@@ -335,10 +335,7 @@ public abstract class BaseIntegrationTest {
                 .randomAlphanumeric(18)));
         teamService.create(team);
         
-        teamSchedulingConfig.findByTeam(team);
-        
         ClientTeamSchedulingConfiguration schedulingConfig = teamSchedulingConfig.findByTeam(team);
-              
         teamSchedulingConfig.saveOrUpdate(schedulingConfig);
         return team;
     }

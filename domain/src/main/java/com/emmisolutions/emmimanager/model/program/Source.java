@@ -27,6 +27,18 @@ public class Source {
     @Column(name = "emmi_src_nm")
     private String name;
 
+    public Source() {
+    }
+
+    /**
+     * Source by id
+     *
+     * @param id the id
+     */
+    public Source(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }

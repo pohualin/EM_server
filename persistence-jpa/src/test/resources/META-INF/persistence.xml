@@ -84,8 +84,10 @@
         <class>com.emmisolutions.emmimanager.model.audit.login.LoginStatus</class>
         <class>com.emmisolutions.emmimanager.model.audit.logout.Logout</class>
         <class>com.emmisolutions.emmimanager.model.audit.logout.LogoutSource</class>
+        <class>com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest</class>
+        <class>com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse</class>
         <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
             <property name="org.hibernate.envers.audit_table_suffix" value="_audit"/>
             <property name="org.hibernate.envers.revision_field_name" value="revision"/>
@@ -96,6 +98,7 @@
             <property name="hibernate.cache.use_query_cache" value="false"/>
             <property name="hibernate.generate_statistics" value="false"/>
             <property name="hibernate.cache.hazelcast.use_lite_member" value="true"/>
+            <property name="hibernate.jdbc.batch_size" value="50"/>
         </properties>
     </persistence-unit>
 </persistence>

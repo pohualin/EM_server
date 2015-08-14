@@ -86,4 +86,16 @@ public class ClientTeamSelfRegConfigurationPersistenceIntegrationTest extends
         selfRegConfigurationForTeamTwo.setCode("CODE_FOR_TEAM_ONE");
         ClientTeamSelfRegConfiguration selfRegConfigurationSavedForTeamTwo = clientTeamSelfRegConfigurationPersistence.save(selfRegConfigurationForTeamTwo);
     }
+
+    @Test
+    public void testGetSelfRegConfigByCode(){
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
+        selfRegConfiguration.setTeam(team);
+        selfRegConfiguration.setCode("codeToTestFindByCode");
+        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationPersistence.save(selfRegConfiguration);
+        ClientTeamSelfRegConfiguration foundSelfRegConfiguration = clientTeamSelfRegConfigurationPersistence.findByCode(selfRegConfiguration.getCode());
+        assertThat("the saved self reg config is found by code:", foundSelfRegConfiguration, is(clientTeamSelfRegConfigurationPersistence.reload(selfRegConfigurationSaved.getId())));
+    }
 }

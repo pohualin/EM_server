@@ -29,6 +29,18 @@ public class Type {
 
     private boolean active;
 
+    public Type() {
+    }
+
+    /**
+     * Type by id
+     *
+     * @param id the id
+     */
+    public Type(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
