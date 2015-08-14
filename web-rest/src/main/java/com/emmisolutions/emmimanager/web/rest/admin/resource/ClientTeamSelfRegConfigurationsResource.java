@@ -56,28 +56,6 @@ public class ClientTeamSelfRegConfigurationsResource {
     }
 
     /**
-     * Find client team self registration configuration by given code if there is any
-     *
-     * @param code
-     * @return a ClientTeamSelfRegConfiguration response entity
-     */
-    @RequestMapping(value = "/teams/ref/self_reg_by_code", method = RequestMethod.GET)
-    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
-    public ResponseEntity<ClientTeamSelfRegConfigurationResource> findByCode(
-            @RequestParam(value = "code", required = false) String code) {
-
-        ClientTeamSelfRegConfiguration found = clientTeamSelfRegConfigurationService.findByCode(code);
-
-        if (found != null) {
-            return new ResponseEntity<>(selfRegConfigResourceAssembler.toResource(
-                    found),
-                    HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
-
-    /**
      * POST to save client team self registration configuration
      *
      * @param teamId                         for the self reg configuration
@@ -116,16 +94,23 @@ public class ClientTeamSelfRegConfigurationsResource {
             @PathVariable("teamId") Long teamId,
             @RequestBody ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {
         clientTeamSelfRegConfiguration.setTeam(new Team(teamId));
-        ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.update(clientTeamSelfRegConfiguration);
 
-        if (selfRegConfiguration != null) {
+        ClientTeamSelfRegConfiguration found = clientTeamSelfRegConfigurationService.findByCode(clientTeamSelfRegConfiguration.getCode());
+        if (found != null && !found.getId().equals(clientTeamSelfRegConfiguration.getId())) {
             return new ResponseEntity<>(
                     selfRegConfigResourceAssembler
-                            .toResource(selfRegConfiguration),
-                    HttpStatus.OK);
+                            .toResource(found),
+                    HttpStatus.NOT_ACCEPTABLE);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.update(clientTeamSelfRegConfiguration);
+            if (selfRegConfiguration != null) {
+                return new ResponseEntity<>(
+                        selfRegConfigResourceAssembler
+                                .toResource(selfRegConfiguration),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            }
         }
-
     }
 }
