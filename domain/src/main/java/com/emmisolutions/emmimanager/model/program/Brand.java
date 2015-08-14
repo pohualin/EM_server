@@ -27,6 +27,18 @@ public class Brand {
     @Column(name = "emmi_brnd_dscrptn")
     private String description;
 
+    public Brand() {
+    }
+
+    /**
+     * Brand by ID
+     *
+     * @param id to use
+     */
+    public Brand(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
