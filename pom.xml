@@ -34,7 +34,7 @@
         <h2.version>1.4.187</h2.version>
         <hibernate.version>4.3.10.Final</hibernate.version>
         <hibernate.validator.version>5.1.1.Final</hibernate.validator.version>
-        <spring.data.version>1.7.1.RELEASE</spring.data.version>
+        <spring.data.version>1.7.4.EMMI</spring.data.version>
         <spring.security.version>3.2.5.RELEASE</spring.security.version>
         <liquibase.version>3.2.0</liquibase.version>
         <liquibase.hibernate.version>3.4</liquibase.hibernate.version>
@@ -184,6 +184,7 @@
                     <path>/</path>
                     <!-- if you want to use test dependencies rather than only runtime -->
                     <useTestClasspath>false</useTestClasspath>
+                    <contextFile>src/main/webapp/META-INF/context.xml</contextFile>
                 </configuration>
                 <!-- For any extra dependencies needed when running embedded Tomcat (not WAR dependencies) add them below -->
                 <dependencies>
@@ -379,6 +380,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>

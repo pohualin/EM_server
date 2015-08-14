@@ -1,14 +1,9 @@
 package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
-import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
-import com.emmisolutions.emmimanager.service.ClientTeamPhoneConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientTeamSelfRegConfigurationService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamPhoneConfigurationResource;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamPhoneConfigurationResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamSelfRegConfigurationResource;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamSelfRegConfigurationResourceAssembler;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
@@ -25,8 +20,8 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
  * ClientTeamSelfRegConfigurationsResource REST API
  */
 @RestController
-@RequestMapping(value = "/webapi", produces = { APPLICATION_JSON_VALUE,
-        APPLICATION_XML_VALUE })
+@RequestMapping(value = "/webapi", produces = {APPLICATION_JSON_VALUE,
+        APPLICATION_XML_VALUE})
 public class ClientTeamSelfRegConfigurationsResource {
 
     @Resource
@@ -43,7 +38,7 @@ public class ClientTeamSelfRegConfigurationsResource {
      * @return a ClientTeamSelfRegConfiguration response entity
      */
     @RequestMapping(value = "/teams/{teamId}/self_reg_configuration", method = RequestMethod.GET)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientTeamSelfRegConfigurationResource> findByTeam(
             @PathVariable("teamId") Long teamId,
             PagedResourcesAssembler<ClientTeamSelfRegConfiguration> assembler) {
@@ -55,21 +50,42 @@ public class ClientTeamSelfRegConfigurationsResource {
             return new ResponseEntity<>(selfRegConfigResourceAssembler.toResource(
                     clientTeamSelfRegConfiguration),
                     HttpStatus.OK);
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
+    /**
+     * Find client team self registration configuration by given code if there is any
+     *
+     * @param code
+     * @return a ClientTeamSelfRegConfiguration response entity
+     */
+    @RequestMapping(value = "/teams/ref/self_reg_by_code", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<ClientTeamSelfRegConfigurationResource> findByCode(
+            @RequestParam(value = "code", required = false) String code) {
+
+        ClientTeamSelfRegConfiguration found = clientTeamSelfRegConfigurationService.findByCode(code);
+
+        if (found != null) {
+            return new ResponseEntity<>(selfRegConfigResourceAssembler.toResource(
+                    found),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 
     /**
      * POST to save client team self registration configuration
      *
-     * @param teamId    for the self reg configuration
+     * @param teamId                         for the self reg configuration
      * @param clientTeamSelfRegConfiguration the user client team self reg configuration that needs to save or update
      * @return a ClientTeamSelfRegConfiguration response entity, with HttpStatus.CREATED or HttpStatus.NOT_ACCEPTABLE
      */
     @RequestMapping(value = "/teams/{teamId}/self_reg_configuration", method = RequestMethod.POST)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientTeamSelfRegConfigurationResource> save(
             @PathVariable("teamId") Long teamId,
             @RequestBody ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {
@@ -90,12 +106,12 @@ public class ClientTeamSelfRegConfigurationsResource {
     /**
      * PUT to update client team self registration configuration
      *
-     * @param teamId    for the self reg configuration
+     * @param teamId                         for the self reg configuration
      * @param clientTeamSelfRegConfiguration the user client team self reg configuration that needs to save or update
      * @return a ClientTeamSelfRegConfiguration response entity, with HttpStatus.OK or HttpStatus.NOT_ACCEPTABLE
      */
     @RequestMapping(value = "/teams/{teamId}/self_reg_configuration", method = RequestMethod.PUT)
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ClientTeamSelfRegConfigurationResource> update(
             @PathVariable("teamId") Long teamId,
             @RequestBody ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {

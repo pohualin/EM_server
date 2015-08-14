@@ -10,7 +10,9 @@ import com.emmisolutions.emmimanager.persistence.repo.ProgramSpecialtyRepository
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 
@@ -33,8 +35,17 @@ public class ProgramPersistenceImpl implements ProgramPersistence {
 
     @Override
     public Page<Program> find(ProgramSearchFilter filter, Pageable pageable) {
-        return programRepository.findAll(where(programSpecifications.hasSpecialties(filter)),
-                pageable != null ? pageable : new PageRequest(0, 10));
+        Sort sort = pageable != null ? pageable.getSort() : null;
+        boolean hasSearchTerms = filter != null && !CollectionUtils.isEmpty(filter.getTerms());
+        if (hasSearchTerms && (sort == null || sort.equals(new Sort("type.weight")))) {
+            // default of sorting by weight, if there are search terms and no other sorts are present
+            sort = new Sort("type.weight", "hliProgram.weight");
+        }
+        return programRepository.findAll(where(programSpecifications
+                        .hasSpecialties(filter))
+                        .and(programSpecifications.matchesTerms(filter)),
+                pageable != null ? new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sort) :
+                        new PageRequest(0, 10, sort));
     }
 
     @Override

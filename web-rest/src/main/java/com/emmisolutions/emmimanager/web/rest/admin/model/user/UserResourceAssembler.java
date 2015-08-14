@@ -9,6 +9,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.provider.ProviderPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.schedule.ScheduledProgramResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamSelfRegConfigurationResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.patientSelfReg.LanguageResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientPage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
@@ -98,7 +99,7 @@ public class UserResourceAssembler implements ResourceAssembler<UserAdmin, UserR
             ret.setWebApiUser(user.isWebApiUser());
             ret.add(linkTo(methodOn(UsersResource.class).updatePassword(user.getId(), null)).withRel("password"));
         }
-
+        ret.add(ClientTeamSelfRegConfigurationResourceAssembler.findTeamBySelfRegCodeLink());
         return ret;
     }
 

@@ -121,4 +121,16 @@ public class ClientTeamSelfRegConfigurationServiceIntegrationTest extends
         ClientTeamSelfRegConfiguration selfRegConfigurationSavedForUpdated = clientTeamSelfRegConfigurationService.update(selfRegConfigurationSaved);
         assertThat("is the same", selfRegConfigurationSaved.getId(), is(selfRegConfigurationSavedForUpdated.getId()));
     }
+
+    @Test
+    public void testGetSelfRegConfigByCode(){
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+        ClientTeamSelfRegConfiguration selfRegConfiguration = new ClientTeamSelfRegConfiguration();
+        selfRegConfiguration.setTeam(team);
+        selfRegConfiguration.setCode("sampleCodeToTestFindByCode");
+        ClientTeamSelfRegConfiguration selfRegConfigurationSaved = clientTeamSelfRegConfigurationService.create(selfRegConfiguration);
+        ClientTeamSelfRegConfiguration foundSelfRegConfiguration = clientTeamSelfRegConfigurationService.findByCode(selfRegConfiguration.getCode());
+        assertThat("the saved self reg config is found by code:", foundSelfRegConfiguration, is(selfRegConfigurationSaved));
+    }
 }
