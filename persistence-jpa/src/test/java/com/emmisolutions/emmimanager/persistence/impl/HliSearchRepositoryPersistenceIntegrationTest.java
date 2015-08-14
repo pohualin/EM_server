@@ -49,6 +49,8 @@ public class HliSearchRepositoryPersistenceIntegrationTest extends BaseIntegrati
                         .addTerm("PHENYLEPHRINE")),
                 is(hliSearchRequest)
         );
+
+        hliSearchRepository.cacheClean(); // just make sure it doesn't throw stack
     }
 
     /**

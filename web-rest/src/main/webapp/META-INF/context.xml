@@ -32,8 +32,11 @@
                  type="java.lang.String"/>
     <!--<Environment name="salesforce.formRefreshIntervalMillis" value="900000" type="java.lang.String"/>-->
 
-    <!-- HLI settins -->
+    <!-- HLI settings -->
     <!--<Environment name="hli.search.url" value="http://192.168.101.65:8080/hliservice/search" type="java.lang.String"/>-->
+    <!-- cache cleanup times are specified in millis, e.g. 900000 == 15 minutes -->
+    <!--<Environment name="hli.cache.oldest" value="900000" type="java.lang.String"/>-->
+    <!--<Environment name="hli.cache.cleanup.job.interval" value="900000" type="java.lang.String"/>-->
 
     <!--
         client application entry point. This is the path for end users to see the client facing application.

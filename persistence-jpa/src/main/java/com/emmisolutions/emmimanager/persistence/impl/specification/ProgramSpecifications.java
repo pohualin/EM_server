@@ -69,18 +69,13 @@ public class ProgramSpecifications {
             public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (filter != null && !CollectionUtils.isEmpty(filter.getTerms())) {
 
-                    // search HLI and retrieve (or create) the persistent search request
+                    // retrieve (or search HLI and create) the persistent search request
                     HliSearchRequest searchRequest = hliSearchRepository.find(filter);
 
                     // find all programs (on a search response) from the search request
-                    Subquery<Program> programSubquery = query.subquery(Program.class);
-                    Root<HliSearchResponse> searchResponseRoot = programSubquery.from(HliSearchResponse.class);
-                    programSubquery
-                            .select(searchResponseRoot.get(HliSearchResponse_.program))
-                            .where(cb.equal(searchResponseRoot.get(HliSearchResponse_.hliSearchRequest), searchRequest));
-
-                    // filter programs based upon the search response programs
-                    return cb.in(root).value(programSubquery);
+                    SetJoin<Program, HliSearchResponse> hliProgramJoin = root.join(Program_.hliProgram, JoinType.INNER);
+                    hliProgramJoin.alias("hliProgram_springDataOrderBy"); // use the inner join for order by
+                    return cb.equal(hliProgramJoin.get(HliSearchResponse_.hliSearchRequest), searchRequest);
                 }
                 return null;
             }

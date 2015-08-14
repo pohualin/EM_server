@@ -5,7 +5,6 @@ import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
 import com.emmisolutions.emmimanager.model.program.Specialty;
 import com.emmisolutions.emmimanager.persistence.ProgramPersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.ProgramSpecifications;
-import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ProgramRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ProgramSpecialtyRepository;
 import org.springframework.data.domain.Page;
@@ -33,9 +32,6 @@ public class ProgramPersistenceImpl implements ProgramPersistence {
 
     @Resource
     ProgramSpecifications programSpecifications;
-
-    @Resource
-    HliSearchRepository hliSearchRepository;
 
     @Override
     public Page<Program> find(ProgramSearchFilter filter, Pageable pageable) {

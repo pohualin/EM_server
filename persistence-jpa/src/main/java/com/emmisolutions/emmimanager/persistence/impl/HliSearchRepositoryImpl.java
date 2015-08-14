@@ -12,6 +12,8 @@ import com.emmisolutions.emmimanager.persistence.repo.ProgramRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +31,14 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.joda.time.DateTimeZone.UTC;
 
 /**
  * Repository for HLI searches
@@ -41,12 +46,18 @@ import java.util.List;
 @Repository
 public class HliSearchRepositoryImpl implements HliSearchRepository {
 
+    private transient final Logger LOGGER = LoggerFactory.getLogger(HliSearchRepositoryImpl.class);
+
     @Resource
     HliSearchRequestRepository hliSearchRequestRepository;
     @Resource
     ProgramRepository programRepository;
+    @PersistenceContext
+    EntityManager entityManager;
     @Value("${hli.search.url:http://192.168.101.65:8080/hliservice/search}")
     private String baseUrl;
+    @Value("${hli.cache.oldest:900000}")
+    private int oldestSearchRequest;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public HliSearchRequest find(ProgramSearchFilter filter) {
@@ -67,6 +78,19 @@ public class HliSearchRepositoryImpl implements HliSearchRepository {
             ret = create(query);
         }
         return ret;
+    }
+
+    @Transactional
+    @Scheduled(fixedDelayString = "${hli.cache.cleanup.job.interval:900000}")
+    public void cacheClean() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<HliSearchRequest> delete = criteriaBuilder.createCriteriaDelete(HliSearchRequest.class);
+        Root<HliSearchRequest> hliSearchRequest = delete.from(HliSearchRequest.class);
+        delete.where(criteriaBuilder.lessThan(hliSearchRequest.get("createdDate").as(DateTime.class),
+                DateTime.now(UTC).minusMillis(oldestSearchRequest)));
+        Query query = entityManager.createQuery(delete);
+        int numDeleted = query.executeUpdate();
+        LOGGER.debug("HLI cache clear job executed successfully and cleaned {} entries.", numDeleted);
     }
 
     private HliSearchRequest create(String query) {
