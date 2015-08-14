@@ -65,4 +65,34 @@
 
     </changeSet>
 
+    <changeSet id="re-add constraints with cascading deletes" author="Matt">
+
+        <dropForeignKeyConstraint baseTableName="hli_search_response"
+                                  baseTableSchemaName="program"
+                                  constraintName="fk_hli_search_response_program"/>
+
+        <addForeignKeyConstraint baseTableName="hli_search_response"
+                                 baseColumnNames="emmi_code"
+                                 baseTableSchemaName="program"
+                                 constraintName="fk_hli_search_response_program"
+                                 referencedTableName="rf_emmi"
+                                 referencedColumnNames="emmi_cd"
+                                 referencedTableSchemaName="program"
+                                 onDelete="CASCADE"/>
+
+        <dropForeignKeyConstraint baseTableName="hli_search_response"
+                                  baseTableSchemaName="program"
+                                  constraintName="fk_hli_search_response_hli_search_request"/>
+
+        <addForeignKeyConstraint baseTableName="hli_search_response"
+                                 baseColumnNames="hli_search_request_id"
+                                 baseTableSchemaName="program"
+                                 constraintName="fk_hli_search_response_hli_search_request"
+                                 referencedTableName="hli_search_request"
+                                 referencedColumnNames="id"
+                                 referencedTableSchemaName="program"
+                                 onDelete="CASCADE"/>
+
+    </changeSet>
+
 </databaseChangeLog>

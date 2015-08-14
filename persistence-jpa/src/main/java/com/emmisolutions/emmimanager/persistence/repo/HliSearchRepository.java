@@ -12,4 +12,9 @@ public interface HliSearchRepository {
      * @return a cached search request
      */
     HliSearchRequest find(ProgramSearchFilter filter);
+
+    /**
+     * Cleans the cache of saved HliSearchRequests
+     */
+    void cacheClean();
 }
