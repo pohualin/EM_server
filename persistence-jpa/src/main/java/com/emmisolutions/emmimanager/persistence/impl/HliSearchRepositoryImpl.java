@@ -36,7 +36,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.joda.time.DateTimeZone.UTC;
 
@@ -112,11 +114,24 @@ public class HliSearchRepositoryImpl implements HliSearchRepository {
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<HliProgramJson>>() {
                         });
         int weight = 0;
+
+        // successful response, create db cache based upon responses
         if (hliSearchResponseEntity.getStatusCode().is2xxSuccessful()) {
             List<HliSearchResponse> searchResponses = null;
 
+            // load all of the ids into jpa session
+            Set<Integer> ids = new HashSet<>();
+            for (HliProgramJson hliProgramJson : hliSearchResponseEntity.getBody()) {
+                if (StringUtils.isNumeric(hliProgramJson.getCode())) {
+                    ids.add(new Integer(hliProgramJson.getCode()));
+                }
+            }
+            programRepository.findAll(ids);
+
+            // create search response objects from the hli response
             for (HliProgramJson aProgram : hliSearchResponseEntity.getBody()) {
                 if (StringUtils.isNumeric(aProgram.getCode())) {
+                    // this won't call the db because of the L1 cache from the previous call
                     Program program = programRepository.findOne(new Integer(aProgram.getCode()));
                     if (program != null) {
                         if (searchResponses == null) {
