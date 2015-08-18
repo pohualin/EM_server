@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security.cas;
 
-import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.HttpProxyAwareAuthenticationDetails;
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
 import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.HttpProxyAwareAuthenticationDetailsImpl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;

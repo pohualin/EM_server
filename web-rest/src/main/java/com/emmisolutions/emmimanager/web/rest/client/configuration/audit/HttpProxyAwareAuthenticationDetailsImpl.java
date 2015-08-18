@@ -1,11 +1,12 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.audit;
 
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Pattern;
 
-import static com.emmisolutions.emmimanager.web.rest.client.configuration.audit.HttpProxyAwareAuthenticationDetails.RANGES.*;
+import static com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails.RANGES.*;
 
 
 /**
@@ -132,12 +133,12 @@ public class HttpProxyAwareAuthenticationDetailsImpl implements HttpProxyAwareAu
         return NO_IP;
     }
 
-    private String longToIpV4(long longIp) {
-        int octet3 = (int) ((longIp >> 24) % 256);
-        int octet2 = (int) ((longIp >> 16) % 256);
-        int octet1 = (int) ((longIp >> 8) % 256);
-        int octet0 = (int) ((longIp) % 256);
-        return octet3 + "." + octet2 + "." + octet1 + "." + octet0;
-    }
+//    private String longToIpV4(long longIp) {
+//        int octet3 = (int) ((longIp >> 24) % 256);
+//        int octet2 = (int) ((longIp >> 16) % 256);
+//        int octet1 = (int) ((longIp >> 8) % 256);
+//        int octet0 = (int) ((longIp) % 256);
+//        return octet3 + "." + octet2 + "." + octet1 + "." + octet0;
+//    }
 
 }
