@@ -106,4 +106,27 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         assertFalse("translation is not null", strings.getContent().isEmpty());
     }
 
+    @Test
+    public void testBusinessRules() {
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+
+        PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
+        patientSelfRegConfig.setTeam(team);
+        patientSelfRegConfig.setExposeEmail(false);
+        patientSelfRegConfig.setExposeId(false);
+        patientSelfRegConfig.setExposePhone(false);
+        patientSelfRegConfig.setRequirePhone(true);
+        patientSelfRegConfig.setRequireEmail(true);
+        patientSelfRegConfig.setRequireId(true);
+        PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
+        assertThat("patient self registration configuration was created:", created.getId(), is(notNullValue()));
+
+        assertFalse(created.isRequirePhone());
+        assertFalse(created.isRequireEmail());
+        assertFalse(created.isRequireId());
+        assertFalse(created.isExposeEmail());
+        assertFalse(created.isExposeId());
+        assertFalse(created.isExposePhone());
+    }
 }
