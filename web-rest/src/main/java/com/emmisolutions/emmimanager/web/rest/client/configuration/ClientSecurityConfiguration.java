@@ -28,9 +28,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -40,6 +42,7 @@ import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import java.util.UUID;
 
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
@@ -159,6 +162,20 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     /**
+     * Hook up the anonymous authentication filter to the proxy aware details source
+     *
+     * @return the filter
+     */
+    @Bean
+    AnonymousAuthenticationFilter anonymousAuthenticationFilter() {
+        AnonymousAuthenticationFilter ret = new AnonymousAuthenticationFilter(UUID.randomUUID().toString(),
+                new AnonymousUser() {
+                }, AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+        ret.setAuthenticationDetailsSource(authenticationDetailsSource());
+        return ret;
+    }
+
+    /**
      * This service can switch between impersonation and regular client
      * based remember me based upon the cookie names passed.
      * @return the remember me services
@@ -227,8 +244,7 @@ public class ClientSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi-client/**")
                 .and()
                 .anonymous()
-                .principal(new AnonymousUser() {
-                })
+                .authenticationFilter(anonymousAuthenticationFilter())
                     .and()
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(authenticationEntryPoint,

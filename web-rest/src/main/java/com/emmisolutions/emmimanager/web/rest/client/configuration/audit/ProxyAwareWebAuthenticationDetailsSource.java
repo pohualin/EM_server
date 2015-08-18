@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.audit;
 
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 
 import javax.servlet.http.HttpServletRequest;

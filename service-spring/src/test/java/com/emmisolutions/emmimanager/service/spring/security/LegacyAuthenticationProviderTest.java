@@ -1,14 +1,16 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
+import com.emmisolutions.emmimanager.exception.IpAddressAuthenticationException;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdminPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
-import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
-import com.emmisolutions.emmimanager.service.UserClientRoleService;
-import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.*;
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -23,9 +25,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Collections;
 
+import static com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails.RANGES.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests the authentication provider
@@ -55,6 +59,12 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
 
     @Resource(name = "adminUserDetailsService")
     UserDetailsService adminUserDetailsService;
+
+    @Resource
+    IpRestrictConfigurationService ipRestrictConfigurationService;
+
+    @Resource
+    ClientRestrictConfigurationService clientRestrictConfigurationService;
 
     @Resource
     UserClientService userClientService;
@@ -93,6 +103,142 @@ public class LegacyAuthenticationProviderTest extends BaseIntegrationTest {
         UserAdmin savedUserAdmin = userAdminPersistence.saveOrUpdate(userAdmin);
         authenticationProvider.authenticate(
                 new UsernamePasswordAuthenticationToken(savedUserAdmin.getLogin(), null));
+    }
+
+    /**
+     * Test all permutations of login when ip restrictions are enabled
+     */
+    @Test
+    public void ipAddresses() {
+        String plainTextPassword = "EmmiSuperAdmin";
+        UserClient userClient = makeNewRandomUserClient(makeNewRandomClient());
+        String encodedPassword = passwordEncoder.encode(plainTextPassword);
+        userClient.setPassword(encodedPassword.substring(0, LegacyPasswordEncoder.PASSWORD_SIZE));
+        userClient.setSalt(encodedPassword.substring(LegacyPasswordEncoder.PASSWORD_SIZE));
+        final UserClient userWithPassword = userClientPersistence.saveOrUpdate(userClient);
+
+        // set up client restriction
+        ClientRestrictConfiguration clientRestrictConfiguration = new ClientRestrictConfiguration();
+        clientRestrictConfiguration.setClient(userWithPassword.getClient());
+        ClientRestrictConfiguration savedRestriction = clientRestrictConfigurationService.create(clientRestrictConfiguration);
+
+        // login when restriction disabled
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userWithPassword.getLogin(), plainTextPassword);
+        authenticationToken.setDetails(new HttpProxyAwareAuthenticationDetails() {
+            @Override
+            public String getIp() {
+                return null;
+            }
+
+            @Override
+            public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
+                return OUT_OF_BOUNDS;
+            }
+        });
+        assertThat("ip restriction disabled login works",
+                authenticationProvider.authenticate(authenticationToken).isAuthenticated(), is(true));
+
+        // enable restrictions
+        savedRestriction.setIpConfigRestrict(true);
+        clientRestrictConfigurationService.update(savedRestriction);
+
+        // login when restrictions enabled, no ip ranges in client config
+        authenticationToken =
+                new UsernamePasswordAuthenticationToken(userWithPassword.getLogin(), plainTextPassword);
+        authenticationToken.setDetails(new HttpProxyAwareAuthenticationDetails() {
+            @Override
+            public String getIp() {
+                return null;
+            }
+
+            @Override
+            public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
+                return OUT_OF_BOUNDS;
+            }
+        });
+        assertThat("no ip ranges configured should authenticate",
+                authenticationProvider.authenticate(authenticationToken).isAuthenticated(), is(true));
+
+        // add a range
+        IpRestrictConfiguration config = new IpRestrictConfiguration();
+        config.setClient(userWithPassword.getClient());
+        config.setIpRangeStart("10.10.10.10");
+        config.setIpRangeEnd("10.10.10.10");
+        ipRestrictConfigurationService.create(config);
+
+        // login with valid ip address
+        authenticationToken =
+                new UsernamePasswordAuthenticationToken(userWithPassword.getLogin(), plainTextPassword);
+        authenticationToken.setDetails(new HttpProxyAwareAuthenticationDetails() {
+            @Override
+            public String getIp() {
+                return null;
+            }
+
+            @Override
+            public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
+                return IN_RANGE;
+            }
+        });
+        assertThat("valid ip should authenticate",
+                authenticationProvider.authenticate(authenticationToken).isAuthenticated(), is(true));
+
+        // login with out of bounds ip address
+        authenticationToken =
+                new UsernamePasswordAuthenticationToken(userWithPassword.getLogin(), plainTextPassword);
+        authenticationToken.setDetails(new HttpProxyAwareAuthenticationDetails() {
+            @Override
+            public String getIp() {
+                return null;
+            }
+
+            @Override
+            public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
+                return OUT_OF_BOUNDS;
+            }
+        });
+        try {
+            authenticationProvider.authenticate(authenticationToken);
+            fail("IpAddressAuthenticationException should be thrown");
+        } catch (IpAddressAuthenticationException e) {
+            // no-op
+        }
+
+        // login with an invalid range configured
+        authenticationToken =
+                new UsernamePasswordAuthenticationToken(userWithPassword.getLogin(), plainTextPassword);
+        authenticationToken.setDetails(new HttpProxyAwareAuthenticationDetails() {
+            @Override
+            public String getIp() {
+                return null;
+            }
+
+            @Override
+            public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
+                return INVALID_RANGE;
+            }
+        });
+        assertThat("invalid range ip should authenticate",
+                authenticationProvider.authenticate(authenticationToken).isAuthenticated(), is(true));
+
+        // login when no ip address can be found
+        authenticationToken =
+                new UsernamePasswordAuthenticationToken(userWithPassword.getLogin(), plainTextPassword);
+        authenticationToken.setDetails(new HttpProxyAwareAuthenticationDetails() {
+            @Override
+            public String getIp() {
+                return null;
+            }
+
+            @Override
+            public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
+                return NO_IP;
+            }
+        });
+        assertThat("no ip address range should authenticate",
+                authenticationProvider.authenticate(authenticationToken).isAuthenticated(), is(true));
+
     }
 
     /**
