@@ -51,8 +51,7 @@ public class PatientSelfRegConfigurationServiceImpl implements
 
         patientSelfRegConfig.setId(null);
         patientSelfRegConfig.setVersion(null);
-        patientSelfRegConfig.setExposeName(true);
-        patientSelfRegConfig.setRequireDateOfBirth(true);
+        setDefaults(patientSelfRegConfig);
         patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
         return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
@@ -66,9 +65,22 @@ public class PatientSelfRegConfigurationServiceImpl implements
                     "PatientSelfRegConfig can not be null.");
         }
         patientSelfRegConfig.setTeam(teamPersistence.reload(patientSelfRegConfig.getTeam()));
+        setDefaults(patientSelfRegConfig);
+        return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
+    }
+
+    private void setDefaults(PatientSelfRegConfig patientSelfRegConfig) {
+        if (!patientSelfRegConfig.isExposePhone()) {
+            patientSelfRegConfig.setRequirePhone(false);
+        }
+        if (!patientSelfRegConfig.isExposeEmail()) {
+            patientSelfRegConfig.setRequireEmail(false);
+        }
+        if (!patientSelfRegConfig.isExposeId()) {
+            patientSelfRegConfig.setRequireId(false);
+        }
         patientSelfRegConfig.setExposeName(true);
         patientSelfRegConfig.setRequireDateOfBirth(true);
-        return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
 
     @Override
