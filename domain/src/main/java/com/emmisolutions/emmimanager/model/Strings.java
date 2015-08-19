@@ -94,4 +94,13 @@ public class Strings extends AbstractAuditingEntity implements Serializable {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "Strings{" +
+                "language=" + language +
+                ", key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

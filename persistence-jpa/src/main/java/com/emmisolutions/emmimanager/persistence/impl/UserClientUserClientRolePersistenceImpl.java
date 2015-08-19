@@ -25,7 +25,6 @@ public class UserClientUserClientRolePersistenceImpl implements
     UserClientUserClientRoleRepository userClientUserClientRoleRepository;
 
     @Caching(evict = {
-            @CacheEvict(value = "clientFindById", allEntries = true),
             @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
     })
     @Override
@@ -55,7 +54,6 @@ public class UserClientUserClientRolePersistenceImpl implements
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "clientFindById", allEntries = true),
             @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
     })
     @Override

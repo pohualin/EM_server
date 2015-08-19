@@ -30,8 +30,8 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
     UserClient findByLoginIgnoreCase(@Param("login") String login);
 
     @Caching(evict = {
-            @CacheEvict(value = "clientFindById", allEntries = true),
-            @CacheEvict(value = "clientFindByLoginIgnoreCase", allEntries = true)
+            @CacheEvict(value = "clientFindById", key = "#p0.id"),
+            @CacheEvict(value = "clientFindByLoginIgnoreCase", key = "#p0.login")
     })
     @Override
     @SuppressWarnings("unchecked")
