@@ -1,11 +1,12 @@
-package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
+package com.emmisolutions.emmimanager.service.spring.security;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientRestrictConfigurationService;
 import com.emmisolutions.emmimanager.service.IpRestrictConfigurationService;
-import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.HttpProxyAwareAuthenticationDetails;
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
+import com.emmisolutions.emmimanager.service.security.IpRangeAuthorizationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -17,9 +18,9 @@ import javax.annotation.Resource;
  * Determines if the authenticated user is within a particular ip range configured for the client.
  */
 @Component("ipRangeWithinClientConfiguration")
-public class IpRangeAuthorizationRequest {
+public class IpRangeAuthorizationRequestImpl implements IpRangeAuthorizationRequest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IpRangeAuthorizationRequest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IpRangeAuthorizationRequestImpl.class);
 
     @Resource
     IpRestrictConfigurationService ipRestrictConfigurationService;

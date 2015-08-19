@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.transaction.TransactionAwareCacheManagerProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -25,7 +27,7 @@ import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_TEST
 
 @Configuration
 @EnableCaching
-public class CacheConfiguration {
+public class CacheConfiguration extends CachingConfigurerSupport {
 
     private static HazelcastInstance hazelcastInstance;
     private final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
@@ -41,8 +43,6 @@ public class CacheConfiguration {
     @Value("${cache.cluster.enabled:true}")
     private boolean clusterEnabled;
 
-    private CacheManager cacheManager;
-
     /**
      * @return the unique instance.
      */
@@ -57,10 +57,10 @@ public class CacheConfiguration {
     }
 
     @Bean
+    @Override
     public CacheManager cacheManager() {
-        log.debug("Starting Hazelcast CacheManager");
-        cacheManager = new com.hazelcast.spring.cache.HazelcastCacheManager(hazelcastInstance);
-        return cacheManager;
+        return new TransactionAwareCacheManagerProxy(
+                new com.hazelcast.spring.cache.HazelcastCacheManager(hazelcastInstance));
     }
 
     @PostConstruct

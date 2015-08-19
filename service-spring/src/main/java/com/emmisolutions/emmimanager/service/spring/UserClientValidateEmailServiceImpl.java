@@ -20,16 +20,10 @@ import javax.annotation.Resource;
 @Service
 public class UserClientValidateEmailServiceImpl implements UserClientValidationEmailService {
     @Resource
+    PasswordEncoder passwordEncoder;
+    @Resource
     private UserClientPersistence userClientPersistence;
 
-    @Resource
-    PasswordEncoder passwordEncoder;
-
-    /**
-     * Add validation token to userclient for use in the validation email
-     * @param userClient on which to add the validation token
-     * @return Userclient with validation token
-     */
     @Override
     @Transactional
     public UserClient addValidationTokenTo(UserClient userClient) {
@@ -46,11 +40,6 @@ public class UserClientValidateEmailServiceImpl implements UserClientValidationE
         return userClientPersistence.saveOrUpdate(fromDb);
     }
 
-    /**
-     * Validate token from email
-     * @param validationEmailToken token to validate
-     * @return Userclient loaded from validation token
-     */
     @Override
     @Transactional
     public UserClient validateEmailToken(String validationEmailToken) {

@@ -1,13 +1,15 @@
 package com.emmisolutions.emmimanager.service.spring.security;
 
+import com.emmisolutions.emmimanager.exception.IpAddressAuthenticationException;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
+import com.emmisolutions.emmimanager.service.security.IpRangeAuthorizationRequest;
 import com.emmisolutions.emmimanager.service.security.UserDetailsConfigurableAuthenticationProvider;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
-
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.context.annotation.Scope;
@@ -34,7 +36,7 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
     @Resource
     UserClientService userClientService;
-    
+
     @Resource
     UserAdminPersistence userAdminPersistence;
 
@@ -43,6 +45,9 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
     @Resource
     PasswordEncoder passwordEncoder;
+
+    @Resource
+    IpRangeAuthorizationRequest ipRangeAuthorizationRequest;
 
     private UserDetailsService userDetailsService;
 
@@ -58,6 +63,15 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
+        // ensure login is within the proper ip address range for the client
+        if (userDetails instanceof UserClient &&
+                authentication.getDetails() instanceof HttpProxyAwareAuthenticationDetails) {
+            if (!ipRangeAuthorizationRequest.withinClientAllowedRange((UserClient) userDetails,
+                    (HttpProxyAwareAuthenticationDetails) authentication.getDetails())) {
+                throw new IpAddressAuthenticationException("ip address outside of permissible range");
+            }
+        }
+
         // make sure password matches the hashed password
         String presentedPassword = authentication.getCredentials().toString();
         String password = userDetails.getPassword();
@@ -68,18 +82,18 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             password += ((UserAdmin) userDetails).getSalt();
         }
         if (!passwordEncoder.matches(presentedPassword, password)) {
-			// In case of an UserClient was locked and lock is expired.
-			// We want to initiate another transaction to unlock the UserClient and
-			// reset failure count.
-			if (userDetails instanceof UserClient) {
-				UserClient toUpdate = (UserClient) userDetails;
-				if (toUpdate.getLockExpirationDateTime() != null
-						&& LocalDateTime.now(DateTimeZone.UTC).isAfter(
-								toUpdate.getLockExpirationDateTime())) {
-					userClientService
-							.resetUserClientLock((UserClient) userDetails);
-				}
-			}
+            // In case of an UserClient was locked and lock is expired.
+            // We want to initiate another transaction to unlock the UserClient and
+            // reset failure count.
+            if (userDetails instanceof UserClient) {
+                UserClient toUpdate = (UserClient) userDetails;
+                if (toUpdate.getLockExpirationDateTime() != null
+                        && LocalDateTime.now(DateTimeZone.UTC).isAfter(
+                        toUpdate.getLockExpirationDateTime())) {
+                    userClientService
+                            .resetUserClientLock((UserClient) userDetails);
+                }
+            }
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
@@ -94,11 +108,11 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
                 unlockedUser.setActivationKey(null);
                 unlockedUser.setActivationExpirationDateTime(null);
             }
-            
+
             // Set credential to expire if password expired
             if (unlockedUser.getPasswordExpireationDateTime() != null
                     && LocalDateTime.now(DateTimeZone.UTC).isAfter(
-                            unlockedUser.getPasswordExpireationDateTime())) {
+                    unlockedUser.getPasswordExpireationDateTime())) {
                 userClientService.expireUserClientCredential(unlockedUser);
             } else {
                 userClientPersistence.saveOrUpdate(unlockedUser);
@@ -121,19 +135,19 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             UserClient toUpdate = (UserClient) user;
             // User is locked but the lock is expired
             if (!toUpdate.isAccountNonLocked()
-    				&& toUpdate.getLockExpirationDateTime() != null
-    				&& LocalDateTime.now(DateTimeZone.UTC).isAfter(
-    						toUpdate.getLockExpirationDateTime())) {
+                    && toUpdate.getLockExpirationDateTime() != null
+                    && LocalDateTime.now(DateTimeZone.UTC).isAfter(
+                    toUpdate.getLockExpirationDateTime())) {
                 // By pass PreAuthentication check by setting this flag to true
-    			toUpdate.setAccountNonLocked(true);
-    		}
+                toUpdate.setAccountNonLocked(true);
+            }
         }
         return user;
     }
 
     @Override
-    public void setUserDetailsService(UserDetailsService userDetailsService){
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
-    
+
 }
