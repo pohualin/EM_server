@@ -1,5 +1,30 @@
-Emmi Manager Release Process
-====================================
+Emmi Manager Source Hierarchy
+===================================
+
+We use an 'open source' style of source management. In addition, we maintain a separate source repository
+for each phase of the application lifecycle (production, release candidate, qa, development). Each lifecycle
+repository is a fork of the 'upstream' lifecycle. 
+
+Here is the 'fork chain' across the repository groups:
+
+Emmi Manager Production  --> 
+    Emmi Manager Release Candidate --> 
+        Emmi Manager QA --> 
+            Emmi Manager Development --> 
+                Individual Developers
+
+
+To move software up the fork chain, we use Merge Requests within [gitlab] (https://git.emmisolutions.com).
+
+The process below details how to convert a SNAPSHOT version of the software into a RELEASE version of
+the software.
+
+Create New Release Candidate(s)
+----------------------------------
+
+The Jenkins build process will create the proper artifacts and upload to nexus when necessary. The key is
+to start at the top of the fork chain and work down. In this case, the top of the fork chain
+is the Emmi Manager Release Candidate group. 
 
 Here is the high level overview:
 
@@ -11,72 +36,18 @@ Here is the high level overview:
 5. Update versions to $NEW_VERSION-SNAPSHOT in QA Group.
 6. Update repositories in Development group from QA group.
 
-Client Application
-------------------------
-
-Here are the steps required to update the versions across the groups for the client application.
-
-1. Create a release directory. (E.g. `mkdir release ; cd release`)
-2. Clone client project: `git clone git@git.emmisolutions.com:emmi-manager-release-candidate/client-angular.git`
-3. Change into the source directory: `cd client-angular`
-4. Edit package.json file. 
-        (e.g. on OSX: `sed -i '' 's/"version": \(.*\)-SNAPSHOT"/"version": \1"/g' package.json`)
-5. commit the version change:
-        `git commit -m "created release version" package.json`
-6. push to the remote repo:
-        `git push`
-7. Create a qa directory same level as the release directory. 
-    (e.g. if you're still in the client-angular directory: `cd ../.. ; mkdir qa ; cd qa`)
-8. Clone client project: `git clone git@git.emmisolutions.com:emmi-manager-qa/client-angular.git`
-9. Change into the source directory: `cd client-angular`
-9. Add upstream project: `git remote add upstream git@git.emmisolutions.com:emmi-manager-release-candidate/client-angular.git`
-10. Fetch upstream changes: `git fetch upstream`
-11. Merge upstream changes into master: `git merge -m "merging upstream" upstream/master`
-12. Update the version in package.json to whatever is the $NEW_VERSION-SNAPSHOT.
-    (e.g. on OSX to update to version 2.0.1-SNAPSHOT: 
-        `sed -i '' 's/"version": ".*"/"version": "2.0.1-SNAPSHOT"/g' package.json`)
-13. Commit and push: `git commit -m "new version of application" package.json ; git push`
-14. Create a dev directory same level as the release directory. 
-    (e.g. if you're still in the client-angular directory: `cd ../.. ; mkdir dev ; cd dev`)
-15. Clone client project: `git clone git@git.emmisolutions.com:emmi-manager-development/client-angular.git`
-16. Change into the source directory: `cd client-angular`
-17. Add upstream project: `git remote add upstream git@git.emmisolutions.com:emmi-manager-qa/client-angular.git`
-18. Fetch upstream changes: `git fetch upstream`
-19. Merge upstream changes into master: `git merge -m "merging upstream" upstream/master`
-20. Commit and push: `git commit -m "new version of application" package.json ; git push`
-
-Data Server
-------------------------
-
-Very similar steps (almost exactly the same) to update the server codebase, 
-the only difference is really how the versions are updated.
-
-1. Create a release directory. (E.g. `mkdir release ; cd release`)
-2. Clone client project: `git clone git@git.emmisolutions.com:emmi-manager-release-candidate/server.git`
-3. Change into the source directory: `cd server`
-4. Update the version on the server via maven: `mvn versions:set -DnewVersion=2.0.0 versions:commit`
-5. commit the version change:
-        `git commit -m "created release version" -a`
-6. push to the remote repo:
-        `git push`
-7. Create a qa directory same level as the release directory. 
-    (e.g. if you're still in the server directory: `cd ../.. ; mkdir qa ; cd qa`)
-8. Clone client project: `git clone git@git.emmisolutions.com:emmi-manager-qa/server.git`
-9. Change into the source directory: `cd server`
-9. Add upstream project: `git remote add upstream git@git.emmisolutions.com:emmi-manager-release-candidate/server.git`
-10. Fetch upstream changes: `git fetch upstream`
-11. Merge upstream changes into master: `git merge -m "merging upstream" upstream/master`
-12. Update the version on the server to $NEW_VERSION-SNAPSHOT via maven: 
-    `mvn versions:set -DnewVersion=2.0.1-SNAPSHOT versions:commit`
-13. Commit and push: `git commit -m "new version of application" -a ; git push`
-14. Create a dev directory same level as the release directory. 
-    (e.g. if you're still in the server directory: `cd ../.. ; mkdir dev ; cd dev`)
-15. Clone client project: `git clone git@git.emmisolutions.com:emmi-manager-development/server.git`
-16. Change into the source directory: `cd server`
-17. Add upstream project: `git remote add upstream git@git.emmisolutions.com:emmi-manager-qa/server.git`
-18. Fetch upstream changes: `git fetch upstream`
-19. Merge upstream changes into master: `git merge -m "merging upstream" upstream/master`
-20. Commit and push: `git commit -m "new version of application" -a ; git push`
+Note: See the `Release Candidate Creation.md` document inside each repository root for detailed instructions on
+how to deal with versions in each repository, the server and angular-client as they are slightly different.
 
 
-        
+Move to Production
+--------------------------
+
+Here we need to move the software up the fork chain and tag the source. The idea is that our production repository
+group is pristine. The head should also represent what is currently in production. 
+
+To do that we need to:
+
+1. Submit a merge request from the client-angular and server repositories inside the Emmi Release Candidate group.
+2. Accept merge request(s) within the Emmi Manager Production group.
+3. Tag the source with the version number.
