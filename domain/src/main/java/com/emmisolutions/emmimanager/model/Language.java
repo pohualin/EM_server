@@ -6,6 +6,7 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Language supported by the system.
@@ -26,6 +27,13 @@ public class Language extends AbstractAuditingEntity implements Serializable {
     @Column(name = "rfc5646_language_tag", nullable = false)
     private String languageTag;
 
+    public Language(Long id) {
+        this.id = id;
+    }
+
+    public Language() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -40,5 +48,23 @@ public class Language extends AbstractAuditingEntity implements Serializable {
 
     public void setLanguageTag(String languageTag) {
         this.languageTag = languageTag;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Language language = (Language) o;
+        return Objects.equals(id, language.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return languageTag;
     }
 }

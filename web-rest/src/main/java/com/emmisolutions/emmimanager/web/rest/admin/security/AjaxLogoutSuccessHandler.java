@@ -32,7 +32,7 @@ public class AjaxLogoutSuccessHandler extends AbstractAuthenticationTargetUrlReq
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
             // non-ajax
-            if (authentication.getDetails() instanceof SavedUrlServiceAuthenticationDetails){
+            if (authentication != null && authentication.getDetails() instanceof SavedUrlServiceAuthenticationDetails) {
                 // cas authenticated, redirect to cas logout url
                 response.sendRedirect(casServerLogoutUrl);
             } else {

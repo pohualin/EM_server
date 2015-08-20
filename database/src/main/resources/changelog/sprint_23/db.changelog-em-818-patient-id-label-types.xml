@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="Add Patient Id Label Types" author="Amrita">
+
+
+        <!-- create the new tables -->
+        <createTable tableName="patient_id_label_type">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_patient_id_label_type"/>
+            </column>
+            <column name="key_path" type="NVARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_modifiable" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+        <addUniqueConstraint tableName="patient_id_label_type" columnNames="key_path"
+                             constraintName="uk_patient_id_label_type_key_path"/>
+
+        <createTable tableName="patient_id_label_type_audit">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="TINYINT"/>
+            <column name="key_path" type="NVARCHAR(1024)"/>
+            <column name="is_modifiable" type="boolean"/>
+        </createTable>
+        <addPrimaryKey tableName="patient_id_label_type_audit" constraintName="pk_patient_id_label_type_audit"
+                       columnNames="id, revision"/>
+
+        <!-- load in the types -->
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_23/data/em-818-patient-id-label-types.csv"
+                  separator=";"
+                  tableName="patient_id_label_type"/>
+
+        <!-- add constraints -->
+        <addForeignKeyConstraint baseTableName="patient_id_label_type_audit" baseColumnNames="revision"
+                                 constraintName="fk_patient_id_label_type_audit_revision"
+                                 referencedTableName="revision_info" referencedColumnNames="revision"/>
+    </changeSet>
+
+    <changeSet id="alter tables to have rowver" author="Amrita" dbms="mssql">
+        <addColumn tableName="patient_id_label_type">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="patient_id_label_type_audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

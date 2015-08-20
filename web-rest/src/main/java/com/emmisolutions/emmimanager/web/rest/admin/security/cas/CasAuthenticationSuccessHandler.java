@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.web.rest.admin.security.cas;
 
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
+import com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.AuthenticationLoggingUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.RedirectStrategy;
@@ -15,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.emmisolutions.emmimanager.model.audit.login.LoginStatusName.SUCCESS;
+import static com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService.APPLICATION.ADMIN_FACING;
 import static com.emmisolutions.emmimanager.web.rest.client.configuration.ImpersonationConfiguration.TRIGGER_VALUE;
 
 /**
@@ -26,10 +30,26 @@ public class CasAuthenticationSuccessHandler extends SavedRequestAwareAuthentica
     @Resource(name ="adminTokenBasedRememberMeServices")
     TokenBasedRememberMeServices adminTokenBasedRememberMeServices;
 
+    @Resource
+    private AuthenticationLoggingUtility authenticationLoggingUtility;
+    /*
+     * A redirect strategy that is impersonation aware
+     */
+    private RedirectStrategy redirectStrategy = new RedirectStrategy() {
+        public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
+            response.sendRedirect(UriComponentsBuilder.fromUriString(url)
+                    .replaceQueryParam(TRIGGER_VALUE) // remove in case of impersonation
+                    .build(true)
+                    .toString());
+        }
+    };
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication)
             throws IOException, ServletException {
+
+        authenticationLoggingUtility.login(authentication, SUCCESS, getApplication());
 
         if (authentication.getPrincipal() instanceof UserAdmin) {
             // bridge CAS success to Remember me success
@@ -48,21 +68,13 @@ public class CasAuthenticationSuccessHandler extends SavedRequestAwareAuthentica
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
+    protected AuthenticationAuditService.APPLICATION getApplication() {
+        return ADMIN_FACING;
+    }
+
     @Override
     protected RedirectStrategy getRedirectStrategy() {
         return redirectStrategy;
     }
-
-    /*
-     * A redirect strategy that is impersonation aware
-     */
-    private RedirectStrategy redirectStrategy = new RedirectStrategy() {
-        public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
-            response.sendRedirect(UriComponentsBuilder.fromUriString(url)
-                    .replaceQueryParam(TRIGGER_VALUE) // remove in case of impersonation
-                    .build(true)
-                    .toString());
-        }
-    };
 
 }

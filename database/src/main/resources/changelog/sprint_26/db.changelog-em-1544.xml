@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="update team role permission rank" author="Paul">
+    	<update tableName="user_client_team_permission">
+    		<column name="rank">1</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA'</where>
+    	</update>
+    	
+    	<update tableName="user_client_team_permission">
+    		<column name="rank">2</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_ROLE'</where>
+    	</update>
+    </changeSet>
+    
+    <changeSet id="update team role permission rank again" author="Paul">
+    	<update tableName="user_client_team_permission">
+    		<column name="rank">2</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA'</where>
+    	</update>
+    	
+    	<update tableName="user_client_team_permission">
+    		<column name="rank">1</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_ROLE'</where>
+    	</update>
+    </changeSet>
+    
+</databaseChangeLog>

@@ -76,15 +76,13 @@ public class ScheduledProgram extends AbstractAuditingEntity {
             foreignKey = @ForeignKey(name = "fk_scheduled_program_client_team"))
     private Team team;
 
-    @NotNull
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "provider_id", nullable = false, columnDefinition = "bigint",
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "provider_id", nullable = true, columnDefinition = "bigint",
             foreignKey = @ForeignKey(name = "fk_scheduled_program_provider"))
     private Provider provider;
 
-    @NotNull
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "location_id", nullable = false, columnDefinition = "bigint",
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "location_id", nullable = true, columnDefinition = "bigint",
             foreignKey = @ForeignKey(name = "fk_scheduled_program_location"))
     private Location location;
 

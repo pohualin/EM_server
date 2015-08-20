@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClientRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.CacheConfiguration;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
+import com.emmisolutions.emmimanager.persistence.configuration.PersistenceTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -27,7 +28,10 @@ import java.util.List;
 /**
  * Root integration test harness
  */
-@ContextConfiguration(classes = {PersistenceConfiguration.class, CacheConfiguration.class})
+@ContextConfiguration(classes = {
+        PersistenceConfiguration.class,
+        CacheConfiguration.class,
+        PersistenceTestConfiguration.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback = true)
 @ActiveProfiles("test")
@@ -75,6 +79,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     ProgramPersistence programPersistence;
+
+    @Resource
+    PatientSelfRegConfigurationPersistence patientSelfRegConfigurationPersistence;
 
     /**
      * Login as a user
@@ -275,6 +282,12 @@ public abstract class BaseIntegrationTest {
                 RandomStringUtils.randomNumeric(4));
         patient.setClient(client == null ? makeNewRandomClient() : client);
         return patientPersistence.save(patient);
+    }
+
+    protected PatientSelfRegConfig makeNewRandomPatientSelfRegConfig(Team team) {
+        PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
+        patientSelfRegConfig.setTeam(team == null ? makeNewRandomTeam(makeNewRandomClient()) : team);
+        return patientSelfRegConfigurationPersistence.save(patientSelfRegConfig);
     }
 
     /**

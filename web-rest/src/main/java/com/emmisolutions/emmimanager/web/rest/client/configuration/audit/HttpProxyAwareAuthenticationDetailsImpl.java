@@ -1,17 +1,18 @@
-package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
+package com.emmisolutions.emmimanager.web.rest.client.configuration.audit;
 
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import static com.emmisolutions.emmimanager.web.rest.client.configuration.security.HttpProxyAwareAuthenticationDetails.RANGES.*;
+import static com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails.RANGES.*;
+
 
 /**
  * Pulls the ip address from the request
  */
-public class HttpProxyAwareAuthenticationDetails implements Serializable {
+public class HttpProxyAwareAuthenticationDetailsImpl implements HttpProxyAwareAuthenticationDetails {
 
     public static final String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
     public static final Pattern pattern = Pattern.compile("^(?:" + _255 + "\\.){3}" + _255 + "$");
@@ -34,7 +35,7 @@ public class HttpProxyAwareAuthenticationDetails implements Serializable {
      *
      * @param request to examine
      */
-    public HttpProxyAwareAuthenticationDetails(HttpServletRequest request) {
+    public HttpProxyAwareAuthenticationDetailsImpl(HttpServletRequest request) {
         ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
@@ -104,32 +105,20 @@ public class HttpProxyAwareAuthenticationDetails implements Serializable {
         return pattern.matcher(ip).matches();
     }
 
-    /**
-     * Get the validated ipv4 address
-     *
-     * @return the address
-     */
+    @Override
     public String getIp() {
         return ip;
     }
 
-    /**
-     * Determines if the ip address on this object is within the passed
-     * bounds.
-     *
-     * @param lowerBoundary the lower bound of the acceptable ip range
-     * @param upperBoundary the upper boundary of the acceptable ip range
-     *
-     * @return
-     */
-    public RANGES checkBoundaries(String lowerBoundary, String upperBoundary){
+    @Override
+    public RANGES checkBoundaries(String lowerBoundary, String upperBoundary) {
         if (ip != null) {
             if (isIPv4Valid(lowerBoundary) && isIPv4Valid(upperBoundary)) {
                 long lowerBound = ipV4ToLong(lowerBoundary);
                 long upperBound = ipV4ToLong(upperBoundary);
-                if (lowerBound <= upperBound){
+                if (lowerBound <= upperBound) {
                     long longIp = ipV4ToLong(ip);
-                    if (longIp >= lowerBound && longIp <= upperBound){
+                    if (longIp >= lowerBound && longIp <= upperBound) {
                         return IN_RANGE;
                     } else {
                         return OUT_OF_BOUNDS;
@@ -144,16 +133,12 @@ public class HttpProxyAwareAuthenticationDetails implements Serializable {
         return NO_IP;
     }
 
-    public static enum RANGES {
-        OUT_OF_BOUNDS, INVALID_RANGE, IN_RANGE, NO_IP
-    }
-
-    private String longToIpV4(long longIp) {
-        int octet3 = (int) ((longIp >> 24) % 256);
-        int octet2 = (int) ((longIp >> 16) % 256);
-        int octet1 = (int) ((longIp >> 8) % 256);
-        int octet0 = (int) ((longIp) % 256);
-        return octet3 + "." + octet2 + "." + octet1 + "." + octet0;
-    }
+//    private String longToIpV4(long longIp) {
+//        int octet3 = (int) ((longIp >> 24) % 256);
+//        int octet2 = (int) ((longIp >> 16) % 256);
+//        int octet1 = (int) ((longIp >> 8) % 256);
+//        int octet0 = (int) ((longIp) % 256);
+//        return octet3 + "." + octet2 + "." + octet1 + "." + octet0;
+//    }
 
 }

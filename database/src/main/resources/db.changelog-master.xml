@@ -4,11 +4,6 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="wipe db" author="Matt" dbms="mssql" context="wipe-db-on-start"
-               runAlways="true" failOnError="true">
-        <sql>exec delete_all_objects_in_DB</sql>
-    </changeSet>
-
     <include relativeToChangelogFile="true" file="changelog/sprint_1/db.changelog-em-12.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_1/db.changelog-em-3.xml"/>
@@ -201,7 +196,7 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1208.xml"/>
 
-    <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-932.xml"/>
+    <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-932.xml"/> 
 
     <include relativeToChangelogFile="true" file="changelog/sprint_18/db.changelog-em-1227.xml"/>
 
@@ -223,7 +218,7 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-972.xml"/>
 
-    <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-933.xml"/>
+    <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-933.xml"/> 
 
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-913.xml"/>
 
@@ -250,5 +245,29 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_24/db.changelog-em-1169.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_24/db.changelog-em-1473.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_25/db.changelog-em-1018.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-translations.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-self-reg.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-id-label-types.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-info-header.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_23/db.changelog-em-818-patient-id-label-config.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_25/db.changelog-em-1344.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_25/db.changelog-em-756.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_26/db.changelog-em-1544.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_25/db.changelog-em-1494.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_26/db.changelog-em-1304.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_26/db.changelog-em-1551.xml"/>
 
 </databaseChangeLog>

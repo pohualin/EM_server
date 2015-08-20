@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfAccessDeni
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenGeneratorFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.CsrfTokenValidationFilter;
 import com.emmisolutions.emmimanager.web.rest.admin.security.csrf.DoubleSubmitSignedCsrfTokenRepository;
+import com.emmisolutions.emmimanager.web.rest.client.configuration.audit.ProxyAwareWebAuthenticationDetailsSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_CAS;
 import static com.emmisolutions.emmimanager.config.Constants.SPRING_PROFILE_PRODUCTION;
+import static com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService.APPLICATION.ADMIN_FACING;
 
 /**
  * Spring Security Setup
@@ -107,7 +109,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         rootTokenBasedRememberMeServices.setAlwaysRemember(true);
         rootTokenBasedRememberMeServices.setParameter("remember-me");
         rootTokenBasedRememberMeServices.setCookieName(AUTHENTICATION_TOKEN_NAME);
+        rootTokenBasedRememberMeServices.setAuthenticationDetailsSource(authenticationDetailsSource());
+        rootTokenBasedRememberMeServices.setApplication(ADMIN_FACING);
         return rootTokenBasedRememberMeServices;
+    }
+
+    /**
+     * The authentication details source knows how to read the proxied
+     * ipv4 address properly.
+     *
+     * @return the ProxyAwareWebAuthenticationDetailsSource
+     */
+    @Bean
+    public ProxyAwareWebAuthenticationDetailsSource authenticationDetailsSource() {
+        return new ProxyAwareWebAuthenticationDetailsSource();
     }
 
     /**
@@ -164,6 +179,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .loginProcessingUrl(loginProcessingUrl)
                     .successHandler(ajaxAuthenticationSuccessHandler)
                     .failureHandler(ajaxAuthenticationFailureHandler)
+                .authenticationDetailsSource(authenticationDetailsSource())
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
                     .permitAll()

@@ -76,17 +76,29 @@
         <class>com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamSchedulingConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.PatientSelfRegConfig</class>
+        <class>com.emmisolutions.emmimanager.model.InfoHeaderConfig</class>
+        <class>com.emmisolutions.emmimanager.model.PatientIdLabelConfig</class>
+        <class>com.emmisolutions.emmimanager.model.PatientIdLabelType</class>
+        <class>com.emmisolutions.emmimanager.model.audit.login.Login</class>
+        <class>com.emmisolutions.emmimanager.model.audit.login.LoginStatus</class>
+        <class>com.emmisolutions.emmimanager.model.audit.logout.Logout</class>
+        <class>com.emmisolutions.emmimanager.model.audit.logout.LogoutSource</class>
+        <class>com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest</class>
+        <class>com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse</class>
         <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.archive.autodetection" value="class"/>
             <property name="org.hibernate.envers.audit_table_suffix" value="_audit"/>
             <property name="org.hibernate.envers.revision_field_name" value="revision"/>
             <property name="org.hibernate.envers.revision_type_field_name" value="revision_type"/>
+            <property name="org.hibernate.envers.default_schema" value="audit"/>
             <property name="jadira.usertype.useJdbc42Apis" value="true"/>
             <property name="hibernate.cache.use_second_level_cache" value="false"/>
             <property name="hibernate.cache.use_query_cache" value="false"/>
             <property name="hibernate.generate_statistics" value="false"/>
             <property name="hibernate.cache.hazelcast.use_lite_member" value="true"/>
+            <property name="hibernate.jdbc.batch_size" value="50"/>
         </properties>
     </persistence-unit>
 </persistence>

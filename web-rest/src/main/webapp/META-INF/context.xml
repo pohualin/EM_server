@@ -1,7 +1,7 @@
 <Context sessionCookiePath="/" useHttpOnly="true" sessionCookieName="EM2_ID" antiResourceLocking="true"
          unloadDelay="10000">
 
-    <Manager pathname="" />
+    <Manager pathname=""/>
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
@@ -10,10 +10,20 @@
               url="jdbc:postgresql://localhost:5432/emmimanager"
               maxActive="20"
               maxIdle="10"
-              validationQuery="select 1" />
+              validationQuery="select 1"/>
+
+    <Resource name="jdbc/EmmiManagerDdlDS" auth="Container" type="javax.sql.DataSource"
+              username="postgres"
+              password=""
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/emmimanager"
+              maxActive="1"
+              maxIdle="0"
+              validationQuery="select 1"/>
 
     <Environment name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect" type="java.lang.String"/>
     <Environment name="hibernate.show_sql" value="true" type="java.lang.String"/>
+    <!--<Environment name="hibernate.jdbc.batch_size" value="50" type="java.lang.String"/>-->
 
     <!-- salesforce settings -->
     <Environment name="salesforce.username" value="sfdcapi@emmisolutions.com.test" type="java.lang.String"/>
@@ -21,6 +31,12 @@
     <Environment name="salesforce.url" value="https://cs13.salesforce.com/services/Soap/u/34.0"
                  type="java.lang.String"/>
     <!--<Environment name="salesforce.formRefreshIntervalMillis" value="900000" type="java.lang.String"/>-->
+
+    <!-- HLI settings -->
+    <!--<Environment name="hli.search.url" value="http://192.168.101.65:8080/hliservice/search" type="java.lang.String"/>-->
+    <!-- cache cleanup times are specified in millis, e.g. 900000 == 15 minutes -->
+    <!--<Environment name="hli.cache.oldest" value="900000" type="java.lang.String"/>-->
+    <!--<Environment name="hli.cache.cleanup.job.interval" value="900000" type="java.lang.String"/>-->
 
     <!--
         client application entry point. This is the path for end users to see the client facing application.

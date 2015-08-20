@@ -1,10 +1,15 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
 import com.emmisolutions.emmimanager.model.program.*;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse_;
+import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +19,10 @@ import java.util.List;
  */
 @Component
 public class ProgramSpecifications {
+
+    @Resource
+    private HliSearchRepository hliSearchRepository;
+
 
     /**
      * Adds an OR clause for each specialty in the filter. This ensures that both
@@ -46,4 +55,31 @@ public class ProgramSpecifications {
             }
         };
     }
+
+    /**
+     * Looks up program IDs from HLI and then uses those to narrow the program search
+     *
+     * @param filter that contains terms
+     * @return a specification for program narrowing using ids found from terms
+     * or null if there are no terms
+     */
+    public Specification<Program> matchesTerms(final ProgramSearchFilter filter) {
+        return new Specification<Program>() {
+            @Override
+            public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (filter != null && !CollectionUtils.isEmpty(filter.getTerms())) {
+
+                    // retrieve (or search HLI and create) the persistent search request
+                    HliSearchRequest searchRequest = hliSearchRepository.find(filter);
+
+                    // find all programs (on a search response) from the search request
+                    SetJoin<Program, HliSearchResponse> hliProgramJoin = root.join(Program_.hliProgram, JoinType.INNER);
+                    hliProgramJoin.alias("hliProgram_springDataOrderBy"); // use the inner join for order by
+                    return cb.equal(hliProgramJoin.get(HliSearchResponse_.hliSearchRequest), searchRequest);
+                }
+                return null;
+            }
+        };
+    }
+
 }

@@ -119,7 +119,8 @@ public class UserClientsPasswordResource {
      */
     @RequestMapping(value = "/password/reset", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @PreAuthorize("hasPermission(@resetPasswordSecurityResponse, #resetPasswordRequest)")
+    @PreAuthorize("hasPermission(@resetPasswordSecurityResponse, #resetPasswordRequest) and " +
+            "hasPermission(@resetWithinIpRange, #resetPasswordRequest.resetToken)")
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> resetPassword(
             @RequestBody ResetPasswordRequest resetPasswordRequest) {
 
@@ -194,7 +195,7 @@ public class UserClientsPasswordResource {
      * @return OK or GONE
      */
     @RequestMapping(value = "/password/policy/reset", method = RequestMethod.GET)
-    @PermitAll
+    @PreAuthorize("hasPermission(@resetWithinIpRange, #resetToken)")
     public ResponseEntity<ClientPasswordConfiguration> resetPasswordPolicy(
             @RequestParam(value = "token", required = false) String resetToken) {
         ClientPasswordConfiguration clientPasswordConfiguration =
@@ -214,7 +215,7 @@ public class UserClientsPasswordResource {
      * GONE (204): when there isn't one
      */
     @RequestMapping(value = "/password/policy/activation", method = RequestMethod.GET)
-    @PermitAll
+    @PreAuthorize("hasPermission(@activationWithinIpRange, #activationToken)")
     public ResponseEntity<ClientPasswordConfiguration> activatePasswordPolicy(
             @RequestParam(value = "token", required = false) String activationToken) {
         ClientPasswordConfiguration clientPasswordConfiguration =

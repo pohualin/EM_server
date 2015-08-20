@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.web.rest.client.resource.PatientsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource;
 import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
-
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.core.AnnotationMappingDiscoverer;
 import org.springframework.hateoas.core.DummyInvocationUtils;
@@ -27,6 +26,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class TeamResourceAssembler
         implements ResourceAssembler<Team, TeamResource> {
 
+    private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
+
     @Override
     public TeamResource toResource(Team entity) {
         TeamResource ret = new TeamResource();
@@ -38,16 +39,20 @@ public class TeamResourceAssembler
 
         // create special template link to allow to find a schedule by id for a team
         ret.add(createScheduleByIdLink(entity));
-        
+
         ret.add(linkTo(methodOn(PatientsResource.class).findTeamEmailConfigForPatient(entity.getClient().getId(), entity.getId(), null, null)).withRel("patientTeamEmailConfig"));
 
         ret.add(linkTo(methodOn(PatientsResource.class).findTeamPhoneConfigForPatient(entity.getClient().getId(), entity.getId())).withRel("patientTeamPhoneConfig"));
-        
+
+        ret.add(linkTo(methodOn(ProgramsResource.class).findTeamSchedulingConfig(entity.getClient().getId(), entity.getId(), null)).withRel("teamSchedulingConfig"));
+
         ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ProgramsResource.class)
-                .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null, null))
+                .possiblePrograms(entity.getClient().getId(), entity.getId(), null, null, null, null))
                 .withSelfRel().getHref()).with(
-                new TemplateVariables(new TemplateVariable(SPECIALTY_ID_REQUEST_PARAM,
-                        REQUEST_PARAM_CONTINUED))), "programs"));
+                new TemplateVariables(
+                        new TemplateVariable(SPECIALTY_ID_REQUEST_PARAM, REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(TERM_REQUEST_PARAM, REQUEST_PARAM_CONTINUED)
+                )), "programs"));
 
         ret.add(new Link(
                 addPaginationTemplate(
@@ -106,10 +111,9 @@ public class TeamResourceAssembler
                                 TemplateVariable.VariableType.REQUEST_PARAM),
                         new TemplateVariable("size",
                                 TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort",
+                        new TemplateVariable("sort*",
                                 TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
     }
-
 
     /**
      * Link for patient search
@@ -122,11 +126,10 @@ public class TeamResourceAssembler
                 new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                         new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort*", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
                         new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
-
 
     /**
      * Link for patient search
@@ -139,7 +142,7 @@ public class TeamResourceAssembler
                 new TemplateVariables(
                         new TemplateVariable("page", TemplateVariable.VariableType.REQUEST_PARAM),
                         new TemplateVariable("size", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
-                        new TemplateVariable("sort", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+                        new TemplateVariable("sort*", TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
 
@@ -164,6 +167,4 @@ public class TeamResourceAssembler
         }
         return null;
     }
-
-    private static final MappingDiscoverer discoverer = new AnnotationMappingDiscoverer(RequestMapping.class);
 }

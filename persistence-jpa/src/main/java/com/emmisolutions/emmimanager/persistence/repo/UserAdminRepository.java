@@ -25,7 +25,7 @@ public interface UserAdminRepository extends JpaRepository<UserAdmin, Long>, Jpa
     UserAdmin fetchWithFullPermissions(@Param("login") String login);
 
     @Caching(evict = {
-            @CacheEvict(value = "adminFetchWithFullPermissions", key = "#p0.login")
+            @CacheEvict(value = "adminFetchWithFullPermissions", allEntries = true)
     })
     @Override
     UserAdmin save(UserAdmin userAdmin);

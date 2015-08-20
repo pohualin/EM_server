@@ -1,10 +1,13 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.service.LocationService;
 import com.emmisolutions.emmimanager.service.ProgramService;
 import com.emmisolutions.emmimanager.service.ScheduleService;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.Test;
@@ -26,7 +29,10 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ProgramService programService;
-
+    
+    @Resource
+    LocationService locationService;
+    
     /**
      * Call the method with a null.
      */
@@ -51,7 +57,7 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         scheduledProgram.setProgram(programService.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));
         scheduledProgram.setPatient(makeNewRandomPatient(client));
-
+        
         ScheduledProgram saved = scheduleService.schedule(scheduledProgram);
         assertThat("save happens successfully, access code is generated/overwritten",
                 saved.getAccessCode(),
@@ -164,5 +170,36 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         scheduledProgram.setPatient(makeNewRandomPatient(client));
         scheduleService.schedule(scheduledProgram);
     }
+    
+    /**
+     * Provider is required
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void ProviderNotProvided() {
+        ScheduledProgram scheduledProgram = new ScheduledProgram();
+        Client client = makeNewRandomClient();
+        scheduledProgram.setTeam(makeNewRandomTeamWithSchedulingConfiguration(client));
+        scheduledProgram.setPatient(makeNewRandomPatient(client));
+        scheduledProgram.setLocation(makeNewRandomLocation());
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC).plusDays(1));
+        scheduledProgram.setProgram(programService.find(null, null).iterator().next());
+        scheduleService.schedule(scheduledProgram);
+    }
+    
+    /**
+     * Location is required
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void LocationNotProvided() {
+        ScheduledProgram scheduledProgram = new ScheduledProgram();
+        Client client = makeNewRandomClient();
+        scheduledProgram.setTeam(makeNewRandomTeamWithSchedulingConfiguration(client));
+        scheduledProgram.setPatient(makeNewRandomPatient(client));
+        scheduledProgram.setProvider(makeNewRandomProvider());
+        scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC).plusDays(1));
+        scheduledProgram.setProgram(programService.find(null, null).iterator().next());
+        scheduleService.schedule(scheduledProgram);
+    }
+  
 
 }

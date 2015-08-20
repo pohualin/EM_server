@@ -1,20 +1,12 @@
 package com.emmisolutions.emmimanager.model.configuration;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
-
+import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import org.hibernate.envers.Audited;
 
-import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * This model holds the global default password configuration for all clients.
@@ -473,4 +465,47 @@ public class DefaultPasswordConfiguration extends AbstractAuditingEntity
         this.passwordResetChangeable = passwordResetChangeable;
     }
 
+    @Override
+    public String toString() {
+        return "DefaultPasswordConfiguration{" +
+                "active=" + active +
+                ", id=" + id +
+                ", version=" + version +
+                ", name='" + name + '\'' +
+                ", defaultPasswordExpirationDays=" + defaultPasswordExpirationDays +
+                ", passwordExpirationDaysMin=" + passwordExpirationDaysMin +
+                ", passwordExpirationDaysMax=" + passwordExpirationDaysMax +
+                ", defaultPasswordRepetitions=" + defaultPasswordRepetitions +
+                ", passwordRepetitionsMin=" + passwordRepetitionsMin +
+                ", passwordRepetitionsMax=" + passwordRepetitionsMax +
+                ", defaultDaysBetweenPasswordChange=" + defaultDaysBetweenPasswordChange +
+                ", daysBetweenPasswordChangeMin=" + daysBetweenPasswordChangeMin +
+                ", daysBetweenPasswordChangeMax=" + daysBetweenPasswordChangeMax +
+                ", defaultPasswordLength=" + defaultPasswordLength +
+                ", passwordLengthMin=" + passwordLengthMin +
+                ", passwordLengthMax=" + passwordLengthMax +
+                ", defaultUppercaseLetters=" + defaultUppercaseLetters +
+                ", uppercaseLettersChangeable=" + uppercaseLettersChangeable +
+                ", defaultLowercaseLetters=" + defaultLowercaseLetters +
+                ", lowercaseLettersChangeable=" + lowercaseLettersChangeable +
+                ", defaultNumbers=" + defaultNumbers +
+                ", numbersChangeable=" + numbersChangeable +
+                ", defaultSpecialChars=" + defaultSpecialChars +
+                ", specialCharsChangeable=" + specialCharsChangeable +
+                ", defaultPasswordReset=" + defaultPasswordReset +
+                ", passwordResetChangeable=" + passwordResetChangeable +
+                ", defaultLockoutAttemps=" + defaultLockoutAttemps +
+                ", lockoutAttempsMin=" + lockoutAttempsMin +
+                ", lockoutAttempsMax=" + lockoutAttempsMax +
+                ", defaultLockoutReset=" + defaultLockoutReset +
+                ", lockoutResetMin=" + lockoutResetMin +
+                ", lockoutResetMax=" + lockoutResetMax +
+                ", defaultIdleTime=" + defaultIdleTime +
+                ", idleTimeMin=" + idleTimeMin +
+                ", idleTimeMax=" + idleTimeMax +
+                ", defaultPasswordExpirationDaysReminder=" + defaultPasswordExpirationDaysReminder +
+                ", passwordExpirationDaysReminderMin=" + passwordExpirationDaysReminderMin +
+                ", passwordExpirationDaysReminderMax=" + passwordExpirationDaysReminderMax +
+                '}';
+    }
 }
