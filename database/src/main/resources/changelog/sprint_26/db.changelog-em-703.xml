@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add columns to client_team_email_configuration to store email reminder data" author="Wade">
+        <addColumn tableName="client_team_email_configuration">
+            <column name="reminder_two_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_team_email_configuration">
+            <column name="reminder_four_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_team_email_configuration">
+            <column name="reminder_six_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_team_email_configuration">
+            <column name="reminder_eight_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_team_email_configuration">
+            <column name="reminder_articles" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add columns to default_team_email_configuration to store email reminder data" author="Wade">
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_two_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_four_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_six_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_eight_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_articles" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add columns to client_team_email_configuration_audit to store email reminder data" author="Wade">
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_two_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_four_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_six_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_eight_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_articles" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
