@@ -30,7 +30,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-	@Version
+    @Version
     private Integer version;
 
     @NotNull
@@ -40,12 +40,27 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 50)
     private EmailReminderType type;
-     
-    @Column(name ="rank", columnDefinition = "integer")
-	private Integer rank;
 
-	@Column(name = "default_value", columnDefinition = "boolean", nullable = false)
+    @Column(name ="rank", columnDefinition = "integer")
+    private Integer rank;
+
+    @Column(name = "default_value", columnDefinition = "boolean", nullable = false)
     private boolean defaultValue;
+
+    @Column(name = "reminder_two_days", columnDefinition = "boolean", nullable = false)
+    private boolean reminderTwoDays;
+
+    @Column(name = "reminder_four_days", columnDefinition = "boolean", nullable = false)
+    private boolean reminderFourDays;
+
+    @Column(name = "reminder_six_days", columnDefinition = "boolean", nullable = false)
+    private boolean reminderSixDays;
+
+    @Column(name = "reminder_eight_days", columnDefinition = "boolean", nullable = false)
+    private boolean reminderEightDays;
+
+    @Column(name = "reminder_articles", columnDefinition = "boolean", nullable = false)
+    private boolean reminderArticles;
 
     
     /**
@@ -58,29 +73,28 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     /**
      * ID constructor
      *
-     * @param id
-     *            to use
+     * @param id to use
      */
     public DefaultClientTeamEmailConfiguration(Long id) {
         this.id = id;
     }
     
     public boolean isDefaultValue() {
-		return defaultValue;
-	}
+        return defaultValue;
+    }
 
-	public void setDefaultValue(boolean defaultValue) {
-		this.defaultValue = defaultValue;
-	}
+    public void setDefaultValue(boolean defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
-	public EmailReminderType getType() {
-		return type;
-	}
+    public EmailReminderType getType() {
+        return type;
+    }
 
-	public void setType(EmailReminderType type) {
-		this.type = type;
-	}
-	
+    public void setType(EmailReminderType type) {
+        this.type = type;
+    }
+
     public Long getId() {
         return id;
     }
@@ -112,28 +126,71 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     public void setActive(boolean active) {
         this.active = active;
     }
-    
+
+    public boolean getReminderTwoDays() {
+        return reminderTwoDays;
+    }
+
+    public void setReminderTwoDays(boolean reminderTwoDays) {
+        this.reminderTwoDays = reminderTwoDays;
+    }
+
+    public boolean getReminderFourDays() {
+        return reminderFourDays;
+    }
+
+    public void setReminderFourDays(boolean reminderFourDays) {
+        this.reminderFourDays = reminderFourDays;
+    }
+
+    public boolean getReminderSixDays() {
+        return reminderSixDays;
+    }
+
+    public void setReminderSixDays(boolean reminderSixDays) {
+        this.reminderSixDays = reminderSixDays;
+    }
+
+    public boolean getReminderEightDays() {
+        return reminderEightDays;
+    }
+
+    public void setReminderEightDays(boolean reminderEightDays) {
+        this.reminderEightDays = reminderEightDays;
+    }
+
+    public boolean getReminderArticles() {
+        return reminderArticles;
+    }
+
+    public void setReminderArticles(boolean reminderArticles) {
+        this.reminderArticles = reminderArticles;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
+
         DefaultClientTeamEmailConfiguration that = (DefaultClientTeamEmailConfiguration) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }
-	
-	@Override
+
+    @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
-	
-	@Override
+
+    @Override
     public String toString() {
         return "DefaultClientTeamEmailConfiguration{" + "id=" + id
-                + ", type=" + type +
-                ", defaultValue=" + defaultValue +  '}';
+            + ", type=" + type
+            + ", defaultValue=" + defaultValue
+            + "}";
     }
-
-      
 }
