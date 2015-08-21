@@ -37,6 +37,7 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    // TODO: Remove
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 50)
     private EmailReminderType type;
@@ -44,8 +45,15 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @Column(name ="rank", columnDefinition = "integer")
     private Integer rank;
 
+    // TODO: Remove
     @Column(name = "default_value", columnDefinition = "boolean", nullable = false)
     private boolean defaultValue;
+
+    @Column(name = "collect_email", columnDefinition = "boolean", nullable = false)
+    private boolean collectEmail;
+
+    @Column(name = "require_email", columnDefinition = "boolean", nullable = false)
+    private boolean requireEmail;
 
     @Column(name = "reminder_two_days", columnDefinition = "boolean", nullable = false)
     private boolean reminderTwoDays;
@@ -127,6 +135,22 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
         this.active = active;
     }
 
+    public boolean getCollectEmail() {
+        return collectEmail;
+    }
+
+    public void setCollectEmail(boolean collectEmail) {
+        this.collectEmail = collectEmail;
+    }
+
+    public boolean getRequireEmail() {
+        return requireEmail;
+    }
+
+    public void setRequireEmail(boolean requireEmail) {
+        this.requireEmail = requireEmail;
+    }
+
     public boolean getReminderTwoDays() {
         return reminderTwoDays;
     }
@@ -191,6 +215,13 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
         return "DefaultClientTeamEmailConfiguration{" + "id=" + id
             + ", type=" + type
             + ", defaultValue=" + defaultValue
+            + ", collectEmail=" + collectEmail
+            + ", requireEmail=" + requireEmail
+            + ", reminderTwoDays=" + reminderTwoDays
+            + ", reminderFourDays=" + reminderFourDays
+            + ", reminderSixDays=" + reminderSixDays
+            + ", reminderEightDays=" + reminderEightDays
+            + ", reminderArticles=" + reminderArticles
             + "}";
     }
 }

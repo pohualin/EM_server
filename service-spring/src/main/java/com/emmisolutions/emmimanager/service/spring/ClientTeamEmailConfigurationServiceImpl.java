@@ -66,10 +66,12 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
 
             for (DefaultClientTeamEmailConfiguration defaultConfig : deafaultClientEmail) {
                 ClientTeamEmailConfiguration teamEmailConfig = new ClientTeamEmailConfiguration();
-                teamEmailConfig.setType(defaultConfig.getType());
+                teamEmailConfig.setType(defaultConfig.getType()); // TODO: Remove
                 teamEmailConfig.setRank(defaultConfig.getRank());
-                teamEmailConfig.setEmailConfig(defaultConfig.isDefaultValue());
+                teamEmailConfig.setEmailConfig(defaultConfig.isDefaultValue()); // TODO: Remove
                 teamEmailConfig.setTeam(reloadTeam);
+                teamEmailConfig.setCollectEmail(defaultConfig.getCollectEmail());
+                teamEmailConfig.setRequireEmail(defaultConfig.getRequireEmail());
                 teamEmailConfig.setReminderTwoDays(defaultConfig.getReminderTwoDays());
                 teamEmailConfig.setReminderFourDays(defaultConfig.getReminderFourDays());
                 teamEmailConfig.setReminderSixDays(defaultConfig.getReminderSixDays());

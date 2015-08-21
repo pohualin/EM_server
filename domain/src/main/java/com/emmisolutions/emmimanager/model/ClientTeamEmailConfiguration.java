@@ -36,6 +36,7 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     @Column(columnDefinition = "bigint")
     private Long id;
 
+    // TODO: Remove
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 50)
     private EmailReminderType type;
@@ -48,8 +49,15 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     @Column(name ="rank", columnDefinition = "integer")
     private Integer rank;
 
+    // TODO: Remove
     @Column(name = "email_config", columnDefinition = "boolean", nullable = false)
     private boolean emailConfig;
+
+    @Column(name = "collect_email", columnDefinition = "boolean", nullable = false)
+    private boolean collectEmail;
+
+    @Column(name = "require_email", columnDefinition = "boolean", nullable = false)
+    private boolean requireEmail;
 
     @Column(name = "reminder_two_days", columnDefinition = "boolean", nullable = false)
     private boolean reminderTwoDays;
@@ -112,6 +120,22 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean getCollectEmail() {
+        return collectEmail;
+    }
+
+    public void setCollectEmail(boolean collectEmail) {
+        this.collectEmail = collectEmail;
+    }
+
+    public boolean getRequireEmail() {
+        return requireEmail;
+    }
+
+    public void setRequireEmail(boolean requireEmail) {
+        this.requireEmail = requireEmail;
     }
 
     public boolean getReminderTwoDays() {
