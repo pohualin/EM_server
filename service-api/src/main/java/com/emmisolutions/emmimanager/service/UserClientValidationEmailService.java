@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.service;
 
 
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface UserClientValidationEmailService {
     /**
@@ -14,15 +13,15 @@ public interface UserClientValidationEmailService {
      * Add a validation token to the UserClient
      *
      * @param userClient on which to add the validation token
-     * @return the saved UserClient
+     * @return the saved UserClient related to the token
      */
-    public UserClient addValidationTokenTo(UserClient userClient);
+    UserClient addValidationTokenTo(UserClient userClient);
 
     /**
-     * Validate email token
+     * Validate email token and remove it from the user
+     *
      * @param validationEmailToken token to validate
-     * @return
+     * @return the updated user client attached to the token
      */
-    @Transactional
     UserClient validateEmailToken(String validationEmailToken);
 }

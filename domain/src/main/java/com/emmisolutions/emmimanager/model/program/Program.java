@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.model.program;
 
-import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.joda.time.LocalDateTime;
@@ -70,7 +70,7 @@ public class Program {
     @XmlTransient
     @SuppressWarnings("unused")
     @OneToMany(mappedBy = "program")
-    private Set<HliProgram> hliProgram; // don't give this field a getter and setter ever
+    private Set<HliSearchResponse> hliProgram; // don't give this field a getter and setter ever
 
     public Program() {
     }

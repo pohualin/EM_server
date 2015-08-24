@@ -1,24 +1,18 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
 import com.emmisolutions.emmimanager.model.program.*;
-import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse_;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
-import static org.hibernate.cfg.AvailableSettings.DIALECT;
 
 /**
  * Specifications holder for Program objects
@@ -26,14 +20,9 @@ import static org.hibernate.cfg.AvailableSettings.DIALECT;
 @Component
 public class ProgramSpecifications {
 
-    private static ThreadLocal<Boolean> performedHliSearch = new ThreadLocal<>();
-    private transient final Logger LOGGER = LoggerFactory.getLogger(ProgramSpecifications.class);
     @Resource
-    HliSearchRepository hliSearchRepository;
-    @PersistenceContext
-    EntityManager entityManager;
-    @Value("${hibernate.jdbc.batch_size:50}")
-    private int batchSize;
+    private HliSearchRepository hliSearchRepository;
+
 
     /**
      * Adds an OR clause for each specialty in the filter. This ensures that both
@@ -80,46 +69,17 @@ public class ProgramSpecifications {
             public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 if (filter != null && !CollectionUtils.isEmpty(filter.getTerms())) {
 
-                    // only load HLI searches one time per thread
-                    if (!Boolean.TRUE.equals(performedHliSearch.get())) {
+                    // retrieve (or search HLI and create) the persistent search request
+                    HliSearchRequest searchRequest = hliSearchRepository.find(filter);
 
-                        performedHliSearch.set(Boolean.TRUE);
-
-                        // search HLI and get full set
-                        Set<HliProgram> hliPrograms = hliSearchRepository.find(filter);
-
-                        // create temporary table (even if there are no programs found)
-                        createTempTable();
-
-                        if (!CollectionUtils.isEmpty(hliPrograms)) {
-                            // insert full set into temporary table
-                            int i = 0;
-                            for (HliProgram hliProgram : hliPrograms) {
-                                entityManager.persist(hliProgram);
-                                i++;
-                                if (i % batchSize == 0) {
-                                    // Flush a batch of inserts and release memory.
-                                    entityManager.flush();
-                                    entityManager.clear();
-                                }
-                            }
-                        }
-                    }
-                    // inner join to the search table to only allow HLI codes
-                    root.join(Program_.hliProgram, JoinType.INNER);
+                    // find all programs (on a search response) from the search request
+                    SetJoin<Program, HliSearchResponse> hliProgramJoin = root.join(Program_.hliProgram, JoinType.INNER);
+                    hliProgramJoin.alias("hliProgram_springDataOrderBy"); // use the inner join for order by
+                    return cb.equal(hliProgramJoin.get(HliSearchResponse_.hliSearchRequest), searchRequest);
                 }
                 return null;
             }
         };
     }
 
-    private void createTempTable() {
-        String dialect = (String) entityManager.getEntityManagerFactory().getProperties().get(DIALECT);
-        LOGGER.debug("Attempting to create temp tables for '{}'", dialect);
-        entityManager.createNamedQuery(dialect).executeUpdate();
-    }
-
-    public void resetThread() {
-        performedHliSearch.remove();
-    }
 }

@@ -211,7 +211,7 @@ public class UserClientSecretQuestionResponsesResource {
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "id,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    @PermitAll
+    @PreAuthorize("hasPermission(@resetWithinIpRange, #resetToken)")
     public ResponseEntity<UserClientSecretQuestionResponsePage> getSecretQuestionWithResetToken(
             @RequestParam(value = "token", required = false) String resetToken,
             @PageableDefault(size = 10, sort = "id") Pageable pageable,
@@ -240,7 +240,7 @@ public class UserClientSecretQuestionResponsesResource {
      * @return OK (200): true - secret question responses are all good, false - not good
      */
     @RequestMapping(value = "/secret_questions/is_response_correct", method = RequestMethod.PUT)
-    @PermitAll
+    @PreAuthorize("hasPermission(@resetWithinIpRange, #resetToken)")
     public ResponseEntity<Boolean> validateSecretResponses(
             @RequestParam(value = "token", required = false) String resetToken,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {

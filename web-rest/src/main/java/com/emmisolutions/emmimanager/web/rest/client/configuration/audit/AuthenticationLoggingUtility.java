@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.audit.login.LoginStatusName;
 import com.emmisolutions.emmimanager.model.audit.logout.LogoutSourceName;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.service.audit.AuthenticationAuditService;
+import com.emmisolutions.emmimanager.service.audit.HttpProxyAwareAuthenticationDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 

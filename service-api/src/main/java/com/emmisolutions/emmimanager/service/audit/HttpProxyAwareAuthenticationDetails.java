@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.web.rest.client.configuration.audit;
+package com.emmisolutions.emmimanager.service.audit;
 
 /**
  * Authentication Details that is http proxy aware.

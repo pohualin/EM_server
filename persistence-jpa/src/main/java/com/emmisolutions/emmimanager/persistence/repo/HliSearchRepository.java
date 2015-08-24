@@ -1,17 +1,20 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
 import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
-import com.emmisolutions.emmimanager.model.program.hli.HliProgram;
-
-import java.util.Set;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest;
 
 public interface HliSearchRepository {
 
     /**
-     * Query the HLI REST service
+     * Return the search request for a search filter
      *
      * @param filter used to narrow the query
-     * @return List of program ids
+     * @return a cached search request
      */
-    Set<HliProgram> find(ProgramSearchFilter filter);
+    HliSearchRequest find(ProgramSearchFilter filter);
+
+    /**
+     * Cleans the cache of saved HliSearchRequests
+     */
+    void cacheClean();
 }

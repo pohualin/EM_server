@@ -9,13 +9,13 @@ import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPa
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.annotation.security.PermitAll;
 import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class UserClientsActivationResource {
      * NOT_ACCEPTABLE (406): when there are errors during activation, (e.g. bad password, existing password, etc)
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST)
-    @PermitAll
+    @PreAuthorize("hasPermission(@activationWithinIpRange, #activationRequest.activationToken)")
     public ResponseEntity<List<UserClientPasswordValidationErrorResource>> activate(
             @RequestBody ActivationRequest activationRequest) {
 
@@ -86,7 +86,7 @@ public class UserClientsActivationResource {
      * @return OK or GONE
      */
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
-    @PermitAll
+    @PreAuthorize("hasPermission(@activationWithinIpRange, #activationToken)")
     public ResponseEntity<Void> validateActivationToken(
             @QueryParam("activationToken") String activationToken) {
         if (userClientService.validateActivationToken(activationToken)) {

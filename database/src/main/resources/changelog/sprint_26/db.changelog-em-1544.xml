@@ -19,4 +19,16 @@
     	</update>
     </changeSet>
     
+    <changeSet id="update team role permission rank again" author="Paul">
+    	<update tableName="user_client_team_permission">
+    		<column name="rank">2</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_METADATA'</where>
+    	</update>
+    	
+    	<update tableName="user_client_team_permission">
+    		<column name="rank">1</column>
+    		<where>name = 'PERM_CLIENT_TEAM_MODIFY_USER_ROLE'</where>
+    	</update>
+    </changeSet>
+    
 </databaseChangeLog>

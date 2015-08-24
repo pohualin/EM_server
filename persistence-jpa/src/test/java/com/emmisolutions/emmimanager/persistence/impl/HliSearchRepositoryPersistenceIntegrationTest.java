@@ -1,15 +1,15 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
-import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
+import com.emmisolutions.emmimanager.model.program.*;
+import com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ProgramRepository;
 import org.junit.Test;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -20,19 +20,37 @@ public class HliSearchRepositoryPersistenceIntegrationTest extends BaseIntegrati
     @Resource
     HliSearchRepository hliSearchRepository;
 
+    @Resource
+    ProgramRepository programRepository;
+
     /**
      * A vaild HLI search should return results
      */
     @Test
     public void valid() {
-        assertThat("should find a program",
-                CollectionUtils.isEmpty(
-                        hliSearchRepository.find(new ProgramSearchFilter()
-                                        .addTerm("mouth")
-                                        .addTerm("cetirizine/pseudoephedrine")
-                        )),
-                is(false)
+
+        Program p8752 = new Program(8752);
+        p8752.setName("so we can have a program in the system for the result");
+        p8752.setBrand(new Brand(1));
+        p8752.setType(new Type(1));
+        p8752.setSource(new Source(1));
+        programRepository.save(p8752);
+
+        HliSearchRequest hliSearchRequest = hliSearchRepository.find(new ProgramSearchFilter()
+                .addTerm("ACETAMINOPHEN")
+                .addTerm("DIPHENHYDRAMINE")
+                .addTerm("PHENYLEPHRINE"));
+
+        assertThat("should create a search request", hliSearchRequest, is(notNullValue()));
+
+        assertThat("find the same search request", hliSearchRepository.find(new ProgramSearchFilter()
+                        .addTerm("ACETAMINOPHEN")
+                        .addTerm("DIPHENHYDRAMINE")
+                        .addTerm("PHENYLEPHRINE")),
+                is(hliSearchRequest)
         );
+
+        hliSearchRepository.cacheClean(); // just make sure it doesn't throw stack
     }
 
     /**

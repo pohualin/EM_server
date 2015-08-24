@@ -41,49 +41,36 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
         APPLICATION_XML_VALUE})
 public class UserClientsResource {
 
+    private static final String VALIDATION_CLIENT_APPLICATION_URI = "#/validateEmail/%s";
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
-
     @Resource(name = "userClientAuthenticationResourceAssembler")
     ResourceAssembler<UserClient, UserClientResource> userResourceAssembler;
-
     @Resource(name = "userClientResourceAssembler")
     ResourceAssembler<UserClient, UserClientResource>
             userClientResourceAssembler;
-
     @Resource(name = "clientUserConflictResourceAssembler")
     ResourceAssembler<List<UserClientService.UserClientConflict>, UserClientResource>
             conflictsResourceAssembler;
-
     @Resource(name = "clientUserClientResourceAssembler")
     ResourceAssembler<UserClient, UserClientResource> clientUserClientResourceAssembler;
-
     @Resource
     UserClientSecretQuestionResponseService userClientSecretQuestionResponseService;
-
     @Resource
     MailService mailService;
-
     @Resource(name = "clientCsrfAuthenticationStrategy")
     CsrfAuthenticationStrategy clientCsrfAuthenticationStrategy;
-
     @Resource
     UserClientService userClientService;
-
     @Resource(name = "clientUserClientValidationErrorResourceAssembler")
     ResourceAssembler<UserClientService.UserClientValidationError, UserClientResource>
             clientUserClientValidationErrorResourceAssembler;
-
     @Resource
     UserClientValidationEmailService userClientValidationEmailService;
-
     @Resource(name = "clientTokenBasedRememberMeServices")
     RootTokenBasedRememberMeServices tokenBasedRememberMeServices;
-
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
-
-    private static final String VALIDATION_CLIENT_APPLICATION_URI = "#/validateEmail/%s";
 
     /**
      * send validation email
@@ -104,7 +91,8 @@ public class UserClientsResource {
                     UriComponentsBuilder.fromHttpUrl(
                             linkTo(methodOn(UserClientsResource.class)
                                     .validateEmailToken(null)).withSelfRel().getHref())
-                            .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI, savedUserClient.getValidationToken()))
+                            .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI,
+                                    savedUserClient.getValidationToken()))
                             .build(false)
                             .toUriString();
             // send the email (asynchronously)
@@ -124,9 +112,10 @@ public class UserClientsResource {
      * GONE (410): if the email token is not valid
      */
     @RequestMapping(value = "/validate/", method = RequestMethod.PUT)
-    @PermitAll
+    @PreAuthorize("hasPermission(@validateEmailWithinIpRange, #validationToken.validationToken)")
     public ResponseEntity<Void> validateEmailToken(@RequestBody ValidationToken validationToken) {
-        UserClient savedUserClient = userClientValidationEmailService.validateEmailToken(validationToken.getValidationToken());
+        UserClient savedUserClient = userClientValidationEmailService
+                .validateEmailToken(validationToken.getValidationToken());
         if (savedUserClient != null) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -140,7 +129,6 @@ public class UserClientsResource {
      * authorized.
      */
     @RequestMapping(value = "/authenticated", method = RequestMethod.GET)
-    @PreAuthorize("hasPermission(@startsWith, 'PERM_CLIENT')")
     public ResponseEntity<UserClientResource> authenticated() {
         return new ResponseEntity<>(
                 userResourceAssembler.toResource((UserClient) userDetailsService
@@ -151,7 +139,7 @@ public class UserClientsResource {
      * PUT for updates to a given user client
      *
      * @param userClientId to update
-     * @param password to verify permission by password
+     * @param password     to verify permission by password
      * @param userClient   the updated user client
      * @return OK (200): containing the newly updated UserClientResource
      * <p/>
@@ -161,13 +149,12 @@ public class UserClientsResource {
      * INTERNAL_SERVER_ERROR (500): when the save doesn't return an updated client.
      */
     @RequestMapping(value = "/user_client/{userClientId}", method = RequestMethod.PUT)
-    @PreAuthorize("hasPermission(@user, #userClientId) and " +
-            "hasPermission(@password, #password)")
+    @PreAuthorize("hasPermission(@user, #userClientId) and hasPermission(@password, #password)")
     public ResponseEntity<UserClientResource> updateUserClientEmail(@PathVariable("userClientId") Long userClientId,
-                                                               @RequestParam(value = "password", required = false) String password,
-                                                               @RequestBody UserClient userClient,
-                                                               HttpServletRequest request,
-                                                               HttpServletResponse response) {
+                                                                    @RequestParam(value = "password", required = false) String password,
+                                                                    @RequestBody UserClient userClient,
+                                                                    HttpServletRequest request,
+                                                                    HttpServletResponse response) {
 
         userClient.setId(userClientId);
         if (StringUtils.isNotBlank(userClient.getEmail())

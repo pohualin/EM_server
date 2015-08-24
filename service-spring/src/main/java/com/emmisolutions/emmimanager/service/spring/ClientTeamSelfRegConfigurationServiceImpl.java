@@ -83,4 +83,9 @@ public class ClientTeamSelfRegConfigurationServiceImpl implements
         }
         return clientTeamSelfRegConfigurationPersistence.find(team.getId());
     }
+
+    @Override
+    public ClientTeamSelfRegConfiguration findByCode(String code) {
+        return clientTeamSelfRegConfigurationPersistence.findByCode(code);
+    }
 }

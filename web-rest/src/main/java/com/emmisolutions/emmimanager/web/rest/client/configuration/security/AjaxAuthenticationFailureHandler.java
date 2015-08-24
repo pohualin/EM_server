@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.client.configuration.security;
 
+import com.emmisolutions.emmimanager.exception.IpAddressAuthenticationException;
 import com.emmisolutions.emmimanager.model.audit.login.LoginStatusName;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -119,6 +120,9 @@ public class AjaxAuthenticationFailureHandler extends
             userClient = userClientService.reload(userClient);
             failure = new UserClientLoginError(
                     UserClientLoginError.Reason.LOCK, userClient);
+        } else if (exception instanceof IpAddressAuthenticationException) {
+            failure = new UserClientLoginError(
+                    UserClientLoginError.Reason.INVALID_IP_ADDRESS);
         }
 
         UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler
@@ -147,6 +151,9 @@ public class AjaxAuthenticationFailureHandler extends
                 break;
             case LOCK:
                 status = LoginStatusName.LOCKED_OUT;
+                break;
+            case INVALID_IP_ADDRESS:
+                status = LoginStatusName.INVALID_IP_ADDRESS;
                 break;
         }
         if (status != null) {
