@@ -62,6 +62,7 @@
         <class>com.emmisolutions.emmimanager.model.program.Program</class>
         <class>com.emmisolutions.emmimanager.model.program.Source</class>
         <class>com.emmisolutions.emmimanager.model.program.Type</class>
+        <class>com.emmisolutions.emmimanager.model.program.ContentSubscription</class>
         <class>com.emmisolutions.emmimanager.model.ProviderSpecialty</class>
         <class>com.emmisolutions.emmimanager.model.Patient</class>
         <class>com.emmisolutions.emmimanager.model.Gender</class>
@@ -76,6 +77,7 @@
         <class>com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamSchedulingConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.PatientSelfRegConfig</class>
         <class>com.emmisolutions.emmimanager.model.InfoHeaderConfig</class>
         <class>com.emmisolutions.emmimanager.model.PatientIdLabelConfig</class>
