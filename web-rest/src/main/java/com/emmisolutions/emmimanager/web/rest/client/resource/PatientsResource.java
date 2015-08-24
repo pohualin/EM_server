@@ -9,7 +9,10 @@ import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientRefere
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourcePage;
-import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.*;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationResource;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 
