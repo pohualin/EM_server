@@ -214,7 +214,7 @@
 
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-1347.xml"/>
 
-     <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-932-fix.xml"/>
+    <include relativeToChangelogFile="true" file="changelog/sprint_19/db.changelog-em-932-fix.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_20/db.changelog-em-972.xml"/>
 
@@ -267,5 +267,9 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_25/db.changelog-em-1494.xml"/>
     
     <include relativeToChangelogFile="true" file="changelog/sprint_26/db.changelog-em-1520.xml"/>
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_26/db.changelog-em-1304.xml"/>
+
+    <include relativeToChangelogFile="true" file="changelog/sprint_26/db.changelog-em-1551.xml"/>
 
 </databaseChangeLog>
