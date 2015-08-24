@@ -81,7 +81,7 @@ public class ClientTeamSelfRegConfigurationsResource {
                 return new ResponseEntity<>(
                         selfRegConfigResourceAssembler
                                 .toResource(selfRegConfiguration),
-                        HttpStatus.OK);
+                        HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
             }
