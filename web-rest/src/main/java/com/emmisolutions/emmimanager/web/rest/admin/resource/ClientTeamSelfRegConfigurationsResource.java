@@ -68,15 +68,23 @@ public class ClientTeamSelfRegConfigurationsResource {
             @PathVariable("teamId") Long teamId,
             @RequestBody ClientTeamSelfRegConfiguration clientTeamSelfRegConfiguration) {
         clientTeamSelfRegConfiguration.setTeam(new Team(teamId));
-        ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.create(clientTeamSelfRegConfiguration);
 
-        if (selfRegConfiguration != null) {
+        ClientTeamSelfRegConfiguration found = clientTeamSelfRegConfigurationService.findByCode(clientTeamSelfRegConfiguration.getCode());
+        if (found != null && !found.getId().equals(clientTeamSelfRegConfiguration.getId())) {
             return new ResponseEntity<>(
                     selfRegConfigResourceAssembler
-                            .toResource(selfRegConfiguration),
-                    HttpStatus.CREATED);
+                            .toResource(found),
+                    HttpStatus.NOT_ACCEPTABLE);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            ClientTeamSelfRegConfiguration selfRegConfiguration = clientTeamSelfRegConfigurationService.create(clientTeamSelfRegConfiguration);
+            if (selfRegConfiguration != null) {
+                return new ResponseEntity<>(
+                        selfRegConfigResourceAssembler
+                                .toResource(selfRegConfiguration),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            }
         }
 
     }
