@@ -3,16 +3,9 @@ package com.emmisolutions.emmimanager.web.rest.admin.resource;
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
-import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamEmailConfigurationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamEmailConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.team.configuration.ClientTeamEmailConfigurationResourceAssembler;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,28 +38,16 @@ public class ClientTeamEmailConfigurationsResource {
     /**
      * Find client team email configuration if there are any
      *
-     * @param teamId    for the email configuration
-     * @param pageable  which page to fetch
-     * @param assembler makes a page for ClientTeamEmailConfiguration
+     * @param teamId for the email configuration
      * @return a ClientTeamEmailConfiguration response entity
      */
     @RequestMapping(value = "/teams/{teamId}/email_configuration", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    @ApiImplicitParams(value = {
-        @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-        @ApiImplicitParam(name = "sort", defaultValue = "rank,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
-    })
-    public ResponseEntity<ClientTeamEmailConfigurationPage> findTeamEmailConfig(
-        @PathVariable("teamId") Long teamId,
-        @PageableDefault(size = 10, sort = "rank") Pageable pageable,
-        PagedResourcesAssembler<ClientTeamEmailConfiguration> assembler) {
+    public ResponseEntity<ClientTeamEmailConfigurationResource> findTeamEmailConfig(@PathVariable("teamId") Long teamId) {
+        ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationService.findByTeam(new Team(teamId));
 
-        Page<ClientTeamEmailConfiguration> page = clientTeamEmailConfigurationService.findByTeam(new Team(teamId), pageable);
-        if (page.hasContent()) {
-            return new ResponseEntity<>(new ClientTeamEmailConfigurationPage(
-                 assembler.toResource(page, emailConfigurationAssembler), page),
-                 HttpStatus.OK);
+        if (clientTeamEmailConfiguration != null) {
+            return new ResponseEntity<>(emailConfigurationAssembler.toResource(clientTeamEmailConfiguration), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

@@ -27,6 +27,10 @@ import java.util.*;
 @Service
 public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailConfigurationService {
 
+    private static final String EXCEPTION_NULL_TEAM_ID = "Team cannot be null to find ClientTeamEmailConfiguration";
+
+    private static final String EXCEPTION_NULL_CLIENT_TEAM_EMAIL_CONFIGURATION = "ClientTeamEmailConfiguration can not be null.";
+
     @Resource
     TeamService teamService;
 
@@ -43,7 +47,7 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
     @Transactional
     public ClientTeamEmailConfiguration saveOrUpdate(ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
         if (clientTeamEmailConfiguration == null) {
-            throw new InvalidDataAccessApiUsageException("ClientTeamEmailConfiguration can not be null.");
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_NULL_CLIENT_TEAM_EMAIL_CONFIGURATION);
         }
 
         Team reloadTeam = teamService.reload(clientTeamEmailConfiguration.getTeam());
@@ -52,9 +56,39 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
     }
 
     @Override
+    public ClientTeamEmailConfiguration findByTeam(Team teamId) {
+        if (teamId.getId() == null) {
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_NULL_TEAM_ID);
+        }
+
+        ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationPersistence.find(teamId.getId());
+
+        // TODO: Refactor
+        if (clientTeamEmailConfiguration == null) {
+            Team reloadTeam = teamPersistence.reload(teamId);
+            DefaultClientTeamEmailConfiguration defaultClientTeamEmailConfiguration = defaultClientTeamEmailConfigurationPersistence.find();
+            ClientTeamEmailConfiguration newClientTeamEmailConfiguration = new ClientTeamEmailConfiguration();
+            newClientTeamEmailConfiguration.setType(defaultClientTeamEmailConfiguration.getType()); // TODO: Remove
+            newClientTeamEmailConfiguration.setRank(defaultClientTeamEmailConfiguration.getRank());
+            newClientTeamEmailConfiguration.setEmailConfig(defaultClientTeamEmailConfiguration.isDefaultValue()); // TODO: Remove
+            newClientTeamEmailConfiguration.setTeam(reloadTeam);
+            newClientTeamEmailConfiguration.setCollectEmail(defaultClientTeamEmailConfiguration.getCollectEmail());
+            newClientTeamEmailConfiguration.setRequireEmail(defaultClientTeamEmailConfiguration.getRequireEmail());
+            newClientTeamEmailConfiguration.setReminderTwoDays(defaultClientTeamEmailConfiguration.getReminderTwoDays());
+            newClientTeamEmailConfiguration.setReminderFourDays(defaultClientTeamEmailConfiguration.getReminderFourDays());
+            newClientTeamEmailConfiguration.setReminderSixDays(defaultClientTeamEmailConfiguration.getReminderSixDays());
+            newClientTeamEmailConfiguration.setReminderEightDays(defaultClientTeamEmailConfiguration.getReminderEightDays());
+            newClientTeamEmailConfiguration.setReminderArticles(defaultClientTeamEmailConfiguration.getReminderArticles());
+            return newClientTeamEmailConfiguration;
+        } else {
+            return clientTeamEmailConfiguration;
+        }
+    }
+
+    @Override
     public Page<ClientTeamEmailConfiguration> findByTeam(Team team, Pageable pageable) {
         if (team.getId() == null) {
-            throw new InvalidDataAccessApiUsageException("Team cannot be null to find ClientTeamEmailConfiguration");
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_NULL_TEAM_ID);
         }
 
         Page<ClientTeamEmailConfiguration> teamEmailConfigDB = clientTeamEmailConfigurationPersistence.find(team.getId(), pageable);

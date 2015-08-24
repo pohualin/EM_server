@@ -15,17 +15,22 @@ public interface ClientTeamEmailConfigurationRepository extends
         JpaSpecificationExecutor<ClientTeamEmailConfiguration> {
 
     /**
+     * Find a ClientTeamEmailConfiguration with given teamId.
+     *
+     * @param teamId to use
+     * @return a ClientTeamEmailConfiguration
+     */
+    public ClientTeamEmailConfiguration findByTeamId(Long teamId);
+
+    /**
      * Find a page of ClientTeamEmailConfiguration with given teamId and
      * page specification
      * 
-     * @param teamId
-     *            to use
-     * @param pageable
-     *            to use
+     * @param teamId to use
+     * @param pageable to use
      * @return a page of ClientTeamEmailConfiguration
      */
     public Page<ClientTeamEmailConfiguration> findByTeamId(
             Long teamId, Pageable pageable);
-  
 
 }

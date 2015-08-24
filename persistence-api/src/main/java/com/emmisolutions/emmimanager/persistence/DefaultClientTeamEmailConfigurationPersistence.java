@@ -11,7 +11,13 @@ import org.springframework.data.domain.Pageable;
  */
 public interface DefaultClientTeamEmailConfigurationPersistence {
 
-       
+    /**
+     * Find DefaultClientTeamEmailConfiguration
+     *
+     * @return a DefaultClientTeamEmailConfiguration
+     */
+    DefaultClientTeamEmailConfiguration find();
+
     /**
      * Find all the active DefaultTeamEmailConfiguration
      * 
