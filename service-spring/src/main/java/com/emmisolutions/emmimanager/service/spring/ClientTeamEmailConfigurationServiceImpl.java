@@ -10,15 +10,10 @@ import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService
 import com.emmisolutions.emmimanager.service.TeamService;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
-
-import java.util.*;
 
 /**
  * Service layer for ClientTeamEmailConfiguration
@@ -63,60 +58,30 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
 
         ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationPersistence.find(teamId.getId());
 
-        // TODO: Refactor
         if (clientTeamEmailConfiguration == null) {
             Team reloadTeam = teamPersistence.reload(teamId);
-            DefaultClientTeamEmailConfiguration defaultClientTeamEmailConfiguration = defaultClientTeamEmailConfigurationPersistence.find();
-            ClientTeamEmailConfiguration newClientTeamEmailConfiguration = new ClientTeamEmailConfiguration();
-            newClientTeamEmailConfiguration.setType(defaultClientTeamEmailConfiguration.getType()); // TODO: Remove
-            newClientTeamEmailConfiguration.setRank(defaultClientTeamEmailConfiguration.getRank());
-            newClientTeamEmailConfiguration.setEmailConfig(defaultClientTeamEmailConfiguration.isDefaultValue()); // TODO: Remove
-            newClientTeamEmailConfiguration.setTeam(reloadTeam);
-            newClientTeamEmailConfiguration.setCollectEmail(defaultClientTeamEmailConfiguration.getCollectEmail());
-            newClientTeamEmailConfiguration.setRequireEmail(defaultClientTeamEmailConfiguration.getRequireEmail());
-            newClientTeamEmailConfiguration.setReminderTwoDays(defaultClientTeamEmailConfiguration.getReminderTwoDays());
-            newClientTeamEmailConfiguration.setReminderFourDays(defaultClientTeamEmailConfiguration.getReminderFourDays());
-            newClientTeamEmailConfiguration.setReminderSixDays(defaultClientTeamEmailConfiguration.getReminderSixDays());
-            newClientTeamEmailConfiguration.setReminderEightDays(defaultClientTeamEmailConfiguration.getReminderEightDays());
-            newClientTeamEmailConfiguration.setReminderArticles(defaultClientTeamEmailConfiguration.getReminderArticles());
-            return newClientTeamEmailConfiguration;
-        } else {
-            return clientTeamEmailConfiguration;
+            clientTeamEmailConfiguration = getDefaultEmailConfiguration();
+            clientTeamEmailConfiguration.setTeam(reloadTeam);
         }
+
+        return clientTeamEmailConfiguration;
     }
 
-    @Override
-    public Page<ClientTeamEmailConfiguration> findByTeam(Team team, Pageable pageable) {
-        if (team.getId() == null) {
-            throw new InvalidDataAccessApiUsageException(EXCEPTION_NULL_TEAM_ID);
-        }
+    private ClientTeamEmailConfiguration getDefaultEmailConfiguration() {
+        DefaultClientTeamEmailConfiguration defaultClientTeamEmailConfiguration = defaultClientTeamEmailConfigurationPersistence.find();
+        ClientTeamEmailConfiguration clientTeamEmailConfiguration = new ClientTeamEmailConfiguration();
 
-        Page<ClientTeamEmailConfiguration> teamEmailConfigDB = clientTeamEmailConfigurationPersistence.find(team.getId(), pageable);
+        clientTeamEmailConfiguration.setType(defaultClientTeamEmailConfiguration.getType()); // TODO: Remove
+        clientTeamEmailConfiguration.setEmailConfig(defaultClientTeamEmailConfiguration.isDefaultValue()); // TODO: Remove
+        clientTeamEmailConfiguration.setRank(defaultClientTeamEmailConfiguration.getRank());
+        clientTeamEmailConfiguration.setCollectEmail(defaultClientTeamEmailConfiguration.getCollectEmail());
+        clientTeamEmailConfiguration.setRequireEmail(defaultClientTeamEmailConfiguration.getRequireEmail());
+        clientTeamEmailConfiguration.setReminderTwoDays(defaultClientTeamEmailConfiguration.getReminderTwoDays());
+        clientTeamEmailConfiguration.setReminderFourDays(defaultClientTeamEmailConfiguration.getReminderFourDays());
+        clientTeamEmailConfiguration.setReminderSixDays(defaultClientTeamEmailConfiguration.getReminderSixDays());
+        clientTeamEmailConfiguration.setReminderEightDays(defaultClientTeamEmailConfiguration.getReminderEightDays());
+        clientTeamEmailConfiguration.setReminderArticles(defaultClientTeamEmailConfiguration.getReminderArticles());
 
-        if (!teamEmailConfigDB.hasContent()) {
-            Team reloadTeam = teamPersistence.reload(team);
-            List<ClientTeamEmailConfiguration> clientTeamEmailConfigurationList = new ArrayList<ClientTeamEmailConfiguration> ();
-            Page<DefaultClientTeamEmailConfiguration> deafaultClientEmail= defaultClientTeamEmailConfigurationPersistence.findActive(pageable);
-
-            for (DefaultClientTeamEmailConfiguration defaultConfig : deafaultClientEmail) {
-                ClientTeamEmailConfiguration teamEmailConfig = new ClientTeamEmailConfiguration();
-                teamEmailConfig.setType(defaultConfig.getType()); // TODO: Remove
-                teamEmailConfig.setRank(defaultConfig.getRank());
-                teamEmailConfig.setEmailConfig(defaultConfig.isDefaultValue()); // TODO: Remove
-                teamEmailConfig.setTeam(reloadTeam);
-                teamEmailConfig.setCollectEmail(defaultConfig.getCollectEmail());
-                teamEmailConfig.setRequireEmail(defaultConfig.getRequireEmail());
-                teamEmailConfig.setReminderTwoDays(defaultConfig.getReminderTwoDays());
-                teamEmailConfig.setReminderFourDays(defaultConfig.getReminderFourDays());
-                teamEmailConfig.setReminderSixDays(defaultConfig.getReminderSixDays());
-                teamEmailConfig.setReminderEightDays(defaultConfig.getReminderEightDays());
-                teamEmailConfig.setReminderArticles(defaultConfig.getReminderArticles());
-                clientTeamEmailConfigurationList.add(teamEmailConfig);
-            }
-
-            return new PageImpl<ClientTeamEmailConfiguration>(clientTeamEmailConfigurationList);
-        } else {
-            return teamEmailConfigDB;
-        }
+        return clientTeamEmailConfiguration;
     }
 }

@@ -37,6 +37,7 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     private Long id;
 
     // TODO: Remove
+    @Deprecated
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 50)
     private EmailReminderType type;
@@ -46,10 +47,12 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     @JoinColumn(name = "client_team_id", referencedColumnName="id")
     private Team team;
 
+    @Deprecated
     @Column(name ="rank", columnDefinition = "integer")
     private Integer rank;
 
     // TODO: Remove
+    @Deprecated
     @Column(name = "email_config", columnDefinition = "boolean", nullable = false)
     private boolean emailConfig;
 
@@ -131,6 +134,10 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     }
 
     public boolean getRequireEmail() {
+        return requireEmail;
+    }
+
+    public boolean isEmailRequired() {
         return requireEmail;
     }
 

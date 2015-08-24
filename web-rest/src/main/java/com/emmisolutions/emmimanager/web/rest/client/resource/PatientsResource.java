@@ -9,10 +9,7 @@ import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientRefere
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.patient.PatientResourcePage;
-import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationPage;
-import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamEmailConfigurationResourceAssembler;
-import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResource;
-import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.TeamPhoneConfigurationResourceAssembler;
+import com.emmisolutions.emmimanager.web.rest.client.model.team.configuration.*;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 
@@ -21,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -167,35 +163,24 @@ public class PatientsResource {
     }
 
     /**
-     * Find team email configuration for patient's or return the default
-     *
-     * @param clientId    for the email configuration
-     * @param teamId    for the email configuration
-     * @param pageable  which page to fetch
-     * @param assembler makes a page for ClientTeamEmailConfiguration
-     * @return a ClientTeamEmailConfiguration response entity
+     * Find a team email configuration for a particular patient or return the default
+     * @param clientId a client's ID
+     * @param teamId a team's ID
+     * @return a ClientTeamEmailConfiguration
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient_email_configuration", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
-    public ResponseEntity<TeamEmailConfigurationPage> findTeamEmailConfigForPatient(
+    public ResponseEntity<TeamEmailConfigurationResource> findTeamEmailConfigurationForPatient(
             @PathVariable("clientId") Long clientId,
-            @PathVariable("teamId") Long teamId,
-            @PageableDefault(size = 10, sort = "rank") Pageable pageable,
-            PagedResourcesAssembler<ClientTeamEmailConfiguration> assembler) {
+            @PathVariable("teamId") Long teamId) {
+        ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationService.findByTeam(new Team(teamId));
 
-        Page<ClientTeamEmailConfiguration> page = clientTeamEmailConfigurationService
-                .findByTeam(new Team(teamId), pageable);
-        if (page.hasContent()) {
-            return new ResponseEntity<>(new TeamEmailConfigurationPage(
-                    assembler.toResource(page,
-                            emailConfigurationAssembler), page),
-                    HttpStatus.OK);
+        if (clientTeamEmailConfiguration != null) {
+            return new ResponseEntity<>(emailConfigurationAssembler.toResource(clientTeamEmailConfiguration), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-
-
     }
     
     /**
@@ -212,11 +197,10 @@ public class PatientsResource {
             @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId) {
 
-        ClientTeamPhoneConfiguration teamPhoneConfiguration = clientTeamPhoneConfigurationService
-                .findByTeam(new Team(teamId));
+        ClientTeamPhoneConfiguration teamPhoneConfiguration = clientTeamPhoneConfigurationService.findByTeam(new Team(teamId));
+
         if (teamPhoneConfiguration != null) {
-            return new ResponseEntity<>(phoneConfigurationAssembler.toResource(
-            		teamPhoneConfiguration), HttpStatus.OK);
+            return new ResponseEntity<>(phoneConfigurationAssembler.toResource(teamPhoneConfiguration), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

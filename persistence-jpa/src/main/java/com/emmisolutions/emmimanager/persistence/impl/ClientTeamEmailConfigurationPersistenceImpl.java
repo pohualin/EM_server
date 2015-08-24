@@ -4,9 +4,6 @@ import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.persistence.ClientTeamEmailConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.ClientTeamEmailConfigurationRepository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -26,17 +23,7 @@ public class ClientTeamEmailConfigurationPersistenceImpl implements ClientTeamEm
     }
 
     @Override
-    public Page<ClientTeamEmailConfiguration> find(Long teamId, Pageable page) {
-        if (page == null) {
-            page = new PageRequest(0, 10);
-        }
-
-        return clientTeamEmailConfigurationRepository.findByTeamId(teamId, page);
-    }
-
-    @Override
-    public ClientTeamEmailConfiguration save(
-    ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
+    public ClientTeamEmailConfiguration save(ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
         return clientTeamEmailConfigurationRepository.save(clientTeamEmailConfiguration);
     }
 

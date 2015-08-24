@@ -2,8 +2,6 @@ package com.emmisolutions.emmimanager.persistence.repo;
 
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -21,16 +19,5 @@ public interface ClientTeamEmailConfigurationRepository extends
      * @return a ClientTeamEmailConfiguration
      */
     public ClientTeamEmailConfiguration findByTeamId(Long teamId);
-
-    /**
-     * Find a page of ClientTeamEmailConfiguration with given teamId and
-     * page specification
-     * 
-     * @param teamId to use
-     * @param pageable to use
-     * @return a page of ClientTeamEmailConfiguration
-     */
-    public Page<ClientTeamEmailConfiguration> findByTeamId(
-            Long teamId, Pageable pageable);
 
 }

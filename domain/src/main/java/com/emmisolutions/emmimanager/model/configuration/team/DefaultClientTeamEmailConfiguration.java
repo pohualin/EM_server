@@ -38,14 +38,17 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     private boolean active;
 
     // TODO: Remove
+    @Deprecated
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 50)
     private EmailReminderType type;
 
+    @Deprecated
     @Column(name ="rank", columnDefinition = "integer")
     private Integer rank;
 
     // TODO: Remove
+    @Deprecated
     @Column(name = "default_value", columnDefinition = "boolean", nullable = false)
     private boolean defaultValue;
 

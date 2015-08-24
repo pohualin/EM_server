@@ -4,9 +4,6 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 
 import javax.annotation.Resource;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
@@ -31,16 +28,6 @@ public class DefaultClientTeamEmailConfigurantionPersistenceImpl implements
     public DefaultClientTeamEmailConfiguration find() {
         return defaultClientTeamEmailConfigurationRepository.
                 findOne(where(defaultClientTeamEmailConfigurationSpecifications.isActive()));
-    }
-
-    @Override
-    public Page<DefaultClientTeamEmailConfiguration> findActive(Pageable page) {
-        if (page == null) {
-            page = new PageRequest(0, 10);
-        }
-
-        return defaultClientTeamEmailConfigurationRepository
-                .findAll(where(defaultClientTeamEmailConfigurationSpecifications.isActive()), page);
     }
 
 }
