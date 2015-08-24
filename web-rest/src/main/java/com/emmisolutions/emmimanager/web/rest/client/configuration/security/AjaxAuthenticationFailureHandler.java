@@ -12,6 +12,7 @@ import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLo
 import com.emmisolutions.emmimanager.web.rest.client.model.security.UserClientLoginErrorResourceAssembler;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.UserClientResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -91,7 +92,7 @@ public class AjaxAuthenticationFailureHandler extends
                             .getAuthentication().getPrincipal());
             userClient = userClientService.reload(userClient);
             boolean canChange = userClient.getPasswordResetExpirationDateTime() != null &&
-                    LocalDateTime.now().isBefore(userClient.getPasswordResetExpirationDateTime());
+                    LocalDateTime.now(DateTimeZone.UTC).isBefore(userClient.getPasswordResetExpirationDateTime());
             failure = new UserClientLoginError(
                     (canChange) ? UserClientLoginError.Reason.EXPIRED : UserClientLoginError.Reason.EXPIRED_CANT_CHANGE,
                     userClient);
