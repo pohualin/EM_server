@@ -20,7 +20,7 @@ public interface ClientContentSubscriptionConfigurationPersistence {
     void delete(Long id);
     
 	/**
-     * Find a page of client team configuration
+     * Find a page of client content subscription configuration
      *
      * @param clientId for which to find the content subscription configuration
      * @return a ClientContentSubscriptionConfiguration objects
@@ -28,7 +28,7 @@ public interface ClientContentSubscriptionConfigurationPersistence {
     Page<ClientContentSubscriptionConfiguration> findByClient(Long clientId, Pageable pageable);
 
     /**
-     * Create/Update a client team phone configuration
+     * Save/Update a client content subscription configuration
      *
      * @param clientContentSubscriptionConfiguration to be saved
      * @return the saved ClientContentSubscriptionConfiguration object
