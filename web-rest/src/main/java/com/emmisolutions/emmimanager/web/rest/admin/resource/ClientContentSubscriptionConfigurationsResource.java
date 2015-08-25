@@ -46,10 +46,10 @@ public class ClientContentSubscriptionConfigurationsResource {
     ClientContentSubscriptionConfigurationResourceAssembler contentSubscriptionConfigurationAssembler;
     
     /**
-     * Get the page of secret question response
+     * Get the page of content subscription
      *
      * @param pageable  the pagination
-     * @return secret question entity
+     * @return content subscription entity
      */
     @RequestMapping(value = "/content_subscriptions", method = RequestMethod.GET)
     @ApiImplicitParams(value = {
