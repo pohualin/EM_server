@@ -7,6 +7,9 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
@@ -22,27 +25,15 @@ public class ContentSubscriptionPersistenceIntegrationTest extends
     ContentSubscriptionPersistence contentSubscriptionPersistence;
 
     /**
-     * Test positive findSystemDefault
+     * Test positive find active content subscription
      */
     @Test
-    public void testFindSystemDefault() {
-    	Page<ContentSubscription> systemDefault = contentSubscriptionPersistence
+    public void testFindActiveContentSubscription() {
+    	Page<ContentSubscription> activeContentSubscritpion = contentSubscriptionPersistence
                 .findActive(null);
-        assertThat("active content subscription found", systemDefault, is(notNullValue()));
-        assertThat("active should be true", systemDefault.getContent().get(1).isActive(),
+        assertThat("make sure the page containts content subscriptions", activeContentSubscritpion.hasContent(), is(true));
+        assertThat("content subscriptions should be active true", activeContentSubscritpion.getContent().get(1).isActive(),
                 is(true));
     }
-
-    /**
-     * Test positive save
-     */
-    @Test
-    public void testSave() {
-    	Page<ContentSubscription>  systemDefault = contentSubscriptionPersistence
-                .findActive(null);
-        systemDefault.getContent().get(1).setActive(true);;
-        assertThat("system default should be false", systemDefault.getContent().get(1).isActive(),
-                is(true));
-    }
-    
+       
 }

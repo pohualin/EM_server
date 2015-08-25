@@ -7,19 +7,19 @@
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
     
-    <changeSet id="rf_content_subscription table from legacy" author="wlee">
+    <changeSet id="create rf_content_subscription table from legacy" author="wlee">
         <createTable tableName="rf_content_subscription" schemaName="program">
             <column name="config_cd" autoIncrement="true" type="integer">
                 <constraints primaryKey="true" primaryKeyName="pk_rf_content_subscription" nullable="false"/>
             </column>
-            <column name="primary_sbscrptn" type="boolean" defaultValueBoolean="true">
+            <column name="primary_sbscrptn" type="boolean">
             </column>
-            <column name="source_sbscrptn" type="boolean" defaultValueBoolean="true">
+            <column name="source_sbscrptn" type="boolean">
             </column>
             <column name="name" type="nvarchar(50)"/>
             <column name="display_ordr" type="integer">
             </column>
-            <column name="active" type="boolean" defaultValueBoolean="true">
+            <column name="active" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="last_chng_dt" type="timestamp" defaultValueDate="${now}">
@@ -31,7 +31,7 @@
        </createTable>
     </changeSet>
     
-    <changeSet id="client_content_subscription_configuration table" author="wlee">
+    <changeSet id="create client_content_subscription_configuration table" author="wlee">
         <!-- TABLES -->
        <createTable tableName="client_content_subscription_configuration">
             <column name="id" autoIncrement="true" type="bigint">
@@ -42,9 +42,9 @@
             </column>
             <column name="last_modified_date" type="timestamp"/>
             <column name="content_subscription_id" type="bigint"/>
-            <column name="faith_based" type="boolean" defaultValueBoolean="false">
+            <column name="faith_based" type="boolean">
             </column>
-            <column name="source" type="boolean" defaultValueBoolean="false">
+            <column name="source" type="boolean">
             </column>
             <column name="source_content_subscription_id" type="bigint">
             </column>
@@ -57,7 +57,7 @@
         </createTable>
     </changeSet>
      
-    <changeSet id="client_content_subscription_configuration audit table" author="wlee">
+    <changeSet id="create client_content_subscription_configuration audit table" author="wlee">
         <createTable tableName="client_content_subscription_configuration_audit" schemaName="audit">
             <column name="id" type="bigint">
                 <constraints nullable="false"/>
@@ -74,7 +74,7 @@
        </createTable>
     </changeSet>
       
-    <changeSet id="content subscription foreign keys and indexes" author="wlee">
+    <changeSet id="create content subscription foreign keys and indexes" author="wlee">
 
         <addPrimaryKey tableName="client_content_subscription_configuration_audit" 
                        columnNames="id, revision" 
@@ -139,14 +139,28 @@
                                        
     </changeSet>
     
-    <changeSet id="unique contraint for client_content_subscription_configuration " author="wlee">
+    <changeSet id="add rowver for sql server for content subscription tables" author="wlee" dbms="mssql">
+
+        <addColumn tableName="client_content_subscription_configuration">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_content_subscription_configuration_audit" schemaName="audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="create unique contraint for client_content_subscription_configuration " author="wlee">
     		<addUniqueConstraint tableName="client_content_subscription_configuration" columnNames="client_id, content_subscription_id"
                              constraintName="uk_client_content_subscription"/>
             <addUniqueConstraint tableName="client_content_subscription_configuration" columnNames="client_id, source_content_subscription_id"
                              constraintName="uk_source-client_content_subscription"/>
     </changeSet>
     
-    <changeSet id=" data from legacy system for rf_content_subscription" author="wlee" context="qa,dev,test">
+    <changeSet id="get data from legacy system for rf_content_subscription" author="wlee" context="qa,dev,test">
   	           
         <loadData encoding="UTF-8"
                   file="changelog/sprint_26/data/em-1520/RF_CONTENT_SUBSCRIPTION.csv"

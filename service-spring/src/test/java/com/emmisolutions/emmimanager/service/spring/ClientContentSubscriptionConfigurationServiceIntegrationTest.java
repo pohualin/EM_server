@@ -11,6 +11,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
@@ -52,24 +53,29 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
         clientContentSubscription.setFaithBased(false);
         clientContentSubscription.setSource(false);
         
-        clientContentSubscriptionConfigurationService.create(clientContentSubscription);
-     
+        ClientContentSubscriptionConfiguration savedContentSubscriptionConfig = clientContentSubscriptionConfigurationService.create(clientContentSubscription);
+        
+        assertThat(
+                "should contain content subscription configuration faith based is false",
+                savedContentSubscriptionConfig.isFaithBased()
+                        , is(false));
+        
+        assertThat(
+                "should contain content subscription configuration source is false",
+                savedContentSubscriptionConfig.isSource()
+                        , is(false));
+             
         Page<ClientContentSubscriptionConfiguration> contentSubscriptionConfig = clientContentSubscriptionConfigurationService
                 .findByClient(client, null);
         
-
         assertThat(
-                "should contain content subscription configuration faith based false",
-                contentSubscriptionConfig.getContent().get(0).isFaithBased()
-                        , is(false));
-        assertThat(
-        		"should contain content subscription configuration source false",
-                contentSubscriptionConfig.getContent().get(0).isSource()
-                        , is(false));
-
-       assertThat(
-                "should contain content subscription 1st id",
-                contentSubscriptionConfig.getContent().get(0).getContentSubscription(), is(contentSubscription.getContent().get(0)));
+                "should has content subscription ",
+                contentSubscriptionConfig.hasContent()
+                        , is(true));
+        
+        assertThat("should has item as savedContentSubscriptionConfig",
+        		contentSubscriptionConfig.getContent(), hasItem(savedContentSubscriptionConfig));
+        
        
        clientContentSubscription.setFaithBased(true);
        
@@ -82,7 +88,7 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
        
        clientContentSubscriptionConfigurationService.delete(updatedClientContentSubscription);
        
-       assertThat("delete note successfully",
+       assertThat("delete content subscription successfully",
     		   clientContentSubscriptionConfigurationService.reload(updatedClientContentSubscription), is(nullValue()));
        
     }
@@ -94,21 +100,6 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
     public void testNegativeUpdateNull() {
     	clientContentSubscriptionConfigurationService.update(null);
     }
-
-    /**
-     * Test bad delete
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeDeleteNull() {
-    	clientContentSubscriptionConfigurationService.delete(null);
-    }
-    
-    /**
-     * Test bad find
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeFindNull() {
-    	clientContentSubscriptionConfigurationService.findByClient(null, null);
-    }
+   
     
 }

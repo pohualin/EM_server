@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import com.emmisolutions.emmimanager.persistence.ClientContentSubscriptionConfigurationPersistence;
@@ -62,6 +63,10 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
     @Transactional
 	public ClientContentSubscriptionConfiguration create(
 			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
+    	if(clientContentSubscriptionConfiguration.getClient().getId() == null){
+    		throw new InvalidDataAccessApiUsageException(
+                    "ClientId can not be null for creating the client's content subscription.");
+    	}
 		Client reload = clientService.reload(clientContentSubscriptionConfiguration
                 .getClient());
 		clientContentSubscriptionConfiguration.setClient(reload);
@@ -73,37 +78,38 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
     @Transactional
 	public void delete(
 			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-		if (clientContentSubscriptionConfiguration == null
-                || clientContentSubscriptionConfiguration.getId() == null) {
-            throw new InvalidDataAccessApiUsageException(
-                    "ClientContentSubscriptionConfiguration or clientContentSubscriptionConfigurationId can not be null.");
-        }
-		clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration
-                .getId());
-		
-	}
+    	
+    	ClientContentSubscriptionConfiguration reloadContentConfiguration = clientContentSubscriptionConfigurationPersistence
+        	.reload(clientContentSubscriptionConfiguration.getId());
+         if (reloadContentConfiguration != null) {
+        	 clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration
+                     .getId());
+         }
+    }
 
 	@Override
 	public Page<ClientContentSubscriptionConfiguration> findByClient(
 			Client client, Pageable pageable) {
-		if (client == null || client.getId() == null) {
-            throw new InvalidDataAccessApiUsageException(
-                    "Client or clientId can not be null.");
-        }
-        return clientContentSubscriptionConfigurationPersistence.findByClient(client.getId(), pageable
-                );
-	}
+		 Client toUse = clientService.reload(client);
+	     if (toUse != null) {
+	        	return clientContentSubscriptionConfigurationPersistence.findByClient(client.getId(), pageable);
+	     }else{
+	            return null;
+	     }
+  	}
 
 	@Override
 	public ClientContentSubscriptionConfiguration reload(
 			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-		if (clientContentSubscriptionConfiguration == null
-                || clientContentSubscriptionConfiguration.getId() == null) {
-            throw new InvalidDataAccessApiUsageException(
-                    "ClientContentSubscriptionConfiguration or clientContentSubscriptionConfigurationId can not be null.");
+		
+		ClientContentSubscriptionConfiguration reloadContentConfiguration = clientContentSubscriptionConfigurationPersistence
+	        	.reload(clientContentSubscriptionConfiguration.getId());
+		if (reloadContentConfiguration != null) {
+			return clientContentSubscriptionConfigurationPersistence
+	                .reload(clientContentSubscriptionConfiguration.getId());
+        }else{
+        	return null;
         }
-        return clientContentSubscriptionConfigurationPersistence
-                .reload(clientContentSubscriptionConfiguration.getId());
+ 
 	}
-
 }

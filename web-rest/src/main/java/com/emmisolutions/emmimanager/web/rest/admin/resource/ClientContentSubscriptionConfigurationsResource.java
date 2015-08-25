@@ -57,7 +57,7 @@ public class ClientContentSubscriptionConfigurationsResource {
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "sort", defaultValue = "rank,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
     })
-    @PermitAll
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<Page<ContentSubscription>> getContentSubscriptionList(
     		@PageableDefault(size = 20, sort = "rank") Pageable pageable) {
 
@@ -127,7 +127,7 @@ public class ClientContentSubscriptionConfigurationsResource {
             return new ResponseEntity<>(
             		contentSubscriptionConfigurationAssembler
                             .toResource(contentSubscriptionConfiguration),
-                    HttpStatus.OK);
+                    HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
