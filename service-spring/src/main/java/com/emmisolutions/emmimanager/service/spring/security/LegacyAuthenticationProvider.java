@@ -101,7 +101,6 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             // mark that the user has logged in successfully
             UserClient userClient = ((UserClient) userDetails);
             UserClient unlockedUser = userClientPersistence.unlockUserClient(userClient);
-            unlockedUser.setPasswordResetExpirationDateTime(null);
             unlockedUser.setPasswordResetToken(null);
             if (unlockedUser.isNeverLoggedIn()) {
                 unlockedUser.setNeverLoggedIn(false);
@@ -115,6 +114,8 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
                     unlockedUser.getPasswordExpireationDateTime())) {
                 userClientService.expireUserClientCredential(unlockedUser);
             } else {
+                // only kill the reset expiration time on a successful login
+                unlockedUser.setPasswordResetExpirationDateTime(null);
                 userClientPersistence.saveOrUpdate(unlockedUser);
             }
         }
