@@ -4,7 +4,6 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
 import com.emmisolutions.emmimanager.persistence.ClientContentSubscriptionConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.impl.specification.EmailRestrictConfigurationSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.ClientContentSubscriptionConfigurationRepository;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.Resource;
 
 /**
- * Persistence implementation for ClientTeamSchedulingConfiguration entity.
+ * Persistence implementation for ClientContentSubscriptionConfiguration entity.
  */
 @Repository
 public class ClientContentSubscriptionConfigurationPersistenceImpl implements
