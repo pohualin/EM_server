@@ -9,23 +9,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
-import com.emmisolutions.emmimanager.model.SecretQuestion;
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
-import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
-import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import com.emmisolutions.emmimanager.persistence.ClientContentSubscriptionConfigurationPersistence;
-import com.emmisolutions.emmimanager.persistence.ClientTeamSchedulingConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.ContentSubscriptionPersistence;
-import com.emmisolutions.emmimanager.persistence.DefaultClientTeamSchedulingConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientContentSubscriptionConfigurationService;
-import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
 import com.emmisolutions.emmimanager.service.ClientService;
 
 /**
- * Service layer for ClientTeamSchedulingConfiguration
+ * Service layer for ClientContentSubscriptionConfiguration
  * 
  */
 @Service
