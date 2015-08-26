@@ -7,6 +7,7 @@ import com.emmisolutions.emmimanager.persistence.UserClientPasswordHistoryPersis
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.service.ClientPasswordConfigurationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordHistoryService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * Service Implementation for UserClientPasswordHistoryService
@@ -48,7 +48,7 @@ public class UserClientPasswordHistoryServiceImpl implements
     @Override
     @Transactional(readOnly = true)
     public Page<UserClientPasswordHistory> get(Pageable pageable,
-            UserClient userClient) {
+                                               UserClient userClient) {
         if (userClient == null || userClient.getId() == null) {
             throw new InvalidDataAccessApiUsageException(
                     "UserClient or userClientId cannot be null");
@@ -82,36 +82,33 @@ public class UserClientPasswordHistoryServiceImpl implements
 
     @Override
     @Transactional
-    public List<UserClientPasswordHistory> handleUserClientPasswordHistory(
+    public void handleUserClientPasswordHistory(
             UserClient userClient) {
         UserClient fromDb = userClientPersistence.reload(userClient);
         if (fromDb == null) {
             throw new InvalidDataAccessApiUsageException(
                     "This method is only to be used with existing UserClient objects");
         }
+        if (StringUtils.isNotBlank(fromDb.getPassword()) && StringUtils.isNotBlank(fromDb.getSalt())) {
+            ClientPasswordConfiguration configuration = clientPasswordConfigurationService.get(fromDb.getClient());
 
-        ClientPasswordConfiguration configuration = clientPasswordConfigurationService
-                .get(fromDb.getClient());
+            // Save latest
+            UserClientPasswordHistory latest = new UserClientPasswordHistory();
+            latest.setUserClient(fromDb);
+            latest.setPassword(fromDb.getPassword());
+            latest.setSalt(fromDb.getSalt());
+            userClientPasswordHistoryPersistence.saveOrUpdate(latest);
 
-        // Save latest
-        UserClientPasswordHistory latest = new UserClientPasswordHistory();
-        latest.setUserClient(fromDb);
-        latest.setPassword(fromDb.getPassword());
-        latest.setSalt(fromDb.getSalt());
-        userClientPasswordHistoryPersistence.saveOrUpdate(latest);
-
-        PageRequest pageRequest = new PageRequest(0,
-                configuration.getPasswordRepetitions());
-        Page<UserClientPasswordHistory> histories = get(pageRequest, fromDb);
-        // purge oldest
-        while (histories.hasContent() && histories.hasNext()) {
-            histories = get(histories.nextPageable(), fromDb);
-            for (UserClientPasswordHistory toPurge : histories.getContent()) {
-                userClientPasswordHistoryPersistence.delete(toPurge.getId());
+            PageRequest pageRequest = new PageRequest(0, configuration.getPasswordRepetitions());
+            Page<UserClientPasswordHistory> histories = get(pageRequest, fromDb);
+            // purge oldest
+            while (histories.hasContent() && histories.hasNext()) {
+                histories = get(histories.nextPageable(), fromDb);
+                for (UserClientPasswordHistory toPurge : histories.getContent()) {
+                    userClientPasswordHistoryPersistence.delete(toPurge.getId());
+                }
             }
         }
-
-        return histories.getContent();
     }
 
 }
