@@ -24,7 +24,9 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
 
     private static final String EXCEPTION_NULL_TEAM_ID = "Team cannot be null to find ClientTeamEmailConfiguration";
 
-    private static final String EXCEPTION_NULL_CLIENT_TEAM_EMAIL_CONFIGURATION = "ClientTeamEmailConfiguration can not be null.";
+    private static final String EXCEPTION_NULL_CLIENT_TEAM_EMAIL_CONFIGURATION = "ClientTeamEmailConfiguration or Team can not be null.";
+
+    private static final String EXCEPTION_INVALID_TEAM = "Team does not exist.";
 
     @Resource
     TeamService teamService;
@@ -41,25 +43,35 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
     @Override
     @Transactional
     public ClientTeamEmailConfiguration saveOrUpdate(ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
-        if (clientTeamEmailConfiguration == null) {
+        if (clientTeamEmailConfiguration == null || clientTeamEmailConfiguration.getTeam() == null) {
             throw new InvalidDataAccessApiUsageException(EXCEPTION_NULL_CLIENT_TEAM_EMAIL_CONFIGURATION);
         }
 
         Team reloadTeam = teamService.reload(clientTeamEmailConfiguration.getTeam());
+
+        if (reloadTeam == null) {
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_INVALID_TEAM);
+        }
+
         clientTeamEmailConfiguration.setTeam(reloadTeam);
         return clientTeamEmailConfigurationPersistence.save(clientTeamEmailConfiguration);
     }
 
     @Override
     public ClientTeamEmailConfiguration findByTeam(Team team) {
-        if (team.getId() == null) {
+        if (team == null || team.getId() == null) {
             throw new InvalidDataAccessApiUsageException(EXCEPTION_NULL_TEAM_ID);
+        }
+
+        Team reloadTeam = teamPersistence.reload(team);
+
+        if (reloadTeam == null) {
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_INVALID_TEAM);
         }
 
         ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationPersistence.find(team.getId());
 
         if (clientTeamEmailConfiguration == null) {
-            Team reloadTeam = teamPersistence.reload(team);
             clientTeamEmailConfiguration = getDefaultEmailConfiguration();
             clientTeamEmailConfiguration.setTeam(reloadTeam);
         }
