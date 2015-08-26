@@ -39,7 +39,7 @@ public class ProgramPersistenceImpl implements ProgramPersistence {
         boolean hasSearchTerms = filter != null && !CollectionUtils.isEmpty(filter.getTerms());
         if (hasSearchTerms && (sort == null || sort.equals(new Sort("type.weight")))) {
             // default of sorting by weight, if there are search terms and no other sorts are present
-            sort = new Sort("type.weight", "hliProgram.weight");
+            sort = new Sort("type.weight", "name");
         }
         return programRepository.findAll(where(programSpecifications
                         .hasSpecialties(filter))
