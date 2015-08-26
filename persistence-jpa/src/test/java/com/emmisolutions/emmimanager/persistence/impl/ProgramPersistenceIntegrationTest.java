@@ -74,11 +74,10 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Make sure that we find a program that isn't first in ID, ensure that the default
-     * sort ordering is by HLI order.
+     * Make sure hli find works
      */
     @Test
-    public void description() {
+    public void hliFind() {
         Program p5320 = new Program(5320);
         p5320.setName("first heart program");
         p5320.setBrand(new Brand(1));
@@ -87,8 +86,7 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
         programRepository.save(p5320);
 
         assertThat("make sure ordering of found program is based upon HLI ordering",
-                programPersistence.find(new ProgramSearchFilter().addTerm("heart").addTerm("repair"),
-                        new PageRequest(0, 1)),
+                programPersistence.find(new ProgramSearchFilter().addTerm("heart").addTerm("repair"), null),
                 hasItems(new Program(5320)));
     }
 
