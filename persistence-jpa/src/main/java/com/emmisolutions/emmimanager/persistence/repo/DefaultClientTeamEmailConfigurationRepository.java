@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamE
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  * 
@@ -15,13 +16,12 @@ public interface DefaultClientTeamEmailConfigurationRepository extends
         JpaSpecificationExecutor<DefaultClientTeamEmailConfiguration> {
 
     /**
-     * Find all active DefaultClientTeamEmailConfiguration
+     * Find the active DefaultClientTeamEmailConfiguration
      *
      * @param specification should be active
-     * @param pageable page specification
      * @return an EmailTemplate object or null
      */
-    //@Override
-    //DefaultClientTeamEmailConfiguration findOne(Specification<DefaultClientTeamEmailConfiguration> specification);
+    @Override
+    DefaultClientTeamEmailConfiguration findOne(Specification<DefaultClientTeamEmailConfiguration> specification);
 
 }

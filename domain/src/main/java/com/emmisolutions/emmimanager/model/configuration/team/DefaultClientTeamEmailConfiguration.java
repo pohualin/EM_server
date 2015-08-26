@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
-import com.emmisolutions.emmimanager.model.EmailReminderType;
 
 /**
  * The default team email configuration.
@@ -36,21 +33,6 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @NotNull
     @Column(name = "active", nullable = false)
     private boolean active;
-
-    // TODO: Remove
-    @Deprecated
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 50)
-    private EmailReminderType type;
-
-    @Deprecated
-    @Column(name ="rank", columnDefinition = "integer")
-    private Integer rank;
-
-    // TODO: Remove
-    @Deprecated
-    @Column(name = "default_value", columnDefinition = "boolean", nullable = false)
-    private boolean defaultValue;
 
     @Column(name = "collect_email", columnDefinition = "boolean", nullable = false)
     private boolean collectEmail;
@@ -89,22 +71,6 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     public DefaultClientTeamEmailConfiguration(Long id) {
         this.id = id;
     }
-    
-    public boolean isDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(boolean defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public EmailReminderType getType() {
-        return type;
-    }
-
-    public void setType(EmailReminderType type) {
-        this.type = type;
-    }
 
     public Long getId() {
         return id;
@@ -114,14 +80,6 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
         this.id = id;
     }
 
-    public Integer getRank() {
-        return rank;
-    }
-
-    public void setRank(Integer rank) {
-        this.rank = rank; 
-    } 
-    
     public Integer getVersion() {
         return version;
     }
@@ -216,8 +174,8 @@ public class DefaultClientTeamEmailConfiguration extends AbstractAuditingEntity
     @Override
     public String toString() {
         return "DefaultClientTeamEmailConfiguration{" + "id=" + id
-            + ", type=" + type
-            + ", defaultValue=" + defaultValue
+            + ", version=" + version
+            + ", active=" + active
             + ", collectEmail=" + collectEmail
             + ", requireEmail=" + requireEmail
             + ", reminderTwoDays=" + reminderTwoDays

@@ -51,15 +51,15 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
     }
 
     @Override
-    public ClientTeamEmailConfiguration findByTeam(Team teamId) {
-        if (teamId.getId() == null) {
+    public ClientTeamEmailConfiguration findByTeam(Team team) {
+        if (team.getId() == null) {
             throw new InvalidDataAccessApiUsageException(EXCEPTION_NULL_TEAM_ID);
         }
 
-        ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationPersistence.find(teamId.getId());
+        ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationPersistence.find(team.getId());
 
         if (clientTeamEmailConfiguration == null) {
-            Team reloadTeam = teamPersistence.reload(teamId);
+            Team reloadTeam = teamPersistence.reload(team);
             clientTeamEmailConfiguration = getDefaultEmailConfiguration();
             clientTeamEmailConfiguration.setTeam(reloadTeam);
         }
@@ -71,9 +71,6 @@ public class ClientTeamEmailConfigurationServiceImpl implements ClientTeamEmailC
         DefaultClientTeamEmailConfiguration defaultClientTeamEmailConfiguration = defaultClientTeamEmailConfigurationPersistence.find();
         ClientTeamEmailConfiguration clientTeamEmailConfiguration = new ClientTeamEmailConfiguration();
 
-        clientTeamEmailConfiguration.setType(defaultClientTeamEmailConfiguration.getType()); // TODO: Remove
-        clientTeamEmailConfiguration.setEmailConfig(defaultClientTeamEmailConfiguration.isDefaultValue()); // TODO: Remove
-        clientTeamEmailConfiguration.setRank(defaultClientTeamEmailConfiguration.getRank());
         clientTeamEmailConfiguration.setCollectEmail(defaultClientTeamEmailConfiguration.getCollectEmail());
         clientTeamEmailConfiguration.setRequireEmail(defaultClientTeamEmailConfiguration.getRequireEmail());
         clientTeamEmailConfiguration.setReminderTwoDays(defaultClientTeamEmailConfiguration.getReminderTwoDays());

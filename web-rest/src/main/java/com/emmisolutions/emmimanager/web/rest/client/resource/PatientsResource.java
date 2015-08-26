@@ -169,14 +169,14 @@ public class PatientsResource {
      * Find a team email configuration for a particular patient or return the default
      * @param clientId a client's ID
      * @param teamId a team's ID
-     * @return a ClientTeamEmailConfiguration
+     * @return OK (200): containing a ClientTeamEmailConfiguration
+     * <p/>
+     * NO_CONTENT (204): when no configuration found
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient_email_configuration", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
-    public ResponseEntity<TeamEmailConfigurationResource> findTeamEmailConfigurationForPatient(
-            @PathVariable("clientId") Long clientId,
-            @PathVariable("teamId") Long teamId) {
+    public ResponseEntity<TeamEmailConfigurationResource> findTeamEmailConfigurationForPatient(@PathVariable("clientId") Long clientId, @PathVariable("teamId") Long teamId) {
         ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationService.findByTeam(new Team(teamId));
 
         if (clientTeamEmailConfiguration != null) {
@@ -191,15 +191,14 @@ public class PatientsResource {
      *
      * @param clientId    for the phone configuration
      * @param teamId    for the phone configuration
-     * @return a ClientTeamPhoneConfiguration response entity
+     * @return OK (200): containing a ClientTeamPhoneConfiguration response entity
+     * <p/>
+     * NO_CONTENT (204): when no configuration found
      */
     @RequestMapping(value = "/clients/{clientId}/teams/{teamId}/patient_phone_configuration", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@client.id(#clientId), 'PERM_CLIENT_SUPER_USER') or " +
             "hasPermission(@team.id(#teamId, #clientId), 'PERM_CLIENT_TEAM_SCHEDULE_PROGRAM')")
-    public ResponseEntity<TeamPhoneConfigurationResource> findTeamPhoneConfigForPatient(
-            @PathVariable("clientId") Long clientId,
-            @PathVariable("teamId") Long teamId) {
-
+    public ResponseEntity<TeamPhoneConfigurationResource> findTeamPhoneConfigForPatient(@PathVariable("clientId") Long clientId, @PathVariable("teamId") Long teamId) {
         ClientTeamPhoneConfiguration teamPhoneConfiguration = clientTeamPhoneConfigurationService.findByTeam(new Team(teamId));
 
         if (teamPhoneConfiguration != null) {

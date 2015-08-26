@@ -36,25 +36,10 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     @Column(columnDefinition = "bigint")
     private Long id;
 
-    // TODO: Remove
-    @Deprecated
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 50)
-    private EmailReminderType type;
-
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "client_team_id", referencedColumnName="id")
     private Team team;
-
-    @Deprecated
-    @Column(name ="rank", columnDefinition = "integer")
-    private Integer rank;
-
-    // TODO: Remove
-    @Deprecated
-    @Column(name = "email_config", columnDefinition = "boolean", nullable = false)
-    private boolean emailConfig;
 
     @Column(name = "collect_email", columnDefinition = "boolean", nullable = false)
     private boolean collectEmail;
@@ -93,31 +78,7 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
         this.team = team;
     }
 
-    public EmailReminderType getType() {
-        return type;
-    }
-
-    public void setType(EmailReminderType type) {
-        this.type = type;
-    }
-
-    public boolean isEmailConfig() {
-        return emailConfig;
-    }
-
-    public void setEmailConfig(boolean emailConfig) {
-        this.emailConfig = emailConfig;
-    }
-
-    public Integer getRank() {
-        return rank;
-    }
-
-    public void setRank(Integer rank) {
-        this.rank = rank;
-    }
-
-	public Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -194,9 +155,10 @@ public class ClientTeamEmailConfiguration extends AbstractAuditingEntity {
     public String toString() {
         return "ClientTeamEmailConfiguration{"
                 + "id=" + id
-                + ", emailConfig=" + emailConfig
-                + " ,team=" + team
-                + ", type=" + type
+                + ", version=" + version
+                + ", team=" + team
+                + ", collectEmail=" + collectEmail
+                + ", requireEmail=" + requireEmail
                 + ", reminderTwoDays=" + reminderTwoDays
                 + ", reminderFourDays=" + reminderFourDays
                 + ", reminderSixDays=" + reminderSixDays

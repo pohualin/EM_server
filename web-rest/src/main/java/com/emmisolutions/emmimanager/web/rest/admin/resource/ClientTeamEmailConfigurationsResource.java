@@ -39,7 +39,9 @@ public class ClientTeamEmailConfigurationsResource {
      * Find client team email configuration if there are any
      *
      * @param teamId for the email configuration
-     * @return a ClientTeamEmailConfiguration response entity
+     * @return OK (200): containing a ClientTeamEmailConfiguration response entity
+     * <p/>
+     * NO_CONTENT (204): when no configuration is found
      */
     @RequestMapping(value = "/teams/{teamId}/email_configuration", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
@@ -58,13 +60,13 @@ public class ClientTeamEmailConfigurationsResource {
      *
      * @param teamId    for the email configuration
      * @param clientTeamEmailConfiguration the user client team configuration that needs to save or update
-     * @return a ClientTeamEmailConfiguration response entity
+     * @return OK (200): containing a ClientTeamEmailConfiguration response entity
+     * <p/>
+     * INTERNAL_SERVER_ERROR (500): when no configuration for a team is found
      */
     @RequestMapping(value = "/teams/{teamId}/email_configuration", method = RequestMethod.POST)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public ResponseEntity<ClientTeamEmailConfigurationResource> saveOrUpdate(
-        @PathVariable("teamId") Long teamId,
-        @RequestBody ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
+    public ResponseEntity<ClientTeamEmailConfigurationResource> saveOrUpdate(@PathVariable("teamId") Long teamId, @RequestBody ClientTeamEmailConfiguration clientTeamEmailConfiguration) {
         clientTeamEmailConfiguration.setTeam(new Team(teamId));
         ClientTeamEmailConfiguration emailConfiguration = clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
 
