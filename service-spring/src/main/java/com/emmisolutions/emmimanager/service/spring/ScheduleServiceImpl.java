@@ -17,7 +17,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +30,18 @@ import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearc
  */
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
+
+    private static final String EXCEPTION_PATIENTS_EMAIL_REQUIRED = "Patient's email is required for the team.";
+
+    private static final String EXCEPTION_PATIENTS_PHONE_REQUIRED = "Patient's phone is required for the team.";
+
+    private static final String EXCEPTION_VIEW_BY_DATE = "view-by-date (UTC) >= current date. Current UTC date is: ";
+
+    private static final String EXCEPTION_PROVIDER_REQUIRED = "Provider is required for the team";
+
+    private static final String EXCEPTION_LOCATION_REQUIRED = "Location is required for the team";
+
+    private static final String EXCEPTION_CANNOT_SCHEDULE_DIFFERING_CLIENTS = "Cannot schedule program for patient and team on different clients.";
 
     @Resource
     PatientPersistence patientPersistence;
@@ -100,6 +111,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (inDb == null) {
             throw new InvalidDataAccessApiUsageException("Only can update persistent program");
         }
+
         if (!inDb.getViewByDate().equals(scheduledProgram.getViewByDate())) {
             // validate view by date if it changes
             validateViewByDate(scheduledProgram);
@@ -119,23 +131,24 @@ public class ScheduleServiceImpl implements ScheduleService {
     private void hydrateValidProgram(ScheduledProgram scheduledProgram) {
         scheduledProgram.setTeam(teamPersistence.reload(scheduledProgram.getTeam()));
         scheduledProgram.setPatient(patientPersistence.reload(scheduledProgram.getPatient()));
+        scheduledProgram.setLocation(locationPersistence.reload(scheduledProgram.getLocation()));
+        scheduledProgram.setProvider(providerPersistence.reload(scheduledProgram.getProvider()));
+
         if (scheduledProgram.getTeam() == null ||
                 scheduledProgram.getTeam().getClient() == null ||
                 scheduledProgram.getPatient() == null ||
                 !scheduledProgram.getTeam().getClient().equals(scheduledProgram.getPatient().getClient())) {
-            throw new InvalidDataAccessApiUsageException("Cannot schedule program for patient and team on different clients.");
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_CANNOT_SCHEDULE_DIFFERING_CLIENTS);
         }
-        scheduledProgram.setLocation(locationPersistence.reload(scheduledProgram.getLocation()));
-        scheduledProgram.setProvider(providerPersistence.reload(scheduledProgram.getProvider()));
-        
+
         ClientTeamSchedulingConfiguration schedulingConfig = teamSchedulingConfigurationService.findByTeam(scheduledProgram.getTeam());
-        if((schedulingConfig.isUseLocation()) &&
-        	(scheduledProgram.getLocation() == null )){
-        	throw new InvalidDataAccessApiUsageException("Location is required for the team");
+
+        if ((schedulingConfig.isUseLocation()) && (scheduledProgram.getLocation() == null )) {
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_LOCATION_REQUIRED);
         }
-        if((schedulingConfig.isUseProvider()) &&
-        	(scheduledProgram.getProvider() == null)){
-        	throw new InvalidDataAccessApiUsageException("Provider is required for the team");
+
+        if ((schedulingConfig.isUseProvider()) && (scheduledProgram.getProvider() == null)) {
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_PROVIDER_REQUIRED);
         }
 
     }
@@ -143,31 +156,26 @@ public class ScheduleServiceImpl implements ScheduleService {
     private void validateViewByDate(ScheduledProgram scheduledProgram) {
         if (scheduledProgram.getViewByDate() == null ||
                 scheduledProgram.getViewByDate().isBefore(LocalDate.now(DateTimeZone.UTC))) {
-            throw new InvalidDataAccessApiUsageException("view-by-date (UTC) >= current date. Current UTC date is: " + LocalDate.now(DateTimeZone.UTC).toString());
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_VIEW_BY_DATE + LocalDate.now(DateTimeZone.UTC).toString());
         }
     }
     
     private void validatePhone(ScheduledProgram toBeScheduled) {
         ClientTeamPhoneConfiguration teamPhoneConfigDB = clientTeamPhoneConfigurationPersistence.find(toBeScheduled.getTeam().getId());
-        if((teamPhoneConfigDB != null) &&
-           (teamPhoneConfigDB.isRequirePhone())){
-        		if(StringUtils.isEmpty(toBeScheduled.getPatient().getPhone())){
-        			throw new InvalidDataAccessApiUsageException("Patient's phone is required for the team");	
-        		}
+        if ((teamPhoneConfigDB != null) && (teamPhoneConfigDB.isRequirePhone())) {
+            if (StringUtils.isEmpty(toBeScheduled.getPatient().getPhone())) {
+                throw new InvalidDataAccessApiUsageException(EXCEPTION_PATIENTS_PHONE_REQUIRED);
+            }
         }
    }
-    
+
     private void validateEmail(ScheduledProgram toBeScheduled) {
-        Page<ClientTeamEmailConfiguration> teamEmailConfigDB = clientTeamEmailConfigurationPersistence.find(toBeScheduled.getTeam().getId(), new PageRequest(0, 10));
-        if(teamEmailConfigDB.hasContent()){
-        	 for(ClientTeamEmailConfiguration emailConfig : teamEmailConfigDB){
-        		if((emailConfig.getType().name().equalsIgnoreCase("REQUIRE_EMAIL"))&&
-					(emailConfig.isEmailConfig())){	 
-					 	if(StringUtils.isEmpty(toBeScheduled.getPatient().getEmail())){
-					 		throw new InvalidDataAccessApiUsageException("Patient's email is required for the team");
-					 	}
-				 	}
-		     }
+        ClientTeamEmailConfiguration teamEmailConfig = clientTeamEmailConfigurationPersistence.find(toBeScheduled.getTeam().getId());
+
+        if ((teamEmailConfig != null) && (teamEmailConfig.isEmailRequired())) {
+            if (StringUtils.isEmpty(toBeScheduled.getPatient().getEmail())) {
+                throw new InvalidDataAccessApiUsageException(EXCEPTION_PATIENTS_EMAIL_REQUIRED);
+            }
         }
-   }
+    }
 }

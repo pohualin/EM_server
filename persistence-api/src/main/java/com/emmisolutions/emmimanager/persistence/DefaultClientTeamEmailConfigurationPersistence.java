@@ -2,21 +2,17 @@ package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 /**
  * Default Team Email Configuration persistence
  *
  */
 public interface DefaultClientTeamEmailConfigurationPersistence {
 
-       
     /**
-     * Find all the active DefaultTeamEmailConfiguration
-     * 
-     * @return page of Default Team Email Configuration
+     * Find DefaultClientTeamEmailConfiguration
+     *
+     * @return a DefaultClientTeamEmailConfiguration
      */
-    Page<DefaultClientTeamEmailConfiguration> findActive(Pageable page);
-      
+    DefaultClientTeamEmailConfiguration find();
+
 }
