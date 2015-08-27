@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A HATEOAS wrapper for a page of ClientTeamEmailConfigurationResource objects.
- *
- * TODO: Figure out what to do with this
  */
 @XmlRootElement(name = "team-email-configuration-for-patient-page")
 public class TeamEmailConfigurationPage extends

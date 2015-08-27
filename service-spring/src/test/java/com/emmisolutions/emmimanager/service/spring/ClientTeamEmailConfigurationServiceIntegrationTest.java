@@ -4,15 +4,21 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
+import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.ClientTeamEmailConfigurationService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -24,13 +30,13 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
 
     @Resource
     ClientTeamEmailConfigurationService clientTeamEmailConfigurationService;
-
+    
     @Resource
     DefaultClientTeamEmailConfigurationPersistence defaultClientTeamEmailConfigurationPersistence;
-
+    
     @Resource
     TeamService teamService;
-
+    
     /**
      * Test CRUD
      */
@@ -38,101 +44,114 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
     public void testCreateReloadUpdate() {
         Client client = makeNewRandomClient();
         Team team = makeNewRandomTeam(client);
+        
+        Page<DefaultClientTeamEmailConfiguration> defaultEmailConfigList =  defaultClientTeamEmailConfigurationPersistence.findActive(new PageRequest(0, 10));
+        
+        DefaultClientTeamEmailConfiguration defaultEmailConfig = defaultEmailConfigList.getContent().get(0);
+        DefaultClientTeamEmailConfiguration defaultEmailConfigTwo = defaultEmailConfigList.getContent().get(1);
 
-        DefaultClientTeamEmailConfiguration defaultClientTeamEmailConfiguration = defaultClientTeamEmailConfigurationPersistence.find();
+        ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
+        emailConfig.setTeam(team);
+        emailConfig.setCreatedBy(new UserAdmin(1l));
+        emailConfig.setRank(defaultEmailConfig.getRank());
+        emailConfig.setType(defaultEmailConfig.getType());
+        emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
+                
+        ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
+        emailConfigTwo.setTeam(team);
+        emailConfigTwo.setCreatedBy(new UserAdmin(1l));
+        emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
+        emailConfigTwo.setType(defaultEmailConfigTwo.getType());
+        emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
 
-        ClientTeamEmailConfiguration clientTeamEmailConfiguration = new ClientTeamEmailConfiguration();
-        clientTeamEmailConfiguration.setTeam(team);
-        clientTeamEmailConfiguration.setCollectEmail(defaultClientTeamEmailConfiguration.getCollectEmail());
-        clientTeamEmailConfiguration.setRequireEmail(defaultClientTeamEmailConfiguration.getRequireEmail());
-        clientTeamEmailConfiguration.setReminderTwoDays(defaultClientTeamEmailConfiguration.getReminderTwoDays());
-        clientTeamEmailConfiguration.setReminderFourDays(defaultClientTeamEmailConfiguration.getReminderFourDays());
-        clientTeamEmailConfiguration.setReminderSixDays(defaultClientTeamEmailConfiguration.getReminderSixDays());
-        clientTeamEmailConfiguration.setReminderEightDays(defaultClientTeamEmailConfiguration.getReminderEightDays());
-        clientTeamEmailConfiguration.setReminderArticles(defaultClientTeamEmailConfiguration.getReminderArticles());
-
-        ClientTeamEmailConfiguration savedClientTeamEmailConfiguration = clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
-
-        ClientTeamEmailConfiguration findClientTeamEmailConfiguration = clientTeamEmailConfigurationService.findByTeam(team);
-
-        assertThat("should contain configuration", findClientTeamEmailConfiguration, is(savedClientTeamEmailConfiguration));
+        List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<>();
+        emailConfigList.add(emailConfig);
+        emailConfigList.add(emailConfigTwo);
+        
+        ClientTeamEmailConfiguration emailConfigSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfig);
+        ClientTeamEmailConfiguration emailConfigTwoSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfigTwo);
+             
+             
+        Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByTeam(team, null);
+        
+        assertThat("should contain email configuration",
+        		listOfEmailConfig.getContent(), hasItem(emailConfigSaved));
+        
+        assertThat("should contain eamil configuration",
+        		listOfEmailConfig.getContent(), hasItem(emailConfigTwoSaved));
+        				
+          
     }
-
+    
     /**
-     * Test a null argument in saveOrUpdate()
+     * Test CRUD
+     */
+    @Test
+    public void testFind() {
+    	Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+                
+        Page<ClientTeamEmailConfiguration> listOfEmailConfig  = clientTeamEmailConfigurationService.findByTeam(team, null);
+        
+        assertThat("should not contain email configuration",
+        		listOfEmailConfig.getContent().size() < 1, is(false));
+        
+        if(!listOfEmailConfig.hasContent()){
+        	Team reloadTeam = teamService.reload(team);
+            
+            Page<DefaultClientTeamEmailConfiguration> defaultEmailConfigList =  defaultClientTeamEmailConfigurationPersistence.findActive(new PageRequest(0, 10));
+            
+            DefaultClientTeamEmailConfiguration defaultEmailConfig = defaultEmailConfigList.getContent().get(0);
+            DefaultClientTeamEmailConfiguration defaultEmailConfigTwo = defaultEmailConfigList.getContent().get(1);
+
+            ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
+            emailConfig.setTeam(reloadTeam);
+            emailConfig.setCreatedBy(new UserAdmin(1l));
+            emailConfig.setRank(defaultEmailConfig.getRank());
+            emailConfig.setType(defaultEmailConfig.getType());
+            emailConfig.setEmailConfig(defaultEmailConfig.isDefaultValue());
+                        
+            ClientTeamEmailConfiguration emailConfigTwo = new ClientTeamEmailConfiguration();
+            emailConfigTwo.setTeam(reloadTeam);
+            emailConfigTwo.setCreatedBy(new UserAdmin(1l));
+            emailConfigTwo.setRank(defaultEmailConfigTwo.getRank());
+            emailConfigTwo.setType(defaultEmailConfigTwo.getType());
+            emailConfigTwo.setEmailConfig(defaultEmailConfigTwo.isDefaultValue());
+
+            List<ClientTeamEmailConfiguration> emailConfigList = new ArrayList<>();
+            emailConfigList.add(emailConfig);
+            emailConfigList.add(emailConfigTwo);
+            
+            ClientTeamEmailConfiguration emailConfigSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfig);
+            ClientTeamEmailConfiguration emailConfigTwoSaved= clientTeamEmailConfigurationService.saveOrUpdate(emailConfigTwo);
+            
+            assertThat("should contain email configuration",
+            		listOfEmailConfig.getContent(), hasItem(emailConfigSaved));
+            
+            assertThat("should contain eamil configuration",
+            		listOfEmailConfig.getContent(), hasItem(emailConfigTwoSaved));
+        				
+         
+        }
+ 
+    }
+    
+    /**
+     * Test bad saveAndUpdate
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeSaveOrUpdateNull() {
-        clientTeamEmailConfigurationService.saveOrUpdate(null);
+    	clientTeamEmailConfigurationService.saveOrUpdate(null);
     }
-
+    
+    
     /**
-     * Test an empty ClientTeamEmailConfiguration in saveOrUpdate()
+     * Test bad saveAndUpdate
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeSaveOrUpdateEmptyTeam() {
-        clientTeamEmailConfigurationService.saveOrUpdate(new ClientTeamEmailConfiguration());
+    public void testNegativeFindNull() {
+    	clientTeamEmailConfigurationService.findByTeam(new Team(), null);
     }
-
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeSaveOrUpdateNullReloadTeam() {
-        ClientTeamEmailConfiguration clientTeamEmailConfiguration = new ClientTeamEmailConfiguration();
-        clientTeamEmailConfiguration.setTeam(new Team(new Long(69)));
-
-        clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
-    }
-
-    /**
-     * Test a null argument in findByTeam(). Should throw an exception.
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeFindByTeamNullTeam() {
-        clientTeamEmailConfigurationService.findByTeam(null);
-    }
-
-    /**
-     * Test an empty Team in findByTeam(). Should throw an exception.
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testNegativeFindByTeamNullTeamId() {
-        clientTeamEmailConfigurationService.findByTeam(new Team());
-    }
-
-    /**
-     * Test sending an invalid team to findByTeam(). Should throw an exception.
-     */
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void testFindByTeamUnknownTeam() {
-        clientTeamEmailConfigurationService.findByTeam(new Team(new Long(69)));
-    }
-
-    @Test
-    public void testFindByTeamAndUpdate() {
-        boolean reminderTwoDays = false;
-
-        Client client = makeNewRandomClient();
-        Team team = makeNewRandomTeam(client);
-
-        DefaultClientTeamEmailConfiguration defaultClientTeamEmailConfiguration = defaultClientTeamEmailConfigurationPersistence.find();
-        ClientTeamEmailConfiguration clientTeamEmailConfiguration = clientTeamEmailConfigurationService.findByTeam(team);
-
-        // Currently no clientTeamEmailConfiguration has been persisted; results should match defaults.
-        assertThat("collectEmail should match default value.", clientTeamEmailConfiguration.getCollectEmail(), is(defaultClientTeamEmailConfiguration.getCollectEmail()));
-        assertThat("requireEmail should match default value.", clientTeamEmailConfiguration.getRequireEmail(), is(defaultClientTeamEmailConfiguration.getRequireEmail()));
-        assertThat("reminderTwoDays should match default value.", clientTeamEmailConfiguration.getReminderTwoDays(), is(defaultClientTeamEmailConfiguration.getReminderTwoDays()));
-        assertThat("reminderFourDays should match default value.", clientTeamEmailConfiguration.getReminderFourDays(), is(defaultClientTeamEmailConfiguration.getReminderFourDays()));
-        assertThat("reminderSixDays should match default value.", clientTeamEmailConfiguration.getReminderSixDays(), is(defaultClientTeamEmailConfiguration.getReminderSixDays()));
-        assertThat("reminderEightDays should match default value.", clientTeamEmailConfiguration.getReminderEightDays(), is(defaultClientTeamEmailConfiguration.getReminderEightDays()));
-        assertThat("reminderArticles should match default value.", clientTeamEmailConfiguration.getReminderArticles(), is(defaultClientTeamEmailConfiguration.getReminderArticles()));
-
-        // Change settings, save, search again and verify changes persisted.
-        clientTeamEmailConfiguration.setReminderTwoDays(reminderTwoDays);
-
-        clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
-
-        ClientTeamEmailConfiguration savedClientTeamEmailConfiguration = clientTeamEmailConfigurationService.findByTeam(clientTeamEmailConfiguration.getTeam());
-
-        assertThat("reminderTwoDays should be false.", savedClientTeamEmailConfiguration.getReminderTwoDays(), is(reminderTwoDays));
-    }
-
+    
+    
 }

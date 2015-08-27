@@ -2,6 +2,9 @@ package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * Persistence API for Client Team Phone Configuration.
  */
