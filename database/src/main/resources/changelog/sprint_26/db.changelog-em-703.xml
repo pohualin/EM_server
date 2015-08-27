@@ -4,15 +4,18 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="delete default email configuration records, drop no longer used columns, and insert new defaults" author="Wade">
+    <changeSet id="delete default email configuration records and drop no longer used columns" author="Wade">
+        <dropUniqueConstraint tableName="default_team_email_configuration" constraintName="uk_default_team_email_configuration"/>
+        <dropDefaultValue tableName="default_team_email_configuration" columnName="default_value"/>
+        <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
+        <dropDefaultValue schemaName="audit" tableName="client_team_email_configuration_audit" columnName="email_config"/>
+
         <delete tableName="default_team_email_configuration">
             <where>type='COLLECT_EMAIL'</where>
         </delete>
         <delete tableName="default_team_email_configuration">
             <where>type='REQUIRE_EMAIL'</where>
         </delete>
-
-        <dropUniqueConstraint tableName="default_team_email_configuration" constraintName="uk_default_team_email_configuration"/>
 
         <dropColumn tableName="default_team_email_configuration" columnName="type"/>
         <dropColumn tableName="default_team_email_configuration" columnName="default_value"/>

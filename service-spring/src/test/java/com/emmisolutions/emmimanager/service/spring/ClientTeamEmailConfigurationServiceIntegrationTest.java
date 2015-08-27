@@ -2,7 +2,6 @@ package com.emmisolutions.emmimanager.service.spring;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
-import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.persistence.DefaultClientTeamEmailConfigurationPersistence;
