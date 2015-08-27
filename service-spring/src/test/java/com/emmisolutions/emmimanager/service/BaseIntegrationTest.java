@@ -314,13 +314,8 @@ public abstract class BaseIntegrationTest {
         ClientTeamEmailConfiguration emailConfig = new ClientTeamEmailConfiguration();
         emailConfig.setTeam(team);
         emailConfig.setCreatedBy(new UserAdmin(1l));
-        emailConfig.setCollectEmail(true);
-        emailConfig.setRequireEmail(false);
-        emailConfig.setReminderTwoDays(true);
-        emailConfig.setReminderFourDays(true);
-        emailConfig.setReminderSixDays(true);
-        emailConfig.setReminderEightDays(true);
-        emailConfig.setReminderArticles(false);
+        emailConfig.setType(EmailReminderType.REQUIRE_EMAIL);
+        emailConfig.setEmailConfig(true);
         teamEmailConfig.saveOrUpdate(emailConfig);
         return team;
     }
