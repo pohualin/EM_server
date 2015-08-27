@@ -8,7 +8,6 @@
         <dropUniqueConstraint tableName="default_team_email_configuration" constraintName="uk_default_team_email_configuration"/>
         <dropDefaultValue tableName="default_team_email_configuration" columnName="default_value"/>
         <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
-        <dropDefaultValue schemaName="audit" tableName="client_team_email_configuration_audit" columnName="email_config"/>
 
         <delete tableName="default_team_email_configuration">
             <where>type='COLLECT_EMAIL'</where>
