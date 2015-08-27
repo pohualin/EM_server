@@ -76,8 +76,11 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
 
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeSaveOrUpdateNullReloadTeam() {
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+
         ClientTeamEmailConfiguration clientTeamEmailConfiguration = new ClientTeamEmailConfiguration();
-        clientTeamEmailConfiguration.setTeam(new Team(new Long(69)));
+        clientTeamEmailConfiguration.setTeam(new Team(team.getId() + 1));
 
         clientTeamEmailConfigurationService.saveOrUpdate(clientTeamEmailConfiguration);
     }
@@ -103,7 +106,10 @@ public class ClientTeamEmailConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testFindByTeamUnknownTeam() {
-        clientTeamEmailConfigurationService.findByTeam(new Team(new Long(69)));
+        Client client = makeNewRandomClient();
+        Team team = makeNewRandomTeam(client);
+
+        clientTeamEmailConfigurationService.findByTeam(new Team(team.getId() + 1));
     }
 
     @Test
