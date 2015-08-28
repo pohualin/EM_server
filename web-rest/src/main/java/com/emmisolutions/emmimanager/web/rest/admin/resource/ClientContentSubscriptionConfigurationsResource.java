@@ -161,14 +161,13 @@ public class ClientContentSubscriptionConfigurationsResource {
 
     /**
      * Delete an content subscription configuration
-     * @param clientId   for the content subscription configuration 
-     * @param id         content subscription configuration to delete
+     * @param clientId   clientId for the content subscription configuration 
      */
-    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/clients/{clientId}/content_subscription_configuration", method = RequestMethod.DELETE)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public void delete(@PathVariable("id") Long id) {
+    public void delete(@PathVariable("clientId") Long clientId) {
     	clientContentSubscriptionConfigurationService
-                .delete(new ClientContentSubscriptionConfiguration(id));
+                .delete(new Client(clientId));
     }
 
 }

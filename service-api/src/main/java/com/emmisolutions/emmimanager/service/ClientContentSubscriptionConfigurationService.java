@@ -55,7 +55,7 @@ public interface ClientContentSubscriptionConfigurationService {
      * @param clientContentSubscriptionConfiguration
      *            to delete
      */
-    public void delete(ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration);
+    public void delete(Client client);
 
     /**
      * Reload an existing ClientContentSubscriptionConfiguration

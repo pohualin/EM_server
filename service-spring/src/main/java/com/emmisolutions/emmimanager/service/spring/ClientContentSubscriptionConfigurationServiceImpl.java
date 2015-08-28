@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.TeamProvider;
+import com.emmisolutions.emmimanager.model.TeamProviderTeamLocation;
 import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
@@ -74,13 +76,18 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
         return clientContentSubscriptionConfigurationPersistence
                 .saveOrUpdate(clientContentSubscriptionConfiguration);
 	}
-
+    
     @Override
     @Transactional
 	public void delete(
-			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-    	clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration
-                     .getId());
+			Client client) {
+    	Page<ClientContentSubscriptionConfiguration> clientContentConfig = this.findByClient(client, null);
+    	if(clientContentConfig.hasContent()){
+    		for (ClientContentSubscriptionConfiguration config: clientContentConfig.getContent()) {
+    			clientContentSubscriptionConfigurationPersistence.delete(config
+                        .getId());
+    		}
+    	}
     }
 
 	@Override

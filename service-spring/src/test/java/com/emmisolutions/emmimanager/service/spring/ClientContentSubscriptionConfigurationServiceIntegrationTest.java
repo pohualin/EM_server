@@ -84,7 +84,7 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
                updatedClientContentSubscription.isFaithBased()
                        , is(true));
        
-       clientContentSubscriptionConfigurationService.delete(updatedClientContentSubscription);
+       clientContentSubscriptionConfigurationService.delete(client);
        
        assertThat("delete content subscription successfully",
     		   clientContentSubscriptionConfigurationService.reload(updatedClientContentSubscription), is(nullValue()));
