@@ -80,20 +80,20 @@
         <addForeignKeyConstraint baseTableName="client_content_subscription_configuration_audit"
                                  baseColumnNames="revision"
                                  baseTableSchemaName="audit"
-                                 constraintName="fk_client_content_subscription_configuration_audit_revision"
+                                 constraintName="fk_client_content_subscription_configuration_audit_revision_info"
                                  referencedTableName="revision_info"
                                  referencedTableSchemaName="audit"
                                  referencedColumnNames="revision"/>
                                  
         <addForeignKeyConstraint baseTableName="client_content_subscription_configuration"
                                  baseColumnNames="client_id"
-                                 constraintName="fk_client_client_content_subscription_configuration"
+                                 constraintName="fk_client_content_subscription_configuration_client"
                                  referencedTableName="client"
                                  referencedColumnNames="id"/>
                                  
         <addForeignKeyConstraint baseTableName="client_content_subscription_configuration"
                                  baseColumnNames="content_subscription_id"
-                                 constraintName="fk_content_subscription_client_content_subscription_configuration"
+                                 constraintName="fk_client_content_subscription_configuration_rf_content_subscription"
                                  referencedTableName="rf_content_subscription"
                                  referencedTableSchemaName="program"
                                  referencedColumnNames="config_cd"/>

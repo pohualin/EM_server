@@ -38,13 +38,14 @@ public class ClientContentSubscriptionConfiguration extends AbstractAuditingEnti
 
    	@NotNull
    	@ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
+    @JoinColumn(name = "client_id", nullable = false,
+    		foreignKey = @ForeignKey(name ="fk_client_content_subscription_configuration_client"))
     private Client client;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "content_subscription_id", columnDefinition = "bigint", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_content_subscription_client_content_subscription_configuration"))
+            foreignKey = @ForeignKey(name = "fk_client_content_subscription_configuration_rf_content_subscription"))
     private ContentSubscription contentSubscription;
     
     @Column(name = "faith_based", columnDefinition = "boolean")
