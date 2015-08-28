@@ -148,8 +148,7 @@ public class ClientContentSubscriptionConfigurationsResource {
     public ResponseEntity<ClientContentSubscriptionConfigurationResource> update(
             @PathVariable("clientId") Long clientId,
             @RequestBody ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-    	clientContentSubscriptionConfiguration.setClient(new Client(clientId));
-    	ClientContentSubscriptionConfiguration updated = clientContentSubscriptionConfigurationService
+        ClientContentSubscriptionConfiguration updated = clientContentSubscriptionConfigurationService
                 .update(clientContentSubscriptionConfiguration);
         if (updated != null) {
             return new ResponseEntity<>(

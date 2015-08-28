@@ -28,10 +28,10 @@ public class ClientContentSubscriptionConfigurationPersistenceImpl implements
     @Override
 	public Page<ClientContentSubscriptionConfiguration> findByClient(Long clientId, Pageable pageable){
     	if (clientId == null) {
-            throw new InvalidDataAccessApiUsageException("Client Id cannot be null");
+    		 return null;
         }
         return clientContentSubscriptionConfigurationRepository.findByClientId(clientId,
-                pageable != null ? pageable : new PageRequest(0, 20, Sort.Direction.DESC, "id"));
+                pageable != null ? pageable : new PageRequest(0, 20, Sort.Direction.ASC, "id"));          
     }
 
 	@Override

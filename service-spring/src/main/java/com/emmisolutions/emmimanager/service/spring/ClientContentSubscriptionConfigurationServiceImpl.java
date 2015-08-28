@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.TeamTag;
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.ClientRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import com.emmisolutions.emmimanager.persistence.ClientContentSubscriptionConfigurationPersistence;
 import com.emmisolutions.emmimanager.persistence.ContentSubscriptionPersistence;
@@ -52,10 +53,10 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
             throw new InvalidDataAccessApiUsageException(
                     "ClientContentSubscriptionConfiguration or clientContentSubscriptionConfigurationId can not be null.");
         }
-        Client reloadClient = clientService.reload(clientContentSubscriptionConfiguration
+		Client reload = clientService.reload(clientContentSubscriptionConfiguration
                 .getClient());
-        clientContentSubscriptionConfiguration.setClient(reloadClient);
-        return clientContentSubscriptionConfigurationPersistence
+		clientContentSubscriptionConfiguration.setClient(reload);
+		return clientContentSubscriptionConfigurationPersistence
                 .saveOrUpdate(clientContentSubscriptionConfiguration);
 	}
 
@@ -78,38 +79,20 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
     @Transactional
 	public void delete(
 			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-    	
-    	ClientContentSubscriptionConfiguration reloadContentConfiguration = clientContentSubscriptionConfigurationPersistence
-        	.reload(clientContentSubscriptionConfiguration.getId());
-         if (reloadContentConfiguration != null) {
-        	 clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration
+    	clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration
                      .getId());
-         }
     }
 
 	@Override
 	public Page<ClientContentSubscriptionConfiguration> findByClient(
 			Client client, Pageable pageable) {
-		 Client toUse = clientService.reload(client);
-	     if (toUse != null) {
-	        	return clientContentSubscriptionConfigurationPersistence.findByClient(client.getId(), pageable);
-	     }else{
-	            return null;
-	     }
+	   	return clientContentSubscriptionConfigurationPersistence.findByClient(client.getId(), pageable);
   	}
 
 	@Override
 	public ClientContentSubscriptionConfiguration reload(
 			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-		
-		ClientContentSubscriptionConfiguration reloadContentConfiguration = clientContentSubscriptionConfigurationPersistence
-	        	.reload(clientContentSubscriptionConfiguration.getId());
-		if (reloadContentConfiguration != null) {
-			return clientContentSubscriptionConfigurationPersistence
+		return clientContentSubscriptionConfigurationPersistence
 	                .reload(clientContentSubscriptionConfiguration.getId());
-        }else{
-        	return null;
-        }
- 
-	}
+   	}
 }

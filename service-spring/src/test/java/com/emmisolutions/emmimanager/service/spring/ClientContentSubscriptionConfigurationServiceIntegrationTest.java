@@ -11,11 +11,15 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 
 import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientNote;
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
+import com.emmisolutions.emmimanager.model.InfoHeaderConfig;
+import com.emmisolutions.emmimanager.model.PatientIdLabelConfig;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
+import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.ContentSubscriptionPersistence;
 import com.emmisolutions.emmimanager.persistence.DefaultClientTeamSchedulingConfigurationPersistence;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
@@ -51,20 +55,14 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
         clientContentSubscription.setClient(client);
         clientContentSubscription.setContentSubscription(contentSubscription.getContent().get(0));
         clientContentSubscription.setFaithBased(false);
-        clientContentSubscription.setSource(false);
-        
+                
         ClientContentSubscriptionConfiguration savedContentSubscriptionConfig = clientContentSubscriptionConfigurationService.create(clientContentSubscription);
         
         assertThat(
                 "should contain content subscription configuration faith based is false",
                 savedContentSubscriptionConfig.isFaithBased()
                         , is(false));
-        
-        assertThat(
-                "should contain content subscription configuration source is false",
-                savedContentSubscriptionConfig.isSource()
-                        , is(false));
-             
+            
         Page<ClientContentSubscriptionConfiguration> contentSubscriptionConfig = clientContentSubscriptionConfigurationService
                 .findByClient(client, null);
         
@@ -91,6 +89,9 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
        assertThat("delete content subscription successfully",
     		   clientContentSubscriptionConfigurationService.reload(updatedClientContentSubscription), is(nullValue()));
        
+       assertThat("reload will return null with null object",
+    		   clientContentSubscriptionConfigurationService.reload(new ClientContentSubscriptionConfiguration()), is(nullValue()));
+      
     }
 
     /**
@@ -100,6 +101,26 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
     public void testNegativeUpdateNull() {
     	clientContentSubscriptionConfigurationService.update(null);
     }
-   
+
+    
+    /**
+     * Test findByClient for null
+     */
+    @Test
+    public void testNegativeFindNull() {
+    	Page<ClientContentSubscriptionConfiguration> config = clientContentSubscriptionConfigurationService.findByClient(new Client(), null);
+    	assertThat(config, is(nullValue()));
+    }
+    
+    @Test
+    public void testUnsavedReload() {
+    	 Page<ContentSubscription> contentSubscription= contentSubscriptionPersistence.findActive(null);
+    	 ClientContentSubscriptionConfiguration clientContentSubscription = new ClientContentSubscriptionConfiguration();
+         clientContentSubscription.setClient(new Client());
+         clientContentSubscription.setContentSubscription(contentSubscription.getContent().get(0));
+         clientContentSubscription.setFaithBased(false);
+         ClientContentSubscriptionConfiguration reloadClientContentSubscription =  clientContentSubscriptionConfigurationService.reload(clientContentSubscription);
+         assertThat("reloaded is null", reloadClientContentSubscription, is(nullValue()));
+    }
     
 }

@@ -41,10 +41,8 @@ public class ClientContentSubscriptionConfigurationPersistenceIntegrationTest ex
         ClientContentSubscriptionConfiguration contentSubscriptionConfig = new ClientContentSubscriptionConfiguration();
         contentSubscriptionConfig.setClient(client);
         contentSubscriptionConfig.setContentSubscription(systemDefault.getContent().get(3));
-        contentSubscriptionConfig.setSource(false);
         contentSubscriptionConfig.setFaithBased(false);
-        contentSubscriptionConfig.setSourceContentSubscription(null);
-        
+       
         ClientContentSubscriptionConfiguration savedContentSubscriptionConfig = clientContentSubscriptionConfigurationPersistence.saveOrUpdate(contentSubscriptionConfig);
 
         Page<ClientContentSubscriptionConfiguration> clientContentSubscriptionList = clientContentSubscriptionConfigurationPersistence

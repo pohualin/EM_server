@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.model.configuration;
 
 import org.hibernate.envers.Audited;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 
 import com.emmisolutions.emmimanager.model.AbstractAuditingEntity;
 import com.emmisolutions.emmimanager.model.Client;
@@ -9,6 +11,8 @@ import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.joda.time.*;
 
 import java.io.Serializable;
 
@@ -39,22 +43,14 @@ public class ClientContentSubscriptionConfiguration extends AbstractAuditingEnti
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "content_subscription_id", columnDefinition = "bigint",
+    @JoinColumn(name = "content_subscription_id", columnDefinition = "bigint", nullable = false,
             foreignKey = @ForeignKey(name = "fk_content_subscription_client_content_subscription_configuration"))
     private ContentSubscription contentSubscription;
     
     @Column(name = "faith_based", columnDefinition = "boolean")
     private boolean faithBased;
-
-    @Column(name = "source", columnDefinition = "boolean")
-    private boolean source;
-   
-    @ManyToOne
-    @JoinColumn(name = "source_content_subscription_id", columnDefinition = "bigint",
-            foreignKey = @ForeignKey(name = "fk_source_content_subscription_client_content_subscription_configuration"))
-    private ContentSubscription sourceContentSubscription;
-
-    /**
+    
+	/**
      * Default constructor
      */
     public ClientContentSubscriptionConfiguration() {
@@ -95,10 +91,6 @@ public class ClientContentSubscriptionConfiguration extends AbstractAuditingEnti
 		this.faithBased = faithBased;
 	}
 
-	public boolean isSource() {
-		return source;
-	}
-
 	public ContentSubscription getContentSubscription() {
 		return contentSubscription;
 	}
@@ -106,11 +98,9 @@ public class ClientContentSubscriptionConfiguration extends AbstractAuditingEnti
 	public void setContentSubscription(ContentSubscription contentSubscription) {
 		this.contentSubscription = contentSubscription;
 	}
-
-	public void setSource(boolean source) {
-		this.source = source;
-	}
 	
+
+
 	public Client getClient() {
         return client;
     }
@@ -119,16 +109,7 @@ public class ClientContentSubscriptionConfiguration extends AbstractAuditingEnti
         this.client = client;
     }
 
-    public ContentSubscription getSourceContentSubscription() {
-		return sourceContentSubscription;
-	}
-
-	public void setSourceContentSubscription(
-			ContentSubscription sourceContentSubscription) {
-		this.sourceContentSubscription = sourceContentSubscription;
-	}
-
-	@Override
+   	@Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -149,8 +130,6 @@ public class ClientContentSubscriptionConfiguration extends AbstractAuditingEnti
                 "client=" + client +
                 ", contentSubscription=" + contentSubscription +
                 ", faithBased=" + faithBased +
-                ", source=" + source +
-                ", sourceContentSubscription=" + sourceContentSubscription + 
                 ", version=" + version +
                 '}';
     }
