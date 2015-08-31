@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
 import com.emmisolutions.emmimanager.model.ClientTeamPhoneConfiguration;
 import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.Patient;
+import com.emmisolutions.emmimanager.model.schedule.Encounter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.*;
@@ -15,6 +16,7 @@ import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,6 +64,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     SchedulePersistence schedulePersistence;
     
     @Resource
+    EncounterPersistence encounterPersistence;
+    
+    @Resource
     ClientTeamSchedulingConfigurationService teamSchedulingConfigurationService;
     
     @Resource
@@ -77,8 +82,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
         ScheduledProgram savedScheduledProgram = null;
-        
+
         if (toBeScheduled != null) {
+            if (toBeScheduled.getEncounter() == null) {
+                Encounter encounter = new Encounter();
+                encounter.setEncounterDateTime(LocalDateTime.now(DateTimeZone.UTC));
+                toBeScheduled.setEncounter(encounterPersistence.save(encounter));
+            }
             hydrateValidProgram(toBeScheduled);
             validateViewByDate(toBeScheduled);
             validatePhone(toBeScheduled);
@@ -124,6 +134,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduledProgram.setLocation(inDb.getLocation());
         scheduledProgram.setProvider(inDb.getProvider());
         scheduledProgram.setProgram(inDb.getProgram());
+        scheduledProgram.setEncounter(inDb.getEncounter());
 
         return schedulePersistence.save(scheduledProgram);
     }

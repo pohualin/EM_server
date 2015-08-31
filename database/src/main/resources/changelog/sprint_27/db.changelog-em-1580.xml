@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+	<property name="now" value="GETDATE()" dbms="mssql"/>
+
+    <changeSet id="create encounter table and encounter audit table" author="Paul">
+        <createTable tableName="encounter">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_encounter"/>
+            </column>
+            <column name="version" type="int"/>
+            <column name="created_by" type="bigint"/>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="bigint"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="encounter_timestamp_utc" type="timestamp">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable schemaName="audit" tableName="encounter_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="encounter_timestamp_utc" type="timestamp" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add fks and indexes to encounter table" author="Paul">
+		<addForeignKeyConstraint baseTableName="encounter"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_encounter_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="encounter"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_encounter_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="encounter" indexName="ix_encounter_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="encounter" indexName="ix_encounter_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="insert encounter for all existing scheduled programs" author="Paul">
+    	<sql><![CDATA[
+            INSERT INTO encounter (encounter_timestamp_utc) select created_date from scheduled_program;
+        ]]></sql>
+    </changeSet>
+    
+    <changeSet id="add encounter_id to scheduled_program" author="Paul">
+    	<addColumn tableName="scheduled_program">
+    		<column name="encounter_id" type="bigint" />
+    	</addColumn>
+    
+    	<sql><![CDATA[
+            update scheduled_program set encounter_id = 
+            	select e.id from scheduled_program sp inner join encounter e on sp.created_date = e.encounter_timestamp_utc
+        ]]></sql>
+    </changeSet>
+    
+    <changeSet id="update nullable constraint on encounter_id" author="Paul">
+    	<addNotNullConstraint tableName="scheduled_program" columnName="encounter_id" columnDataType="bigint" />
+    	<addForeignKeyConstraint constraintName="fk_scheduled_program_encounter" 
+    		baseTableName="scheduled_program" baseColumnNames="encounter_id"
+    		referencedTableName="encounter" referencedColumnNames="id"/>
+		<createIndex tableName="scheduled_program" indexName="ix_scheduled_program_encounter_id">
+			<column name="encounter_id"></column>
+		</createIndex>
+    </changeSet>
+    
+    <changeSet id="add encounter_id to scheduled_program audit" author="Paul">
+    	<addColumn schemaName="audit" tableName="scheduled_program_audit">
+    		<column name="encounter_id" type="bigint" />
+    	</addColumn>
+    </changeSet>
+
+</databaseChangeLog>
