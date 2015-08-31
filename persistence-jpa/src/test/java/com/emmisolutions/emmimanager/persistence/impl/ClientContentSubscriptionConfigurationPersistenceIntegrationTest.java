@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 
 import javax.annotation.Resource;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,28 +41,26 @@ public class ClientContentSubscriptionConfigurationPersistenceIntegrationTest ex
         ClientContentSubscriptionConfiguration contentSubscriptionConfig = new ClientContentSubscriptionConfiguration();
         contentSubscriptionConfig.setClient(client);
         contentSubscriptionConfig.setContentSubscription(systemDefault.getContent().get(3));
-        contentSubscriptionConfig.setSource(false);
         contentSubscriptionConfig.setFaithBased(false);
-        contentSubscriptionConfig.setSourceContentSubscription(null);
-        
+       
         ClientContentSubscriptionConfiguration savedContentSubscriptionConfig = clientContentSubscriptionConfigurationPersistence.saveOrUpdate(contentSubscriptionConfig);
 
-        Page<ClientContentSubscriptionConfiguration> configurationSave = clientContentSubscriptionConfigurationPersistence
+        Page<ClientContentSubscriptionConfiguration> clientContentSubscriptionList = clientContentSubscriptionConfigurationPersistence
         		.findByClient(client.getId(), null);
        
 
-        assertThat("should contain configuration", savedContentSubscriptionConfig,
-                is(configurationSave.getContent().get(0)));
+        assertThat("saved config should be found", clientContentSubscriptionList, 
+        		hasItem(savedContentSubscriptionConfig));
 
         ClientContentSubscriptionConfiguration configurationReload = clientContentSubscriptionConfigurationPersistence
                 .reload(savedContentSubscriptionConfig.getId());
 
-        assertThat("should reload the same configuration", configurationSave.getContent().get(0),
-                is(configurationReload));
+        assertThat("reload should be the same configuration as the saved one", configurationReload,
+                is(savedContentSubscriptionConfig));
         
         clientContentSubscriptionConfigurationPersistence.delete(savedContentSubscriptionConfig.getId());
         
-        assertThat("delete note successfully",
+        assertThat("delete the saved content subscription successfully",
         		clientContentSubscriptionConfigurationPersistence.reload(savedContentSubscriptionConfig.getId()), is(nullValue()));
 
     }

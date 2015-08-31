@@ -5,10 +5,8 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.BaseResource;
 
 import javax.xml.bind.annotation.*;
 
-
 /**
- * HATEOAS wrapper for ClientContentSubscriptionConfiguration, essentially a DTO instead of
- * a wrapper.
+ * HATEOAS wrapper for ClientContentSubscriptionConfiguration
  */
 @XmlRootElement(name = "client-content-subscription-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)

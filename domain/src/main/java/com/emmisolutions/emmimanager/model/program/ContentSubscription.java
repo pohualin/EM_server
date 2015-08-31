@@ -37,10 +37,10 @@ public class ContentSubscription {
     private Integer rank;
     
     @Column(name = "primary_sbscrptn")
-    private boolean primarySbscrptn;
+    private boolean primarySubscription;
     
 	@Column(name = "source_sbscrptn")
-    private boolean sourceSbscrptn;
+    private boolean sourceSubscription;
     
     public ContentSubscription(){
 		
@@ -71,20 +71,21 @@ public class ContentSubscription {
 		this.id = id;
 	}
 
-	public boolean isPrimarySbscrptn() {
-		return primarySbscrptn;
+	
+	public boolean isPrimarySubscription() {
+		return primarySubscription;
 	}
 
-	public void setPrimarySbscrptn(boolean primarySbscrptn) {
-		this.primarySbscrptn = primarySbscrptn;
+	public void setPrimarySubscription(boolean primarySubscription) {
+		this.primarySubscription = primarySubscription;
 	}
 
-	public boolean isSourceSbscrptn() {
-		return sourceSbscrptn;
+	public boolean isSourceSubscription() {
+		return sourceSubscription;
 	}
 
-	public void setSourceSbscrptn(boolean sourceSbscrptn) {
-		this.sourceSbscrptn = sourceSbscrptn;
+	public void setSourceSubscription(boolean sourceSubscription) {
+		this.sourceSubscription = sourceSubscription;
 	}
 
 	public void setName(String name) {
@@ -133,8 +134,8 @@ public class ContentSubscription {
 	public String toString() {
 		return "Content Subscription [id=" + id + ", "
 				+ "content subscription name =" + name
-				+ "primary subscription =" + primarySbscrptn
-				+ "source subscription =" + sourceSbscrptn
+				+ "primary subscription =" + primarySubscription
+				+ "source subscription =" + sourceSubscription
 				+ "rank =" + rank
 				+ "]";
 	}
