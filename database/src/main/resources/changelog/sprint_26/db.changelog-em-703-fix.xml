@@ -12,10 +12,9 @@
         </preConditions>
 
         <!-- Create new_client_team_email_configuration -->
-        <dropPrimaryKey tableName="client_team_email_configuration"/>
         <createTable tableName="new_client_team_email_configuration">
             <column name="id" type="bigint" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_team_email_configuration"/>
+                <constraints nullable="false"/>
             </column>
             <column name="created_date" type="timestamp" defaultValueDate="${now}">
                 <constraints nullable="false"/>
@@ -79,13 +78,7 @@
         </sql>
 
         <!-- Drop client_team_email_configuration -->
-        <dropAllForeignKeyConstraints baseTableName="client_team_email_configuration"/>
-        <dropIndex tableName="client_team_email_configuration"
-                   indexName="ix_client_email_configuration_team_default_email_configuration"/>
-        <dropIndex tableName="client_team_email_configuration"
-                   indexName="ix_client_team_email_configuration_created_by"/>
-        <dropIndex tableName="client_team_email_configuration"
-                   indexName="ix_client_team_email_configuration_last_modified_by"/>
+        <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
         <dropTable tableName="client_team_email_configuration"/>
 
         <!--
@@ -93,6 +86,7 @@
             and set up foreign keys and indexes
         -->
         <renameTable oldTableName="new_client_team_email_configuration" newTableName="client_team_email_configuration"/>
+        <addPrimaryKey tableName="client_team_email_configuration" columnNames="id" constraintName="pk_client_team_email_configuration"/>
         <addForeignKeyConstraint baseTableName="client_team_email_configuration"
                                  baseColumnNames="created_by" constraintName="fk_client_team_email_configuration_created_by"
                                  referencedTableName="users" referencedColumnNames="id"/>
@@ -166,10 +160,15 @@
         <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="rank"/>
     </changeSet>
 
-    <changeSet id="delete default email configuration records and drop no longer used columns" author="Wade">
+    <changeSet id="delete default email configuration records and drop no longer used columns then add new columns and default record" author="Wade">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="default_team_email_configuration" columnName="type" />
+            <columnExists tableName="default_team_email_configuration" columnName="default_value" />
+            <columnExists tableName="default_team_email_configuration" columnName="rank" />
+        </preConditions>
+
         <dropUniqueConstraint tableName="default_team_email_configuration" constraintName="uk_default_team_email_configuration"/>
         <dropDefaultValue tableName="default_team_email_configuration" columnName="default_value"/>
-        <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
 
         <delete tableName="default_team_email_configuration">
             <where>type='COLLECT_EMAIL'</where>
@@ -181,9 +180,7 @@
         <dropColumn tableName="default_team_email_configuration" columnName="type"/>
         <dropColumn tableName="default_team_email_configuration" columnName="default_value"/>
         <dropColumn tableName="default_team_email_configuration" columnName="rank"/>
-    </changeSet>
 
-    <changeSet id="add columns to default_team_email_configuration to store email reminder data" author="Wade">
         <addColumn tableName="default_team_email_configuration">
             <column name="collect_email" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false" />
@@ -219,9 +216,7 @@
                 <constraints nullable="false" />
             </column>
         </addColumn>
-    </changeSet>
 
-    <changeSet id="add default email configuration defaults" author="Wade">
         <insert tableName="default_team_email_configuration">
             <column name="version" value="0"/>
             <column name="collect_email" value="true"/>
