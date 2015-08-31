@@ -65,11 +65,11 @@
             <column name="reminder_articles" value="false"/>
         </update>
 
-        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_two_days"/>
-        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_four_days"/>
-        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_six_days"/>
-        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_eight_days"/>
-        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_articles"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_two_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_four_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_six_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_eight_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_articles" columnDataType="boolean"/>
 
         <!-- Drop client_team_email_configuration -->
         <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
