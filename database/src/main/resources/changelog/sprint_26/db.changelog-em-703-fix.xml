@@ -4,75 +4,6 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="delete default email configuration records and drop no longer used columns" author="Wade">
-        <dropUniqueConstraint tableName="default_team_email_configuration" constraintName="uk_default_team_email_configuration"/>
-        <dropDefaultValue tableName="default_team_email_configuration" columnName="default_value"/>
-        <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
-
-        <delete tableName="default_team_email_configuration">
-            <where>type='COLLECT_EMAIL'</where>
-        </delete>
-        <delete tableName="default_team_email_configuration">
-            <where>type='REQUIRE_EMAIL'</where>
-        </delete>
-
-        <dropColumn tableName="default_team_email_configuration" columnName="type"/>
-        <dropColumn tableName="default_team_email_configuration" columnName="default_value"/>
-        <dropColumn tableName="default_team_email_configuration" columnName="rank"/>
-    </changeSet>
-
-    <changeSet id="add columns to default_team_email_configuration to store email reminder data" author="Wade">
-        <addColumn tableName="default_team_email_configuration">
-            <column name="collect_email" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="default_team_email_configuration">
-            <column name="require_email" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="default_team_email_configuration">
-            <column name="reminder_two_days" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="default_team_email_configuration">
-            <column name="reminder_four_days" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="default_team_email_configuration">
-            <column name="reminder_six_days" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="default_team_email_configuration">
-            <column name="reminder_eight_days" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="default_team_email_configuration">
-            <column name="reminder_articles" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-    </changeSet>
-
-    <changeSet id="add default email configuration defaults" author="Wade">
-        <insert tableName="default_team_email_configuration">
-            <column name="version" value="0"/>
-            <column name="collect_email" value="true"/>
-            <column name="require_email" value="false"/>
-            <column name="reminder_two_days" value="true"/>
-            <column name="reminder_four_days" value="true"/>
-            <column name="reminder_six_days" value="true"/>
-            <column name="reminder_eight_days" value="true"/>
-            <column name="reminder_articles" value="false"/>
-        </insert>
-    </changeSet>
-
-
     <changeSet id="flip data from row to column if there is any" author="Wade">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="client_team_email_configuration" columnName="type" />
@@ -142,13 +73,19 @@
                             false
                         FROM client_team_email_configuration old_config_a INNER JOIN client_team_email_configuration old_config_b
                         ON old_config_a.client_team_id = old_config_b.client_team_id AND old_config_a.id <> old_config_b.id
-                        WHERE old_config_a.type='COLLECT')
+                        WHERE old_config_a.type='COLLECT_EMAIL')
                 );
             ]]>
         </sql>
 
         <!-- Drop client_team_email_configuration -->
         <dropAllForeignKeyConstraints baseTableName="client_team_email_configuration"/>
+        <dropIndex tableName="client_team_email_configuration"
+                   indexName="ix_client_email_configuration_team_default_email_configuration"/>
+        <dropIndex tableName="client_team_email_configuration"
+                   indexName="ix_client_team_email_configuration_created_by"/>
+        <dropIndex tableName="client_team_email_configuration"
+                   indexName="ix_client_team_email_configuration_last_modified_by"/>
         <dropTable tableName="client_team_email_configuration"/>
 
         <!--
@@ -165,13 +102,16 @@
         <addForeignKeyConstraint baseTableName="client_team_email_configuration"
                                  baseColumnNames="client_team_id" constraintName="fk_client_team_email_configuration_team"
                                  referencedTableName="client_team" referencedColumnNames="id"/>
-        <createIndex tableName="client_team_email_configuration" indexName="ix_client_email_configuration_team_default_email_configuration">
+        <createIndex tableName="client_team_email_configuration"
+                     indexName="ix_client_email_configuration_team_default_email_configuration">
             <column name="client_team_id" type="bigint"/>
         </createIndex>
-        <createIndex tableName="client_team_email_configuration" indexName="ix_client_team_email_configuration_created_by">
+        <createIndex tableName="client_team_email_configuration"
+                     indexName="ix_client_team_email_configuration_created_by">
             <column name="created_by" type="bigint"/>
         </createIndex>
-        <createIndex tableName="client_team_email_configuration" indexName="ix_client_team_email_configuration_last_modified_by">
+        <createIndex tableName="client_team_email_configuration"
+                     indexName="ix_client_team_email_configuration_last_modified_by">
             <column name="last_modified_by" type="bigint"/>
         </createIndex>
     </changeSet>
@@ -226,4 +166,71 @@
         <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="rank"/>
     </changeSet>
 
+    <changeSet id="delete default email configuration records and drop no longer used columns" author="Wade">
+        <dropUniqueConstraint tableName="default_team_email_configuration" constraintName="uk_default_team_email_configuration"/>
+        <dropDefaultValue tableName="default_team_email_configuration" columnName="default_value"/>
+        <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
+
+        <delete tableName="default_team_email_configuration">
+            <where>type='COLLECT_EMAIL'</where>
+        </delete>
+        <delete tableName="default_team_email_configuration">
+            <where>type='REQUIRE_EMAIL'</where>
+        </delete>
+
+        <dropColumn tableName="default_team_email_configuration" columnName="type"/>
+        <dropColumn tableName="default_team_email_configuration" columnName="default_value"/>
+        <dropColumn tableName="default_team_email_configuration" columnName="rank"/>
+    </changeSet>
+
+    <changeSet id="add columns to default_team_email_configuration to store email reminder data" author="Wade">
+        <addColumn tableName="default_team_email_configuration">
+            <column name="collect_email" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="require_email" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_two_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_four_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_six_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_eight_days" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="default_team_email_configuration">
+            <column name="reminder_articles" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add default email configuration defaults" author="Wade">
+        <insert tableName="default_team_email_configuration">
+            <column name="version" value="0"/>
+            <column name="collect_email" value="true"/>
+            <column name="require_email" value="false"/>
+            <column name="reminder_two_days" value="true"/>
+            <column name="reminder_four_days" value="true"/>
+            <column name="reminder_six_days" value="true"/>
+            <column name="reminder_eight_days" value="true"/>
+            <column name="reminder_articles" value="false"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
