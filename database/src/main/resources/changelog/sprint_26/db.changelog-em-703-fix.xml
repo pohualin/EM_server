@@ -30,21 +30,11 @@
             <column name="require_email" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="reminder_two_days" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="reminder_four_days" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="reminder_six_days" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="reminder_eight_days" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-            <column name="reminder_articles" type="boolean">
-                <constraints nullable="false"/>
-            </column>
+            <column name="reminder_two_days" type="boolean"/>
+            <column name="reminder_four_days" type="boolean"/>
+            <column name="reminder_six_days" type="boolean"/>
+            <column name="reminder_eight_days" type="boolean"/>
+            <column name="reminder_articles" type="boolean"/>
         </createTable>
 
         <!-- Insert in to new_client_team_email_configuration -->
@@ -54,28 +44,32 @@
                             client_team_id,
                             created_by,
                             collect_email,
-                            require_email,
-                            reminder_two_days,
-                            reminder_four_days,
-                            reminder_six_days,
-                            reminder_eight_days,
-                            reminder_articles
+                            require_email
                 ) (
                     (SELECT old_config_a.client_team_id,
                             old_config_a.created_by,
                             old_config_a.email_config AS collect_email,
-                            old_config_b.email_config AS require_email,
-                            true,
-                            true,
-                            true,
-                            true,
-                            false
+                            old_config_b.email_config AS require_email
                         FROM client_team_email_configuration old_config_a INNER JOIN client_team_email_configuration old_config_b
                         ON old_config_a.client_team_id = old_config_b.client_team_id AND old_config_a.id <> old_config_b.id
                         WHERE old_config_a.type='COLLECT_EMAIL')
                 );
             ]]>
         </sql>
+
+        <update tableName="new_client_team_email_configuration">
+            <column name="reminder_two_days" value="true"/>
+            <column name="reminder_four_days" value="true"/>
+            <column name="reminder_six_days" value="true"/>
+            <column name="reminder_eight_days" value="true"/>
+            <column name="reminder_articles" value="false"/>
+        </update>
+
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_two_days"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_four_days"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_six_days"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_eight_days"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_articles"/>
 
         <!-- Drop client_team_email_configuration -->
         <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
