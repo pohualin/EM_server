@@ -70,18 +70,34 @@
        </createTable>
     </changeSet>
     
-     <changeSet id="change the data type from bigint to integer" author="wlee">
-    	<update tableName="client_content_subscription_configuration">
-        	<column name="content_subscription_id" type="integer">
-                <constraints nullable="false"/>
-        	</column>
-        </update>
-        <update tableName="client_content_subscription_configuration_audit" schemaName="audit">
-        	<column name="content_subscription_id" type="integer">
-            </column>
-        </update>
+    <changeSet id="change the data type from bigint to integer for content_subscription_id" author="wlee">
+        <modifyDataType tableName="client_content_subscription_configuration"
+                        columnName="content_subscription_id"
+                        newDataType="integer"/>
+        <modifyDataType tableName="client_content_subscription_configuration_audit" 
+                        schemaName="audit"
+                        columnName="content_subscription_id"
+                        newDataType="integer"/>
     </changeSet>
-      
+  
+    <changeSet id="add rowver for sql server for content subscription tables" author="wlee" dbms="mssql">
+        <addColumn tableName="client_content_subscription_configuration">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_content_subscription_configuration_audit" schemaName="audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="create unique contraint for client_content_subscription_configuration " author="wlee">
+    		<addUniqueConstraint tableName="client_content_subscription_configuration" columnNames="client_id, content_subscription_id"
+                             constraintName="uk_client_content_subscription"/>
+    </changeSet>
+    
     <changeSet id="create content subscription foreign keys and indexes" author="wlee">
 
         <addPrimaryKey tableName="client_content_subscription_configuration_audit" 
@@ -138,25 +154,6 @@
             <column name="last_modified_by"/>
         </createIndex>
                                        
-    </changeSet>
-    
-    <changeSet id="add rowver for sql server for content subscription tables" author="wlee" dbms="mssql">
-
-        <addColumn tableName="client_content_subscription_configuration">
-            <column name="rowver" type="rowversion">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-        <addColumn tableName="client_content_subscription_configuration_audit" schemaName="audit">
-            <column name="rowver" type="rowversion">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
-    
-    <changeSet id="create unique contraint for client_content_subscription_configuration " author="wlee">
-    		<addUniqueConstraint tableName="client_content_subscription_configuration" columnNames="client_id, content_subscription_id"
-                             constraintName="uk_client_content_subscription"/>
     </changeSet>
     
     <changeSet id="get data from legacy system for rf_content_subscription" author="wlee" context="qa,dev,test">
