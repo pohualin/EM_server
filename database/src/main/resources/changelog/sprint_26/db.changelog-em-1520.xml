@@ -41,7 +41,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified_date" type="timestamp"/>
-            <column name="content_subscription_id" type="integer">
+            <column name="content_subscription_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="faith_based" type="boolean">
@@ -65,9 +65,21 @@
             </column>
             <column name="revision_type" type="tinyint"/>
             <column name="faith_based" type="boolean"/>
-            <column name="content_subscription_id" type="integer"/>
+            <column name="content_subscription_id" type="bigint"/>
             <column name="client_id" type="bigint"/>
        </createTable>
+    </changeSet>
+    
+     <changeSet id="change the data type from bigint to integer" author="wlee">
+    	<update tableName="client_content_subscription_configuration">
+        	<column name="content_subscription_id" type="integer">
+                <constraints nullable="false"/>
+        	</column>
+        </update>
+        <update tableName="client_content_subscription_configuration_audit" schemaName="audit">
+        	<column name="content_subscription_id" type="integer">
+            </column>
+        </update>
     </changeSet>
       
     <changeSet id="create content subscription foreign keys and indexes" author="wlee">
@@ -155,7 +167,5 @@
                   tableName="rf_content_subscription"
                   schemaName="program"/>
     </changeSet>
-    
-    
     
 </databaseChangeLog>
