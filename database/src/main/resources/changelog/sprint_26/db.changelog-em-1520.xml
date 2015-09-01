@@ -41,7 +41,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified_date" type="timestamp"/>
-            <column name="content_subscription_id" type="bigint">
+            <column name="content_subscription_id" type="integer">
                 <constraints nullable="false"/>
             </column>
             <column name="faith_based" type="boolean">
@@ -65,7 +65,7 @@
             </column>
             <column name="revision_type" type="tinyint"/>
             <column name="faith_based" type="boolean"/>
-            <column name="content_subscription_id" type="bigint"/>
+            <column name="content_subscription_id" type="integer"/>
             <column name="client_id" type="bigint"/>
        </createTable>
     </changeSet>
