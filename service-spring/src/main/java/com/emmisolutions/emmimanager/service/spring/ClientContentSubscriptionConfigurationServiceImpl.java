@@ -66,7 +66,8 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
     @Transactional
 	public ClientContentSubscriptionConfiguration create(
 			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-    	if(clientContentSubscriptionConfiguration.getClient().getId() == null){
+    	if((clientContentSubscriptionConfiguration.getClient() == null) &&
+    	    (clientContentSubscriptionConfiguration.getClient().getId() == null)){
     		throw new InvalidDataAccessApiUsageException(
                     "ClientId can not be null for creating the client's content subscription.");
     	}
