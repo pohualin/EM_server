@@ -70,7 +70,7 @@
        </createTable>
     </changeSet>
     
-    <changeSet id="change the data type from bigint to integer for content_subscription_id" author="wlee">
+    <changeSet id="change data type from bigint to integer for content_subscription_id" author="wlee">
         <modifyDataType tableName="client_content_subscription_configuration"
                         columnName="content_subscription_id"
                         newDataType="integer"/>
