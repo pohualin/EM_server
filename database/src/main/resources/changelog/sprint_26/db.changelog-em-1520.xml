@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create rf_content_subscription table from legacy" author="wlee">
+        <createTable tableName="rf_content_subscription" schemaName="program">
+            <column name="config_cd" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" primaryKeyName="pk_rf_content_subscription" nullable="false"/>
+            </column>
+            <column name="primary_sbscrptn" type="boolean">
+            </column>
+            <column name="source_sbscrptn" type="boolean">
+            </column>
+            <column name="name" type="nvarchar(50)"/>
+            <column name="display_ordr" type="integer">
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_chng_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_dt" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+       </createTable>
+    </changeSet>
+    
+    <changeSet id="create client_content_subscription_configuration table" author="wlee">
+        <!-- TABLES -->
+       <createTable tableName="client_content_subscription_configuration">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_content_subscription_configuration"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="content_subscription_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="faith_based" type="boolean">
+            </column>
+            <column name="client_id" type="bigint">
+            	<constraints nullable="false" />
+            </column>
+            <column name="version" type="int"/>
+            <column name="created_by" type="bigint"/>
+            <column name="last_modified_by" type="bigint"/>
+        </createTable>
+    </changeSet>
+     
+    <changeSet id="create client_content_subscription_configuration audit table" author="wlee">
+        <createTable tableName="client_content_subscription_configuration_audit" schemaName="audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="faith_based" type="boolean"/>
+            <column name="content_subscription_id" type="bigint"/>
+            <column name="client_id" type="bigint"/>
+       </createTable>
+    </changeSet>
+      
+    <changeSet id="create content subscription foreign keys and indexes" author="wlee">
+
+        <addPrimaryKey tableName="client_content_subscription_configuration_audit" 
+                       columnNames="id, revision" 
+                       schemaName="audit"
+                       constraintName="pk_client_content_subscription_configuration_audit"/>
+
+        <addForeignKeyConstraint baseTableName="client_content_subscription_configuration_audit"
+                                 baseColumnNames="revision"
+                                 baseTableSchemaName="audit"
+                                 constraintName="fk_client_content_subscription_configuration_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedTableSchemaName="audit"
+                                 referencedColumnNames="revision"/>
+                                 
+        <addForeignKeyConstraint baseTableName="client_content_subscription_configuration"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_client_content_subscription_configuration_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+                                 
+        <addForeignKeyConstraint baseTableName="client_content_subscription_configuration"
+                                 baseColumnNames="content_subscription_id"
+                                 constraintName="fk_client_content_subscription_configuration_rf_content_subscription"
+                                 referencedTableName="rf_content_subscription"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="config_cd"/>
+                                 
+       <addForeignKeyConstraint baseTableName="client_content_subscription_configuration"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_client_content_subscription_configuration_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_content_subscription_configuration"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_client_content_subscription_configuration_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+                                 
+        <createIndex tableName="client_content_subscription_configuration"
+                     indexName="ix_client_content_subscription_configuration_client_id">
+            <column name="client_id" type="BIGINT"/>
+        </createIndex>
+        <createIndex tableName="client_content_subscription_configuration"
+                     indexName="ix_client_content_subscription_configuration_content_subscription_id">
+            <column name="content_subscription_id"/>
+        </createIndex> 
+        <createIndex tableName="client_content_subscription_configuration"
+                     indexName="ix_client_content_subscription_configuration_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="client_content_subscription_configuration"
+                     indexName="ix_client_content_subscription_configuration_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+                                       
+    </changeSet>
+    
+    <changeSet id="add rowver for sql server for content subscription tables" author="wlee" dbms="mssql">
+
+        <addColumn tableName="client_content_subscription_configuration">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_content_subscription_configuration_audit" schemaName="audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="create unique contraint for client_content_subscription_configuration " author="wlee">
+    		<addUniqueConstraint tableName="client_content_subscription_configuration" columnNames="client_id, content_subscription_id"
+                             constraintName="uk_client_content_subscription"/>
+    </changeSet>
+    
+    <changeSet id="get data from legacy system for rf_content_subscription" author="wlee" context="qa,dev,test">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_26/data/em-1520/RF_CONTENT_SUBSCRIPTION.csv"
+                  separator=","
+                  quotchar="&quot;"
+                  tableName="rf_content_subscription"
+                  schemaName="program"/>
+    </changeSet>
+    
+    
+    
+</databaseChangeLog>
