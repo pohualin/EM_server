@@ -4,10 +4,165 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="delete default email configuration records and drop no longer used columns" author="Wade">
+    <changeSet id="flip data from row to column if there is any" author="Wade">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="client_team_email_configuration" columnName="type" />
+            <columnExists tableName="client_team_email_configuration" columnName="email_config" />
+            <columnExists tableName="client_team_email_configuration" columnName="rank" />
+        </preConditions>
+
+        <!-- Create new_client_team_email_configuration -->
+        <createTable tableName="new_client_team_email_configuration">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="version" type="int"/>
+            <column name="client_team_id" type="bigint"/>
+            <column name="created_by" type="bigint"/>
+            <column name="last_modified_by" type="bigint"/>
+            <column name="collect_email" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="require_email" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reminder_two_days" type="boolean"/>
+            <column name="reminder_four_days" type="boolean"/>
+            <column name="reminder_six_days" type="boolean"/>
+            <column name="reminder_eight_days" type="boolean"/>
+            <column name="reminder_articles" type="boolean"/>
+        </createTable>
+
+        <!-- Insert in to new_client_team_email_configuration -->
+        <sql>
+            <![CDATA[
+                INSERT INTO new_client_team_email_configuration (
+                            client_team_id,
+                            created_by,
+                            collect_email,
+                            require_email
+                ) (
+                    (SELECT old_config_a.client_team_id,
+                            old_config_a.created_by,
+                            old_config_a.email_config AS collect_email,
+                            old_config_b.email_config AS require_email
+                        FROM client_team_email_configuration old_config_a INNER JOIN client_team_email_configuration old_config_b
+                        ON old_config_a.client_team_id = old_config_b.client_team_id AND old_config_a.id <> old_config_b.id
+                        WHERE old_config_a.type='COLLECT_EMAIL')
+                );
+            ]]>
+        </sql>
+
+        <update tableName="new_client_team_email_configuration">
+            <column name="reminder_two_days" value="true"/>
+            <column name="reminder_four_days" value="true"/>
+            <column name="reminder_six_days" value="true"/>
+            <column name="reminder_eight_days" value="true"/>
+            <column name="reminder_articles" value="false"/>
+        </update>
+
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_two_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_four_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_six_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_eight_days" columnDataType="boolean"/>
+        <addNotNullConstraint tableName="new_client_team_email_configuration" columnName="reminder_articles" columnDataType="boolean"/>
+
+        <!-- Drop client_team_email_configuration -->
+        <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
+        <dropTable tableName="client_team_email_configuration"/>
+
+        <!--
+            Rename new_client_team_email_configuration to client_team_email_configuration
+            and set up foreign keys and indexes
+        -->
+        <renameTable oldTableName="new_client_team_email_configuration" newTableName="client_team_email_configuration"/>
+        <addPrimaryKey tableName="client_team_email_configuration" columnNames="id" constraintName="pk_client_team_email_configuration"/>
+        <addForeignKeyConstraint baseTableName="client_team_email_configuration"
+                                 baseColumnNames="created_by" constraintName="fk_client_team_email_configuration_created_by"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_team_email_configuration"
+                                 baseColumnNames="last_modified_by" constraintName="fk_client_team_email_configuration_last_modified_by"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_team_email_configuration"
+                                 baseColumnNames="client_team_id" constraintName="fk_client_team_email_configuration_team"
+                                 referencedTableName="client_team" referencedColumnNames="id"/>
+        <createIndex tableName="client_team_email_configuration"
+                     indexName="ix_client_email_configuration_team_default_email_configuration">
+            <column name="client_team_id" type="bigint"/>
+        </createIndex>
+        <createIndex tableName="client_team_email_configuration"
+                     indexName="ix_client_team_email_configuration_created_by">
+            <column name="created_by" type="bigint"/>
+        </createIndex>
+        <createIndex tableName="client_team_email_configuration"
+                     indexName="ix_client_team_email_configuration_last_modified_by">
+            <column name="last_modified_by" type="bigint"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="delete data from audit table if there is any from legacy structure" author="Wade">
+        <preConditions onFail="MARK_RAN">
+            <columnExists schemaName="audit" tableName="client_team_email_configuration_audit" columnName="type" />
+            <columnExists schemaName="audit" tableName="client_team_email_configuration_audit" columnName="email_config" />
+            <columnExists schemaName="audit" tableName="client_team_email_configuration_audit" columnName="rank" />
+        </preConditions>
+
+        <delete schemaName="audit" tableName="client_team_email_configuration_audit"/>
+
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="collect_email" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="require_email" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_two_days" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_four_days" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_six_days" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_eight_days" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
+            <column name="reminder_articles" type="boolean">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="type"/>
+        <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="email_config"/>
+        <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="rank"/>
+    </changeSet>
+
+    <changeSet id="delete default email configuration records and drop no longer used columns then add new columns and default record" author="Wade">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="default_team_email_configuration" columnName="type" />
+            <columnExists tableName="default_team_email_configuration" columnName="default_value" />
+            <columnExists tableName="default_team_email_configuration" columnName="rank" />
+        </preConditions>
+
         <dropUniqueConstraint tableName="default_team_email_configuration" constraintName="uk_default_team_email_configuration"/>
         <dropDefaultValue tableName="default_team_email_configuration" columnName="default_value"/>
-        <dropDefaultValue tableName="client_team_email_configuration" columnName="email_config"/>
 
         <delete tableName="default_team_email_configuration">
             <where>type='COLLECT_EMAIL'</where>
@@ -19,9 +174,7 @@
         <dropColumn tableName="default_team_email_configuration" columnName="type"/>
         <dropColumn tableName="default_team_email_configuration" columnName="default_value"/>
         <dropColumn tableName="default_team_email_configuration" columnName="rank"/>
-    </changeSet>
 
-    <changeSet id="add columns to default_team_email_configuration to store email reminder data" author="Wade">
         <addColumn tableName="default_team_email_configuration">
             <column name="collect_email" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false" />
@@ -57,9 +210,7 @@
                 <constraints nullable="false" />
             </column>
         </addColumn>
-    </changeSet>
 
-    <changeSet id="add default email configuration defaults" author="Wade">
         <insert tableName="default_team_email_configuration">
             <column name="version" value="0"/>
             <column name="collect_email" value="true"/>
@@ -71,117 +222,4 @@
             <column name="reminder_articles" value="false"/>
         </insert>
     </changeSet>
-    
-    
-    <changeSet id="flip data from row to column if there is any" author="Wade">
-        <preConditions onFail="MARK_RAN">
-        	<columnExists tableName="client_team_email_configuration" columnName="type" />
-        	<columnExists tableName="client_team_email_configuration" columnName="email_config" />
-        	<columnExists tableName="client_team_email_configuration" columnName="rank" />
-        </preConditions>
-        
-        <!-- 
-       		1. Create new_client_team_email_configuration
-       		2. insert into new_client_team_email_configuration
-       		3. rename new_client_team_email_configuration to client_team_email_configuration
-       		4. drop client_team_email_configuration
-       	 -->
-       	 
-        <sql><![CDATA[
-            INSERT INTO QUERY
-        ]]></sql>
-    </changeSet>
-    
-    <changeSet id="delete data from audit table if there is any from legacy structure" author="Wade">
-        <preConditions onFail="MARK_RAN">
-        	<columnExists tableName="client_team_email_configuration_audit" columnName="type" />
-        	<columnExists tableName="client_team_email_configuration_audit" columnName="email_config" />
-        	<columnExists tableName="client_team_email_configuration_audit" columnName="rank" />
-        </preConditions>
-        
-        <!-- 
-       		1. delete from audit
-       	 -->
-       	 
-        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
-            <column name="collect_email" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
-            <column name="require_email" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
-            <column name="reminder_two_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
-            <column name="reminder_four_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
-            <column name="reminder_six_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
-            <column name="reminder_eight_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn schemaName="audit" tableName="client_team_email_configuration_audit">
-            <column name="reminder_articles" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-    
-        <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="type"/>
-        <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="email_config"/>
-        <dropColumn schemaName="audit" tableName="client_team_email_configuration_audit" columnName="rank"/>
-    </changeSet>
-    
-    <!-- 
-    <changeSet id="add columns to client_team_email_configuration to store email reminder data" author="Wade">
-        <addColumn tableName="client_team_email_configuration">
-            <column name="collect_email" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="client_team_email_configuration">
-            <column name="require_email" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="client_team_email_configuration">
-            <column name="reminder_two_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="client_team_email_configuration">
-            <column name="reminder_four_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="client_team_email_configuration">
-            <column name="reminder_six_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="client_team_email_configuration">
-            <column name="reminder_eight_days" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-        <addColumn tableName="client_team_email_configuration">
-            <column name="reminder_articles" type="boolean">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-    </changeSet>
-     -->
-
 </databaseChangeLog>
