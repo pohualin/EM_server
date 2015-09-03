@@ -103,6 +103,28 @@ public class ClientResourceAssembler implements
                                 TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
+    
+    /**
+     * Create full link to get ContentSubscriptionConfiguration
+     *
+     * @param entity
+     *            to use
+     * @return a link to get ContentSubscriptionConfiguration
+     */
+    public static Link createContentSubscriptionConfigLink(Client entity) {
+        Link link = linkTo(
+                methodOn(ClientContentSubscriptionConfigurationsResource.class).findClientContentSubscriptionConfig(
+                        entity.getId(), null, null)).withRel(
+                "clientContentSubscriptionConfigurations");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page",
+                                TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable(
+                                "sort",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
 
     @Override
     public ClientResource toResource(Client entity) {
@@ -142,8 +164,13 @@ public class ClientResourceAssembler implements
                 methodOn(ClientRestrictConfigurationsResource.class)
                         .getByClient(entity.getId())).withRel(
                 "restrictConfiguration"));
+        
+        ret.add(linkTo(
+                methodOn(ClientContentSubscriptionConfigurationsResource.class).getContentSubscriptionList(null)).withRel(
+                "contentSubscriptions"));
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
+        ret.add(createContentSubscriptionConfigLink(entity));
         ret.add(linkTo(methodOn(AdminPatientsResource.class).create(entity.getId(), null)).withRel("patient"));
         ret.add(linkTo(methodOn(UserClientsResource.class).badEmails(entity.getId(),null,null,null)).withRel("getBadEmails"));
         ret.add(linkTo(methodOn(ClientNotesResource.class).getByClient(entity.getId())).withRel("clientNote"));
