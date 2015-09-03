@@ -11,7 +11,7 @@ import com.emmisolutions.emmimanager.persistence.EncounterPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.EncounterRepository;
 
 /**
- * Schedule persistence repository
+ * Encounter persistence implementation
  */
 @Repository
 public class EncounterPersistenceImpl implements EncounterPersistence {
