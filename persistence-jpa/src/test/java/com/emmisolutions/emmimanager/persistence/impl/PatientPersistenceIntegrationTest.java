@@ -99,7 +99,7 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void filterByAccessCode() {
-        final ScheduledProgram scheduledProgram = makeNewRandomScheduledProgram(null, null, null);
+        final ScheduledProgram scheduledProgram = makeNewRandomScheduledProgram(null, null, null, null);
         assertThat("patient should be found by access code",
                 patientPersistence.list(null, with().accessCodes(scheduledProgram.getAccessCode())),
                 hasItem(scheduledProgram.getPatient()));
@@ -109,7 +109,7 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
                 not(hasItem(scheduledProgram.getPatient())));
 
         final ScheduledProgram secondProgram = makeNewRandomScheduledProgram(
-                scheduledProgram.getTeam().getClient(), scheduledProgram.getPatient(), null);
+                scheduledProgram.getTeam().getClient(), scheduledProgram.getPatient(), null, null);
 
         assertThat("same patient should be found by second access code",
                 patientPersistence.list(null, with().accessCodes(secondProgram.getAccessCode())),
@@ -127,15 +127,15 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void teamFilters() {
         // schedule for one patient on one program on one team and two programs on a another team
-        final ScheduledProgram team1Program1 = makeNewRandomScheduledProgram(null, null, null);
+        final ScheduledProgram team1Program1 = makeNewRandomScheduledProgram(null, null, null, null);
         final ScheduledProgram team2Program1 = makeNewRandomScheduledProgram(
-                team1Program1.getTeam().getClient(), team1Program1.getPatient(), null);
+                team1Program1.getTeam().getClient(), team1Program1.getPatient(), null, null);
         final ScheduledProgram team2Program2 = makeNewRandomScheduledProgram(
-                team2Program1.getTeam().getClient(), team2Program1.getPatient(), team2Program1.getTeam());
+                team2Program1.getTeam().getClient(), team2Program1.getPatient(), team2Program1.getTeam(), null);
 
         // schedule one program for new patient on the same team as the other patient
         final ScheduledProgram patient2Team2 = makeNewRandomScheduledProgram(
-                team2Program1.getTeam().getClient(), null, team2Program2.getTeam());
+                team2Program1.getTeam().getClient(), null, team2Program2.getTeam(), null);
 
         // find them all with one query
         assertThat("both patients should come back",
@@ -157,11 +157,11 @@ public class PatientPersistenceIntegrationTest extends BaseIntegrationTest {
      */
     @Test
     public void loadLatestScheduledProgram() {
-        ScheduledProgram lastScheduledProgram = makeNewRandomScheduledProgram(null, null, null);
+        ScheduledProgram lastScheduledProgram = makeNewRandomScheduledProgram(null, null, null, null);
         Patient patient = lastScheduledProgram.getPatient();
         for (int i = 0; i < 5; i++) {
             lastScheduledProgram = makeNewRandomScheduledProgram(lastScheduledProgram.getTeam().getClient(),
-                    lastScheduledProgram.getPatient(), lastScheduledProgram.getTeam());
+                    lastScheduledProgram.getPatient(), lastScheduledProgram.getTeam(), null);
         }
 
         Page<Patient> patients = patientPersistence.list(null,

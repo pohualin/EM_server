@@ -3,12 +3,16 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.schedule.Encounter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
+import com.emmisolutions.emmimanager.persistence.EncounterPersistence;
 import com.emmisolutions.emmimanager.persistence.ProgramPersistence;
 import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -28,6 +32,9 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     ProgramPersistence programPersistence;
+    
+    @Resource
+    EncounterPersistence encounterPersistence;
 
     /**
      * Happy path save success.
@@ -45,6 +52,10 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
         scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
         scheduledProgram.setTeam(makeNewRandomTeam(client));
         scheduledProgram.setPatient(patient);
+        
+        Encounter encounter = new Encounter();
+        encounter.setEncounterDateTime(LocalDateTime.now(DateTimeZone.UTC));
+        scheduledProgram.setEncounter(encounterPersistence.save(encounterPersistence.save(encounter)));
 
         ScheduledProgram saved = schedulePersistence.save(scheduledProgram);
         assertThat("save happens successfully",

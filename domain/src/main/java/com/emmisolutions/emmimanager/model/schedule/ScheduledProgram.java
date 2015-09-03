@@ -29,7 +29,8 @@ import java.util.Objects;
                 @Index(name = "ix_scheduled_program_patient_id", columnList = "patient_id"),
                 @Index(name = "ix_scheduled_program_team_id", columnList = "team_id"),
                 @Index(name = "ix_scheduled_program_location_id", columnList = "location_id"),
-                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id")
+                @Index(name = "ix_scheduled_program_provider_id", columnList = "provider_id"),
+                @Index(name = "ix_scheduled_program_encounter_id", columnList = "encounter_id")
         }
 )
 @XmlRootElement(name = "scheduled_program")
@@ -89,6 +90,12 @@ public class ScheduledProgram extends AbstractAuditingEntity {
     @NotNull
     @Column(name = "view_by_date_utc", nullable = false, columnDefinition = "date")
     private LocalDate viewByDate;
+    
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "encounter_id", nullable = false, columnDefinition = "bigint",
+            foreignKey = @ForeignKey(name = "fk_scheduled_program_encounter"))
+    private Encounter encounter;
 
     @Column(name = "active", nullable = false, columnDefinition = "boolean")
     private boolean active = true;
@@ -200,6 +207,14 @@ public class ScheduledProgram extends AbstractAuditingEntity {
         this.provider = provider;
     }
 
+    public Encounter getEncounter() {
+        return encounter;
+    }
+
+    public void setEncounter(Encounter encounter) {
+        this.encounter = encounter;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -232,6 +247,7 @@ public class ScheduledProgram extends AbstractAuditingEntity {
                 ", team=" + team +
                 ", provider=" + provider +
                 ", location=" + location +
+                ", encounter=" + encounter +
                 ", viewByDate=" + viewByDate +
                 ", active=" + active +
                 '}';

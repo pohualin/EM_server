@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.*;
+import com.emmisolutions.emmimanager.model.schedule.Encounter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
@@ -9,9 +10,11 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.persistence.configuration.CacheConfiguration;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceConfiguration;
 import com.emmisolutions.emmimanager.persistence.configuration.PersistenceTestConfiguration;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +25,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +83,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     ProgramPersistence programPersistence;
+    
+    @Resource
+    EncounterPersistence encounterPersistence;
 
     @Resource
     PatientSelfRegConfigurationPersistence patientSelfRegConfigurationPersistence;
@@ -301,7 +308,7 @@ public abstract class BaseIntegrationTest {
      *                layer prohibits this case.
      * @return a ScheduledProgram
      */
-    public ScheduledProgram makeNewRandomScheduledProgram(Client client, Patient patient, Team team) {
+    public ScheduledProgram makeNewRandomScheduledProgram(Client client, Patient patient, Team team, Encounter encounter) {
         ScheduledProgram scheduledProgram = new ScheduledProgram();
         if (client == null) {
             client = makeNewRandomClient();
@@ -312,6 +319,9 @@ public abstract class BaseIntegrationTest {
         if (team == null) {
             team = makeNewRandomTeam(client);
         }
+        if (encounter == null) {
+            encounter = makeNewRandomEncounter();
+        }
         scheduledProgram.setAccessCode("2" + RandomStringUtils.randomNumeric(10));
         scheduledProgram.setViewByDate(LocalDate.now(DateTimeZone.UTC));
         scheduledProgram.setLocation(makeNewRandomLocation());
@@ -319,6 +329,13 @@ public abstract class BaseIntegrationTest {
         scheduledProgram.setProgram(programPersistence.find(null, null).iterator().next());
         scheduledProgram.setTeam(team);
         scheduledProgram.setPatient(patient);
+        scheduledProgram.setEncounter(encounter);
         return schedulePersistence.save(scheduledProgram);
+    }
+    
+    public Encounter makeNewRandomEncounter(){
+        Encounter encounter = new Encounter();
+        encounter.setEncounterDateTime(LocalDateTime.now(DateTimeZone.UTC));
+        return encounterPersistence.save(encounter);
     }
 }

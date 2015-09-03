@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service;
 import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.model.configuration.ClientPasswordConfiguration;
 import com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamPhoneConfiguration;
+import com.emmisolutions.emmimanager.model.schedule.Encounter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.User;
 import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
@@ -14,6 +15,7 @@ import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermis
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermissionName;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamRole;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
+import com.emmisolutions.emmimanager.persistence.EncounterPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.UserAdminRoleRepository;
 import com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration;
 import com.emmisolutions.emmimanager.service.configuration.MailConfiguration;
@@ -27,6 +29,7 @@ import com.icegreen.greenmail.spring.GreenMailBean;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -138,6 +141,9 @@ public abstract class BaseIntegrationTest {
 
     @Resource
     ProgramService programService;
+    
+    @Resource
+    EncounterPersistence encounterPersistence;
 
     @PostConstruct
     private void init() {
@@ -504,6 +510,7 @@ public abstract class BaseIntegrationTest {
         patient.setLastName(RandomStringUtils.randomAlphabetic(20));
         patient.setDateOfBirth(LocalDate.now());
         patient.setClient(client == null ? makeNewRandomClient() : client);
+        patient.setEmail(RandomStringUtils.randomAlphabetic(50) + "@email.com");
         return patientService.create(patient);
     }
 
