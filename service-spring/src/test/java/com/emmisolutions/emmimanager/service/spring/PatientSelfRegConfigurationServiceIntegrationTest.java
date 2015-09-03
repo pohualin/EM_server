@@ -75,7 +75,6 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         assertTrue(created.isExposeId());
         assertTrue(created.isExposeName());
         assertTrue(created.isExposePhone());
-        assertTrue(created.isRequireDateOfBirth());
         PatientSelfRegConfig updated = patientSelfRegConfigurationService.update(created);
         assertThat("patient self registration configuration was updated:", updated, is(patientSelfRegConfigurationService.findByTeam(team)));
     }

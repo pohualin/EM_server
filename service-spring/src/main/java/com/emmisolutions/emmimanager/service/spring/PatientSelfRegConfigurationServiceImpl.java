@@ -80,7 +80,6 @@ public class PatientSelfRegConfigurationServiceImpl implements
             patientSelfRegConfig.setRequireId(false);
         }
         patientSelfRegConfig.setExposeName(true);
-        patientSelfRegConfig.setRequireDateOfBirth(true);
     }
 
     @Override
