@@ -69,7 +69,7 @@
         </update>
 	</changeSet>
     
-    <changeSet id="associate encounter to scheduled programs postgresql" author="Paul" dbms="postgresql">
+    <changeSet id="associate encounter to scheduled programs postgresql" author="Paul" dbms="postgresql,mssql">
     	<addColumn tableName="scheduled_program">
     		<column name="encounter_id" type="bigint" />
     	</addColumn>
@@ -86,7 +86,7 @@
         <dropColumn tableName="encounter" columnName="scheduled_program_id"/>
     </changeSet>
     
-    <changeSet id="associate encounter to scheduled programs" author="Paul" dbms="mysql,h2,mssql">
+    <changeSet id="associate encounter to scheduled programs" author="Paul" dbms="mysql,h2">
     	<addColumn tableName="scheduled_program">
     		<column name="encounter_id" type="bigint" />
     	</addColumn>
