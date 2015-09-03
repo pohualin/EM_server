@@ -86,7 +86,7 @@
         <dropColumn tableName="encounter" columnName="scheduled_program_id"/>
     </changeSet>
     
-    <changeSet id="associate encounter to scheduled programs" author="Paul" dbms="mysql,h2">
+    <changeSet id="associate encounter to scheduled programs" author="Paul" dbms="mysql,h2,mssql">
     	<addColumn tableName="scheduled_program">
     		<column name="encounter_id" type="bigint" />
     	</addColumn>
