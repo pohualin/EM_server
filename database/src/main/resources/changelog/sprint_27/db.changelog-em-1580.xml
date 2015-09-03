@@ -56,20 +56,50 @@
     </changeSet>
     
     <changeSet id="insert encounter for all existing scheduled programs" author="Paul">
+    	<addColumn tableName="encounter">
+    		<column name="scheduled_program_id" type="bigint" />
+    	</addColumn>
+    	
     	<sql><![CDATA[
-            INSERT INTO encounter (encounter_timestamp_utc) select created_date from scheduled_program;
+            INSERT INTO encounter (encounter_timestamp_utc, scheduled_program_id) select created_date, id from scheduled_program;
         ]]></sql>
+        
+        <update tableName="encounter">
+        	<column name="version">0</column>
+        </update>
+	</changeSet>
+    
+    <changeSet id="associate encounter to scheduled programs postgresql" author="Paul" dbms="postgresql">
+    	<addColumn tableName="scheduled_program">
+    		<column name="encounter_id" type="bigint" />
+    	</addColumn>
+    
+    	<sql><![CDATA[
+            update scheduled_program set encounter_id = sub.e_id
+		 		from (select sp.id as sp_id, e.id as e_id from 
+		      		scheduled_program sp inner join encounter e 
+		      		on sp.created_date = e.encounter_timestamp_utc
+		      		and sp.id = e.scheduled_program_id) as sub
+		 		where scheduled_program.id = sub.sp_id
+        ]]></sql>
+        
+        <dropColumn tableName="encounter" columnName="scheduled_program_id"/>
     </changeSet>
     
-    <changeSet id="add encounter_id to scheduled_program" author="Paul">
+    <changeSet id="associate encounter to scheduled programs" author="Paul" dbms="mysql,h2">
     	<addColumn tableName="scheduled_program">
     		<column name="encounter_id" type="bigint" />
     	</addColumn>
     
     	<sql><![CDATA[
             update scheduled_program set encounter_id = 
-            	select e.id from scheduled_program sp inner join encounter e on sp.created_date = e.encounter_timestamp_utc
+            	select sp.id, e.id from scheduled_program sp inner join encounter e 
+            	on sp.created_date = e.encounter_timestamp_utc
+            	and sp.id = e.scheduled_program_id
+            	where scheduled_program.id = sp.id
         ]]></sql>
+    
+        <dropColumn tableName="encounter" columnName="scheduled_program_id"/>
     </changeSet>
     
     <changeSet id="update nullable constraint on encounter_id" author="Paul">
@@ -86,6 +116,19 @@
     	<addColumn schemaName="audit" tableName="scheduled_program_audit">
     		<column name="encounter_id" type="bigint" />
     	</addColumn>
+    </changeSet>
+    
+    <changeSet id="add rowver for sql server for encounter tables" author="Paul" dbms="mssql">
+        <addColumn tableName="encounter">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="encounter_audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

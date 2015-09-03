@@ -86,8 +86,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (toBeScheduled != null) {
             if (toBeScheduled.getEncounter() == null) {
                 Encounter encounter = new Encounter();
-                encounter.setEncounterDateTime(LocalDateTime.now(DateTimeZone.UTC));
-                toBeScheduled.setEncounter(encounterPersistence.save(encounter));
+                encounter.setEncounterDateTime(LocalDateTime
+                        .now(DateTimeZone.UTC));
+                toBeScheduled
+                        .setEncounter(encounterPersistence.save(encounter));
             }
             hydrateValidProgram(toBeScheduled);
             validateViewByDate(toBeScheduled);
