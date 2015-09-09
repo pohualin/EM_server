@@ -112,12 +112,14 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
 
         PatientSelfRegConfig patientSelfRegConfig = new PatientSelfRegConfig();
         patientSelfRegConfig.setTeam(team);
+        patientSelfRegConfig.setRequireName(false);
         patientSelfRegConfig.setExposeEmail(false);
         patientSelfRegConfig.setExposeId(false);
         patientSelfRegConfig.setExposePhone(false);
         patientSelfRegConfig.setRequirePhone(true);
         patientSelfRegConfig.setRequireEmail(true);
         patientSelfRegConfig.setRequireId(true);
+        patientSelfRegConfig.setExposeName(true);
         PatientSelfRegConfig created = patientSelfRegConfigurationService.create(patientSelfRegConfig);
         assertThat("patient self registration configuration was created:", created.getId(), is(notNullValue()));
 
@@ -127,5 +129,7 @@ public class PatientSelfRegConfigurationServiceIntegrationTest extends
         assertFalse(created.isExposeEmail());
         assertFalse(created.isExposeId());
         assertFalse(created.isExposePhone());
+        assertFalse(created.isRequireName());
+        assertTrue(created.isExposeName());
     }
 }
