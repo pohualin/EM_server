@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -165,10 +166,12 @@ public class ClientContentSubscriptionConfigurationsResource {
      * Delete an content subscription configuration
      * @param id   id for the content subscription configuration to delete 
      */
-    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/clients/{clientId}/content_subscription_configuration", method = RequestMethod.DELETE)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("clientId") Long clientId,
+    		@RequestParam(value = "id", required = false) Long id) {
     	clientContentSubscriptionConfigurationService
                 .delete(new ClientContentSubscriptionConfiguration(id));
+    	return new ResponseEntity<>(HttpStatus.OK);
     }
 }

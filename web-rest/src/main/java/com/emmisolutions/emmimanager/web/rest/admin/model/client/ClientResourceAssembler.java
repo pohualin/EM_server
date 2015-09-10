@@ -125,6 +125,25 @@ public class ClientResourceAssembler implements
                                 TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
+    
+    /**
+     * Create full link to get ContentSubscriptionConfiguration
+     *
+     * @param entity
+     *            to use
+     * @return a delete link to get ContentSubscriptionConfiguration
+     */
+    public static Link deleteContentSubscriptionConfigLink(Client entity) {
+        Link link = linkTo(
+                methodOn(ClientContentSubscriptionConfigurationsResource.class).delete(
+                        entity.getId(), null)).withRel(
+                "deleteClientContentSubscriptionConfiguration");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("id",
+                                TemplateVariable.VariableType.REQUEST_PARAM)));
+        return new Link(uriTemplate, link.getRel());
+    }
 
     @Override
     public ClientResource toResource(Client entity) {
@@ -171,6 +190,7 @@ public class ClientResourceAssembler implements
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
         ret.add(createContentSubscriptionConfigLink(entity));
+        ret.add(deleteContentSubscriptionConfigLink(entity));
         ret.add(linkTo(methodOn(AdminPatientsResource.class).create(entity.getId(), null)).withRel("patient"));
         ret.add(linkTo(methodOn(UserClientsResource.class).badEmails(entity.getId(),null,null,null)).withRel("getBadEmails"));
         ret.add(linkTo(methodOn(ClientNotesResource.class).getByClient(entity.getId())).withRel("clientNote"));
