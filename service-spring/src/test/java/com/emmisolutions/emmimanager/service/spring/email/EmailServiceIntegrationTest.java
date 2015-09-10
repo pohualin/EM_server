@@ -13,6 +13,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 
+import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -47,7 +48,7 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
 
         // send the activation email
         String activationUrl = "http://whatever/" + user.getActivationKey();
-        mailService.sendActivationEmail(user, activationUrl);
+        mailService.sendActivationEmail(user, activationUrl, null);
 
         // make sure the message was received
         MimeMessage[] messages = getEmailsFromServer();
@@ -74,14 +75,14 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
 
         int countOfMessages = getEmailsFromServer().length;
 
-        mailService.sendActivationEmail(null, null);
+        mailService.sendActivationEmail(null, null, null);
         assertThat("no client shouldn't change messages", getEmailsFromServer().length, is(countOfMessages));
 
-        mailService.sendActivationEmail(userClient, "http://aUrl");
+        mailService.sendActivationEmail(userClient, "http://aUrl", null);
         assertThat("no email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
 
         userClient.setEmail("steve@steve.com");
-        mailService.sendActivationEmail(userClient, "http://aUrl");
+        mailService.sendActivationEmail(userClient, "http://aUrl", null);
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
 
@@ -106,7 +107,7 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
 
         // send the reset email
         String resetUrl = "http://whatever/";
-        mailService.sendPasswordResetEmail(user, resetUrl);
+        mailService.sendPasswordResetEmail(user, resetUrl, null);
 
         // make sure the message was received
         messages = getEmailsFromServer();
@@ -134,14 +135,14 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
 
         int countOfMessages = getEmailsFromServer().length;
 
-        mailService.sendPasswordResetEmail(null, null);
+        mailService.sendPasswordResetEmail(null, null, null);
         assertThat("no client shouldn't change messages", getEmailsFromServer().length, is(countOfMessages));
 
-        mailService.sendPasswordResetEmail(userClient, "http://aUrl");
+        mailService.sendPasswordResetEmail(userClient, "http://aUrl", null);
         assertThat("no email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
 
         userClient.setEmail("steve@steve.com");
-        mailService.sendPasswordResetEmail(userClient, "http://aUrl");
+        mailService.sendPasswordResetEmail(userClient, "http://aUrl", null);
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
 
@@ -149,16 +150,16 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
      * Ensure we can send invalid account password reset emails
      */
     @Test
-    public void invalidAccountPasswordReset(){
+    public void invalidAccountPasswordReset() {
         String email = "invalid@account.org";
         setEmailMailServerUser(email);
         int countOfMessages = getEmailsFromServer().length;
-        mailService.sendInvalidAccountPasswordResetEmail(null);
+        mailService.sendInvalidAccountPasswordResetEmail(null, null);
         assertThat("no email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
 
         UserClient userClient = new UserClient();
         userClient.setEmail(email);
-        mailService.sendInvalidAccountPasswordResetEmail(userClient);
+        mailService.sendInvalidAccountPasswordResetEmail(userClient, null);
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
 
@@ -167,16 +168,16 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
      * Ensure we can send password change confirmation emails
      */
     @Test
-    public void changePasswordConfirmation(){
+    public void changePasswordConfirmation() {
         String email = "changed.password@account.org";
         setEmailMailServerUser(email);
         int countOfMessages = getEmailsFromServer().length;
-        mailService.sendPasswordChangeConfirmationEmail(null);
+        mailService.sendPasswordChangeConfirmationEmail(null, null);
         assertThat("email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
 
         UserClient userClient = new UserClient();
         userClient.setEmail(email);
-        mailService.sendPasswordChangeConfirmationEmail(userClient);
+        mailService.sendPasswordChangeConfirmationEmail(userClient, null);
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
 
@@ -184,16 +185,16 @@ public class EmailServiceIntegrationTest extends BaseIntegrationTest {
      * Ensure we can send email verification emails
      */
     @Test
-    public void emailVerification(){
+    public void emailVerification() {
         String email = "email.verified@account.org";
         setEmailMailServerUser(email);
         int countOfMessages = getEmailsFromServer().length;
-        mailService.sendValidationEmail(null,"http://aUrl");
+        mailService.sendValidationEmail(null, "http://aUrl", "http://aTrackingUrl/" + SIGNATURE_VARIABLE_NAME);
         assertThat("email shouldn't send", getEmailsFromServer().length, is(countOfMessages));
 
         UserClient userClient = new UserClient();
         userClient.setEmail(email);
-        mailService.sendValidationEmail(userClient,"http://aUrl");
+        mailService.sendValidationEmail(userClient, "http://aUrl", null);
         assertThat("everything ok, send", getEmailsFromServer().length, is(countOfMessages + 1));
     }
 }

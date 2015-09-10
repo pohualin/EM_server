@@ -62,4 +62,33 @@
 
     </changeSet>
 
+    <changeSet id="em-1660" author="Matt">
+
+        <addColumn tableName="email_template_tracking">
+            <column name="signature" type="varchar(64)">
+                <constraints unique="true" uniqueConstraintName="uk_email_template_tracking_signature"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="email_template_tracking" indexName="ix_email_template_tracking_signature">
+            <column name="signature"/>
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="em-1660 add viewed date to tracking" author="Matt">
+
+        <addColumn tableName="email_template_tracking">
+            <column name="viewed_date" type="datetime"/>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="update versions of existing templates" author="Matt">
+
+        <update tableName="email_template">
+            <column name="version" valueNumeric="0"/>
+        </update>
+
+    </changeSet>
+
 </databaseChangeLog>
