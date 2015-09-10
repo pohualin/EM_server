@@ -79,6 +79,12 @@ public class PatientSelfRegConfigurationServiceImpl implements
         if (!patientSelfRegConfig.isExposeId()) {
             patientSelfRegConfig.setRequireId(false);
         }
+        if (!patientSelfRegConfig.isExposeName()) {
+            patientSelfRegConfig.setRequireName(false);
+        }
+        if (!patientSelfRegConfig.isExposeDateOfBirth()) {
+            patientSelfRegConfig.setRequireDateOfBirth(false);
+        }
     }
 
     @Override
