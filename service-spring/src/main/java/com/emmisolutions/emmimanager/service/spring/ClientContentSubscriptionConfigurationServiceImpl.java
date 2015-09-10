@@ -81,14 +81,8 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
     @Override
     @Transactional
 	public void delete(
-			Client client) {
-    	Page<ClientContentSubscriptionConfiguration> clientContentConfig = this.findByClient(client, null);
-    	if(clientContentConfig.hasContent()){
-    		for (ClientContentSubscriptionConfiguration config: clientContentConfig.getContent()) {
-    			clientContentSubscriptionConfigurationPersistence.delete(config
-                        .getId());
-    		}
-    	}
+			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
+    	clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration.getId());
     }
 
 	@Override
