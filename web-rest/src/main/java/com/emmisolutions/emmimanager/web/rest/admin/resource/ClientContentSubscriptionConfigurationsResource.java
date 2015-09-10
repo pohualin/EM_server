@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscripti
 import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import com.emmisolutions.emmimanager.service.ClientContentSubscriptionConfigurationService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.contentSubscription.ClientContentSubscriptionConfigurationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.contentSubscription.ClientContentSubscriptionConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.contentSubscription.ClientContentSubscriptionConfigurationResourceAssembler;
@@ -161,15 +162,37 @@ public class ClientContentSubscriptionConfigurationsResource {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    /**
+     * Reload an existing content subscription configuration
+     * 
+     * @param id
+     *            to reload
+     * @return an existing ContentSubscritpionConfiguration
+     */
+    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.GET)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    public ResponseEntity<ClientContentSubscriptionConfigurationResource> get(
+            @PathVariable("id") Long id) {
+    	ClientContentSubscriptionConfiguration  reload = clientContentSubscriptionConfigurationService
+                .reload(new ClientContentSubscriptionConfiguration(id));
+        if (reload != null) {
+            return new ResponseEntity<>(
+            		contentSubscriptionConfigurationAssembler.toResource(reload),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
     /**
      * Delete an content subscription configuration
      * @param id   id for the content subscription configuration to delete 
      */
-    @RequestMapping(value = "/clients/{clientId}/content_subscription_configuration", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.DELETE)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public ResponseEntity<Void> delete(@PathVariable("clientId") Long clientId,
-    		@RequestParam(value = "id", required = false) Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     	clientContentSubscriptionConfigurationService
                 .delete(new ClientContentSubscriptionConfiguration(id));
     	return new ResponseEntity<>(HttpStatus.OK);
