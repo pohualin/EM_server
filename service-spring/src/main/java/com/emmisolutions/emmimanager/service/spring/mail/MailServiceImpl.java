@@ -24,6 +24,8 @@ import javax.transaction.Transactional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
+
 /**
  * MailService implementation
  */
@@ -33,7 +35,7 @@ public class MailServiceImpl implements MailService {
     public static final String USER_CONTEXT_VARIABLE = "user";
     public static final String URL_CONTEXT_VARIABLE = "activationUrl";
     public static final String EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE = "emailValidationTimeout";
-    public static final String EMAIL_SENT_CONTEXT_VARIABLE = "emailSent";
+    public static final String EMAIL_TRACKING_CONTEXT_VARIABLE = "emailTracking";
     private static final Logger LOGGER = LoggerFactory.getLogger(MailServiceImpl.class);
     private static final Pattern titleFinderInTemplates = Pattern.compile("<title>(.*)</title>", Pattern.DOTALL);
     @Resource
@@ -63,46 +65,50 @@ public class MailServiceImpl implements MailService {
     @Async
     @Override
     @Transactional
-    public void sendActivationEmail(UserClient user, String activationUrl) {
-        sendTemplateBasedEmail(activationFrom, user, activationUrl, EmailTemplateType.ACTIVATION);
+    public void sendActivationEmail(UserClient user, String activationUrl, String trackingUrl) {
+        sendTemplateBasedEmail(activationFrom, user, activationUrl, EmailTemplateType.ACTIVATION, trackingUrl);
     }
 
     @Async
     @Override
     @Transactional
-    public void sendValidationEmail(UserClient user, String validationUrl) {
-        sendTemplateBasedEmail(emailValidationFrom, user, validationUrl, EmailTemplateType.VALIDATION);
+    public void sendValidationEmail(UserClient user, String validationUrl, String trackingUrl) {
+        sendTemplateBasedEmail(emailValidationFrom, user, validationUrl, EmailTemplateType.VALIDATION, trackingUrl);
     }
 
     @Async
     @Override
     @Transactional
-    public void sendPasswordResetEmail(UserClient user, String passwordResetUrl) {
-        sendTemplateBasedEmail(passwordResetFrom, user, passwordResetUrl, EmailTemplateType.PASSWORD_RESET);
+    public void sendPasswordResetEmail(UserClient user, String passwordResetUrl, String trackingUrl) {
+        sendTemplateBasedEmail(passwordResetFrom, user, passwordResetUrl, EmailTemplateType.PASSWORD_RESET,
+                trackingUrl);
     }
 
     @Async
     @Override
     @Transactional
-    public void sendInvalidAccountPasswordResetEmail(UserClient userClient) {
-        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_INVALID_ACCOUNT);
+    public void sendInvalidAccountPasswordResetEmail(UserClient userClient, String trackingUrl) {
+        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_INVALID_ACCOUNT,
+                trackingUrl);
     }
 
     @Async
     @Override
     @Transactional
-    public void sendPasswordChangeConfirmationEmail(UserClient userClient) {
-        sendTemplateBasedEmail(passwordChangedFrom, userClient, null, EmailTemplateType.PASSWORD_CHANGED);
+    public void sendPasswordChangeConfirmationEmail(UserClient userClient, String trackingUrl) {
+        sendTemplateBasedEmail(passwordChangedFrom, userClient, null, EmailTemplateType.PASSWORD_CHANGED, trackingUrl);
     }
 
     @Async
     @Override
     @Transactional
-    public void sendPasswordResetNotEnabled(UserClient userClient) {
-        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_NOT_ENABLED);
+    public void sendPasswordResetNotEnabled(UserClient userClient, String trackingUrl) {
+        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_NOT_ENABLED,
+                trackingUrl);
     }
 
-    private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type) {
+    private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type,
+                                        String trackingUrl) {
         if (user == null || StringUtils.isBlank(user.getEmail()) || type == null) {
             return;
         }
@@ -112,13 +118,16 @@ public class MailServiceImpl implements MailService {
         context.setVariable(EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE,
                 UserClientValidationEmailService.VALIDATION_TOKEN_HOURS_VALID);
         EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(type), user);
-        context.setVariable(EMAIL_SENT_CONTEXT_VARIABLE, emailSentTracking);
+        if (StringUtils.isNotBlank(trackingUrl) && emailSentTracking != null) {
+            context.setVariable(EMAIL_TRACKING_CONTEXT_VARIABLE,
+                    trackingUrl.replace(SIGNATURE_VARIABLE_NAME, emailSentTracking.getSignature()));
+        }
 
         LOGGER.debug("User Context: {}", context.getVariables().get(USER_CONTEXT_VARIABLE));
         LOGGER.debug("URL Context: {}", context.getVariables().get(URL_CONTEXT_VARIABLE));
         LOGGER.debug("Validation Timeout Context: {}",
                 context.getVariables().get(EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE));
-        LOGGER.debug("Email Tracking Context: {}", context.getVariables().get(EMAIL_SENT_CONTEXT_VARIABLE));
+        LOGGER.debug("Email Tracking Context: {}", context.getVariables().get(EMAIL_TRACKING_CONTEXT_VARIABLE));
 
         String content = templateEngine.process("db:" + type.toString(), context);
         String subject = "Action Required";
