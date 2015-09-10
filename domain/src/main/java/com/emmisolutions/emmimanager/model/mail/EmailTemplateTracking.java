@@ -35,13 +35,13 @@ public class EmailTemplateTracking implements Serializable {
 
     private boolean viewed;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_client_id",
             foreignKey = @ForeignKey(name = "fk_email_template_tracking_user_client"))
     private UserClient userClient;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "email_template_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_email_template_tracking_email_template"))
     private EmailTemplate emailTemplate;
@@ -49,6 +49,11 @@ public class EmailTemplateTracking implements Serializable {
     @CreatedDate
     @Column(name = "created_date", updatable = false, columnDefinition = "timestamp", nullable = false)
     private DateTime createdDate;
+
+    private String signature;
+
+    @Column(name = "viewed_date", columnDefinition = "timestamp")
+    private DateTime viewedDate;
 
     public Long getId() {
         return id;
@@ -106,12 +111,28 @@ public class EmailTemplateTracking implements Serializable {
         this.createdDate = createdDate;
     }
 
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public DateTime getViewedDate() {
+        return viewedDate;
+    }
+
+    public void setViewedDate(DateTime viewedDate) {
+        this.viewedDate = viewedDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EmailTemplateTracking emailSent = (EmailTemplateTracking) o;
-        return Objects.equals(id, emailSent.id);
+        EmailTemplateTracking that = (EmailTemplateTracking) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
@@ -126,9 +147,9 @@ public class EmailTemplateTracking implements Serializable {
                 ", email='" + email + '\'' +
                 ", sent=" + sent +
                 ", viewed=" + viewed +
-                ", userClient=" + userClient +
-                ", emailTemplate=" + emailTemplate +
                 ", createdDate=" + createdDate +
+                ", signature=" + signature +
+                ", viewedDate=" + viewedDate +
                 '}';
     }
 }

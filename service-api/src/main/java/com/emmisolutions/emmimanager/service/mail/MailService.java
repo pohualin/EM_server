@@ -13,7 +13,7 @@ public interface MailService {
      * @param user          to send an activation to
      * @param activationUrl for the links to actually activate
      */
-    void sendActivationEmail(UserClient user, String activationUrl);
+    void sendActivationEmail(UserClient user, String activationUrl, String trackingUrl);
 
 
     /**
@@ -22,7 +22,7 @@ public interface MailService {
      * @param user          to send an validation to
      * @param validationUrl url for validation
      */
-    void sendValidationEmail(UserClient user, String validationUrl);
+    void sendValidationEmail(UserClient user, String validationUrl, String trackingUrl);
 
     /**
      * Sends an password reset email to a user
@@ -30,7 +30,7 @@ public interface MailService {
      * @param user             to send an activation to
      * @param passwordResetUrl for the links to actually activate
      */
-    void sendPasswordResetEmail(UserClient user, String passwordResetUrl);
+    void sendPasswordResetEmail(UserClient user, String passwordResetUrl, String trackingUrl);
 
     /**
      * Sends a password reset to an email that is not yet validated
@@ -38,7 +38,7 @@ public interface MailService {
      *
      * @param userClient to send to
      */
-    void sendInvalidAccountPasswordResetEmail(UserClient userClient);
+    void sendInvalidAccountPasswordResetEmail(UserClient userClient, String trackingUrl);
 
     /**
      * Sends an email to the user if the user has an email that
@@ -46,7 +46,7 @@ public interface MailService {
      *
      * @param userClient to send to
      */
-    void sendPasswordChangeConfirmationEmail(UserClient userClient);
+    void sendPasswordChangeConfirmationEmail(UserClient userClient, String trackingUrl);
     
     /**
      * Sends an password reset not enabled email to a user
@@ -54,5 +54,5 @@ public interface MailService {
      * @param userClient
      *            to send to
      */
-    void sendPasswordResetNotEnabled(UserClient userClient);
+    void sendPasswordResetNotEnabled(UserClient userClient, String trackingUrl);
 }
