@@ -4,7 +4,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="add web beacons" author="Matt">
+    <changeSet id="web beacons with inline css" author="Matt">
         <loadUpdateData
                 encoding="UTF-8"
                 file="changelog/sprint_28/data/em-1505/templates.data"
