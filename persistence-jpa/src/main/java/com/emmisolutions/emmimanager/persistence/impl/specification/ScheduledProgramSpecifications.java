@@ -3,9 +3,11 @@ package com.emmisolutions.emmimanager.persistence.impl.specification;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Patient_;
 import com.emmisolutions.emmimanager.model.Team_;
+import com.emmisolutions.emmimanager.model.schedule.Encounter_;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram_;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,6 +17,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +60,26 @@ public class ScheduledProgramSpecifications {
                 if (filter != null && filter.team() != null) {
                     return cb.equal(root.join(ScheduledProgram_.team)
                             .get(Team_.id), filter.team().getId());
+                }
+                return null;
+            }
+        };
+    }
+    
+    /**
+     * Spec based upon encounter in filter
+     *
+     * @param filter to get encounter
+     * @return a Specification or null
+     */
+    public Specification<ScheduledProgram> encounter(final ScheduledProgramSearchFilter filter) {
+
+        return new Specification<ScheduledProgram>() {
+            @Override
+            public Predicate toPredicate(Root<ScheduledProgram> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (filter != null && filter.encounter() != null) {
+                    return cb.equal(root.join(ScheduledProgram_.encounter)
+                            .get(Encounter_.id), filter.encounter().getId());
                 }
                 return null;
             }

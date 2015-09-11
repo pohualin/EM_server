@@ -3,7 +3,9 @@ package com.emmisolutions.emmimanager.web.rest.client.resource;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.schedule.Encounter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledProgramResource;
@@ -11,10 +13,8 @@ import com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledPro
 import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -25,11 +25,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 
 /**
  * Teams resource.
@@ -38,8 +38,6 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 @RequestMapping(value = "/webapi-client", produces = {APPLICATION_JSON_VALUE,
         APPLICATION_XML_VALUE})
 public class SchedulesResource {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulesResource.class);
 
     @Resource(name = "scheduledProgramResourceAssembler")
     ResourceAssembler<ScheduledProgram, ScheduledProgramResource> scheduledProgramResourceResourceAssembler;
@@ -52,6 +50,11 @@ public class SchedulesResource {
 
     @Resource
     ScheduleService scheduleService;
+    
+    /**
+     * request parameter name
+     */
+    public static final String ENCOUNTER_REQUEST_PARAM = "encounter";
 
     /**
      * GET to retrieve a page of ScheduledProgram objects for a particular team.
@@ -65,20 +68,19 @@ public class SchedulesResource {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "size", defaultValue = "10", value = "number of items on a page", dataType = "integer", paramType = "query"),
             @ApiImplicitParam(name = "page", defaultValue = "0", value = "page to request (zero index)", dataType = "integer", paramType = "query"),
-            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "sort", defaultValue = "name,asc", value = "sort to apply format: property,asc or desc", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = ENCOUNTER_REQUEST_PARAM, defaultValue = "", value = "Encounter ID to filter by", dataType = "long", paramType = "query")
     })
     public ScheduledProgramResourcePage scheduled(
             @PathVariable("clientId") Long clientId,
             @PathVariable("teamId") Long teamId,
+            @RequestParam(value = ENCOUNTER_REQUEST_PARAM, required = false) Long encounterId,
             @PageableDefault(size = 10, sort = "id") Pageable pageable,
             PagedResourcesAssembler<ScheduledProgram> assembler) {
 
-        LOGGER.debug("Client ID: {}", clientId);
-        LOGGER.debug("Team ID: {}", teamId);
-        LOGGER.debug("Pageable: {}", pageable);
-
-        Page<ScheduledProgram> scheduledPrograms = new PageImpl<>(new ArrayList<ScheduledProgram>());
-
+        ScheduledProgramSearchFilter filter = with().encounter(new Encounter(encounterId));
+        Page<ScheduledProgram> scheduledPrograms = scheduleService.find(filter, pageable);
+        
         return new ScheduledProgramResourcePage(
                 assembler.toResource(scheduledPrograms, scheduledProgramResourceResourceAssembler),
                 scheduledPrograms);
