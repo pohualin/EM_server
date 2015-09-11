@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -89,7 +90,7 @@ public class UserClientsPasswordResource {
             UserClient modifiedUser = userClientPasswordService
                     .changeExpiredPassword(expiredPasswordChangeRequest);
             if (modifiedUser != null) {
-                mailService.sendPasswordChangeConfirmationEmail(modifiedUser);
+                mailService.sendPasswordChangeConfirmationEmail(modifiedUser, emailViewedTrackingLink());
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.GONE);
@@ -130,7 +131,7 @@ public class UserClientsPasswordResource {
             UserClient userClient = userClientPasswordService
                     .resetPassword(resetPasswordRequest);
             if (userClient != null) {
-                mailService.sendPasswordChangeConfirmationEmail(userClient);
+                mailService.sendPasswordChangeConfirmationEmail(userClient, emailViewedTrackingLink());
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             return new ResponseEntity<>(HttpStatus.GONE);
@@ -166,7 +167,7 @@ public class UserClientsPasswordResource {
             UserClient updated = userClientPasswordService
                     .changePassword(changePasswordRequest);
 
-            mailService.sendPasswordChangeConfirmationEmail(updated);
+            mailService.sendPasswordChangeConfirmationEmail(updated, emailViewedTrackingLink());
 
             // update user's login token
             tokenBasedRememberMeServices.rewriteLoginToken(request, response,
@@ -277,14 +278,14 @@ public class UserClientsPasswordResource {
                                                 userClient.getPasswordResetToken()))
                                 .build(false)
                                 .toUriString();
-                mailService.sendPasswordResetEmail(userClient, resetRef);
+                mailService.sendPasswordResetEmail(userClient, resetRef, emailViewedTrackingLink());
             } else {
                 // user was found but is not setup for password reset
-                mailService.sendPasswordResetNotEnabled(userClient);
+                mailService.sendPasswordResetNotEnabled(userClient, emailViewedTrackingLink());
             }
         } else {
             // send invalid account reset email
-            mailService.sendInvalidAccountPasswordResetEmail(userClient);
+            mailService.sendInvalidAccountPasswordResetEmail(userClient, emailViewedTrackingLink());
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

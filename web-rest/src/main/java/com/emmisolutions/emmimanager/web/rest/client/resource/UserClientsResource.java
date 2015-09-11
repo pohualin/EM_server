@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -96,7 +97,7 @@ public class UserClientsResource {
                             .build(false)
                             .toUriString();
             // send the email (asynchronously)
-            mailService.sendValidationEmail(savedUserClient, validationHref);
+            mailService.sendValidationEmail(savedUserClient, validationHref, emailViewedTrackingLink());
             return new ResponseEntity<>(HttpStatus.OK);
         }
 

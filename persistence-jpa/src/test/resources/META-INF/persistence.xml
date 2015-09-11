@@ -58,6 +58,7 @@
         <class>com.emmisolutions.emmimanager.model.SecretQuestion</class>
         <class>com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse</class>
         <class>com.emmisolutions.emmimanager.model.mail.EmailTemplate</class>
+        <class>com.emmisolutions.emmimanager.model.mail.EmailTemplateTracking</class>
         <class>com.emmisolutions.emmimanager.model.program.Brand</class>
         <class>com.emmisolutions.emmimanager.model.program.Program</class>
         <class>com.emmisolutions.emmimanager.model.program.Source</class>
