@@ -3,6 +3,8 @@ package com.emmisolutions.emmimanager.web.rest.admin.model.configuration.content
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientContentSubscriptionConfigurationsResource;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 

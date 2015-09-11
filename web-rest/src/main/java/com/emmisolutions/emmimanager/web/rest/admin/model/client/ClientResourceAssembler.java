@@ -166,7 +166,7 @@ public class ClientResourceAssembler implements
                 "restrictConfiguration"));
         
         ret.add(linkTo(
-                methodOn(ClientContentSubscriptionConfigurationsResource.class).getContentSubscriptionList(null)).withRel(
+                methodOn(ClientContentSubscriptionConfigurationsResource.class).get(null)).withRel(
                 "contentSubscriptions"));
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));

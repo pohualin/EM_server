@@ -1,8 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import javax.annotation.Resource;
 
@@ -122,5 +121,7 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
          ClientContentSubscriptionConfiguration reloadClientContentSubscription =  clientContentSubscriptionConfigurationService.reload(clientContentSubscription);
          assertThat("reloaded is null", reloadClientContentSubscription, is(nullValue()));
     }
+    
+  
     
 }

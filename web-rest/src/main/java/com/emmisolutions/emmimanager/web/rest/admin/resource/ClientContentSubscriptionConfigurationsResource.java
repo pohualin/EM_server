@@ -68,8 +68,7 @@ public class ClientContentSubscriptionConfigurationsResource {
                 .list(pageable);
        
         if (page != null) {
-        	
-        	 return new ResponseEntity<>(page, HttpStatus.OK);
+ 	    	 return new ResponseEntity<>(page, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -138,19 +137,19 @@ public class ClientContentSubscriptionConfigurationsResource {
 
     }
     
-    /**
+   /**
      * Update an existing content subscription configuration
      * 
-     * @param clientId   for the content subscription configuration
+     * @param id   for the content subscription configuration
      * @param contentSubscritpionConfiguration
      *            contains updated information
      * @return an updated ContentSubscritpionConfiguration
      */
-    @RequestMapping(value = "/clients/{clientId}/content_subscription_configuration", method = RequestMethod.PUT, consumes = {
+    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientContentSubscriptionConfigurationResource> update(
-            @PathVariable("clientId") Long clientId,
+            @PathVariable("id") Long id,
             @RequestBody ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
         ClientContentSubscriptionConfiguration updated = clientContentSubscriptionConfigurationService
                 .update(clientContentSubscriptionConfiguration);
