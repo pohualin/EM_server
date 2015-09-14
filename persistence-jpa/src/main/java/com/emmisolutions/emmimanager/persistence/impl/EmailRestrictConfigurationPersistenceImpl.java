@@ -19,8 +19,7 @@ import com.emmisolutions.emmimanager.persistence.repo.EmailRestrictConfiguration
  * Persistence implementation for EmailRestrictConfiguration entity.
  */
 @Repository
-public class EmailRestrictConfigurationPersistenceImpl implements
-        EmailRestrictConfigurationPersistence {
+public class EmailRestrictConfigurationPersistenceImpl implements EmailRestrictConfigurationPersistence {
 
     @Resource
     EmailRestrictConfigurationRepository emailRestrictConfigurationRepository;
@@ -34,12 +33,13 @@ public class EmailRestrictConfigurationPersistenceImpl implements
     }
 
     @Override
-    public Page<EmailRestrictConfiguration> list(Pageable pageable,
-            Long clientId) {
+    public Page<EmailRestrictConfiguration> list(Pageable pageable, Long clientId) {
         Pageable toUse = pageable;
+
         if (pageable == null) {
             toUse = new PageRequest(0, 10);
         }
+
         return emailRestrictConfigurationRepository.findAll(
                 where(emailRestrictConfigurationSpecifications
                         .isClient(clientId)), toUse);
@@ -51,10 +51,8 @@ public class EmailRestrictConfigurationPersistenceImpl implements
     }
 
     @Override
-    public EmailRestrictConfiguration saveOrUpdate(
-            EmailRestrictConfiguration emailRestrictConfiguration) {
-        return emailRestrictConfigurationRepository
-                .save(emailRestrictConfiguration);
+    public EmailRestrictConfiguration saveOrUpdate(EmailRestrictConfiguration emailRestrictConfiguration) {
+        return emailRestrictConfigurationRepository.save(emailRestrictConfiguration);
     }
 
     @Override

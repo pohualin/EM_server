@@ -3,12 +3,14 @@ package com.emmisolutions.emmimanager.persistence.impl;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -29,6 +31,8 @@ public class EmailRestrictConfigurationPersistenceIntegrationTest extends
 
     @Resource
     EmailRestrictConfigurationPersistence emailRestrictConfigurationPersistence;
+
+    public static final String EMAIL_ENDING_DUPLICATE = "duplicate.email.ending.emmisolutions.com";
 
     /**
      * Test list
@@ -114,4 +118,62 @@ public class EmailRestrictConfigurationPersistenceIntegrationTest extends
         assertThat("should reload the same configuration",
                 configuration.getId() == reload.getId(), is(true));
     }
+
+    /**
+     * Test finding duplicate email endings
+     */
+    @Test(expected = DataIntegrityViolationException.class)
+    public void testFindDuplicateEmailEnding() {
+        Client client = makeNewRandomClient();
+        EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
+
+        configuration.setClient(client);
+        configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
+        configuration.setEmailEnding(EMAIL_ENDING_DUPLICATE);
+
+        assertThat("EmailRestrictConfiguration with duplicate email address should not already exist.",
+                emailRestrictConfigurationPersistence.findDuplicateEmailEnding(configuration), is(nullValue()));
+
+        configuration = emailRestrictConfigurationPersistence.saveOrUpdate(configuration);
+
+        assertThat("EmailRestrictConfiguration should be saved.", configuration.getId(), is(notNullValue()));
+        assertThat("EmailRestrictConfiguration should be saved with correct email ending.",
+                configuration.getEmailEnding(), is(EMAIL_ENDING_DUPLICATE));
+
+        EmailRestrictConfiguration duplicate = new EmailRestrictConfiguration();
+        duplicate.setClient(client);
+        duplicate.setDescription(RandomStringUtils.randomAlphabetic(255));
+        duplicate.setEmailEnding(EMAIL_ENDING_DUPLICATE);
+
+        assertThat("Duplicate should be found.",
+                emailRestrictConfigurationPersistence.findDuplicateEmailEnding(duplicate), is(notNullValue()));
+
+        // Attempt to save a configuration with a duplicate email ending. Should throw an exception.
+        emailRestrictConfigurationPersistence.saveOrUpdate(duplicate);
+    }
+
+    /**
+     * Searching for null should return null
+     */
+    @Test
+    public void testFindDuplicateEmailEndingNullConfiguration() {
+        assertThat("Searching for null configuration should return null.",
+                emailRestrictConfigurationPersistence.findDuplicateEmailEnding(null), is(nullValue()));
+    }
+
+    /**
+     * Searching for an empty email ending should return null
+     */
+    @Test
+    public void testFindDuplicateEmailEndingEmptyEmailEnding() {
+        Client client = makeNewRandomClient();
+        EmailRestrictConfiguration configuration = new EmailRestrictConfiguration();
+
+        configuration.setClient(client);
+        configuration.setDescription(RandomStringUtils.randomAlphabetic(255));
+
+        assertThat("Searching for an empty email ending should return null.",
+                emailRestrictConfigurationPersistence.findDuplicateEmailEnding(configuration), is(nullValue()));
+    }
+
 }
