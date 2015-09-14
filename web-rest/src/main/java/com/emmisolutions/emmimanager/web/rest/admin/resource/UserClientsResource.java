@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.Tag;
 import com.emmisolutions.emmimanager.model.Team;
 import com.emmisolutions.emmimanager.model.UserClientSearchFilter;
-import com.emmisolutions.emmimanager.model.configuration.EmailRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.service.ClientService;
 import com.emmisolutions.emmimanager.service.EmailRestrictConfigurationService;
@@ -30,10 +29,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.emmisolutions.emmimanager.model.UserClientSearchFilter.StatusFilter.fromStringOrActive;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -141,7 +138,7 @@ public class UserClientsResource {
                             .toResource(validationError),
                     HttpStatus.NOT_ACCEPTABLE);
         } else {
-         // look for conflicts before attempting to save
+            // look for conflicts before attempting to save
             UserClientResource conflictingUserClient = userClientConflictResourceAssembler
                     .toResource(userClientService.findConflictingUsers(userClient));
 
@@ -170,6 +167,7 @@ public class UserClientsResource {
 
     /**
      * Send an activation email
+     *
      * @param id of the user
      * @return OK
      */
@@ -191,7 +189,7 @@ public class UserClientsResource {
                             .toUriString();
 
             // send the email (asynchronously)
-            mailService.sendActivationEmail(savedUserClient, activationHref);
+            mailService.sendActivationEmail(savedUserClient, activationHref, emailViewedTrackingLink());
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -233,7 +231,7 @@ public class UserClientsResource {
                         .toUriString();
 
         // send the reset email (asynchronously)
-        mailService.sendPasswordResetEmail(savedUserClient, resetRef);
+        mailService.sendPasswordResetEmail(savedUserClient, resetRef, emailViewedTrackingLink());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -297,7 +295,7 @@ public class UserClientsResource {
             // look for conflicts before attempting to save
             UserClientResource conflictingUserClient = userClientConflictResourceAssembler
                     .toResource(userClientService.findConflictingUsers(userClient));
-    
+
             if (conflictingUserClient == null) {
                 UserClient updatedUserClient = userClientService.update(userClient);
                 if (updatedUserClient != null) {
@@ -319,7 +317,7 @@ public class UserClientsResource {
     /**
      * GET emails that do not follow restrictions
      *
-     * @param id         to get from
+     * @param id        to get from
      * @param pageable  to use
      * @param assembler to use
      * @return UserClientResource or INTERNAL_SERVER_ERROR if the update somehow
@@ -339,26 +337,26 @@ public class UserClientsResource {
             @RequestParam(value = "status", required = false) String status,
             PagedResourcesAssembler<UserClient> assembler) {
 
-        UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter(new Client(id), fromStringOrActive(status),null);
+        UserClientSearchFilter userClientSearchFilter = new UserClientSearchFilter(new Client(id), fromStringOrActive(status), null);
         Page<UserClient> userClientPage = userClientService.emailsThatDontFollowRestrictions(pageable, userClientSearchFilter);
 
         if (userClientPage != null && userClientPage.hasContent()) {
             // create a ClientPage containing the response
             return new ResponseEntity<>(new UserClientPage(
-                    assembler.toResource(userClientPage,userClientResourceAssembler),
-                    userClientPage, userClientSearchFilter ),HttpStatus.OK);
+                    assembler.toResource(userClientPage, userClientResourceAssembler),
+                    userClientPage, userClientSearchFilter), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-    
+
     /**
      * Get a page of UserClient across all Clients based on the search criteria
      *
-     * @param pageable to use
+     * @param pageable  to use
      * @param assembler to assemble search results
-     * @param status to filter
-     * @param term to search
+     * @param status    to filter
+     * @param term      to search
      * @return a page of UserClient that meet the search criteria
      */
     @RequestMapping(value = "/user_clients", method = RequestMethod.GET)
@@ -395,6 +393,7 @@ public class UserClientsResource {
 
     /**
      * Get reference data such as status filter for UserClient
+     *
      * @return an instance of reference data
      */
     @RequestMapping(value = "/user_clients/ref", method = RequestMethod.GET)
@@ -402,8 +401,8 @@ public class UserClientsResource {
     public ReferenceData getReferenceData() {
         return new ReferenceData();
     }
-    
-    private void setReloadedClient(Long clientId, UserClient userClient){
+
+    private void setReloadedClient(Long clientId, UserClient userClient) {
         Client client = new Client();
         client.setId(clientId);
         client = clientService.reload(client);

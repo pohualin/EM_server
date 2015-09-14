@@ -62,4 +62,31 @@
 
     </changeSet>
 
+    <changeSet id="em-1660 view tracking" author="Matt">
+
+        <addColumn tableName="email_template_tracking">
+            <column name="signature" type="varchar(64)"/>
+        </addColumn>
+
+        <addColumn tableName="email_template_tracking">
+            <column name="viewed_date" type="datetime"/>
+        </addColumn>
+
+        <update tableName="email_template">
+            <column name="version" valueNumeric="0"/>
+        </update>
+
+    </changeSet>
+
+    <changeSet id="em-1660 partial index" author="Matt" dbms="mssql, postgresql">
+
+        <sql>
+            <![CDATA[
+                create unique index ix_email_template_tracking_signature on
+                    email_template_tracking(signature) where signature is not null
+             ]]>
+        </sql>
+
+    </changeSet>
+
 </databaseChangeLog>

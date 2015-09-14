@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.persistence.EmailTemplatePersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.EmailTemplateRepository;
 import com.emmisolutions.emmimanager.persistence.repo.EmailTemplateTrackingRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -40,7 +41,19 @@ public class EmailTemplatePersistenceImpl implements EmailTemplatePersistence {
         if (userClient != null) {
             toSave.setEmail(userClient.getEmail());
         }
-        return emailTemplateTrackingRepository.save(toSave);
+        EmailTemplateTracking saved = emailTemplateTrackingRepository.save(toSave);
+        saved.setSignature(encoder.encodePassword(saved.getId() + SERVER_SIDE_SECRET,
+                saved.getCreatedDate().getMillis()));
+        return emailTemplateTrackingRepository.save(saved);
     }
+
+    @Override
+    public EmailTemplateTracking load(String signature) {
+        if (StringUtils.length(signature) == STORED_LENGTH) {
+            return emailTemplateTrackingRepository.findBySignature(signature);
+        }
+        return null;
+    }
+
 
 }

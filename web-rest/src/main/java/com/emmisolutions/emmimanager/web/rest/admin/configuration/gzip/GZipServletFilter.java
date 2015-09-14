@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.web.rest.admin.configuration.gzip;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ public class GZipServletFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        if (!isIncluded(httpRequest) && acceptsGZipEncoding(httpRequest) && !response.isCommitted()) {
+        if (!isIncluded(httpRequest) && acceptsGZipEncoding(httpRequest) && !response.isCommitted() && isNotBinary(httpRequest)) {
             // Client accepts zipped content
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("{} Written with gzip compression", httpRequest.getRequestURL());
@@ -52,7 +53,7 @@ public class GZipServletFilter implements Filter {
             gzout.close();
 
             // double check one more time before writing out
-            // repsonse might have been committed due to error
+            // response might have been committed due to error
             if (response.isCommitted()) {
                 return;
             }
@@ -91,6 +92,10 @@ public class GZipServletFilter implements Filter {
             }
             chain.doFilter(request, response);
         }
+    }
+
+    private boolean isNotBinary(HttpServletRequest request) {
+        return !StringUtils.endsWithAny(request.getServletPath(), ".gif", ".jpg", ".png");
     }
 
     /**
