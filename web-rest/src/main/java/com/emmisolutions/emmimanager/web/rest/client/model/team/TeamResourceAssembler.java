@@ -18,6 +18,8 @@ import static org.springframework.hateoas.TemplateVariable.VariableType.REQUEST_
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import static com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledProgramResourcePage.scheduleProgramsSearchLink;
+
 /**
  * Converts UserClientUserClientTeamRole objects to TeamResource objects with the proper links governed by
  * the Role.
@@ -32,10 +34,7 @@ public class TeamResourceAssembler
     public TeamResource toResource(Team entity) {
         TeamResource ret = new TeamResource();
         ret.setEntity(entity);
-        ret.add(new Link(addPaginationTemplate(
-                linkTo(methodOn(SchedulesResource.class)
-                        .scheduled(entity.getClient().getId(), entity.getId(), null, null))
-                        .withSelfRel().getHref()), "schedulePrograms"));
+        ret.add(scheduleProgramsSearchLink(entity));
 
         // create special template link to allow to find a schedule by id for a team
         ret.add(createScheduleByIdLink(entity));
