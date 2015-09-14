@@ -17,7 +17,7 @@ import java.io.IOException;
 import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-import static org.springframework.http.MediaType.IMAGE_GIF_VALUE;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 /**
  * Endpoints for email tracking
@@ -46,7 +46,7 @@ public class TrackingEmailsResource {
 
     @PostConstruct
     private void init() throws IOException {
-        blankImage = IOUtils.readBytesAndClose(new ClassPathResource("images/tracking.gif").getInputStream(), -1);
+        blankImage = IOUtils.readBytesAndClose(new ClassPathResource("images/beacon.png").getInputStream(), -1);
     }
 
     /**
@@ -55,8 +55,8 @@ public class TrackingEmailsResource {
      * @param signature used to update the EmailTemplateTracking object
      * @return 200 (OK): wrapping a byte[]
      */
-    @RequestMapping(value = "/email/view/{signature}.gif", method = RequestMethod.GET,
-            produces = IMAGE_GIF_VALUE)
+    @RequestMapping(value = "/email/images/{signature}.png", method = RequestMethod.GET,
+            produces = IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> track(@PathVariable("signature") String signature) {
         trackingService.viewed(signature);
         return ResponseEntity.ok(blankImage);
