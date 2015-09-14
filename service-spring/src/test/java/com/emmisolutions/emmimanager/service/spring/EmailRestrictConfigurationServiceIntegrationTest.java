@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service.spring;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import javax.annotation.Resource;
@@ -30,6 +31,8 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
     @Resource
     EmailRestrictConfigurationService emailRestrictConfigurationService;
 
+    public static final String EMAIL_ENDING_DUPLICATE = "duplicate.email.ending.emmisolutions.com";
+
     /**
      * Test CRUD
      */
@@ -41,6 +44,10 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
         emailConfig.setClient(client);
         emailConfig.setEmailEnding("emmisolutions.com");
         emailConfig.setDescription(RandomStringUtils.randomAlphabetic(255));
+
+        assertFalse("should not have a duplicate email ending",
+                emailRestrictConfigurationService.hasDuplicateEmailEnding(emailConfig));
+
         emailConfig = emailRestrictConfigurationService.create(emailConfig);
 
         assertThat("emailConfig saved with id", emailConfig.getId(),
@@ -74,13 +81,13 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
 
         EmailRestrictConfiguration emailConfig = new EmailRestrictConfiguration();
         emailConfig.setClient(client);
-        emailConfig.setEmailEnding("emmisolutions.com");
+        emailConfig.setEmailEnding("emmisolutionsA.com");
         emailConfig.setDescription(RandomStringUtils.randomAlphabetic(255));
         emailConfig = emailRestrictConfigurationService.create(emailConfig);
 
         EmailRestrictConfiguration emailConfigA = new EmailRestrictConfiguration();
         emailConfigA.setClient(client);
-        emailConfigA.setEmailEnding("emmisolutions.com");
+        emailConfigA.setEmailEnding("emmisolutionsB.com");
         emailConfigA.setDescription(RandomStringUtils.randomAlphabetic(255));
         emailConfigA = emailRestrictConfigurationService.create(emailConfigA);
 
@@ -108,8 +115,7 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeDeleteNullId() {
-        emailRestrictConfigurationService
-                .delete(new EmailRestrictConfiguration());
+        emailRestrictConfigurationService.delete(new EmailRestrictConfiguration());
     }
 
     /**
@@ -125,8 +131,7 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeReloadNullId() {
-        emailRestrictConfigurationService
-                .reload(new EmailRestrictConfiguration());
+        emailRestrictConfigurationService.reload(new EmailRestrictConfiguration());
     }
 
     /**
@@ -158,8 +163,55 @@ public class EmailRestrictConfigurationServiceIntegrationTest extends
      */
     @Test(expected = InvalidDataAccessApiUsageException.class)
     public void testNegativeUpdateNullId() {
-        emailRestrictConfigurationService
-                .update(new EmailRestrictConfiguration());
+        emailRestrictConfigurationService.update(new EmailRestrictConfiguration());
     }
 
+    /**
+     * Test bad create
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testNegativeCreateNullConfig() {
+        emailRestrictConfigurationService.create(null);
+    }
+
+    /**
+     * Test hasDuplicateEmailEnding with null argument
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testNegativeHasDuplicateEmailEndingNullConfig() {
+        emailRestrictConfigurationService.hasDuplicateEmailEnding(null);
+    }
+
+    /**
+     * Test hasDuplicateEmailEnding with null Client
+     */
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testNegativeHasDuplicateEmailEndingNullClient() {
+        emailRestrictConfigurationService.hasDuplicateEmailEnding(new EmailRestrictConfiguration());
+    }
+
+    /**
+     * Test hasDuplicateEmailEnding
+     */
+    @Test
+    public void testHasDuplicateEmailEnding() {
+        Client client = makeNewRandomClient();
+
+        EmailRestrictConfiguration emailConfig = new EmailRestrictConfiguration();
+        emailConfig.setClient(client);
+        emailConfig.setEmailEnding(EMAIL_ENDING_DUPLICATE);
+        emailConfig.setDescription(RandomStringUtils.randomAlphabetic(255));
+
+        assertFalse("Should not have a duplicate email", emailRestrictConfigurationService.hasDuplicateEmailEnding(emailConfig));
+
+        emailConfig = emailRestrictConfigurationService.create(emailConfig);
+
+        EmailRestrictConfiguration duplicate = new EmailRestrictConfiguration();
+        duplicate.setClient(client);
+        duplicate.setEmailEnding(EMAIL_ENDING_DUPLICATE);
+        duplicate.setDescription(RandomStringUtils.randomAlphabetic(255));
+
+        assertThat("Should have a duplicate entry", emailRestrictConfigurationService.hasDuplicateEmailEnding(duplicate), is(true));
+
+    }
 }
