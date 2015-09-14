@@ -60,8 +60,7 @@ public class EmailRestrictConfiguration extends AbstractAuditingEntity
     /**
      * Create IpRestrictConfiguration by id
      *
-     * @param id
-     *            to use
+     * @param id to use
      */
     public EmailRestrictConfiguration(Long id) {
         this.id = id;
@@ -123,4 +122,14 @@ public class EmailRestrictConfiguration extends AbstractAuditingEntity
         return id != null ? id.hashCode() : 0;
     }
 
+    @Override
+    public String toString() {
+        return "EmailRestrictConfiguration{" +
+                "id=" + id +
+                ", version=" + version +
+                ", client=" + client +
+                ", description='" + description + '\'' +
+                ", emailEnding='" + emailEnding + '\'' +
+                '}';
+    }
 }
