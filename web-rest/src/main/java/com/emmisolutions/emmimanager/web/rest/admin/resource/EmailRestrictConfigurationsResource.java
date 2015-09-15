@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.EmailRes
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.EmailRestrictConfigurationResourceAssembler;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -40,12 +41,9 @@ public class EmailRestrictConfigurationsResource {
     /**
      * Get a page of EmailRestrictConfiguration for a Client
      * 
-     * @param clientId
-     *            to lookup
-     * @param pageable
-     *            to use
-     * @param assembler
-     *            to use
+     * @param clientId to lookup
+     * @param pageable to use
+     * @param assembler to use
      * @return an EmailRestrictConfigurationPage
      */
     @RequestMapping(value = "/client/{id}/email_restrict_configurations", method = RequestMethod.GET)
@@ -59,15 +57,12 @@ public class EmailRestrictConfigurationsResource {
             @PageableDefault(size = 10, sort = "emailEnding", direction = Direction.ASC) Pageable pageable,
             PagedResourcesAssembler<EmailRestrictConfiguration> assembler) {
 
-        Page<EmailRestrictConfiguration> page = emailRestrictConfigurationService
-                .getByClient(pageable, new Client(clientId));
+        Page<EmailRestrictConfiguration> page = emailRestrictConfigurationService.getByClient(pageable, new Client(clientId));
 
         if (page.hasContent()) {
             // create a EmailRestrictConfigurationPage containing the response
             return new ResponseEntity<>(new EmailRestrictConfigurationPage(
-                    assembler.toResource(page,
-                            emailRestrictConfigurationAssembler), page),
-                    HttpStatus.OK);
+                    assembler.toResource(page, emailRestrictConfigurationAssembler), page), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -76,10 +71,8 @@ public class EmailRestrictConfigurationsResource {
     /**
      * Create a brand new EmailRestrictConfiguration
      * 
-     * @param clientId
-     *            to assign
-     * @param emailRestrictConfiguration
-     *            to create
+     * @param clientId to assign
+     * @param emailRestrictConfiguration to create
      * @return a created EmailRestrictConfiguration
      */
     @RequestMapping(value = "/client/{id}/email_restrict_configurations", method = RequestMethod.POST, consumes = {
@@ -88,36 +81,36 @@ public class EmailRestrictConfigurationsResource {
     public ResponseEntity<EmailRestrictConfigurationResource> create(
             @PathVariable("id") Long clientId,
             @RequestBody EmailRestrictConfiguration emailRestrictConfiguration) {
+
         emailRestrictConfiguration.setClient(new Client(clientId));
-        EmailRestrictConfiguration created = emailRestrictConfigurationService
-                .create(emailRestrictConfiguration);
-        if (created != null) {
-            return new ResponseEntity<>(
-                    emailRestrictConfigurationAssembler.toResource(created),
-                    HttpStatus.OK);
+        emailRestrictConfiguration.setEmailEnding(StringUtils.lowerCase(emailRestrictConfiguration.getEmailEnding()));
+
+        if (!emailRestrictConfigurationService.hasDuplicateEmailEnding(emailRestrictConfiguration)) {
+            EmailRestrictConfiguration created = emailRestrictConfigurationService.create(emailRestrictConfiguration);
+
+            if (created != null) {
+                return new ResponseEntity<>(emailRestrictConfigurationAssembler.toResource(created), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
     /**
      * Reload an existing EmailRestrictConfiguartion
      * 
-     * @param id
-     *            to reload
+     * @param id to reload
      * @return an existing EmailRestrictConfiguartion
      */
     @RequestMapping(value = "/email_restrict_configuration/{id}", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public ResponseEntity<EmailRestrictConfigurationResource> get(
-            @PathVariable("id") Long id) {
-        EmailRestrictConfiguration emailRestrictConfiguration = emailRestrictConfigurationService
-                .reload(new EmailRestrictConfiguration(id));
+    public ResponseEntity<EmailRestrictConfigurationResource> get(@PathVariable("id") Long id) {
+        EmailRestrictConfiguration emailRestrictConfiguration = emailRestrictConfigurationService.reload(new EmailRestrictConfiguration(id));
+
         if (emailRestrictConfiguration != null) {
-            return new ResponseEntity<>(
-                    emailRestrictConfigurationAssembler
-                            .toResource(emailRestrictConfiguration),
-                    HttpStatus.OK);
+            return new ResponseEntity<>(emailRestrictConfigurationAssembler.toResource(emailRestrictConfiguration), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -127,10 +120,8 @@ public class EmailRestrictConfigurationsResource {
     /**
      * Update an existing EmailRestrictConfiguration
      * 
-     * @param id
-     *            to reload
-     * @param emailRestrictConfiguration
-     *            contains updated information
+     * @param id to reload
+     * @param emailRestrictConfiguration contains updated information
      * @return an updated EmailRestrictConfiguration
      */
     @RequestMapping(value = "/email_restrict_configuration/{id}", method = RequestMethod.PUT, consumes = {
@@ -139,12 +130,11 @@ public class EmailRestrictConfigurationsResource {
     public ResponseEntity<EmailRestrictConfigurationResource> update(
             @PathVariable("id") Long id,
             @RequestBody EmailRestrictConfiguration emailRestrictConfiguration) {
-        EmailRestrictConfiguration updated = emailRestrictConfigurationService
-                .update(emailRestrictConfiguration);
+
+        EmailRestrictConfiguration updated = emailRestrictConfigurationService.update(emailRestrictConfiguration);
+
         if (updated != null) {
-            return new ResponseEntity<>(
-                    emailRestrictConfigurationAssembler.toResource(updated),
-                    HttpStatus.OK);
+            return new ResponseEntity<>(emailRestrictConfigurationAssembler.toResource(updated), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -153,14 +143,12 @@ public class EmailRestrictConfigurationsResource {
     /**
      * Delete an existing EmailRestrictConfiguration
      * 
-     * @param id
-     *            to delete
+     * @param id to delete
      */
     @RequestMapping(value = "/email_restrict_configuration/{id}", method = RequestMethod.DELETE)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public void delete(@PathVariable Long id) {
-        emailRestrictConfigurationService
-                .delete(new EmailRestrictConfiguration(id));
+        emailRestrictConfigurationService.delete(new EmailRestrictConfiguration(id));
     }
 
 }
