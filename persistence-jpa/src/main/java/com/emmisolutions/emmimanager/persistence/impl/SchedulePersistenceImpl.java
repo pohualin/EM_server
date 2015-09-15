@@ -63,7 +63,8 @@ public class SchedulePersistenceImpl implements SchedulePersistence {
                         .and(specifications.team(filter))
                         .and(specifications.expired(filter))
                         .and(specifications.patients(filter))
-                        .and(specifications.accessCodes(filter)),
+                        .and(specifications.accessCodes(filter))
+                        .and(specifications.encounter(filter)),
                 page == null ? new PageRequest(0, 50, Sort.Direction.ASC, "viewByDate") : page);
     }
 }

@@ -14,49 +14,47 @@ public interface EmailRestrictConfigurationService {
     /**
      * Create a new EmailRestrictConfiguration
      * 
-     * @param emailRestrictConfiguration
-     *            to create
+     * @param emailRestrictConfiguration to create
      * @return created EmailRestrictConfiguration
      */
-    public EmailRestrictConfiguration create(
-            EmailRestrictConfiguration emailRestrictConfiguration);
+    EmailRestrictConfiguration create(EmailRestrictConfiguration emailRestrictConfiguration);
 
     /**
      * Delete an existing EmailRestrictConfiguration
      * 
-     * @param emailRestrictConfiguration
-     *            to delete
+     * @param emailRestrictConfiguration to delete
      */
-    public void delete(EmailRestrictConfiguration emailRestrictConfiguration);
+    void delete(EmailRestrictConfiguration emailRestrictConfiguration);
 
     /**
      * Get a page of EmailRestrictConfiguration by Client
-     * 
-     * @param client
-     *            to lookup
+     *
+     * @param client to lookup
      * @return a page of EmailRestrictConfiguration
      */
-    public Page<EmailRestrictConfiguration> getByClient(Pageable pageable,
-            Client client);
+    Page<EmailRestrictConfiguration> getByClient(Pageable pageable, Client client);
 
     /**
      * Reload an existing EmailRestrictConfiguration
      * 
-     * @param emailRestrictConfiguration
-     *            to reload
+     * @param emailRestrictConfiguration to reload
      * @return an existing EmailRestrictConfiguration
      */
-    public EmailRestrictConfiguration reload(
-            EmailRestrictConfiguration emailRestrictConfiguration);
+    EmailRestrictConfiguration reload(EmailRestrictConfiguration emailRestrictConfiguration);
 
     /**
      * Update an existing EmailRestrictConfiguration
      * 
-     * @param emailRestrictConfiguration
-     *            to update
+     * @param emailRestrictConfiguration to update
      * @return an updated EmailRestrictConfiguration
      */
-    public EmailRestrictConfiguration update(
-            EmailRestrictConfiguration emailRestrictConfiguration);
+    EmailRestrictConfiguration update(EmailRestrictConfiguration emailRestrictConfiguration);
 
+    /**
+     * Check if the passed in email ending already exists for a client
+     *
+     * @param emailRestrictConfiguration to search for
+     * @return true if an entry already exists, false otherwise
+     */
+    boolean hasDuplicateEmailEnding(EmailRestrictConfiguration emailRestrictConfiguration);
 }
