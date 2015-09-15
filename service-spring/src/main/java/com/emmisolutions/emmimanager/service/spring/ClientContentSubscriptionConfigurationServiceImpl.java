@@ -82,11 +82,9 @@ public class ClientContentSubscriptionConfigurationServiceImpl implements
     @Transactional
 	public void delete(
 			ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
-    	if (clientContentSubscriptionConfiguration == null
-                || clientContentSubscriptionConfiguration.getId() == null) {
-        		//Doesn't need to do anything if clientContentSubscriptionConfiguration is not exist
-       	}else{
-       		clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration.getId());
+    	if (clientContentSubscriptionConfiguration != null
+                && clientContentSubscriptionConfiguration.getId() != null) {
+    		clientContentSubscriptionConfigurationPersistence.delete(clientContentSubscriptionConfiguration.getId());
        	}
     }
 

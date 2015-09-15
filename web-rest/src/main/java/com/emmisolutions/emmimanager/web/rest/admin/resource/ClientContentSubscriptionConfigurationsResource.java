@@ -180,7 +180,7 @@ public class ClientContentSubscriptionConfigurationsResource {
             		contentSubscriptionConfigurationAssembler.toResource(reload),
                     HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
     }
