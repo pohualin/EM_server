@@ -122,6 +122,11 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
          assertThat("reloaded is null", reloadClientContentSubscription, is(nullValue()));
     }
     
-  
+    @Test
+    public void testDeleteNull(){
+    	ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration = null;
+    	clientContentSubscriptionConfigurationService.delete(clientContentSubscriptionConfiguration);
+    	assertThat(clientContentSubscriptionConfiguration, is(nullValue()));
+    }
     
 }

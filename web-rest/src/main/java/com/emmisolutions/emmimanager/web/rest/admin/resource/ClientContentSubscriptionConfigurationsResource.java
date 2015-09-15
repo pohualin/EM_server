@@ -163,7 +163,7 @@ public class ClientContentSubscriptionConfigurationsResource {
     }
     
     /**
-     * Reload an existing content subscription configuration
+     * Get an existing content subscription configuration
      * 
      * @param id
      *            to reload
