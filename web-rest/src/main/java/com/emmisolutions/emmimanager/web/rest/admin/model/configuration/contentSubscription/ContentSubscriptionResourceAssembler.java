@@ -1,8 +1,10 @@
 package com.emmisolutions.emmimanager.web.rest.admin.model.configuration.contentSubscription;
 
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
-import com.emmisolutions.emmimanager.web.rest.client.resource.UserClientSecretQuestionResponsesResource;
+import com.emmisolutions.emmimanager.web.rest.admin.resource.ClientContentSubscriptionConfigurationsResource;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +22,7 @@ public class ContentSubscriptionResourceAssembler implements
     public ContentSubscriptionResource toResource(
     		ContentSubscription entity) {
         ContentSubscriptionResource ret = new ContentSubscriptionResource();
-        ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).secretQuestions(null)).withSelfRel());
+        ret.add(linkTo(methodOn(ClientContentSubscriptionConfigurationsResource.class).getContentSubscriptionList(null)).withSelfRel());
         ret.setEntity(entity);
         return ret;
     }

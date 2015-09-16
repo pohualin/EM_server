@@ -3,8 +3,10 @@ package com.emmisolutions.emmimanager.web.rest.admin.resource;
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.SecretQuestion;
 import com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration;
+import com.emmisolutions.emmimanager.model.configuration.IpRestrictConfiguration;
 import com.emmisolutions.emmimanager.model.program.ContentSubscription;
 import com.emmisolutions.emmimanager.service.ClientContentSubscriptionConfigurationService;
+import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.IpRestrictConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.contentSubscription.ClientContentSubscriptionConfigurationPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.contentSubscription.ClientContentSubscriptionConfigurationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.configuration.contentSubscription.ClientContentSubscriptionConfigurationResourceAssembler;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -65,7 +68,7 @@ public class ClientContentSubscriptionConfigurationsResource {
                 .list(pageable);
        
         if (page != null) {
-        	 return new ResponseEntity<>(page, HttpStatus.OK);
+ 	    	 return new ResponseEntity<>(page, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -95,7 +98,7 @@ public class ClientContentSubscriptionConfigurationsResource {
         Page<ClientContentSubscriptionConfiguration> page = clientContentSubscriptionConfigurationService
                 .findByClient(new Client(clientId), pageable);
     	if (page.hasContent()) {
-    	 return new ResponseEntity<>(new ClientContentSubscriptionConfigurationPage(
+    	   return new ResponseEntity<>(new ClientContentSubscriptionConfigurationPage(
                  assembler.toResource(page,
                 		 contentSubscriptionConfigurationAssembler), page),
                  HttpStatus.OK);
@@ -134,19 +137,19 @@ public class ClientContentSubscriptionConfigurationsResource {
 
     }
     
-    /**
+   /**
      * Update an existing content subscription configuration
      * 
-     * @param clientId   for the content subscription configuration
+     * @param id   for the content subscription configuration
      * @param contentSubscritpionConfiguration
      *            contains updated information
      * @return an updated ContentSubscritpionConfiguration
      */
-    @RequestMapping(value = "/clients/{clientId}/content_subscription_configuration", method = RequestMethod.PUT, consumes = {
+    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<ClientContentSubscriptionConfigurationResource> update(
-            @PathVariable("clientId") Long clientId,
+            @PathVariable("id") Long id,
             @RequestBody ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration) {
         ClientContentSubscriptionConfiguration updated = clientContentSubscriptionConfigurationService
                 .update(clientContentSubscriptionConfiguration);
@@ -158,16 +161,39 @@ public class ClientContentSubscriptionConfigurationsResource {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    /**
+     * Get an existing content subscription configuration
+     * 
+     * @param id
+     *            to reload
+     * @return an existing ContentSubscritpionConfiguration
+     */
+    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.GET)
+    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
+    public ResponseEntity<ClientContentSubscriptionConfigurationResource> get(
+            @PathVariable("id") Long id) {
+    	ClientContentSubscriptionConfiguration  reload = clientContentSubscriptionConfigurationService
+                .reload(new ClientContentSubscriptionConfiguration(id));
+        if (reload != null) {
+            return new ResponseEntity<>(
+            		contentSubscriptionConfigurationAssembler.toResource(reload),
+                    HttpStatus.OK);
+        } else {
+        	return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+    }
 
     /**
      * Delete an content subscription configuration
-     * @param clientId   clientId for the content subscription configuration 
+     * @param id   id for the content subscription configuration to delete 
      */
-    @RequestMapping(value = "/clients/{clientId}/content_subscription_configuration", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/content_subscription_configuration/{id}", method = RequestMethod.DELETE)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public void delete(@PathVariable("clientId") Long clientId) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
     	clientContentSubscriptionConfigurationService
-                .delete(new Client(clientId));
+                .delete(new ClientContentSubscriptionConfiguration(id));
+    	return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }
