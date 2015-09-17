@@ -2,10 +2,7 @@ package com.emmisolutions.emmimanager.service.spring.jobs;
 
 import com.emmisolutions.emmimanager.service.ProgramService;
 import com.emmisolutions.emmimanager.service.schedule.AllJobs;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +26,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 @Profile("!test")
 @Component(CLEANUP_HLI_SEARCH_CACHE_JOB_BEAN_NAME)
+@DisallowConcurrentExecution
 public class CleanupHliSearchCache extends QuartzJobBean implements AllJobs {
 
     private static final transient Logger LOGGER = LoggerFactory.getLogger(CleanupHliSearchCache.class);
