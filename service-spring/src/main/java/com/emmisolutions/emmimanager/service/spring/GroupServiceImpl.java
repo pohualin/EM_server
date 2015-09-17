@@ -134,7 +134,7 @@ public class GroupServiceImpl implements GroupService {
                     for (Tag tag : saveRequest.getTags()) {
                         String normalizedTagName = normalizeTagName(tag.getName());
                         if (StringUtils.isBlank(normalizedTagName) || !tagsInAGroup.add(normalizedTagName)) {
-                            throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' is null, only contains special characters or is a duplicate within group: " + saveRequest.getGroup().getName());
+                            throw new IllegalArgumentException("Tag name: '" + tag.getName() + "' is null or is a duplicate within group: " + saveRequest.getGroup().getName());
                         }
                     }
                 }
@@ -155,7 +155,7 @@ public class GroupServiceImpl implements GroupService {
         String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
         if (StringUtils.isNotBlank(normalizedName)) {
             // do regex
-            normalizedName = normalizedName.replaceAll("[^a-z0-9;,.']*", "");
+            normalizedName = normalizedName.replaceAll("\\s+", "");
         }
         return normalizedName;
     }
