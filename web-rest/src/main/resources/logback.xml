@@ -42,6 +42,8 @@
     <logger name="liquibase" level="warn"/>
     <logger name="org.apache.catalina.core" level="OFF"/>
 
+    <logger name="org.quartz" level="WARN"/>
+
     <logger name="org.hibernate.engine.internal.StatefulPersistenceContext" level="ERROR"/>
 
     <root level="${logback.loglevel}">

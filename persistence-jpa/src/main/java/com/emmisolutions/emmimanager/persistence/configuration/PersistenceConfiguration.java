@@ -20,6 +20,8 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.jndi.JndiPropertySource;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaDialect;
@@ -154,7 +156,7 @@ public class PersistenceConfiguration {
      * @param env in which we are in
      * @return the liquibase bean
      */
-    @Bean
+    @Bean(name = "dbUpdater")
     public SpringLiquibase getDbUpdater(Environment env) throws NamingException {
         SpringLiquibase springLiquibase = new SpringLiquibase();
         if (env.acceptsProfiles(SPRING_PROFILE_JNDI_PERSISTENCE, SPRING_PROFILE_PRODUCTION)) {
@@ -175,11 +177,14 @@ public class PersistenceConfiguration {
      * @return the datasource
      * @throws NamingException if there isn't a jndi bean
      */
-    @Bean
+    @Bean(name = "dataSource")
     @Profile({SPRING_PROFILE_JNDI_PERSISTENCE, SPRING_PROFILE_PRODUCTION})
     public DataSource getDataSource() throws NamingException {
         JndiTemplate jndi = new JndiTemplate();
-        return jndi.lookup("java:comp/env/jdbc/EmmiManagerDS", DataSource.class);
+        return new TransactionAwareDataSourceProxy(
+                new LazyConnectionDataSourceProxy(
+                        jndi.lookup("java:comp/env/jdbc/EmmiManagerDS", DataSource.class)
+                ));
     }
 
     /**
@@ -200,7 +205,7 @@ public class PersistenceConfiguration {
      *
      * @return data source
      */
-    @Bean
+    @Bean(name = "dataSource")
     @Profile({SPRING_PROFILE_TEST, SPRING_PROFILE_H2})
     public DataSource getTestingDataSource(Environment env) {
         DriverManagerDataSource ds = new DriverManagerDataSource();
@@ -219,7 +224,7 @@ public class PersistenceConfiguration {
                 LOGGER.error("Problem connecting to in memory database", e);
             }
         }
-        return ds;
+        return new TransactionAwareDataSourceProxy(new LazyConnectionDataSourceProxy(ds));
     }
 
     @Bean(name = "transactionManager")

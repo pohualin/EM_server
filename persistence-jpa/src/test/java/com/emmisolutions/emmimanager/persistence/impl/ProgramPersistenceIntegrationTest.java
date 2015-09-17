@@ -101,4 +101,12 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
                         new PageRequest(0, 1, new Sort("type.weight"))),
                 hasItems(new Program(10)));
     }
+
+    /**
+     * Ensure that the hli cache clear method works.. no
+     */
+    @Test
+    public void callCleanup() {
+        assertThat("cache clean works", programPersistence.clearHliCache() >= 0, is(true));
+    }
 }

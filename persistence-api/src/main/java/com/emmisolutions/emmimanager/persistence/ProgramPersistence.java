@@ -14,7 +14,7 @@ public interface ProgramPersistence {
     /**
      * Find programs
      *
-     * @param filter to narrow the results
+     * @param filter   to narrow the results
      * @param pageable the page specification
      * @return a page of programs
      */
@@ -27,4 +27,9 @@ public interface ProgramPersistence {
      * @return a page of Specialty objects
      */
     Page<Specialty> findSpecialties(Pageable page);
+
+    /**
+     * Clears the hli search cache
+     */
+    int clearHliCache();
 }

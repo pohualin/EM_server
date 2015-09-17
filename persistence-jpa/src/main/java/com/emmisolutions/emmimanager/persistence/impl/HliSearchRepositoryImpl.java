@@ -22,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +60,7 @@ public class HliSearchRepositoryImpl implements HliSearchRepository {
     @Value("${hli.cache.oldest:900000}")
     private int oldestSearchRequest;
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public HliSearchRequest find(ProgramSearchFilter filter) {
         if (filter == null || CollectionUtils.isEmpty(filter.getTerms())) {
@@ -82,17 +82,15 @@ public class HliSearchRepositoryImpl implements HliSearchRepository {
         return ret;
     }
 
-    @Transactional
-    @Scheduled(fixedDelayString = "${hli.cache.cleanup.job.interval:900000}")
-    public void cacheClean() {
+    @Override
+    public int cacheClean() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaDelete<HliSearchRequest> delete = criteriaBuilder.createCriteriaDelete(HliSearchRequest.class);
         Root<HliSearchRequest> hliSearchRequest = delete.from(HliSearchRequest.class);
         delete.where(criteriaBuilder.lessThan(hliSearchRequest.get("createdDate").as(DateTime.class),
                 DateTime.now(UTC).minusMillis(oldestSearchRequest)));
         Query query = entityManager.createQuery(delete);
-        int numDeleted = query.executeUpdate();
-        LOGGER.debug("HLI cache clear job executed successfully and cleaned {} entries.", numDeleted);
+        return query.executeUpdate();
     }
 
     private HliSearchRequest create(String query) {

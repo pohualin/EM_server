@@ -102,4 +102,12 @@ public class ProgramServiceIntegrationTest extends BaseIntegrationTest {
                 not(hasItem(new Program(10))));
     }
 
+    /**
+     * Ensure that the hli cache clear method works.. no
+     */
+    @Test
+    public void callCleanup() {
+        assertThat("cache clean works", programService.clearHliCache() >= 0, is(true));
+    }
+
 }

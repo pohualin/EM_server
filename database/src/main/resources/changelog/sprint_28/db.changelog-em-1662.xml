@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create quartz schema" author="Matt" dbms="mysql,h2,postgresql">
+        <sql>
+            <![CDATA[
+            create schema quartz
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="create quartz schema sql server" author="Matt" dbms="mssql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT count(*) FROM sys.schemas WHERE name = 'quartz'</sqlCheck>
+        </preConditions>
+        <sql>
+            <![CDATA[
+            create schema quartz authorization dbo
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_job_details">
+        <comment>[QRTZ_JOB_DETAILS] table creation (with PK)</comment>
+        <createTable tableName="qrtz_job_details" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(250)"/>
+            <column name="job_class_name" type="VARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_durable" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_nonconcurrent" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_update_data" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requests_recovery" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_data" type="BYTEA"/>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, job_name, job_group"
+                       schemaName="quartz" constraintName="qrtz_job_details_pkey" tableName="qrtz_job_details"/>
+
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_triggers">
+        <comment>[QRTZ_TRIGGERS] table creation (with PK and FK)</comment>
+        <createTable tableName="qrtz_triggers" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(250)"/>
+            <column name="next_fire_time" type="INT8"/>
+            <column name="prev_fire_time" type="INT8"/>
+            <column name="priority" type="INT4"/>
+            <column name="trigger_state" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_type" type="VARCHAR(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="INT8"/>
+            <column name="calendar_name" type="VARCHAR(200)"/>
+            <column name="misfire_instr" type="INT2"/>
+            <column name="job_data" type="BYTEA"/>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, trigger_name, trigger_group"
+                       schemaName="quartz"
+                       constraintName="qrtz_triggers_pkey" tableName="qrtz_triggers"/>
+
+        <addForeignKeyConstraint baseColumnNames="sched_name,job_name,job_group"
+                                 baseTableName="qrtz_triggers"
+                                 baseTableSchemaName="quartz"
+                                 constraintName="fk_qrtz_triggers-qrtz_job_details"
+                                 referencedTableSchemaName="quartz"
+                                 referencedColumnNames="sched_name,job_name,job_group"
+                                 referencedTableName="qrtz_job_details"
+                />
+
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_simple_triggers">
+        <comment>[QRTZ_SIMPLE_TRIGGERS] table creation (with PK and FK)</comment>
+        <createTable tableName="qrtz_simple_triggers" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="repeat_count" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="repeat_interval" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="times_triggered" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, trigger_name, trigger_group"
+                       schemaName="quartz"
+                       constraintName="qrtz_simple_triggers_pkey" tableName="qrtz_simple_triggers"/>
+        <addForeignKeyConstraint baseColumnNames="sched_name,trigger_name,trigger_group"
+                                 baseTableName="qrtz_simple_triggers"
+                                 baseTableSchemaName="quartz"
+                                 constraintName="qrtz_simple_triggers_sched_name_fkey"
+                                 referencedTableSchemaName="quartz"
+                                 referencedColumnNames="sched_name,trigger_name,trigger_group"
+                                 referencedTableName="qrtz_triggers"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_cron_triggers">
+        <comment>[QRTZ_CRON_TRIGGERS] table creation (with PK and FK)</comment>
+        <createTable tableName="qrtz_cron_triggers" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cron_expression" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_zone_id" type="VARCHAR(80)"/>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, trigger_name, trigger_group"
+                       schemaName="quartz"
+                       constraintName="qrtz_cron_triggers_pkey" tableName="qrtz_cron_triggers"/>
+        <addForeignKeyConstraint baseColumnNames="sched_name,trigger_name,trigger_group"
+                                 baseTableName="qrtz_cron_triggers"
+                                 baseTableSchemaName="quartz"
+                                 constraintName="qrtz_cron_triggers_sched_name_fkey"
+                                 referencedTableSchemaName="quartz"
+                                 referencedColumnNames="SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP"
+                                 referencedTableName="qrtz_triggers"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_simprop_triggers">
+        <comment>[QRTZ_SIMPROP_TRIGGERS] table creation (with PK and FK)</comment>
+        <createTable tableName="qrtz_simprop_triggers" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="str_prop_1" type="VARCHAR(512)"/>
+            <column name="str_prop_2" type="VARCHAR(512)"/>
+            <column name="str_prop_3" type="VARCHAR(512)"/>
+            <column name="int_prop_1" type="INT4"/>
+            <column name="int_prop_2" type="INT4"/>
+            <column name="long_prop_1" type="INT8"/>
+            <column name="long_prop_2" type="INT8"/>
+            <column name="dec_prop_1" type="numeric"/>
+            <column name="dec_prop_2" type="numeric"/>
+            <column name="bool_prop_1" type="BOOL"/>
+            <column name="bool_prop_2" type="BOOL"/>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name,trigger_name,trigger_group" schemaName="quartz"
+                       constraintName="qrtz_simprop_triggers_pkey" tableName="qrtz_simprop_triggers"/>
+        <addForeignKeyConstraint
+                baseColumnNames="sched_name,trigger_name,trigger_group"
+                baseTableName="qrtz_simprop_triggers"
+                baseTableSchemaName="quartz"
+                constraintName="qrtz_simprop_triggers_sched_name_fkey"
+                referencedTableSchemaName="quartz"
+                referencedColumnNames="sched_name,trigger_name,trigger_group"
+                referencedTableName="qrtz_triggers"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_blob_triggers">
+        <comment>[QRTZ_BLOB_TRIGGERS] table creation (with PK and FK)</comment>
+        <createTable tableName="qrtz_blob_triggers" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="blob_data" type="BYTEA"/>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name,trigger_name,trigger_group" schemaName="quartz"
+                       constraintName="qrtz_blob_triggers_pkey" tableName="qrtz_blob_triggers"/>
+        <addForeignKeyConstraint
+                baseColumnNames="sched_name,trigger_name,trigger_group"
+                baseTableName="qrtz_blob_triggers"
+                baseTableSchemaName="quartz"
+                constraintName="qrtz_blob_triggers_sched_name_fkey"
+                referencedTableSchemaName="quartz"
+                referencedColumnNames="sched_name,trigger_name,trigger_group"
+                referencedTableName="qrtz_triggers"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_calendars">
+        <comment>[QRTZ_CALENDARS] table creation (with PK)</comment>
+        <createTable tableName="qrtz_calendars" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="calendar_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="calendar" type="BYTEA">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, calendar_name" schemaName="quartz"
+                       constraintName="qrtz_calendars_pkey" tableName="qrtz_calendars"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_paused_trigger_grps">
+        <comment>[QRTZ_PAUSED_TRIGGER_GRPS] table creation (with PK)</comment>
+        <createTable tableName="qrtz_paused_trigger_grps" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, trigger_group" schemaName="quartz"
+                       constraintName="qrtz_paused_trigger_grps_pkey" tableName="qrtz_paused_trigger_grps"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_fired_triggers">
+        <comment>[QRTZ_FIRED_TRIGGERS] table creation (with PK)</comment>
+        <createTable tableName="qrtz_fired_triggers" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entry_id" type="VARCHAR(95)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="instance_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fired_time" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sched_time" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_name" type="VARCHAR(200)"/>
+            <column name="job_group" type="VARCHAR(200)"/>
+            <column name="is_nonconcurrent" type="BOOL"/>
+            <column name="requests_recovery" type="BOOL"/>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, entry_id" schemaName="quartz"
+                       constraintName="qrtz_fired_triggers_pkey" tableName="qrtz_fired_triggers"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_scheduler_state">
+        <comment>[QRTZ_SCHEDULER_STATE] table creation (with PK)</comment>
+        <createTable tableName="qrtz_scheduler_state" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="instance_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_checkin_time" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="checkin_interval" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, instance_name" schemaName="quartz"
+                       constraintName="qrtz_scheduler_state_pkey" tableName="qrtz_scheduler_state"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_table_qrtz_locks">
+        <comment>[QRTZ_LOCKS] table creation (with PK)</comment>
+        <createTable tableName="qrtz_locks" schemaName="quartz">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lock_name" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="sched_name, lock_name" schemaName="quartz"
+                       constraintName="qrtz_locks_pkey" tableName="qrtz_locks"/>
+    </changeSet>
+
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_nft_misfire">
+        <createIndex indexName="idx_qrtz_t_nft_misfire" tableName="qrtz_triggers"
+                     schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="misfire_instr"/>
+            <column name="next_fire_time"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_nft_st_misfire">
+        <createIndex indexName="idx_qrtz_t_nft_st_misfire" tableName="qrtz_triggers"
+                     schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="misfire_instr"/>
+            <column name="next_fire_time"/>
+            <column name="trigger_state"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_c">
+        <createIndex indexName="idx_qrtz_t_c" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="calendar_name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_j">
+        <createIndex indexName="idx_qrtz_t_j" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="job_name"/>
+            <column name="job_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_n_state">
+        <createIndex indexName="idx_qrtz_t_n_state" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="trigger_name"/>
+            <column name="trigger_group"/>
+            <column name="trigger_state"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_j_grp">
+        <createIndex indexName="idx_qrtz_j_grp" tableName="qrtz_job_details" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="job_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_ft_j_g">
+        <createIndex indexName="idx_qrtz_ft_j_g" tableName="qrtz_fired_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="job_name"/>
+            <column name="job_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_n_g_state">
+        <createIndex indexName="idx_qrtz_t_n_g_state" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="trigger_group"/>
+            <column name="trigger_state"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_ft_tg">
+        <createIndex indexName="idx_qrtz_ft_tg" tableName="qrtz_fired_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="trigger_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_ft_jg">
+        <createIndex indexName="idx_qrtz_ft_jg" tableName="qrtz_fired_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="job_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_next_fire_time">
+        <createIndex indexName="idx_qrtz_t_next_fire_time" tableName="qrtz_triggers"
+                     schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="next_fire_time"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_nft_st_misfire_grp">
+        <createIndex indexName="idx_qrtz_t_nft_st_misfire_grp" tableName="qrtz_triggers"
+                     schemaName="quartz"
+                     unique="false">
+            <column name="sched_name"/>
+            <column name="misfire_instr"/>
+            <column name="next_fire_time"/>
+            <column name="trigger_group"/>
+            <column name="trigger_state"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_ft_inst_job_req_rcvry">
+        <createIndex indexName="idx_qrtz_ft_inst_job_req_rcvry" tableName="qrtz_fired_triggers"
+                     schemaName="quartz"
+                     unique="false">
+            <column name="sched_name"/>
+            <column name="instance_name"/>
+            <column name="requests_recovery"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_ft_t_g">
+        <createIndex indexName="idx_qrtz_ft_t_g" tableName="qrtz_fired_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="trigger_name"/>
+            <column name="trigger_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_nft_st">
+        <createIndex indexName="idx_qrtz_t_nft_st" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="trigger_state"/>
+            <column name="next_fire_time"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_g">
+        <createIndex indexName="idx_qrtz_t_g" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="trigger_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_j_req_recovery">
+        <createIndex indexName="idx_qrtz_j_req_recovery" tableName="qrtz_job_details" schemaName="quartz"
+                     unique="false">
+            <column name="sched_name"/>
+            <column name="requests_recovery"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_state">
+        <createIndex indexName="idx_qrtz_t_state" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="trigger_state"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_t_jg">
+        <createIndex indexName="idx_qrtz_t_jg" tableName="qrtz_triggers" schemaName="quartz" unique="false">
+            <column name="sched_name"/>
+            <column name="job_group"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Matt" id="create_index_idx_qrtz_ft_trig_inst_name">
+        <createIndex indexName="idx_qrtz_ft_trig_inst_name" tableName="qrtz_fired_triggers" schemaName="quartz"
+                     unique="false">
+            <column name="sched_name"/>
+            <column name="instance_name"/>
+        </createIndex>
+    </changeSet>
+
+
+</databaseChangeLog>

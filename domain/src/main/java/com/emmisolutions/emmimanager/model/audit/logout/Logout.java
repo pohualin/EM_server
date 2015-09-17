@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import java.util.Objects;
 
 /**
  * A user logout record
@@ -87,5 +88,30 @@ public class Logout {
 
     public void setAdminFacingApplication(boolean adminFacingApplication) {
         this.adminFacingApplication = adminFacingApplication;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Logout logout = (Logout) o;
+        return Objects.equals(id, logout.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Logout{" +
+                "id=" + id +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", source=" + source +
+                ", user=" + user +
+                ", time=" + time +
+                ", adminFacingApplication=" + adminFacingApplication +
+                '}';
     }
 }
