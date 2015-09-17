@@ -100,4 +100,25 @@
     <!--<Environment name="cache.cluster.group.name" value="development_cluster" type="java.lang.String" override="false"/>-->
     <!--<Environment name="cache.cluster.required.min.size" value="1" type="java.lang.String" override="false"/>-->
 
+    <!-- Quartz (cluster aware persistent scheduling) Configuration Settings -->
+
+    <!-- postgres specific -->
+    <Environment name="org.quartz.jobStore.tablePrefix" value="quartz.qrtz_" type="java.lang.String" override="false"/>
+    <Environment name="org.quartz.jobStore.driverDelegateClass" value="org.quartz.impl.jdbcjobstore.PostgreSQLDelegate"
+                 type="java.lang.String" override="false"/>
+
+    <!-- sql server specific, comment out postgres if using these -->
+    <!--<Environment name="org.quartz.jobStore.tablePrefix" value="[quartz].qrtz_" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.jobStore.driverDelegateClass" value="org.quartz.impl.jdbcjobstore.MSSQLDelegate" type="java.lang.String" override="false"/>-->
+
+    <!-- generic configurations (probably shouldn't override)-->
+    <!--<Environment name="org.quartz.jobStore.class" value="org.springframework.scheduling.quartz.LocalDataSourceJobStore" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.jobStore.isClustered" value="true" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.jobStore.useProperties" value="true" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.jobStore.lockHandler.class" value="org.quartz.impl.jdbcjobstore.UpdateLockRowSemaphore" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.jobStore.clusterCheckinInterval" value="20000" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.scheduler.instanceName" value="em2_clustered_scheduler" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.scheduler.instanceId" value="AUTO" type="java.lang.String" override="false"/>-->
+    <!--<Environment name="org.quartz.scheduler.skipUpdateCheck" value="true" type="java.lang.String" override="false"/>-->
+
 </Context>

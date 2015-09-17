@@ -28,4 +28,11 @@ public interface ProgramService {
      */
     Page<Specialty> findSpecialties(Pageable page);
 
+    /**
+     * Clears the HLI program search cache
+     *
+     * @return number of removed entries
+     */
+    int clearHliCache();
+
 }

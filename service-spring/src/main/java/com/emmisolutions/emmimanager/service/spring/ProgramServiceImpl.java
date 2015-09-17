@@ -32,4 +32,10 @@ public class ProgramServiceImpl implements ProgramService {
         return programPersistence.findSpecialties(page);
     }
 
+    @Override
+    @Transactional
+    public int clearHliCache() {
+        return programPersistence.clearHliCache();
+    }
+
 }

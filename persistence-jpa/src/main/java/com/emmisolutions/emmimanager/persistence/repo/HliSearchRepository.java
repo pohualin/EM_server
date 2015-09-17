@@ -16,5 +16,5 @@ public interface HliSearchRepository {
     /**
      * Cleans the cache of saved HliSearchRequests
      */
-    void cacheClean();
+    int cacheClean();
 }

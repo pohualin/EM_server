@@ -59,6 +59,7 @@
         <commons.codec.version>1.10</commons.codec.version>
         <hazelcast.version>3.5</hazelcast.version>
         <kryo.version>3.0.2</kryo.version>
+        <quartz.version>2.2.1</quartz.version>
     </properties>
 
     <build>
@@ -114,6 +115,10 @@
                                         <exclude>*.logging.*</exclude>
                                         <exclude>com.emmisolutions.emmimanager.web.rest.*</exclude>
                                         <exclude>com.emmisolutions.emmimanager.persistence.configuration.*</exclude>
+                                        <exclude>
+                                            com.emmisolutions.emmimanager.service.configuration.schedule.*
+                                        </exclude>
+                                        <exclude>com.emmisolutions.emmimanager.service.spring.jobs.*</exclude>
                                         <exclude>
                                             com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration
                                         </exclude>
@@ -658,6 +663,12 @@
                 <groupId>com.esotericsoftware</groupId>
                 <artifactId>kryo</artifactId>
                 <version>${kryo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
             </dependency>
 
         </dependencies>
