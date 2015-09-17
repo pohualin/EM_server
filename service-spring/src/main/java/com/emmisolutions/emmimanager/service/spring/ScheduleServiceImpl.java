@@ -38,6 +38,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     private static final String EXCEPTION_PATIENTS_PHONE_REQUIRED = "Patient's phone is required for the team.";
 
     private static final String EXCEPTION_VIEW_BY_DATE = "view-by-date (UTC) >= current date. Current UTC date is: ";
+    
+    private static final String EXCEPTION_VIEW_BY_DATE_WITHIN_FIVE_YEARS = "view-by-date (UTC) <= 5 years from today. Current UTC date is: ";
 
     private static final String EXCEPTION_PROVIDER_REQUIRED = "Provider is required for the team";
 
@@ -170,6 +172,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (scheduledProgram.getViewByDate() == null ||
                 scheduledProgram.getViewByDate().isBefore(LocalDate.now(DateTimeZone.UTC))) {
             throw new InvalidDataAccessApiUsageException(EXCEPTION_VIEW_BY_DATE + LocalDate.now(DateTimeZone.UTC).toString());
+        }
+        
+        if (scheduledProgram.getViewByDate() == null ||
+                scheduledProgram.getViewByDate().isAfter(LocalDate.now(DateTimeZone.UTC).plusYears(5))){
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_VIEW_BY_DATE_WITHIN_FIVE_YEARS + LocalDate.now(DateTimeZone.UTC).toString());
         }
     }
     

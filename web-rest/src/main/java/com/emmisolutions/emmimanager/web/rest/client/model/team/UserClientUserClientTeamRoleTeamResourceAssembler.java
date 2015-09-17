@@ -2,12 +2,10 @@ package com.emmisolutions.emmimanager.web.rest.client.model.team;
 
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientTeamPermission;
 import com.emmisolutions.emmimanager.model.user.client.team.UserClientUserClientTeamRole;
-import com.emmisolutions.emmimanager.web.rest.client.resource.SchedulesResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.stereotype.Component;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledProgramResourcePage.scheduleProgramsSearchLink;
 
 /**
  * Converts UserClientUserClientTeamRole objects to TeamResource objects with the proper links governed by
@@ -24,9 +22,7 @@ public class UserClientUserClientTeamRoleTeamResourceAssembler
         for (UserClientTeamPermission userClientTeamPermission : entity.getUserClientTeamRole().getUserClientTeamPermissions()) {
             switch (userClientTeamPermission.getName()) {
                 case PERM_CLIENT_TEAM_SCHEDULE_PROGRAM:
-                    ret.add(linkTo(methodOn(SchedulesResource.class)
-                            .scheduled(entity.getTeam().getClient().getId(), entity.getTeam().getId(), null, null))
-                            .withRel("schedulePrograms"));
+                    ret.add(scheduleProgramsSearchLink(entity.getTeam()));
                     break;
             }
         }

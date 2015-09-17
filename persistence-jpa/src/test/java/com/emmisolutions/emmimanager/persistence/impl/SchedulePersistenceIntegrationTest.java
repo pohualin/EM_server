@@ -80,6 +80,9 @@ public class SchedulePersistenceIntegrationTest extends BaseIntegrationTest {
 
         assertThat("access code works",
                 schedulePersistence.find(with().accessCodes(saved.getAccessCode()).patients(patient), null), hasItem(saved));
+        
+        assertThat("enconter works", 
+                schedulePersistence.find(with().encounter(saved.getEncounter()), null), hasItem(saved));
     }
 
     /**

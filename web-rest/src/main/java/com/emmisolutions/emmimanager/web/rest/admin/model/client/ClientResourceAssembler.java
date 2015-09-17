@@ -125,7 +125,7 @@ public class ClientResourceAssembler implements
                                 TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
         return new Link(uriTemplate, link.getRel());
     }
-
+    
     @Override
     public ClientResource toResource(Client entity) {
         ClientResource ret = new ClientResource();
@@ -164,7 +164,6 @@ public class ClientResourceAssembler implements
                 methodOn(ClientRestrictConfigurationsResource.class)
                         .getByClient(entity.getId())).withRel(
                 "restrictConfiguration"));
-        
         ret.add(linkTo(
                 methodOn(ClientContentSubscriptionConfigurationsResource.class).getContentSubscriptionList(null)).withRel(
                 "contentSubscriptions"));

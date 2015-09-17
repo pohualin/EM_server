@@ -38,8 +38,8 @@ public interface ClientContentSubscriptionConfigurationService {
 
     
     /**
-     * Find a Page of existing clientContentSubscriptionConfiguration by Client id 
-     * @param clientId
+     * Find a Page of existing clientContentSubscriptionConfiguration by Client 
+     * @param client
      *            to find
      * @param pageable
      *            to use
@@ -55,7 +55,7 @@ public interface ClientContentSubscriptionConfigurationService {
      * @param clientContentSubscriptionConfiguration
      *            to delete
      */
-    public void delete(Client client);
+    public void delete(ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration);
 
     /**
      * Reload an existing ClientContentSubscriptionConfiguration

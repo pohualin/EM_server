@@ -106,6 +106,10 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         saved.setViewByDate(LocalDate.now(DateTimeZone.UTC).minusDays(1));
         scheduleService.update(saved);
         fail("the update call should have failed due to invalid view-by-date");
+        
+        saved.setViewByDate(LocalDate.now(DateTimeZone.UTC).plusYears(5).plusDays(1));
+        scheduleService.update(saved);
+        fail("the update call should have failed due to invalid view-by-date");
     }
 
     /**

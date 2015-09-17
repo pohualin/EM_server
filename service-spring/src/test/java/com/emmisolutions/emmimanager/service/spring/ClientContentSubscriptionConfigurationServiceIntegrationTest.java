@@ -1,8 +1,7 @@
 package com.emmisolutions.emmimanager.service.spring;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import javax.annotation.Resource;
 
@@ -84,7 +83,7 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
                updatedClientContentSubscription.isFaithBased()
                        , is(true));
        
-       clientContentSubscriptionConfigurationService.delete(client);
+       clientContentSubscriptionConfigurationService.delete(updatedClientContentSubscription);
        
        assertThat("delete content subscription successfully",
     		   clientContentSubscriptionConfigurationService.reload(updatedClientContentSubscription), is(nullValue()));
@@ -121,6 +120,13 @@ public class ClientContentSubscriptionConfigurationServiceIntegrationTest extend
          clientContentSubscription.setFaithBased(false);
          ClientContentSubscriptionConfiguration reloadClientContentSubscription =  clientContentSubscriptionConfigurationService.reload(clientContentSubscription);
          assertThat("reloaded is null", reloadClientContentSubscription, is(nullValue()));
+    }
+    
+    @Test
+    public void testDeleteNull(){
+    	ClientContentSubscriptionConfiguration clientContentSubscriptionConfiguration = null;
+    	clientContentSubscriptionConfigurationService.delete(clientContentSubscriptionConfiguration);
+    	assertThat(clientContentSubscriptionConfiguration, is(nullValue()));
     }
     
 }

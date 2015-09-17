@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="Remove any duplicate email endings in email_restrict_configuration. Add unique constraint." author="Wade">
+        <sql>
+            <![CDATA[
+                DELETE FROM email_restrict_configuration WHERE id IN (
+                    SELECT DISTINCT dupe.id FROM email_restrict_configuration orig INNER JOIN email_restrict_configuration dupe
+                    ON orig.client_id = dupe.client_id
+                        AND ((LOWER(orig.email_ending) = LOWER(dupe.email_ending)) OR (dupe.email_ending=''))
+                        AND orig.id <> dupe.id
+                        AND dupe.id > orig.id
+                    GROUP BY dupe.id
+                );
+            ]]>
+        </sql>
+
+        <addUniqueConstraint tableName="email_restrict_configuration" columnNames="client_id, email_ending"
+                             constraintName="uk_client_id_email_ending" />
+    </changeSet>
+
+</databaseChangeLog>

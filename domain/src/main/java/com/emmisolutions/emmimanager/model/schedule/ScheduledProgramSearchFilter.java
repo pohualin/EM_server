@@ -31,6 +31,8 @@ public class ScheduledProgramSearchFilter {
     private Long id;
 
     private Team team;
+    
+    private Encounter encounter;
 
     private boolean includeExpired;
 
@@ -167,6 +169,26 @@ public class ScheduledProgramSearchFilter {
      */
     public Team team() {
         return team;
+    }
+    
+    /**
+     * Filter by encounter
+     *
+     * @param encounter to use
+     * @return this ScheduledProgramSearchFilter for chaining
+     */
+    public ScheduledProgramSearchFilter encounter(Encounter encounter) {
+        this.encounter = encounter;
+        return this;
+    }
+
+    /**
+     * Fetches the encounter filter
+     *
+     * @return encounter set on the filter
+     */
+    public Encounter encounter() {
+        return encounter;
     }
 
     /**
