@@ -10,9 +10,9 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
 import com.emmisolutions.emmimanager.service.ScheduleService;
+import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJob;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -38,7 +38,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private static final String EXCEPTION_PATIENTS_PHONE_REQUIRED = "Patient's phone is required for the team.";
 
     private static final String EXCEPTION_VIEW_BY_DATE = "view-by-date (UTC) >= current date. Current UTC date is: ";
-    
+
     private static final String EXCEPTION_VIEW_BY_DATE_WITHIN_FIVE_YEARS = "view-by-date (UTC) <= 5 years from today. Current UTC date is: ";
 
     private static final String EXCEPTION_PROVIDER_REQUIRED = "Provider is required for the team";
@@ -64,21 +64,24 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Resource
     SchedulePersistence schedulePersistence;
-    
+
     @Resource
     EncounterPersistence encounterPersistence;
-    
+
     @Resource
     ClientTeamSchedulingConfigurationService teamSchedulingConfigurationService;
-    
+
     @Resource
     ClientTeamPhoneConfigurationPersistence clientTeamPhoneConfigurationPersistence;
-    
+
     @Resource
     ClientTeamEmailConfigurationPersistence clientTeamEmailConfigurationPersistence;
 
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
+
+    @Resource
+    ScheduleProgramReminderEmailJob scheduledProgramReminderEmailJob;
 
     @Override
     @Transactional
@@ -100,6 +103,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             toBeScheduled.setAccessCode(accessCodeGenerator.next());
             savedScheduledProgram = schedulePersistence.save(toBeScheduled);
         }
+        scheduledProgramReminderEmailJob.scheduleReminder(savedScheduledProgram);
         return savedScheduledProgram;
     }
 
@@ -140,7 +144,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduledProgram.setProgram(inDb.getProgram());
         scheduledProgram.setEncounter(inDb.getEncounter());
 
-        return schedulePersistence.save(scheduledProgram);
+        ScheduledProgram savedScheduledProgram = schedulePersistence.save(scheduledProgram);
+        scheduledProgramReminderEmailJob.scheduleReminder(savedScheduledProgram);
+        return savedScheduledProgram;
     }
 
     private void hydrateValidProgram(ScheduledProgram scheduledProgram) {
@@ -158,7 +164,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         ClientTeamSchedulingConfiguration schedulingConfig = teamSchedulingConfigurationService.findByTeam(scheduledProgram.getTeam());
 
-        if ((schedulingConfig.isUseLocation()) && (scheduledProgram.getLocation() == null )) {
+        if ((schedulingConfig.isUseLocation()) && (scheduledProgram.getLocation() == null)) {
             throw new InvalidDataAccessApiUsageException(EXCEPTION_LOCATION_REQUIRED);
         }
 
@@ -173,13 +179,13 @@ public class ScheduleServiceImpl implements ScheduleService {
                 scheduledProgram.getViewByDate().isBefore(LocalDate.now(DateTimeZone.UTC))) {
             throw new InvalidDataAccessApiUsageException(EXCEPTION_VIEW_BY_DATE + LocalDate.now(DateTimeZone.UTC).toString());
         }
-        
+
         if (scheduledProgram.getViewByDate() == null ||
-                scheduledProgram.getViewByDate().isAfter(LocalDate.now(DateTimeZone.UTC).plusYears(5))){
+                scheduledProgram.getViewByDate().isAfter(LocalDate.now(DateTimeZone.UTC).plusYears(5))) {
             throw new InvalidDataAccessApiUsageException(EXCEPTION_VIEW_BY_DATE_WITHIN_FIVE_YEARS + LocalDate.now(DateTimeZone.UTC).toString());
         }
     }
-    
+
     private void validatePhone(ScheduledProgram toBeScheduled) {
         ClientTeamPhoneConfiguration teamPhoneConfigDB = clientTeamPhoneConfigurationPersistence.find(toBeScheduled.getTeam().getId());
         if ((teamPhoneConfigDB != null) && (teamPhoneConfigDB.isRequirePhone())) {
@@ -187,7 +193,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 throw new InvalidDataAccessApiUsageException(EXCEPTION_PATIENTS_PHONE_REQUIRED);
             }
         }
-   }
+    }
 
     private void validateEmail(ScheduledProgram toBeScheduled) {
         ClientTeamEmailConfiguration teamEmailConfig = clientTeamEmailConfigurationPersistence.find(toBeScheduled.getTeam().getId());

@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.service.schedule;
+package com.emmisolutions.emmimanager.service.jobs;
 
 /**
  * Holds the list of all job names that can be scheduled
@@ -15,5 +15,15 @@ public interface AllJobs {
      * data.
      */
     String HOUSEKEEPING_GROUP = "HOUSEKEEPING";
+
+    /**
+     * Group name for patient emails
+     */
+    String PATIENT_EMAIL_GROUP = "PATIENT_EMAIL";
+
+    /**
+     * Job name for scheduled program reminders
+     */
+    String SCHEDULED_PROGRAM_REMINDER_EMAIL = "scheduledProgramReminderEmail";
 
 }
