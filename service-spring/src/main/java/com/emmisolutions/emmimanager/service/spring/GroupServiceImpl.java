@@ -152,11 +152,16 @@ public class GroupServiceImpl implements GroupService {
     }
 
     private String normalizeTagName(String name) {
-        String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
-        if (StringUtils.isNotBlank(normalizedName)) {
+        String trimmed = StringUtils.trimToEmpty(StringUtils.lowerCase(name));
+        String normalizedName = trimmed;
+        if (StringUtils.isNotBlank(trimmed)) {
             // do regex
-            normalizedName = normalizedName.replaceAll("\\s+", "");
+            normalizedName = trimmed.replaceAll("[^a-z0-9]*", "");
+            if (!StringUtils.isNotBlank(normalizedName)){
+                normalizedName = trimmed;
+            }
         }
         return normalizedName;
     }
+
 }
