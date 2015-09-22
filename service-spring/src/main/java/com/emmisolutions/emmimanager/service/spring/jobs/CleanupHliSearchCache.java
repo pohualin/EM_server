@@ -22,7 +22,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 /**
  * Schedules and executes a job to clean the hli search cache.
  */
-@Profile("!test")
 @Component(CLEANUP_HLI_SEARCH_CACHE_JOB_BEAN_NAME)
 @DisallowConcurrentExecution
 public class CleanupHliSearchCache extends QuartzJobBean implements AllJobs {

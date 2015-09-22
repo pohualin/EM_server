@@ -10,7 +10,7 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
 import com.emmisolutions.emmimanager.service.ScheduleService;
-import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJob;
+import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +81,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     UserDetailsService userDetailsService;
 
     @Resource
-    ScheduleProgramReminderEmailJob scheduledProgramReminderEmailJob;
+    ScheduleProgramReminderEmailJobMaintenanceService scheduledProgramReminderEmailJob;
 
     @Override
     @Transactional
@@ -103,7 +103,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             toBeScheduled.setAccessCode(accessCodeGenerator.next());
             savedScheduledProgram = schedulePersistence.save(toBeScheduled);
         }
-        scheduledProgramReminderEmailJob.scheduleReminder(savedScheduledProgram);
+        scheduledProgramReminderEmailJob.scheduleReminders(savedScheduledProgram);
         return savedScheduledProgram;
     }
 
@@ -145,7 +145,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduledProgram.setEncounter(inDb.getEncounter());
 
         ScheduledProgram savedScheduledProgram = schedulePersistence.save(scheduledProgram);
-        scheduledProgramReminderEmailJob.scheduleReminder(savedScheduledProgram);
+        scheduledProgramReminderEmailJob.updateScheduledReminders(savedScheduledProgram);
         return savedScheduledProgram;
     }
 

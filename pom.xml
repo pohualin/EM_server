@@ -60,6 +60,7 @@
         <hazelcast.version>3.5</hazelcast.version>
         <kryo.version>3.0.2</kryo.version>
         <quartz.version>2.2.1</quartz.version>
+        <jmockit.version>1.19</jmockit.version>
     </properties>
 
     <build>
@@ -118,7 +119,6 @@
                                         <exclude>
                                             com.emmisolutions.emmimanager.service.configuration.schedule.*
                                         </exclude>
-                                        <exclude>com.emmisolutions.emmimanager.service.spring.jobs.*</exclude>
                                         <exclude>
                                             com.emmisolutions.emmimanager.service.configuration.AsyncConfiguration
                                         </exclude>
@@ -205,6 +205,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- needs to be before junit in the classpath -->
+            <dependency>
+                <groupId>org.jmockit</groupId>
+                <artifactId>jmockit</artifactId>
+                <version>${jmockit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -682,6 +690,11 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -17,12 +17,12 @@ public interface AllJobs {
     String HOUSEKEEPING_GROUP = "HOUSEKEEPING";
 
     /**
-     * Group name for patient emails
+     * Group name for patient email job
      */
-    String PATIENT_EMAIL_GROUP = "PATIENT_EMAIL";
+    String PATIENT_EMAIL_JOB_GROUP = "PATIENT_EMAIL";
 
     /**
-     * Job name for scheduled program reminders
+     * Job name for scheduled program reminders, matches spring bean component name
      */
     String SCHEDULED_PROGRAM_REMINDER_EMAIL = "scheduledProgramReminderEmail";
 
