@@ -6,7 +6,6 @@ import org.joda.time.LocalDate;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +40,12 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
     @Transactional
     public void scheduleReminders(ScheduledProgram scheduledProgram) {
         schedule(scheduledProgram, 0, 2, 4, 6, 8);
+
     }
 
+    @Override
     @Resource(name = "quartzScheduler")
-    public void setScheduler(Scheduler scheduler){
+    public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 
