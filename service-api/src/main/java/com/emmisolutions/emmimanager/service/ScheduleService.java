@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramNote;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,14 @@ public interface ScheduleService {
      * @return Page of ScheduledProgram objects matching filter
      */
     Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page);
+
+    /**
+     * finds the notes for a given scheduled program
+     *
+     * @param accessCode unique identifier for a scheduled program
+     * @return a ScheduledProgramNote containing notes from a scheduled program
+     */
+    ScheduledProgramNote findNotes(String accessCode);
 
     /**
      * Update a scheduled program
