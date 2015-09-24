@@ -8,17 +8,13 @@ import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
 import com.emmisolutions.emmimanager.service.mail.PatientMailService;
-import com.emmisolutions.emmimanager.service.mail.TrackingService;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.model.mail.EmailTemplateType.SCHEDULED_PROGRAM_PATIENT_REMINDER;
-import static org.joda.time.DateTimeZone.UTC;
+import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
 
 /**
  * Patient Mail service implementation
@@ -33,15 +29,9 @@ public class PatientEmailServiceImpl implements PatientMailService {
     ClientTeamEmailConfigurationService clientTeamEmailConfigurationService;
 
     @Resource
-    TrackingService trackingService;
-
-    @Resource
-    EmailTemplatePersistence emailTemplatePersistence;
-
-    @Resource
     ScheduleService scheduleService;
+    private EmailTemplatePersistence emailTemplatePersistence;
 
-    @Async
     @Override
     @Transactional
     public void sendReminderEmail(ScheduledProgram aScheduledProgram,
@@ -50,37 +40,13 @@ public class PatientEmailServiceImpl implements PatientMailService {
         ScheduledProgram scheduledProgram = scheduleService.reload(aScheduledProgram);
 
         if (scheduledProgram != null) {
-
-            // check that the team has reminders enabled
-            boolean sendMail = false;
-            ClientTeamEmailConfiguration clientTeamEmailConfiguration =
-                    clientTeamEmailConfigurationService.findByTeam(scheduledProgram.getTeam());
-            if (day != null) {
-                switch (day) {
-                    case AT_SCHEDULING:
-                        sendMail = true;
-                        break;
-                    case TWO_DAYS_BEFORE_VIEW_BY_DATE:
-                        sendMail = clientTeamEmailConfiguration.getReminderTwoDays();
-                        break;
-                    case FOUR_DAYS_BEFORE_VIEW_BY_DATE:
-                        sendMail = clientTeamEmailConfiguration.getReminderFourDays();
-                        break;
-                    case SIX_DAYS_BEFORE_VIEW_BY_DATE:
-                        sendMail = clientTeamEmailConfiguration.getReminderSixDays();
-                        break;
-                    case EIGHT_DAYS_BEFORE_VIEW_BY_DATE:
-                        sendMail = clientTeamEmailConfiguration.getReminderEightDays();
-                        break;
-                }
-            }
-
-            // if we are to send an email, make sure we haven't already sent one today
-            if (sendMail && !emailTemplatePersistence.emailAlreadySentToday(
-                    SCHEDULED_PROGRAM_PATIENT_REMINDER, scheduledProgram.getPatient())) {
+            if (!emailTemplatePersistence.emailAlreadySentToday(
+                    SCHEDULED_PROGRAM_PATIENT_REMINDER, scheduledProgram.getPatient()) &&
+                    teamConfiguredToSendMail(scheduledProgram, day)) {
+                // patient hasn't been emailed today and team allows email for the reminder day
 
                 // retrieve tracking url
-                String trackingUrl = "http://get.from";
+                String trackingUrl = "http://get.from/" + SIGNATURE_VARIABLE_NAME;
 
                 // get start emmi url to point to
                 String startEmmiUrl = "http://startemmi.com";
@@ -88,7 +54,41 @@ public class PatientEmailServiceImpl implements PatientMailService {
                 // send email
                 mailService.sendPatientScheduledProgramReminderEmail(scheduledProgram,
                         startEmmiUrl, trackingUrl);
+
             }
         }
+    }
+
+    private boolean teamConfiguredToSendMail(ScheduledProgram scheduledProgram,
+                                             ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay day) {
+        boolean sendMail = false;
+        ClientTeamEmailConfiguration clientTeamEmailConfiguration =
+                clientTeamEmailConfigurationService.findByTeam(scheduledProgram.getTeam());
+        if (day != null) {
+            switch (day) {
+                case AT_SCHEDULING:
+                    sendMail = true;
+                    break;
+                case TWO_DAYS_BEFORE_VIEW_BY_DATE:
+                    sendMail = clientTeamEmailConfiguration.getReminderTwoDays();
+                    break;
+                case FOUR_DAYS_BEFORE_VIEW_BY_DATE:
+                    sendMail = clientTeamEmailConfiguration.getReminderFourDays();
+                    break;
+                case SIX_DAYS_BEFORE_VIEW_BY_DATE:
+                    sendMail = clientTeamEmailConfiguration.getReminderSixDays();
+                    break;
+                case EIGHT_DAYS_BEFORE_VIEW_BY_DATE:
+                    sendMail = clientTeamEmailConfiguration.getReminderEightDays();
+                    break;
+            }
+        }
+        return sendMail;
+    }
+
+    @Override
+    @Resource
+    public void setEmailTemplatePersistence(EmailTemplatePersistence emailTemplatePersistence) {
+        this.emailTemplatePersistence = emailTemplatePersistence;
     }
 }

@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring.jobs;
 
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.quartz.*;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
     @Override
     @Transactional
     public void scheduleReminders(ScheduledProgram scheduledProgram) {
-        // schedule for all days
+        // schedule for all reminder days
         schedule(scheduledProgram, ReminderDay.values());
     }
 
@@ -54,22 +55,31 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
     }
 
     @Override
-    public ReminderDay extractDay(JobExecutionContext jobExecutionContext) {
+    public ReminderDay extractReminderDay(JobExecutionContext jobExecutionContext) {
         ReminderDay ret = null;
         if (jobExecutionContext != null && jobExecutionContext.getTrigger() != null) {
-            jobExecutionContext.getTrigger().getKey()
+            TriggerKey triggerKey = jobExecutionContext.getTrigger().getKey();
+            if (triggerKey != null) {
+                ret = ReminderDay.fromString(
+                        StringUtils.substringBefore(triggerKey.getName(), PATIENT_EMAIL_TRIGGER_NAME_SUFFIX));
+            }
         }
         return ret;
     }
 
-//    return triggerKey(
-//            String.format(PATIENT_EMAIL_TRIGGER_NAME, day.getDay()),
-//            String.format(PATIENT_EMAIL_TRIGGER_GROUP,
-//            scheduledProgram.getId()));
-
     @Override
     public ScheduledProgram extractScheduledProgram(JobExecutionContext jobExecutionContext) {
-        return null;
+        ScheduledProgram ret = null;
+        if (jobExecutionContext != null && jobExecutionContext.getTrigger() != null) {
+            TriggerKey triggerKey = jobExecutionContext.getTrigger().getKey();
+            if (triggerKey != null) {
+                String id = StringUtils.substringAfter(triggerKey.getGroup(), PATIENT_EMAIL_TRIGGER_GROUP_PREFIX);
+                if (StringUtils.isNumeric(id)) {
+                    ret = new ScheduledProgram(new Long(id));
+                }
+            }
+        }
+        return ret;
     }
 
     /**
@@ -144,7 +154,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
      * @param scheduledProgram on which the job should run, used for the trigger group
      * @return a new trigger key
      */
-    private TriggerKey createTriggerKey(ReminderDay day, ScheduledProgram scheduledProgram) {
+    TriggerKey createTriggerKey(ReminderDay day, ScheduledProgram scheduledProgram) {
         return triggerKey(
                 String.format(PATIENT_EMAIL_TRIGGER_NAME, day.getDay()),
                 String.format(PATIENT_EMAIL_TRIGGER_GROUP,

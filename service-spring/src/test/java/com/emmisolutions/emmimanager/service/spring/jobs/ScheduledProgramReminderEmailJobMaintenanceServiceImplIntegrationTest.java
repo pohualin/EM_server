@@ -4,10 +4,10 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import mockit.Injectable;
-import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import mockit.Verifications;
 import org.joda.time.LocalDate;
+import org.junit.After;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -26,6 +26,14 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
     @Resource
     ScheduleProgramReminderEmailJobMaintenanceService service;
 
+    @Resource(name = "quartzScheduler")
+    Scheduler realScheduler;
+
+    @After
+    public void reset() {
+        service.setScheduler(realScheduler);
+    }
+
     /**
      * Make sure that emails are scheduled for a newly scheduled program
      *
@@ -33,7 +41,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
      * @throws SchedulerException shouldn't happen, there because of expectations and verifications
      */
     @Test
-    public void newScheduledProgram(@Mocked final Scheduler scheduler) throws SchedulerException {
+    public void newScheduledProgram(@Injectable final Scheduler scheduler) throws SchedulerException {
         new NonStrictExpectations() {{
             // ensure scheduler will return null when existing triggers are fetched
             scheduler.getTrigger(withInstanceOf(TriggerKey.class));
@@ -89,7 +97,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
      * @throws SchedulerException shouldn't happen, there because of verifications
      */
     @Test
-    public void updateExistingScheduledProgram(@Mocked final Scheduler scheduler) throws SchedulerException {
+    public void updateExistingScheduledProgram(@Injectable final Scheduler scheduler) throws SchedulerException {
 
         service.setScheduler(scheduler);
 
@@ -136,7 +144,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
      * @throws SchedulerException shouldn't happen, there because of expectations
      */
     @Test(expected = RuntimeException.class)
-    public void makeSureRuntimeExceptionIsThrownOnSchedulerError(@Mocked final Scheduler scheduler) throws SchedulerException {
+    public void makeSureRuntimeExceptionIsThrownOnSchedulerError(@Injectable final Scheduler scheduler) throws SchedulerException {
         new NonStrictExpectations() {{
             scheduler.rescheduleJob(withInstanceOf(TriggerKey.class), withInstanceOf(Trigger.class));
             result = new SchedulerException();

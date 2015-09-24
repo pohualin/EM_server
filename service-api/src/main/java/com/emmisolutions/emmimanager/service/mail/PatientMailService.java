@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.service.mail;
 
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.persistence.EmailTemplatePersistence;
 import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 
 /**
@@ -16,4 +17,11 @@ public interface PatientMailService {
      */
     void sendReminderEmail(ScheduledProgram scheduledProgram,
                            ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay day);
+
+    /**
+     * Sets the email template persistence dependency
+     *
+     * @param emailTemplatePersistence to use
+     */
+    void setEmailTemplatePersistence(EmailTemplatePersistence emailTemplatePersistence);
 }

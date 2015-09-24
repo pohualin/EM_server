@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring.mail;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateTracking;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateType;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
@@ -73,69 +74,82 @@ public class MailServiceImpl implements MailService {
     @Override
     @Transactional
     public void sendActivationEmail(UserClient user, String activationUrl, String trackingUrl) {
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(ACTIVATION), user);
-        sendTemplateBasedEmail(activationFrom, user, activationUrl, ACTIVATION, trackingUrl, null, emailSentTracking);
+        sendTemplateBasedEmail(activationFrom, user, activationUrl, ACTIVATION, trackingUrl, null,
+                trackEmail(user, ACTIVATION));
     }
 
     @Async
     @Override
     @Transactional
     public void sendValidationEmail(UserClient user, String validationUrl, String trackingUrl) {
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(VALIDATION), user);
-        sendTemplateBasedEmail(emailValidationFrom, user, validationUrl, VALIDATION, trackingUrl, null, emailSentTracking);
+        sendTemplateBasedEmail(emailValidationFrom, user, validationUrl, VALIDATION, trackingUrl, null,
+                trackEmail(user, VALIDATION));
     }
 
     @Async
     @Override
     @Transactional
     public void sendPasswordResetEmail(UserClient user, String passwordResetUrl, String trackingUrl) {
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_RESET), user);
         sendTemplateBasedEmail(passwordResetFrom, user, passwordResetUrl, PASSWORD_RESET,
-                trackingUrl, null, emailSentTracking);
+                trackingUrl, null, trackEmail(user, PASSWORD_RESET));
     }
 
     @Async
     @Override
     @Transactional
     public void sendInvalidAccountPasswordResetEmail(UserClient userClient, String trackingUrl) {
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_RESET_INVALID_ACCOUNT), userClient);
         sendTemplateBasedEmail(passwordResetFrom, userClient, null, PASSWORD_RESET_INVALID_ACCOUNT,
-                trackingUrl, null, emailSentTracking);
+                trackingUrl, null, trackEmail(userClient, PASSWORD_RESET_INVALID_ACCOUNT));
     }
 
     @Async
     @Override
     @Transactional
     public void sendPasswordChangeConfirmationEmail(UserClient userClient, String trackingUrl) {
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_CHANGED), userClient);
-        sendTemplateBasedEmail(passwordChangedFrom, userClient, null, PASSWORD_CHANGED, trackingUrl, null, emailSentTracking);
+        sendTemplateBasedEmail(passwordChangedFrom, userClient, null, PASSWORD_CHANGED, trackingUrl, null,
+                trackEmail(userClient, PASSWORD_CHANGED));
     }
 
     @Async
     @Override
     @Transactional
     public void sendPasswordResetNotEnabled(UserClient userClient, String trackingUrl) {
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_RESET_NOT_ENABLED), userClient);
-        sendTemplateBasedEmail(passwordResetFrom, userClient, null, PASSWORD_RESET_NOT_ENABLED, trackingUrl, null, emailSentTracking);
+        sendTemplateBasedEmail(passwordResetFrom, userClient, null, PASSWORD_RESET_NOT_ENABLED, trackingUrl, null,
+                trackEmail(userClient, PASSWORD_RESET_NOT_ENABLED));
     }
 
+    @Async
     @Override
     @Transactional
-    public void sendPatientScheduledProgramReminderEmail(ScheduledProgram scheduledProgram, String startEmmiUrl, String trackingUrl) {
+    public void sendPatientScheduledProgramReminderEmail(ScheduledProgram scheduledProgram, String startEmmiUrl,
+                                                         String trackingUrl) {
         UserClient stub = new UserClient();
         stub.setEmail(scheduledProgram.getPatient().getEmail());
         stub.setFirstName(scheduledProgram.getPatient().getFirstName());
         stub.setLastName(scheduledProgram.getPatient().getLastName());
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(SCHEDULED_PROGRAM_PATIENT_REMINDER),
-                scheduledProgram.getPatient());
         sendTemplateBasedEmail(reminderFrom, stub, startEmmiUrl,
-                SCHEDULED_PROGRAM_PATIENT_REMINDER, trackingUrl, scheduledProgram, emailSentTracking);
+                SCHEDULED_PROGRAM_PATIENT_REMINDER, trackingUrl, scheduledProgram,
+                trackEmail(scheduledProgram.getPatient(), SCHEDULED_PROGRAM_PATIENT_REMINDER));
+    }
+
+    private EmailTemplateTracking trackEmail(Patient patient, EmailTemplateType type) {
+        if (patient == null || StringUtils.isBlank(patient.getEmail()) || type == null) {
+            return null;
+        }
+        return emailTemplatePersistence.log(emailTemplatePersistence.find(type), patient);
+    }
+
+    private EmailTemplateTracking trackEmail(UserClient userClient, EmailTemplateType type) {
+        if (userClient == null || StringUtils.isBlank(userClient.getEmail()) || type == null) {
+            return null;
+        }
+        return emailTemplatePersistence.log(emailTemplatePersistence.find(type), userClient);
     }
 
     private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type,
                                         String trackingUrl, ScheduledProgram scheduledProgram,
                                         EmailTemplateTracking emailSentTracking) {
-        if (user == null || StringUtils.isBlank(user.getEmail()) || type == null) {
+        if (emailSentTracking == null) {
             return;
         }
         Context context = new Context();
@@ -143,7 +157,7 @@ public class MailServiceImpl implements MailService {
         context.setVariable(URL_CONTEXT_VARIABLE, url);
         context.setVariable(EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE,
                 UserClientValidationEmailService.VALIDATION_TOKEN_HOURS_VALID);
-        if (StringUtils.isNotBlank(trackingUrl) && emailSentTracking != null) {
+        if (StringUtils.isNotBlank(trackingUrl)) {
             context.setVariable(EMAIL_TRACKING_CONTEXT_VARIABLE,
                     trackingUrl.replace(SIGNATURE_VARIABLE_NAME, emailSentTracking.getSignature()));
         }

@@ -28,5 +28,6 @@ public interface UserAdminRepository extends JpaRepository<UserAdmin, Long>, Jpa
             @CacheEvict(value = "adminFetchWithFullPermissions", allEntries = true)
     })
     @Override
+    @SuppressWarnings("unchecked")
     UserAdmin save(UserAdmin userAdmin);
 }
