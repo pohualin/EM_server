@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.service.spring.mail;
 
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateTracking;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateType;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.persistence.EmailTemplatePersistence;
 import com.emmisolutions.emmimanager.service.UserClientValidationEmailService;
@@ -24,6 +25,7 @@ import javax.transaction.Transactional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.emmisolutions.emmimanager.model.mail.EmailTemplateType.*;
 import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
 
 /**
@@ -36,6 +38,8 @@ public class MailServiceImpl implements MailService {
     public static final String URL_CONTEXT_VARIABLE = "activationUrl";
     public static final String EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE = "emailValidationTimeout";
     public static final String EMAIL_TRACKING_CONTEXT_VARIABLE = "emailTracking";
+    public static final String SCHEDULED_PROGRAM_CONTEXT_VARIABLE = "scheduledProgram";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MailServiceImpl.class);
     private static final Pattern titleFinderInTemplates = Pattern.compile("<title>(.*)</title>", Pattern.DOTALL);
     @Resource
@@ -56,6 +60,9 @@ public class MailServiceImpl implements MailService {
     @Value("${mail.password_changed.from:EmmiManager Password Manager <no_reply_pw_manager@emmisolutions.com>}")
     private String passwordChangedFrom;
 
+    @Value("${mail.scheduled_program_from.from:Emmi Solutions <no_reply_program_manager@emmisolutions.com>}")
+    private String reminderFrom;
+
     @Value("${mail.server.use:true}")
     private boolean useMailServer;
 
@@ -66,49 +73,68 @@ public class MailServiceImpl implements MailService {
     @Override
     @Transactional
     public void sendActivationEmail(UserClient user, String activationUrl, String trackingUrl) {
-        sendTemplateBasedEmail(activationFrom, user, activationUrl, EmailTemplateType.ACTIVATION, trackingUrl);
+        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(ACTIVATION), user);
+        sendTemplateBasedEmail(activationFrom, user, activationUrl, ACTIVATION, trackingUrl, null, emailSentTracking);
     }
 
     @Async
     @Override
     @Transactional
     public void sendValidationEmail(UserClient user, String validationUrl, String trackingUrl) {
-        sendTemplateBasedEmail(emailValidationFrom, user, validationUrl, EmailTemplateType.VALIDATION, trackingUrl);
+        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(VALIDATION), user);
+        sendTemplateBasedEmail(emailValidationFrom, user, validationUrl, VALIDATION, trackingUrl, null, emailSentTracking);
     }
 
     @Async
     @Override
     @Transactional
     public void sendPasswordResetEmail(UserClient user, String passwordResetUrl, String trackingUrl) {
-        sendTemplateBasedEmail(passwordResetFrom, user, passwordResetUrl, EmailTemplateType.PASSWORD_RESET,
-                trackingUrl);
+        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_RESET), user);
+        sendTemplateBasedEmail(passwordResetFrom, user, passwordResetUrl, PASSWORD_RESET,
+                trackingUrl, null, emailSentTracking);
     }
 
     @Async
     @Override
     @Transactional
     public void sendInvalidAccountPasswordResetEmail(UserClient userClient, String trackingUrl) {
-        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_INVALID_ACCOUNT,
-                trackingUrl);
+        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_RESET_INVALID_ACCOUNT), userClient);
+        sendTemplateBasedEmail(passwordResetFrom, userClient, null, PASSWORD_RESET_INVALID_ACCOUNT,
+                trackingUrl, null, emailSentTracking);
     }
 
     @Async
     @Override
     @Transactional
     public void sendPasswordChangeConfirmationEmail(UserClient userClient, String trackingUrl) {
-        sendTemplateBasedEmail(passwordChangedFrom, userClient, null, EmailTemplateType.PASSWORD_CHANGED, trackingUrl);
+        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_CHANGED), userClient);
+        sendTemplateBasedEmail(passwordChangedFrom, userClient, null, PASSWORD_CHANGED, trackingUrl, null, emailSentTracking);
     }
 
     @Async
     @Override
     @Transactional
     public void sendPasswordResetNotEnabled(UserClient userClient, String trackingUrl) {
-        sendTemplateBasedEmail(passwordResetFrom, userClient, null, EmailTemplateType.PASSWORD_RESET_NOT_ENABLED,
-                trackingUrl);
+        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(PASSWORD_RESET_NOT_ENABLED), userClient);
+        sendTemplateBasedEmail(passwordResetFrom, userClient, null, PASSWORD_RESET_NOT_ENABLED, trackingUrl, null, emailSentTracking);
+    }
+
+    @Override
+    @Transactional
+    public void sendPatientScheduledProgramReminderEmail(ScheduledProgram scheduledProgram, String startEmmiUrl, String trackingUrl) {
+        UserClient stub = new UserClient();
+        stub.setEmail(scheduledProgram.getPatient().getEmail());
+        stub.setFirstName(scheduledProgram.getPatient().getFirstName());
+        stub.setLastName(scheduledProgram.getPatient().getLastName());
+        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(SCHEDULED_PROGRAM_PATIENT_REMINDER),
+                scheduledProgram.getPatient());
+        sendTemplateBasedEmail(reminderFrom, stub, startEmmiUrl,
+                SCHEDULED_PROGRAM_PATIENT_REMINDER, trackingUrl, scheduledProgram, emailSentTracking);
     }
 
     private void sendTemplateBasedEmail(String from, UserClient user, String url, EmailTemplateType type,
-                                        String trackingUrl) {
+                                        String trackingUrl, ScheduledProgram scheduledProgram,
+                                        EmailTemplateTracking emailSentTracking) {
         if (user == null || StringUtils.isBlank(user.getEmail()) || type == null) {
             return;
         }
@@ -117,10 +143,12 @@ public class MailServiceImpl implements MailService {
         context.setVariable(URL_CONTEXT_VARIABLE, url);
         context.setVariable(EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE,
                 UserClientValidationEmailService.VALIDATION_TOKEN_HOURS_VALID);
-        EmailTemplateTracking emailSentTracking = emailTemplatePersistence.log(emailTemplatePersistence.find(type), user);
         if (StringUtils.isNotBlank(trackingUrl) && emailSentTracking != null) {
             context.setVariable(EMAIL_TRACKING_CONTEXT_VARIABLE,
                     trackingUrl.replace(SIGNATURE_VARIABLE_NAME, emailSentTracking.getSignature()));
+        }
+        if (scheduledProgram != null) {
+            context.setVariable(SCHEDULED_PROGRAM_CONTEXT_VARIABLE, scheduledProgram);
         }
 
         LOGGER.debug("User Context: {}", context.getVariables().get(USER_CONTEXT_VARIABLE));
@@ -128,6 +156,8 @@ public class MailServiceImpl implements MailService {
         LOGGER.debug("Validation Timeout Context: {}",
                 context.getVariables().get(EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE));
         LOGGER.debug("Email Tracking Context: {}", context.getVariables().get(EMAIL_TRACKING_CONTEXT_VARIABLE));
+        LOGGER.debug("Scheduled Program Context: {}",
+                context.getVariables().get(SCHEDULED_PROGRAM_CONTEXT_VARIABLE));
 
         String content = templateEngine.process("db:" + type.toString(), context);
         String subject = "Action Required";

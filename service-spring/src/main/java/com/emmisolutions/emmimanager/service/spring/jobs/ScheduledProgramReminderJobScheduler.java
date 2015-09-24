@@ -1,6 +1,6 @@
 package com.emmisolutions.emmimanager.service.spring.jobs;
 
-import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import com.emmisolutions.emmimanager.service.mail.PatientMailService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -14,7 +14,6 @@ import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.PATIENT_EMAIL_JOB_GROUP;
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.SCHEDULED_PROGRAM_REMINDER_EMAIL;
-import static com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService.SCHEDULED_PROGRAM_ID;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 
@@ -30,10 +29,13 @@ public class ScheduledProgramReminderJobScheduler extends QuartzJobBean {
     @Resource(name = "quartzScheduler")
     Scheduler scheduler;
 
+    @Resource
+    ScheduleProgramReminderEmailJobMaintenanceService scheduleService;
+
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        patientMailService.sendReminderEmail(
-                new ScheduledProgram(context.getMergedJobDataMap().getLongValue(SCHEDULED_PROGRAM_ID)));
+        patientMailService.sendReminderEmail(scheduleService.extractScheduledProgram(context),
+                scheduleService.extractDay(context));
     }
 
     /**
