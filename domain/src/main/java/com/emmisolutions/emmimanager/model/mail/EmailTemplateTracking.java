@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model.mail;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.hibernate.validator.constraints.Email;
 import org.joda.time.DateTime;
@@ -39,6 +40,11 @@ public class EmailTemplateTracking implements Serializable {
     @JoinColumn(name = "user_client_id",
             foreignKey = @ForeignKey(name = "fk_email_template_tracking_user_client"))
     private UserClient userClient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id",
+            foreignKey = @ForeignKey(name = "fk_email_template_tracking_client_patient"))
+    private Patient patient;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -151,5 +157,13 @@ public class EmailTemplateTracking implements Serializable {
                 ", signature=" + signature +
                 ", viewedDate=" + viewedDate +
                 '}';
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }

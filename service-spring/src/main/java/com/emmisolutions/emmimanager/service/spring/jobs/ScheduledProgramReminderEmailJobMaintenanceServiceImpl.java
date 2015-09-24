@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.PATIENT_EMAIL_JOB_GROUP;
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.SCHEDULED_PROGRAM_REMINDER_EMAIL;
+import static com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay.*;
 import static org.joda.time.DateTimeZone.UTC;
 import static org.quartz.DateBuilder.IntervalUnit.MINUTE;
 import static org.quartz.DateBuilder.futureDate;
@@ -33,14 +34,17 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
     @Override
     @Transactional
     public void updateScheduledReminders(ScheduledProgram scheduledProgram) {
-        schedule(scheduledProgram, 2, 4, 6, 8);
+        // re-schedule for all days without the AT_SCHEDULED day
+        schedule(scheduledProgram, TWO_DAYS_BEFORE_VIEW_BY_DATE,
+                FOUR_DAYS_BEFORE_VIEW_BY_DATE, SIX_DAYS_BEFORE_VIEW_BY_DATE,
+                EIGHT_DAYS_BEFORE_VIEW_BY_DATE);
     }
 
     @Override
     @Transactional
     public void scheduleReminders(ScheduledProgram scheduledProgram) {
-        schedule(scheduledProgram, 0, 2, 4, 6, 8);
-
+        // schedule for all days
+        schedule(scheduledProgram, ReminderDay.values());
     }
 
     @Override
@@ -49,16 +53,35 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
         this.scheduler = scheduler;
     }
 
+    @Override
+    public ReminderDay extractDay(JobExecutionContext jobExecutionContext) {
+        ReminderDay ret = null;
+        if (jobExecutionContext != null && jobExecutionContext.getTrigger() != null) {
+            jobExecutionContext.getTrigger().getKey()
+        }
+        return ret;
+    }
+
+//    return triggerKey(
+//            String.format(PATIENT_EMAIL_TRIGGER_NAME, day.getDay()),
+//            String.format(PATIENT_EMAIL_TRIGGER_GROUP,
+//            scheduledProgram.getId()));
+
+    @Override
+    public ScheduledProgram extractScheduledProgram(JobExecutionContext jobExecutionContext) {
+        return null;
+    }
+
     /**
      * Schedules the patient email job.
      *
      * @param scheduledProgram for which to schedule notifications
      * @param days             on which to notify the patient
      */
-    private void schedule(ScheduledProgram scheduledProgram, int... days) {
+    private void schedule(ScheduledProgram scheduledProgram, ReminderDay... days) {
         if (scheduledProgram != null && scheduledProgram.getId() != null) {
             try {
-                for (int notificationDay : days) {
+                for (ReminderDay notificationDay : days) {
                     // for each notification day, create or update an existing trigger
                     Trigger newTrigger = createTrigger(notificationDay, scheduledProgram);
                     Trigger existing = scheduler
@@ -90,10 +113,10 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
      * @return a new trigger when the start date is >= today and the scheduled program is active,
      * null when start date < today or program is inactive
      */
-    private Trigger createTrigger(int day, ScheduledProgram scheduledProgram) {
+    private Trigger createTrigger(ReminderDay day, ScheduledProgram scheduledProgram) {
         Trigger ret = null;
         if (scheduledProgram != null && scheduledProgram.isActive()) {
-            LocalDate triggerDate = scheduledProgram.getViewByDate().minusDays(day);
+            LocalDate triggerDate = scheduledProgram.getViewByDate().minusDays(day.getDay());
             if (LocalDate.now(UTC).equals(triggerDate) || LocalDate.now(UTC).isBefore(triggerDate)) {
                 // trigger start date is >= today
                 TriggerBuilder<SimpleTrigger> simpleTriggerBuilder = newTrigger()
@@ -101,10 +124,10 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
                         .withIdentity(createTriggerKey(day, scheduledProgram))
                         .withSchedule(
                                 simpleSchedule()
-                                        .withMisfireHandlingInstructionFireNow())
-                        .usingJobData(SCHEDULED_PROGRAM_ID, scheduledProgram.getId().toString());
-                if (day == 0) {
-                    simpleTriggerBuilder.startAt(futureDate(10, MINUTE));
+                                        .withMisfireHandlingInstructionFireNow());
+                if (AT_SCHEDULING.equals(day)) {
+                    // start the job five minutes from now, just to allow a buffer
+                    simpleTriggerBuilder.startAt(futureDate(5, MINUTE));
                 } else {
                     simpleTriggerBuilder.startAt(triggerDate.toDate());
                 }
@@ -121,9 +144,9 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
      * @param scheduledProgram on which the job should run, used for the trigger group
      * @return a new trigger key
      */
-    private TriggerKey createTriggerKey(int day, ScheduledProgram scheduledProgram) {
+    private TriggerKey createTriggerKey(ReminderDay day, ScheduledProgram scheduledProgram) {
         return triggerKey(
-                String.format(PATIENT_EMAIL_TRIGGER_NAME, day),
+                String.format(PATIENT_EMAIL_TRIGGER_NAME, day.getDay()),
                 String.format(PATIENT_EMAIL_TRIGGER_GROUP,
                         scheduledProgram.getId()));
     }

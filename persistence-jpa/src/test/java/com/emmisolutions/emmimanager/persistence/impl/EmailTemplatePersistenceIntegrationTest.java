@@ -58,7 +58,7 @@ public class EmailTemplatePersistenceIntegrationTest extends BaseIntegrationTest
      */
     @Test(expected = ConstraintViolationException.class)
     public void badLogging() {
-        emailTemplatePersistence.log(null, null);
+        emailTemplatePersistence.log(null, (UserClient) null);
     }
 
     /**
