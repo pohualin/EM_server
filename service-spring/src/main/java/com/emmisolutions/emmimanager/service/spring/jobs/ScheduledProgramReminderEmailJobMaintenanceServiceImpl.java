@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service.spring.jobs;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.quartz.*;
 import org.slf4j.Logger;
@@ -139,9 +140,11 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
                                         .withMisfireHandlingInstructionFireNow());
                 if (AT_SCHEDULING.equals(day)) {
                     // start the job five minutes from now, just to allow a buffer
-                    simpleTriggerBuilder.startAt(futureDate(5, MINUTE));
+                    simpleTriggerBuilder.startAt(futureDate(1, MINUTE));
                 } else {
-                    simpleTriggerBuilder.startAt(triggerDate.toDate());
+                    // convert to jdk timezone for quartz to run
+                    simpleTriggerBuilder.startAt(
+                            triggerDate.toDateTimeAtStartOfDay().toDateTime(DateTimeZone.getDefault()).toDate());
                 }
                 ret = simpleTriggerBuilder.build();
             }
