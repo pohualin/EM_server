@@ -14,6 +14,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -69,6 +70,20 @@ public class LegacyAuthenticationProvider extends AbstractUserDetailsAuthenticat
             if (!ipRangeAuthorizationRequest.withinClientAllowedRange((UserClient) userDetails,
                     (HttpProxyAwareAuthenticationDetails) authentication.getDetails())) {
                 throw new IpAddressAuthenticationException("ip address outside of permissible range");
+            }
+        }
+        
+        // Disable user if user's password has expired for 60 days
+        if (userDetails instanceof UserClient) {
+            UserClient userClient = (UserClient) userDetails;
+            if (userClient.getPasswordExpireationDateTime() != null
+                    && LocalDateTime.now(DateTimeZone.UTC).isAfter(
+                            userClient.getPasswordExpireationDateTime()
+                                    .plusDays(60))) {
+                userClient = userClientService.disableUserClient(userClient);
+                userClient = userClientService.expireUserClientCredential(userClient);
+                throw new DisabledException(
+                        "User is disabled due to password expired for 60 days");
             }
         }
 

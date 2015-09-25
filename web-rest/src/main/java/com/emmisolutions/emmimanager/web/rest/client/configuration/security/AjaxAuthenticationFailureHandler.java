@@ -18,6 +18,7 @@ import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -124,6 +125,9 @@ public class AjaxAuthenticationFailureHandler extends
         } else if (exception instanceof IpAddressAuthenticationException) {
             failure = new UserClientLoginError(
                     UserClientLoginError.Reason.INVALID_IP_ADDRESS);
+        } else if (exception instanceof DisabledException) {
+            failure = new UserClientLoginError(
+                    UserClientLoginError.Reason.BAD);
         }
 
         UserClientLoginErrorResource resource = userClientLoginFailureResourceAssembler

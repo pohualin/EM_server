@@ -127,6 +127,14 @@ public interface UserClientService {
 	 * @return a credential expired userClient
 	 */
 	UserClient expireUserClientCredential(UserClient userClient);
+	
+	/**
+	 * Set active to false for a given userClient
+	 * 
+	 * @param userClient to set
+	 * @return an inactive userClient
+	 */
+	UserClient disableUserClient(UserClient userClient);
 
     /**
      * return true if the email is valid
