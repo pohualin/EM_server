@@ -49,9 +49,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
         }};
 
         service.setScheduler(scheduler);
-
-        makeNewScheduledProgram(null); // creating a scheduled program should cause job scheduling
-
+        service.scheduleReminders(makeNewScheduledProgram(null), "http://link", "http://tracking");
         new Verifications() {{
             // verify that the makeNewScheduledProgram actually called scheduleJob
             scheduler.scheduleJob(withInstanceOf(Trigger.class));
@@ -77,7 +75,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
         service.setScheduler(scheduler);
 
         // do the update to the scheduled reminders
-        service.updateScheduledReminders(scheduledProgram);
+        service.updateScheduledReminders(scheduledProgram, null, null);
 
         new Verifications() {{
             // verify that the makeNewScheduledProgram actually called rescheduleJob()
@@ -102,7 +100,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
         service.setScheduler(scheduler);
 
         // by default all mocked methods will return an object e.g. scheduler.getTrigger()
-        makeNewScheduledProgram(null); // creating a scheduled program should cause job scheduling
+        service.scheduleReminders(makeNewScheduledProgram(null), "http://link", "http://tracking");
 
         new Verifications() {{
             // verify that the makeNewScheduledProgram actually called rescheduleJob()
@@ -127,7 +125,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
         service.setScheduler(scheduler);
 
         // do the update to the scheduled reminders
-        service.updateScheduledReminders(scheduledProgram);
+        service.updateScheduledReminders(scheduledProgram, null, null);
 
         new Verifications() {{
             // verify that the makeNewScheduledProgram actually called scheduleJob
@@ -151,8 +149,7 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImplIntegrationTe
         }};
 
         service.setScheduler(scheduler);
-
-        makeNewScheduledProgram(null);
+        service.scheduleReminders(makeNewScheduledProgram(null), "http://link", "http://tracking");
     }
 
 }

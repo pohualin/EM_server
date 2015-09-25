@@ -40,7 +40,7 @@ public interface ScheduleService {
      * finds a page of scheduled programs by filter
      *
      * @param filter to AND together
-     * @param page   specifcation
+     * @param page   specification
      * @return Page of ScheduledProgram objects matching filter
      */
     Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page);

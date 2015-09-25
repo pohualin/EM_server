@@ -118,7 +118,6 @@ public class MailServiceImpl implements MailService {
                 trackEmail(userClient, PASSWORD_RESET_NOT_ENABLED));
     }
 
-    @Async
     @Override
     @Transactional
     public void sendPatientScheduledProgramReminderEmail(ScheduledProgram scheduledProgram, String startEmmiUrl,
@@ -154,7 +153,11 @@ public class MailServiceImpl implements MailService {
         }
         Context context = new Context();
         context.setVariable(USER_CONTEXT_VARIABLE, user);
-        context.setVariable(URL_CONTEXT_VARIABLE, url);
+        if (StringUtils.isNotBlank(url)) {
+            // substitute tracking into url as well (only will do something if the variable is present
+            context.setVariable(URL_CONTEXT_VARIABLE,
+                    url.replace(SIGNATURE_VARIABLE_NAME, emailSentTracking.getSignature()));
+        }
         context.setVariable(EMAIL_VALIDATION_TIMEOUT_CONTEXT_VARIABLE,
                 UserClientValidationEmailService.VALIDATION_TOKEN_HOURS_VALID);
         if (StringUtils.isNotBlank(trackingUrl)) {

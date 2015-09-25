@@ -17,14 +17,15 @@ import javax.annotation.Resource;
 import java.util.concurrent.locks.Lock;
 
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.PATIENT_EMAIL_JOB_GROUP;
-import static com.emmisolutions.emmimanager.service.jobs.AllJobs.SCHEDULED_PROGRAM_REMINDER_EMAIL;
+import static com.emmisolutions.emmimanager.service.jobs.AllJobs.SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME;
+import static com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService.*;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 
 /**
  * Job creation and execution for scheduled email programs
  */
-@Component(SCHEDULED_PROGRAM_REMINDER_EMAIL)
+@Component(SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME)
 public class ScheduledProgramReminderJobScheduler extends QuartzJobBean {
 
     @Resource
@@ -49,15 +50,23 @@ public class ScheduledProgramReminderJobScheduler extends QuartzJobBean {
                 scheduleProgramReminderEmailJobMaintenanceService.extractScheduledProgram(context));
 
         if (scheduledProgram != null) {
-            // only allow one scheduled program job per patient to run concurrently
+            // acquire a cluster aware lock based upon the patient id
             Lock clusterAwareLock = hazelCast.getLock(
-                    String.format("PATIENT_SCHEDULED_PROGRAM_EMAIL_NOTIFICATION_%s",
-                            scheduledProgram.getPatient().getId()));
+                    String.format(PATIENT_EMAIL_CLUSTER_LOCK_NAME, scheduledProgram.getPatient().getId()));
+            /*
+                Lock the patient for this email type. Note: this will only work if the sendReminderEmail
+                call is not @Async.. because the writing to the email tracking table happens inside of
+                sendReminderEmail.. if the call comes back before the tracking record is created,
+                another email will go out, which is undesirable.
+              */
             clusterAwareLock.lock();
             try {
                 patientMailService.sendReminderEmail(scheduledProgram,
-                        scheduleProgramReminderEmailJobMaintenanceService.extractReminderDay(context));
+                        scheduleProgramReminderEmailJobMaintenanceService.extractReminderDay(context),
+                        context.getMergedJobDataMap().getString(LINK_URL_KEY),
+                        context.getMergedJobDataMap().getString(TRACKING_URL_KEY));
             } finally {
+                // let the next thread that was waiting on this lock continue
                 clusterAwareLock.unlock();
             }
         }
@@ -69,10 +78,10 @@ public class ScheduledProgramReminderJobScheduler extends QuartzJobBean {
     @PostConstruct
     private void createJob() throws SchedulerException {
         if (!scheduler.checkExists(jobKey(
-                SCHEDULED_PROGRAM_REMINDER_EMAIL, PATIENT_EMAIL_JOB_GROUP))) {
+                SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME, PATIENT_EMAIL_JOB_GROUP))) {
             scheduler.addJob(
                     newJob(ScheduledProgramReminderJobScheduler.class)
-                            .withIdentity(SCHEDULED_PROGRAM_REMINDER_EMAIL,
+                            .withIdentity(SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME,
                                     PATIENT_EMAIL_JOB_GROUP)
                             .requestRecovery()
                             .storeDurably()

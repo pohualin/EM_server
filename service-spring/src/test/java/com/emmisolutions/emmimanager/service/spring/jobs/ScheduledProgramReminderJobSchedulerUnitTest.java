@@ -68,7 +68,7 @@ public class ScheduledProgramReminderJobSchedulerUnitTest extends BaseUnitTest {
 
         // verify that the reminder email was sent
         new Verifications() {{
-            patientMailService.sendReminderEmail(scheduledProgram, AT_SCHEDULING);
+            patientMailService.sendReminderEmail(scheduledProgram, AT_SCHEDULING, anyString, anyString);
             times = 1;
         }};
     }

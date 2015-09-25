@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.PATIENT_EMAIL_JOB_GROUP;
-import static com.emmisolutions.emmimanager.service.jobs.AllJobs.SCHEDULED_PROGRAM_REMINDER_EMAIL;
+import static com.emmisolutions.emmimanager.service.jobs.AllJobs.SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME;
 import static com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay.*;
 import static org.joda.time.DateTimeZone.UTC;
 import static org.quartz.DateBuilder.IntervalUnit.MINUTE;
@@ -34,18 +34,18 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
 
     @Override
     @Transactional
-    public void updateScheduledReminders(ScheduledProgram scheduledProgram) {
+    public void updateScheduledReminders(ScheduledProgram scheduledProgram, String linkUrl, String trackingUrl) {
         // re-schedule for all days without the AT_SCHEDULED day
-        schedule(scheduledProgram, TWO_DAYS_BEFORE_VIEW_BY_DATE,
+        schedule(scheduledProgram, linkUrl, trackingUrl, TWO_DAYS_BEFORE_VIEW_BY_DATE,
                 FOUR_DAYS_BEFORE_VIEW_BY_DATE, SIX_DAYS_BEFORE_VIEW_BY_DATE,
                 EIGHT_DAYS_BEFORE_VIEW_BY_DATE);
     }
 
     @Override
     @Transactional
-    public void scheduleReminders(ScheduledProgram scheduledProgram) {
+    public void scheduleReminders(ScheduledProgram scheduledProgram, String linkUrl, String trackingUrl) {
         // schedule for all reminder days
-        schedule(scheduledProgram, ReminderDay.values());
+        schedule(scheduledProgram, linkUrl, trackingUrl, ReminderDay.values());
     }
 
     @Override
@@ -88,12 +88,12 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
      * @param scheduledProgram for which to schedule notifications
      * @param days             on which to notify the patient
      */
-    private void schedule(ScheduledProgram scheduledProgram, ReminderDay... days) {
+    private void schedule(ScheduledProgram scheduledProgram, String linkUrl, String trackingUrl, ReminderDay... days) {
         if (scheduledProgram != null && scheduledProgram.getId() != null) {
             try {
                 for (ReminderDay notificationDay : days) {
                     // for each notification day, create or update an existing trigger
-                    Trigger newTrigger = createTrigger(notificationDay, scheduledProgram);
+                    Trigger newTrigger = createTrigger(notificationDay, scheduledProgram, linkUrl, trackingUrl);
                     Trigger existing = scheduler
                             .getTrigger(createTriggerKey(notificationDay, scheduledProgram));
                     if (existing != null) {
@@ -123,15 +123,17 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
      * @return a new trigger when the start date is >= today and the scheduled program is active,
      * null when start date < today or program is inactive
      */
-    private Trigger createTrigger(ReminderDay day, ScheduledProgram scheduledProgram) {
+    private Trigger createTrigger(ReminderDay day, ScheduledProgram scheduledProgram, String linkUrl, String trackingUrl) {
         Trigger ret = null;
         if (scheduledProgram != null && scheduledProgram.isActive()) {
             LocalDate triggerDate = scheduledProgram.getViewByDate().minusDays(day.getDay());
             if (LocalDate.now(UTC).equals(triggerDate) || LocalDate.now(UTC).isBefore(triggerDate)) {
                 // trigger start date is >= today
                 TriggerBuilder<SimpleTrigger> simpleTriggerBuilder = newTrigger()
-                        .forJob(SCHEDULED_PROGRAM_REMINDER_EMAIL, PATIENT_EMAIL_JOB_GROUP)
+                        .forJob(SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME, PATIENT_EMAIL_JOB_GROUP)
                         .withIdentity(createTriggerKey(day, scheduledProgram))
+                        .usingJobData(LINK_URL_KEY, linkUrl)
+                        .usingJobData(TRACKING_URL_KEY, trackingUrl)
                         .withSchedule(
                                 simpleSchedule()
                                         .withMisfireHandlingInstructionFireNow());

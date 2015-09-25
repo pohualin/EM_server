@@ -24,6 +24,8 @@ public interface AllJobs {
     /**
      * Job name for scheduled program reminders, matches spring bean component name
      */
-    String SCHEDULED_PROGRAM_REMINDER_EMAIL = "scheduledProgramReminderEmail";
+    String SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME = "scheduledProgramReminderEmail";
+
+
 
 }

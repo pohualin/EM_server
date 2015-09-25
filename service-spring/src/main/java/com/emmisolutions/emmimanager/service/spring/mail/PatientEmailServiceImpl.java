@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 import static com.emmisolutions.emmimanager.model.mail.EmailTemplateType.SCHEDULED_PROGRAM_PATIENT_REMINDER;
-import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
 
 /**
  * Patient Mail service implementation
@@ -35,7 +34,8 @@ public class PatientEmailServiceImpl implements PatientMailService {
     @Override
     @Transactional
     public void sendReminderEmail(ScheduledProgram aScheduledProgram,
-                                  ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay day) {
+                                  ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay day,
+                                  String linkUrl, String trackingUrl) {
 
         ScheduledProgram scheduledProgram = scheduleService.reload(aScheduledProgram);
 
@@ -44,16 +44,8 @@ public class PatientEmailServiceImpl implements PatientMailService {
                     SCHEDULED_PROGRAM_PATIENT_REMINDER, scheduledProgram.getPatient()) &&
                     teamConfiguredToSendMail(scheduledProgram, day)) {
                 // patient hasn't been emailed today and team allows email for the reminder day
-
-                // retrieve tracking url
-                String trackingUrl = "http://get.from/" + SIGNATURE_VARIABLE_NAME;
-
-                // get start emmi url to point to
-                String startEmmiUrl = "http://startemmi.com";
-
-                // send email
                 mailService.sendPatientScheduledProgramReminderEmail(scheduledProgram,
-                        startEmmiUrl, trackingUrl);
+                        linkUrl, trackingUrl);
 
             }
         }

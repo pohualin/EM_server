@@ -41,11 +41,12 @@ public class PatientEmailServiceIntegrationTest extends BaseIntegrationTest {
 
         // send a bunch of emails
         patientMailService.setEmailTemplatePersistence(mockETPersistence);
-        patientMailService.sendReminderEmail(scheduledProgram, AT_SCHEDULING);
-        patientMailService.sendReminderEmail(scheduledProgram, TWO_DAYS_BEFORE_VIEW_BY_DATE);
-        patientMailService.sendReminderEmail(scheduledProgram, FOUR_DAYS_BEFORE_VIEW_BY_DATE);
-        patientMailService.sendReminderEmail(scheduledProgram, SIX_DAYS_BEFORE_VIEW_BY_DATE);
-        patientMailService.sendReminderEmail(scheduledProgram, EIGHT_DAYS_BEFORE_VIEW_BY_DATE);
+        String link = "http://blah", tracking = "http://tracking";
+        patientMailService.sendReminderEmail(scheduledProgram, AT_SCHEDULING, link, tracking);
+        patientMailService.sendReminderEmail(scheduledProgram, TWO_DAYS_BEFORE_VIEW_BY_DATE, link, tracking);
+        patientMailService.sendReminderEmail(scheduledProgram, FOUR_DAYS_BEFORE_VIEW_BY_DATE, link, tracking);
+        patientMailService.sendReminderEmail(scheduledProgram, SIX_DAYS_BEFORE_VIEW_BY_DATE, link, tracking);
+        patientMailService.sendReminderEmail(scheduledProgram, EIGHT_DAYS_BEFORE_VIEW_BY_DATE, link, tracking);
 
         // set the template back for subsequent tests
         patientMailService.setEmailTemplatePersistence(emailTemplatePersistence);

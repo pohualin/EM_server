@@ -10,7 +10,6 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
 import com.emmisolutions.emmimanager.service.ScheduleService;
-import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.service.spring.util.AccessCodeGenerator;
 import org.apache.commons.lang3.StringUtils;
@@ -80,9 +79,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Resource(name = "clientUserDetailsService")
     UserDetailsService userDetailsService;
 
-    @Resource
-    ScheduleProgramReminderEmailJobMaintenanceService scheduledProgramReminderEmailJob;
-
     @Override
     @Transactional
     public ScheduledProgram schedule(ScheduledProgram toBeScheduled) {
@@ -103,7 +99,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             toBeScheduled.setAccessCode(accessCodeGenerator.next());
             savedScheduledProgram = schedulePersistence.save(toBeScheduled);
         }
-        scheduledProgramReminderEmailJob.scheduleReminders(savedScheduledProgram);
         return savedScheduledProgram;
     }
 
@@ -143,10 +138,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduledProgram.setProvider(inDb.getProvider());
         scheduledProgram.setProgram(inDb.getProgram());
         scheduledProgram.setEncounter(inDb.getEncounter());
-
-        ScheduledProgram savedScheduledProgram = schedulePersistence.save(scheduledProgram);
-        scheduledProgramReminderEmailJob.updateScheduledReminders(savedScheduledProgram);
-        return savedScheduledProgram;
+        return schedulePersistence.save(scheduledProgram);
     }
 
     private void hydrateValidProgram(ScheduledProgram scheduledProgram) {

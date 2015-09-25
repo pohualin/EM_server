@@ -14,9 +14,12 @@ public interface PatientMailService {
      *
      * @param scheduledProgram on which to remind
      * @param day              the reminder day
+     * @param linkUrl          a link in the email
+     * @param trackingUrl      the tracking link
      */
     void sendReminderEmail(ScheduledProgram scheduledProgram,
-                           ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay day);
+                           ScheduleProgramReminderEmailJobMaintenanceService.ReminderDay day,
+                           String linkUrl, String trackingUrl);
 
     /**
      * Sets the email template persistence dependency

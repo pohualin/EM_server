@@ -32,20 +32,35 @@ public interface ScheduleProgramReminderEmailJobMaintenanceService {
     String PATIENT_EMAIL_TRIGGER_NAME = "%s" + PATIENT_EMAIL_TRIGGER_NAME_SUFFIX;
 
     /**
+     * The cluster aware lock name template
+     */
+    String PATIENT_EMAIL_CLUSTER_LOCK_NAME = "PATIENT_SCHEDULED_PROGRAM_EMAIL_NOTIFICATION_%s";
+
+    /**
+     * Parameter name for the link url inside the job context
+     */
+    String LINK_URL_KEY = "linkUrl";
+
+    /**
+     * Parameter name for the tracking url inside the job context
+     */
+    String TRACKING_URL_KEY = "trackingUrl";
+
+    /**
      * Schedules email reminders for a new scheduled program.
      * This will create zero day as well as the other
      * reminders.
      *
      * @param scheduledProgram on which to schedule
      */
-    void scheduleReminders(ScheduledProgram scheduledProgram);
+    void scheduleReminders(ScheduledProgram scheduledProgram, String linkUrl, String trackingUrl);
 
     /**
      * Update the scheduled reminders for the program
      *
      * @param scheduledProgram to update the reminders
      */
-    void updateScheduledReminders(ScheduledProgram scheduledProgram);
+    void updateScheduledReminders(ScheduledProgram scheduledProgram, String linkUrl, String trackingUrl);
 
     /**
      * Sets the scheduler
@@ -70,7 +85,9 @@ public interface ScheduleProgramReminderEmailJobMaintenanceService {
      */
     ScheduledProgram extractScheduledProgram(JobExecutionContext jobExecutionContext);
 
-
+    /**
+     * This is which day the reminders go out
+     */
     enum ReminderDay {
         AT_SCHEDULING(0), TWO_DAYS_BEFORE_VIEW_BY_DATE(2),
         FOUR_DAYS_BEFORE_VIEW_BY_DATE(4), SIX_DAYS_BEFORE_VIEW_BY_DATE(6),
