@@ -76,16 +76,17 @@ public class TrackingEmailsResource {
     }
 
     /**
-     * Get which tracks that the image was viewed
+     * Performs a redirect to the startEmmiRedirectUrl after tracking the
+     * action taken
      *
      * @param signature of the viewed state
      * @param response  to redirect with
-     * @return BAD_REQUEST when redirect doesn't work
+     * @return BAD_REQUEST when redirect doesn't work for whatever reason.. this should never happen though
      */
     @RequestMapping(value = "/email/images/{signature}/go", method = RequestMethod.GET)
     public ResponseEntity<Void> bounceToStartEmmi(@PathVariable("signature") String signature,
                                                   HttpServletResponse response) {
-        trackingService.viewed(signature);
+        trackingService.actionTaken(signature);
         try {
             response.sendRedirect(startEmmiRedirectUrl);
         } catch (IOException e) {

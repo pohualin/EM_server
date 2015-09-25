@@ -30,4 +30,19 @@
 
     </changeSet>
 
+    <changeSet id="add action taken attribute" author="Matt">
+
+        <addColumn tableName="email_template_tracking">
+            <column name="action_taken" type="boolean"/>
+        </addColumn>
+
+        <addColumn tableName="email_template_tracking">
+            <column name="action_taken_date_utc" type="timestamp"/>
+        </addColumn>
+
+        <renameColumn tableName="email_template_tracking" oldColumnName="viewed_date"
+                      newColumnName="viewed_date_utc" columnDataType="timestamp"/>
+
+    </changeSet>
+
 </databaseChangeLog>
