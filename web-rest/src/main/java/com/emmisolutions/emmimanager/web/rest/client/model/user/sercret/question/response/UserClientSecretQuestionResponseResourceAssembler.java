@@ -23,6 +23,7 @@ public class UserClientSecretQuestionResponseResourceAssembler implements
         if (!entity.getUserClient().isImpersonated()) {
             ret.add(linkTo(methodOn(UserClientSecretQuestionResponsesResource.class).get(entity.getUserClient().getId(), entity.getId())).withSelfRel());
         }
+        entity.setResponse(null);
         ret.setEntity(entity);
         return ret;
     }

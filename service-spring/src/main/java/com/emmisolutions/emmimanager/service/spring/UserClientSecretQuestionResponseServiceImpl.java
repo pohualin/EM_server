@@ -8,6 +8,7 @@ import com.emmisolutions.emmimanager.persistence.UserClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserClientSecretQuestionResponsePersistence;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -15,6 +16,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,9 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
 
     @Resource
     UserClientPersistence userClientPersistence;
+    
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -69,6 +74,7 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
                 toSave = questionResponse;
             }
         }
+        toSave.setResponse(passwordEncoder.encode(toSave.getResponse().replaceAll("\\s+", "").toLowerCase()));
         return userClientSecretQuestionResponsePersistence.saveOrUpdate(toSave);
     }
 
@@ -146,18 +152,8 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
                 ret = true;
             } else {
                 if (questionResponse != null) {
-                    // security questions are required for this user
-                    Page<UserClientSecretQuestionResponse> savedResponses =
-                            userClientSecretQuestionResponsePersistence
-                                    .findByUserClient(userClient, new PageRequest(0, 2));
-                    for (UserClientSecretQuestionResponse savedResponse : savedResponses) {
-                        if (savedResponse.getSecretQuestion().equals(questionResponse.getSecretQuestion())) {
-                            // found the saved question in the db, ensure response text is the same
-                            ret = questionResponse.getResponse().replaceAll("\\s+", "")
-                                    .equalsIgnoreCase(savedResponse.getResponse().replaceAll("\\s+", ""));
-                            break;
-                        }
-                    }
+                    questionResponse.setUserClient(userClient);
+                    ret = validateSecurityResponse(questionResponse);
                 }
             }
         } else {
@@ -165,6 +161,31 @@ public class UserClientSecretQuestionResponseServiceImpl implements UserClientSe
                     "This method is only to be used with existing valid reset token");
         }
 
+        return ret;
+    }
+    
+    @Override
+    public boolean validateSecurityResponse(
+            UserClientSecretQuestionResponse questionResponse) {
+        boolean ret = false;
+        if (questionResponse != null) {
+            // security questions are required for this user
+            Page<UserClientSecretQuestionResponse> savedResponses = userClientSecretQuestionResponsePersistence
+                    .findByUserClient(questionResponse.getUserClient(),
+                            new PageRequest(0, 2));
+            if (savedResponses != null) {
+                for (UserClientSecretQuestionResponse savedResponse : savedResponses) {
+                    if (savedResponse.getSecretQuestion().equals(
+                            questionResponse.getSecretQuestion())) {
+                        ret = passwordEncoder.matches(
+                                questionResponse.getResponse()
+                                        .replaceAll("\\s+", "").toLowerCase(),
+                                savedResponse.getResponse());
+                        break;
+                    }
+                }
+            }
+        }
         return ret;
     }
 

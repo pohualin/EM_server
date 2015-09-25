@@ -1,4 +1,4 @@
-package com.emmisolutions.emmimanager.service.spring.email;
+package com.emmisolutions.emmimanager.service.spring.mail;
 
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateTracking;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateType;

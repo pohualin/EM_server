@@ -69,5 +69,13 @@ public interface UserClientSecretQuestionResponseService {
      * @return UserClient a user client
      */
     UserClient saveOrUpdateUserClient(UserClient userClient);
+    
+    /**
+     * Validate security question response
+     * 
+     * @param questionResponse to validate
+     * @return true if response matches, otherwise false
+     */
+    boolean validateSecurityResponse(UserClientSecretQuestionResponse questionResponse);
 
 }

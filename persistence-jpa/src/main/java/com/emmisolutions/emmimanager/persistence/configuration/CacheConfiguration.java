@@ -46,6 +46,7 @@ public class CacheConfiguration extends CachingConfigurerSupport {
     /**
      * @return the unique instance.
      */
+    @Bean(name = "hazelCast")
     public static HazelcastInstance getHazelcastInstance() {
         return hazelcastInstance;
     }

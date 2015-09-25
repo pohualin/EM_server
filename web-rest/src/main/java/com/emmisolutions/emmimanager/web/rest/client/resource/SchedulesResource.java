@@ -8,12 +8,12 @@ import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.TeamService;
+import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledProgramResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.schedule.ScheduledProgramResourcePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.team.TeamResource;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,10 +26,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
+import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.patientRedirectLink;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
-import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 
 /**
  * Teams resource.
@@ -39,22 +41,20 @@ import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearc
         APPLICATION_XML_VALUE})
 public class SchedulesResource {
 
-    @Resource(name = "scheduledProgramResourceAssembler")
-    ResourceAssembler<ScheduledProgram, ScheduledProgramResource> scheduledProgramResourceResourceAssembler;
-
-    @Resource(name = "clientTeamResourceAssembler")
-    ResourceAssembler<Team, TeamResource> teamTeamResourceAssembler;
-
-    @Resource
-    TeamService teamService;
-
-    @Resource
-    ScheduleService scheduleService;
-    
     /**
      * request parameter name
      */
     public static final String ENCOUNTER_REQUEST_PARAM = "encounter";
+    @Resource(name = "scheduledProgramResourceAssembler")
+    ResourceAssembler<ScheduledProgram, ScheduledProgramResource> scheduledProgramResourceResourceAssembler;
+    @Resource(name = "clientTeamResourceAssembler")
+    ResourceAssembler<Team, TeamResource> teamTeamResourceAssembler;
+    @Resource
+    TeamService teamService;
+    @Resource
+    ScheduleService scheduleService;
+    @Resource
+    ScheduleProgramReminderEmailJobMaintenanceService scheduledProgramReminderEmailJob;
 
     /**
      * GET to retrieve a page of ScheduledProgram objects for a particular team.
@@ -129,10 +129,13 @@ public class SchedulesResource {
 
         // schedule program
         ScheduledProgram scheduledProgram = scheduleService.schedule(toBeScheduled);
+
+        // schedule emails
+        scheduledProgramReminderEmailJob.scheduleReminders(scheduledProgram, patientRedirectLink(), emailViewedTrackingLink());
+
         if (scheduledProgram != null) {
             return new ResponseEntity<>(scheduledProgramResourceResourceAssembler.toResource(scheduledProgram), OK);
         }
-
         return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
     }
 

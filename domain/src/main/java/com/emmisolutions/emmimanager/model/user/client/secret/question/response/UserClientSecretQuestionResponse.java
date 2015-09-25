@@ -54,10 +54,9 @@ public class UserClientSecretQuestionResponse extends AbstractAuditingEntity imp
 	@JoinColumn(name = "secret_question_id", referencedColumnName="id")
 	private SecretQuestion secretQuestion;
 	
-	@Column(length = 200, columnDefinition = "nvarchar(200)")
-	@Pattern(regexp = "[0-9A-Za-z-'=_\\-+;:@#$%&?,.!() <>^~*`|{}\\[\\]\"\\/]*", message = "Can only contain letters, digits, spaces, and the following characters: - ' = _ - + ; : @ # $ % & ? , . ! |(){}[]: <>")
-	@Size(max = 200)
-	private String response;
+    @Column(length = 72, name = "hashed_response", columnDefinition = "nvarchar(72)", nullable = false)
+    @Size(max = 72)
+    private String response;
 	    
     public String getResponse() {
 		return response;

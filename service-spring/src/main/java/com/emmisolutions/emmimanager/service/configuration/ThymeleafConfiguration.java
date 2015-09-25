@@ -3,6 +3,7 @@ package com.emmisolutions.emmimanager.service.configuration;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplate;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateType;
 import com.emmisolutions.emmimanager.persistence.EmailTemplatePersistence;
+import com.emmisolutions.emmimanager.service.configuration.thymeleaf.JodaTimeExpressionObjectExtension;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
@@ -11,16 +12,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
+import uk.co.gcwilliams.jodatime.thymeleaf.JodaTimeDialect;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Enable Thymeleaf as a rendering engine for email templates
@@ -28,6 +33,7 @@ import java.util.HashSet;
 @Configuration
 public class ThymeleafConfiguration {
 
+    private final static String DB_RESOLVER_PREFIX = "db:";
     @Resource
     EmailTemplatePersistence emailTemplatePersistence;
 
@@ -58,8 +64,6 @@ public class ThymeleafConfiguration {
         return resolver;
     }
 
-    private final static String DB_RESOLVER_PREFIX = "db:";
-
     /**
      * Makes a new Thymeleaf TemplateResolver that resolves all db:type values
      * that uses our own persistence layer to load it from the database
@@ -70,12 +74,6 @@ public class ThymeleafConfiguration {
     public TemplateResolver dbTemplateResolver() {
 
         return new TemplateResolver() {
-            @Override
-            protected String computeResourceName(TemplateProcessingParameters params) {
-                String templateName = params.getTemplateName();
-                return templateName.substring(DB_RESOLVER_PREFIX.length());
-            }
-
             {
                 setOrder(2);
                 setResolvablePatterns(new HashSet<String>() {{
@@ -97,6 +95,12 @@ public class ThymeleafConfiguration {
                     }
                 });
             }
+
+            @Override
+            protected String computeResourceName(TemplateProcessingParameters params) {
+                String templateName = params.getTemplateName();
+                return templateName.substring(DB_RESOLVER_PREFIX.length());
+            }
         };
     }
 
@@ -112,6 +116,15 @@ public class ThymeleafConfiguration {
             add(springThymeleafTemplateResolver());
             add(dbTemplateResolver());
         }});
+        engine.addDialect(new JodaTimeDialect() {
+            @Override
+            public Map<String, Object> getAdditionalExpressionObjects(IProcessingContext processingContext) {
+                Map<String, Object> expressionObjects = new HashMap<>();
+                expressionObjects.put(JODA,
+                        new JodaTimeExpressionObjectExtension(processingContext.getContext().getLocale()));
+                return expressionObjects;
+            }
+        });
         return engine;
     }
 }

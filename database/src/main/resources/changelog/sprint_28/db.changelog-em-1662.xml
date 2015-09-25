@@ -482,5 +482,13 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="messed up boolean column name" author="Matt">
+
+        <renameColumn tableName="qrtz_simprop_triggers" schemaName="quartz"
+                      oldColumnName="BOOLEAN_prop_1" newColumnName="bool_prop_1" columnDataType="BOOLEAN"/>
+        <renameColumn tableName="qrtz_simprop_triggers" schemaName="quartz"
+                      oldColumnName="BOOLEAN_prop_2" newColumnName="bool_prop_2" columnDataType="BOOLEAN"/>
+
+    </changeSet>
 
 </databaseChangeLog>
