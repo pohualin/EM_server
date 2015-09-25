@@ -89,8 +89,16 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>uk.co.gcwilliams</groupId>
+            <artifactId>jodatime-thymeleaf-dialect</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -2,6 +2,7 @@ package com.emmisolutions.emmimanager.web.rest.client.resource;
 
 import com.emmisolutions.emmimanager.service.mail.TrackingService;
 import org.h2.util.IOUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
@@ -29,6 +31,9 @@ public class TrackingEmailsResource {
     @Resource
     TrackingService trackingService;
 
+    @Value("${view.program.full.redirect.url:http://startemmi.com}")
+    String startEmmiRedirectUrl;
+
     private byte[] blankImage;
 
     /**
@@ -43,6 +48,14 @@ public class TrackingEmailsResource {
                 ).withSelfRel().getHref()
         ).build(true).toUriString();
     }
+
+    public static String patientRedirectLink() {
+        return UriComponentsBuilder.fromHttpUrl(linkTo(methodOn(
+                                TrackingEmailsResource.class).bounceToStartEmmi(SIGNATURE_VARIABLE_NAME, null)
+                ).withSelfRel().getHref()
+        ).build(true).toUriString();
+    }
+
 
     @PostConstruct
     private void init() throws IOException {
@@ -60,5 +73,24 @@ public class TrackingEmailsResource {
     public ResponseEntity<byte[]> track(@PathVariable("signature") String signature) {
         trackingService.viewed(signature);
         return ResponseEntity.ok(blankImage);
+    }
+
+    /**
+     * Get which tracks that the image was viewed
+     *
+     * @param signature of the viewed state
+     * @param response  to redirect with
+     * @return BAD_REQUEST when redirect doesn't work
+     */
+    @RequestMapping(value = "/email/images/{signature}/go", method = RequestMethod.GET)
+    public ResponseEntity<Void> bounceToStartEmmi(@PathVariable("signature") String signature,
+                                                  HttpServletResponse response) {
+        trackingService.viewed(signature);
+        try {
+            response.sendRedirect(startEmmiRedirectUrl);
+        } catch (IOException e) {
+            // no - op
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

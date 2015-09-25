@@ -18,7 +18,7 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
     /**
      * Find a user by the login
      *
-     * @param login case insensitive comparison
+     * @param login which should be in lowercase already
      * @return UserClient or null
      */
     @Cacheable(value = "clientFindByLoginIgnoreCase", key = "#p0")
@@ -26,8 +26,8 @@ public interface UserClientRepository extends JpaRepository<UserClient, Long>,
             "left join fetch u.teamRoles tr left join fetch tr.userClientTeamRole uctr " +
             "left join fetch uctr.userClientTeamPermissions tp " +
             "left join fetch u.clientRoles ur left join fetch ur.userClientRole r " +
-            "left join fetch r.userClientPermissions p where u.login = lower(:login)")
-    UserClient findByLoginIgnoreCase(@Param("login") String login);
+            "left join fetch r.userClientPermissions p where u.login = :login")
+    UserClient findByLogin(@Param("login") String login);
 
     @Caching(evict = {
             @CacheEvict(value = "clientFindById", key = "#p0.id"),

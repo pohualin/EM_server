@@ -47,11 +47,11 @@ public class AuthenticationAuditPersistenceImpl implements AuthenticationAuditPe
         }
         if (StringUtils.isNotBlank(attempt.getLogin()) && attempt.getUser() == null) {
             // attempt to find a user client via the login
-            attempt.setUser(userClientRepository.findByLoginIgnoreCase(attempt.getLogin()));
+            attempt.setUser(userClientRepository.findByLogin(StringUtils.lowerCase(attempt.getLogin())));
         }
         if (StringUtils.isNotBlank(attempt.getLogin()) && attempt.getUser() == null) {
             // attempt to find the user admin via the login
-            attempt.setUser(userAdminRepository.fetchWithFullPermissions(attempt.getLogin()));
+            attempt.setUser(userAdminRepository.fetchWithFullPermissions(StringUtils.lowerCase(attempt.getLogin())));
         }
         if (attempt.getStatus() != null && attempt.getStatus().getName() != null) {
             attempt.setStatus(loginStatusRepository.findByName(attempt.getStatus().getName()));

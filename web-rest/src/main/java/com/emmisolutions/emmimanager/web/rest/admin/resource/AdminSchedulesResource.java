@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.service.ScheduleService;
+import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.schedule.ScheduledProgramResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.schedule.ScheduledProgramResourcePage;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
@@ -22,6 +23,8 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.patientRedirectLink;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -56,6 +59,9 @@ public class AdminSchedulesResource {
 
     @Resource
     ScheduleService scheduleService;
+
+    @Resource
+    ScheduleProgramReminderEmailJobMaintenanceService scheduledProgramReminderEmailJob;
 
     @Resource(name = "adminScheduledProgramResourceAssembler")
     ResourceAssembler<ScheduledProgram, ScheduledProgramResource> scheduledProgramResourceResourceAssembler;
@@ -134,6 +140,8 @@ public class AdminSchedulesResource {
                                                            @RequestBody ScheduledProgram scheduledProgram) {
         scheduledProgram.setId(id);
         ScheduledProgram updatedProgram = scheduleService.update(scheduledProgram);
+        scheduledProgramReminderEmailJob.updateScheduledReminders(updatedProgram, patientRedirectLink(),
+                emailViewedTrackingLink());
         if (updatedProgram != null) {
             return new ResponseEntity<>(scheduledProgramResourceResourceAssembler.toResource(updatedProgram), OK);
         }

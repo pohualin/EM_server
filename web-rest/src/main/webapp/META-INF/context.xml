@@ -121,4 +121,8 @@
     <!--<Environment name="org.quartz.scheduler.instanceId" value="AUTO" type="java.lang.String" override="false"/>-->
     <!--<Environment name="org.quartz.scheduler.skipUpdateCheck" value="true" type="java.lang.String" override="false"/>-->
 
+    <!-- program viewing (startemmi) integration point -->
+    <!--<Environment name="view.program.full.redirect.url" value="http://startemmi.com" type="java.lang.String"-->
+    <!--override="false"/>-->
+
 </Context>

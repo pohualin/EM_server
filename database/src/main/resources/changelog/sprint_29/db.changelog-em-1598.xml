@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="patient reminder emails" author="Matt">
+        <loadUpdateData
+                encoding="UTF-8"
+                primaryKey="type"
+                file="changelog/sprint_29/data/em-1598/patient_email_template.data"
+                separator="~"
+                tableName="email_template"/>
+    </changeSet>
+
+    <changeSet id="add patient to email template tracking" author="Matt">
+
+        <addColumn tableName="email_template_tracking">
+            <column name="patient_id" type="bigint"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="email_template_tracking" baseColumnNames="patient_id"
+                                 constraintName="fk_email_template_tracking_client_patient"
+                                 referencedTableName="client_patient"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="email_template_tracking" indexName="ix_email_template_tracking_patient_id">
+            <column name="patient_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,8 +1,10 @@
 package com.emmisolutions.emmimanager.persistence;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplate;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateTracking;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateType;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
@@ -48,6 +50,16 @@ public interface EmailTemplatePersistence {
      */
     EmailTemplateTracking log(EmailTemplate emailTemplate, UserClient userClient);
 
+
+    /**
+     * Log a sent email
+     *
+     * @param emailTemplate    that will be sent
+     * @param patient who it is sent to why the email was sent
+     * @return the EmailSent object
+     */
+    EmailTemplateTracking log(EmailTemplate emailTemplate, Patient patient);
+
     /**
      * Finds a persistent EmailTemplateTracking by it's signature
      *
@@ -55,5 +67,14 @@ public interface EmailTemplatePersistence {
      * @return the persistent EmailTemplateTracking
      */
     EmailTemplateTracking load(String signature);
+
+    /**
+     * Finds whether an email has been sent today
+     *
+     * @param emailTemplate for this type
+     * @param patient       to this patient
+     * @return true if it has been sent, false not been sent today
+     */
+    boolean emailAlreadySentToday(EmailTemplateType emailTemplateType, Patient patient);
 
 }
