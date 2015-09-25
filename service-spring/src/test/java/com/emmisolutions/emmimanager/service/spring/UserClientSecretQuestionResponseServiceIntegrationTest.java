@@ -10,13 +10,16 @@ import com.emmisolutions.emmimanager.service.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.service.UserClientPasswordService;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +45,9 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
 
     @Resource
     UserClientSecretQuestionResponseService userClientSecretQuestionResponseService;
+    
+    @Resource
+    PasswordEncoder passwordEncoder;
 
     /**
      * Empty secret questions should be created
@@ -269,24 +275,25 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         List<UserClientSecretQuestionResponse> list = new ArrayList<>();
         UserClientSecretQuestionResponse questionResponse3 = new UserClientSecretQuestionResponse();
         questionResponse3.setSecretQuestion(set.getContent().get(1));
+        questionResponse3.setUserClient(userSaveAgain);
         questionResponse3.setResponse("Response1");
         UserClientSecretQuestionResponse questionResponse4 = new UserClientSecretQuestionResponse();
         questionResponse4.setSecretQuestion(set.getContent().get(2));
+        questionResponse4.setUserClient(userSaveAgain);
         questionResponse4.setResponse("Response2");
         list.add(questionResponse3);
         list.add(questionResponse4);
 
 
+        questionResponse.setResponse("response1");
         assertThat("user client is not null", resetToken, is(notNullValue()));
         assertThat("SecretQuestion has been created",
                 userClientSecretQuestionResponseService.validateSecurityResponse(resetToken,
                         questionResponse), is(true));
         UserClient userClientByToken =
                 userClientPersistence.findByResetToken(resetToken);
-        Page<UserClientSecretQuestionResponse> dbResponse = userClientSecretQuestionResponsePersistence
-                .findByUserClient(userClientByToken, new PageRequest(0, 10));
 
-        boolean isSame = compareSecurityResponse(list, dbResponse);
+        boolean isSame = compareSecurityResponse(list);
         assertThat("SecretQuestion has been created", isSame, is(true));
 
         List<UserClientSecretQuestionResponse> list2 = new ArrayList<>();
@@ -299,7 +306,7 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
         list2.add(questionResponse5);
         list2.add(questionResponse6);
 
-        boolean isSameAgain = compareSecurityResponse(list2, dbResponse);
+        boolean isSameAgain = compareSecurityResponse(list2);
         assertThat("SecretQuestion has been created", isSameAgain, is(false));
 
         assertThat("user client is not null", userClientByToken, is(notNullValue()));
@@ -394,21 +401,18 @@ public class UserClientSecretQuestionResponseServiceIntegrationTest extends Base
                 is(2));
 
         assertThat("Client was given an id", questionResponse.getId(), is(notNullValue()));
-        assertThat("system is the response", questionResponse.getResponse(), is("Toyota"));
+        assertThat("system is the response", passwordEncoder.matches("Toyota".toLowerCase(), questionResponse.getResponse()), is(true));
         assertThat("Should return null", userClientSecretQuestionResponseService.reload(questionResponseToo), is(notNullValue()));
         assertThat("user client secret question created is true", user.isSecretQuestionCreated(), is(false));
     }
 
-    private boolean compareSecurityResponse(List<UserClientSecretQuestionResponse> questionResponse, Page<UserClientSecretQuestionResponse> dbResponse) {
+    private boolean compareSecurityResponse(
+            List<UserClientSecretQuestionResponse> questionResponse) {
         int counter = 0;
         for (UserClientSecretQuestionResponse response : questionResponse) {
-            for (UserClientSecretQuestionResponse databaseResponse : dbResponse) {
-                if (databaseResponse.getSecretQuestion().equals(response.getSecretQuestion())) {
-                    if (response.getResponse().replaceAll("\\s+", "")
-                            .equalsIgnoreCase(databaseResponse.getResponse().replaceAll("\\s+", ""))) {
-                        counter++;
-                    }
-                }
+            if (userClientSecretQuestionResponseService
+                    .validateSecurityResponse(response)) {
+                counter++;
             }
         }
         return counter == 2;

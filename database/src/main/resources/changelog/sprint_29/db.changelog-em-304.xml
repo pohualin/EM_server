@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="wipe out user_client_secret_question_response and drop response column" author="Paul">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="user_client_secret_question_response" columnName="response" />
+        </preConditions>
+        
+        <delete tableName="user_client_secret_question_response"/>
+        <delete schemaName="audit" tableName="user_client_secret_question_response_audit" />
+
+		<dropColumn tableName="user_client_secret_question_response" columnName="response" />
+		<dropColumn schemaName="audit" tableName="user_client_secret_question_response_audit" columnName="response" />
+    </changeSet>
+    
+    <changeSet id="add hashed_response column" author="Paul">
+		<addColumn tableName="user_client_secret_question_response">
+			<column name="hashed_response" type="nvarchar(72)" />
+		</addColumn>
+		
+		<addColumn schemaName="audit" tableName="user_client_secret_question_response_audit">
+			<column name="hashed_response" type="nvarchar(72)" />
+		</addColumn>
+		
+		<addNotNullConstraint tableName="user_client_secret_question_response"
+			columnName="hashed_response" columnDataType="nvarchar(72)" />
+    </changeSet>
+    
+    <changeSet id="reset security question related flags in user_client" author="Paul">
+    	<update tableName="user_client">
+    		<column name="security_questions_not_required_for_reset">false</column>
+    		<column name="secret_question_created">false</column>
+    	</update>
+    </changeSet>
+
+</databaseChangeLog>
