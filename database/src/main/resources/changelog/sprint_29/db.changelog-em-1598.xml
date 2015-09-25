@@ -20,7 +20,7 @@
         </addColumn>
 
         <addForeignKeyConstraint baseTableName="email_template_tracking" baseColumnNames="patient_id"
-                                 constraintName="fk_email_template_tracking_patient_id"
+                                 constraintName="fk_email_template_tracking_client_patient"
                                  referencedTableName="client_patient"
                                  referencedColumnNames="id"/>
 
