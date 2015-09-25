@@ -4,7 +4,6 @@ import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplate;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateTracking;
 import com.emmisolutions.emmimanager.model.mail.EmailTemplateType;
-import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
@@ -50,7 +49,6 @@ public interface EmailTemplatePersistence {
      */
     EmailTemplateTracking log(EmailTemplate emailTemplate, UserClient userClient);
 
-
     /**
      * Log a sent email
      *
@@ -71,7 +69,7 @@ public interface EmailTemplatePersistence {
     /**
      * Finds whether an email has been sent today
      *
-     * @param emailTemplate for this type
+     * @param emailTemplateType for this type
      * @param patient       to this patient
      * @return true if it has been sent, false not been sent today
      */
