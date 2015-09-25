@@ -92,8 +92,11 @@ public class AdminSchedulesResource {
 
         ScheduledProgramSearchFilter filter = with()
                 .accessCodes(accessCodes)
-                .patients(new Patient(patientId))
                 .includeExpired(Boolean.TRUE.equals(expired));
+
+        if (patientId != null){
+            filter.patients(new Patient(patientId));
+        }
 
         Page<ScheduledProgram> scheduledPrograms = scheduleService.find(filter, page);
 

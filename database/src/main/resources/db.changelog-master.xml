@@ -283,7 +283,9 @@
     <include relativeToChangelogFile="true" file="changelog/sprint_28/db.changelog-em-1662.xml"/>
 
     <include relativeToChangelogFile="true" file="changelog/sprint_28/db.changelog-em-1418.xml"/>
-
+    
+    <include relativeToChangelogFile="true" file="changelog/sprint_29/db.changelog-em-304.xml"/>
+    
     <include relativeToChangelogFile="true" file="changelog/sprint_29/db.changelog-em-1598.xml"/>
 
 </databaseChangeLog>
