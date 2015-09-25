@@ -133,6 +133,7 @@ public class MailServiceImpl implements MailService {
 
     private EmailTemplateTracking trackEmail(Patient patient, EmailTemplateType type) {
         if (patient == null || StringUtils.isBlank(patient.getEmail()) || type == null) {
+            LOGGER.debug("No email will be sent because {} does not have an email address", patient);
             return null;
         }
         return emailTemplatePersistence.log(emailTemplatePersistence.find(type), patient);
@@ -140,6 +141,7 @@ public class MailServiceImpl implements MailService {
 
     private EmailTemplateTracking trackEmail(UserClient userClient, EmailTemplateType type) {
         if (userClient == null || StringUtils.isBlank(userClient.getEmail()) || type == null) {
+            LOGGER.debug("No email will be sent because {} does not have an email address", userClient);
             return null;
         }
         return emailTemplatePersistence.log(emailTemplatePersistence.find(type), userClient);
