@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.user.client.activation.ActivationRequ
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService;
 import com.emmisolutions.emmimanager.service.UserClientPasswordValidationService.UserClientPasswordValidationError;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.mail.TrackingService;
 import com.emmisolutions.emmimanager.web.rest.client.model.password.UserClientPasswordValidationErrorResource;
 import org.springframework.hateoas.ResourceAssembler;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,9 @@ public class UserClientsActivationResource {
 
     @Resource
     UserClientPasswordValidationService userClientPasswordValidationService;
+
+    @Resource
+    TrackingService trackingService;
 
     @Resource(name = "userClientPasswordValidationErrorResourceAssembler")
     ResourceAssembler<UserClientPasswordValidationError, UserClientPasswordValidationErrorResource>
@@ -88,7 +92,12 @@ public class UserClientsActivationResource {
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
     @PreAuthorize("hasPermission(@activationWithinIpRange, #activationToken)")
     public ResponseEntity<Void> validateActivationToken(
-            @QueryParam("activationToken") String activationToken) {
+            @QueryParam("activationToken") String activationToken,
+            @QueryParam("trackingToken") String trackingToken) {
+
+        // track the action of clicking the activation link
+        trackingService.actionTaken(trackingToken);
+
         if (userClientService.validateActivationToken(activationToken)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
