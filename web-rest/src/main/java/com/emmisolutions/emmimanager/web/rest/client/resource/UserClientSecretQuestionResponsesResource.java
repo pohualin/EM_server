@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.TRACKING_TOKEN_REQUEST_PARAM;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -247,7 +248,7 @@ public class UserClientSecretQuestionResponsesResource {
     @PreAuthorize("hasPermission(@resetWithinIpRange, #resetToken)")
     public ResponseEntity<Boolean> validateSecretResponses(
             @RequestParam(value = "token", required = false) String resetToken,
-            @RequestParam(value = "trackingToken", required = false) String trackingToken,
+            @RequestParam(value = TRACKING_TOKEN_REQUEST_PARAM, required = false) String trackingToken,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {
 
         trackingService.actionTaken(trackingToken); // action taken on reset email

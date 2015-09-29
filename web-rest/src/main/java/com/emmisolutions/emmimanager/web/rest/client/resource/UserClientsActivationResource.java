@@ -21,6 +21,7 @@ import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.TRACKING_TOKEN_REQUEST_PARAM;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -93,7 +94,7 @@ public class UserClientsActivationResource {
     @PreAuthorize("hasPermission(@activationWithinIpRange, #activationToken)")
     public ResponseEntity<Void> validateActivationToken(
             @QueryParam("activationToken") String activationToken,
-            @QueryParam("trackingToken") String trackingToken) {
+            @QueryParam(TRACKING_TOKEN_REQUEST_PARAM) String trackingToken) {
 
         // track the action of clicking the activation link
         trackingService.actionTaken(trackingToken);
