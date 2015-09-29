@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.service.UserClientService;
 import com.emmisolutions.emmimanager.service.UserClientService.UserClientConflict;
 import com.emmisolutions.emmimanager.service.UserClientValidationEmailService;
 import com.emmisolutions.emmimanager.service.mail.MailService;
+import com.emmisolutions.emmimanager.service.mail.TrackingService;
 import com.emmisolutions.emmimanager.service.security.UserDetailsService;
 import com.emmisolutions.emmimanager.web.rest.admin.security.RootTokenBasedRememberMeServices;
 import com.emmisolutions.emmimanager.web.rest.client.model.ValidationToken;
@@ -27,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.TRACKING_TOKEN_REQUEST_PARAM;
 import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -73,6 +76,9 @@ public class UserClientsResource {
     @Value("${client.application.entry.point:/client.html}")
     String clientEntryPoint;
 
+    @Resource
+    TrackingService trackingService;
+
     /**
      * send validation email
      *
@@ -91,9 +97,10 @@ public class UserClientsResource {
             String validationHref =
                     UriComponentsBuilder.fromHttpUrl(
                             linkTo(methodOn(UserClientsResource.class)
-                                    .validateEmailToken(null)).withSelfRel().getHref())
+                                    .validateEmailToken(null, null)).withSelfRel().getHref())
                             .replacePath(clientEntryPoint + String.format(VALIDATION_CLIENT_APPLICATION_URI,
                                     savedUserClient.getValidationToken()))
+                            .pathSegment(SIGNATURE_VARIABLE_NAME) // tracking token
                             .build(false)
                             .toUriString();
             // send the email (asynchronously)
@@ -114,7 +121,13 @@ public class UserClientsResource {
      */
     @RequestMapping(value = "/validate/", method = RequestMethod.PUT)
     @PreAuthorize("hasPermission(@validateEmailWithinIpRange, #validationToken.validationToken)")
-    public ResponseEntity<Void> validateEmailToken(@RequestBody ValidationToken validationToken) {
+    public ResponseEntity<Void> validateEmailToken(
+            @RequestParam(value = TRACKING_TOKEN_REQUEST_PARAM,
+                    required = false) String trackingToken,
+            @RequestBody ValidationToken validationToken) {
+
+        trackingService.actionTaken(trackingToken);
+
         UserClient savedUserClient = userClientValidationEmailService
                 .validateEmailToken(validationToken.getValidationToken());
         if (savedUserClient != null) {

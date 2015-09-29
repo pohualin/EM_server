@@ -28,12 +28,11 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 @RequestMapping(value = "/webapi-client")
 public class TrackingEmailsResource {
 
+    public static final String TRACKING_TOKEN_REQUEST_PARAM = "trackingToken";
     @Resource
     TrackingService trackingService;
-
     @Value("${view.program.full.redirect.url:http://startemmi.com}")
     String startEmmiRedirectUrl;
-
     private byte[] blankImage;
 
     /**
