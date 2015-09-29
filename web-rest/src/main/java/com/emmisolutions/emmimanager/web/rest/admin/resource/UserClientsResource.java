@@ -230,7 +230,10 @@ public class UserClientsResource {
                 UriComponentsBuilder.fromHttpUrl(
                         linkTo(methodOn(UserClientsResource.class)
                                 .resetPassword(id)).withSelfRel().getHref())
-                        .replacePath(clientEntryPoint + String.format(RESET_PASSWORD_CLIENT_APPLICATION_URI, savedUserClient.getPasswordResetToken()))
+                        .replacePath(clientEntryPoint +
+                                String.format(RESET_PASSWORD_CLIENT_APPLICATION_URI,
+                                        savedUserClient.getPasswordResetToken())) // reset token
+                        .pathSegment(SIGNATURE_VARIABLE_NAME) // tracking token
                         .build(false)
                         .toUriString();
 

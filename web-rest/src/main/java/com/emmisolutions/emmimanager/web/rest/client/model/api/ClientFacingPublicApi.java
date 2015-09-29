@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static org.springframework.hateoas.TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -47,8 +48,12 @@ public class ClientFacingPublicApi extends ResourceSupport {
                 .getSecretQuestionWithResetToken(null, null, null)).withRel("getSecretQuestionWithResetToken");
         add(new Link(urlWithTokenParameter(getSecretQuestionWithResetToken), getSecretQuestionWithResetToken.getRel()));
         Link validateSecretQuestion = linkTo(methodOn(UserClientSecretQuestionResponsesResource.class)
-                .validateSecretResponses(null, null)).withRel("validateSecurityResponse");
-        add(new Link(urlWithTokenParameter(validateSecretQuestion), validateSecretQuestion.getRel()));
+                .validateSecretResponses(null, null, null)).withRel("validateSecurityResponse");
+        add(new Link(new UriTemplate(validateSecretQuestion.getHref())
+                .with(new TemplateVariables(
+                                new TemplateVariable("token", TemplateVariable.VariableType.REQUEST_PARAM),
+                                new TemplateVariable("trackingToken", REQUEST_PARAM_CONTINUED))
+                ).toString(), validateSecretQuestion.getRel()));
         Link lockedOutUserByResetToken = linkTo(methodOn(UserClientsResource.class)
                 .lockOutUserWithResetToken(null)).withRel("lockOutUserWithResetToken");
         add(new Link(urlWithTokenParameter(lockedOutUserByResetToken), lockedOutUserByResetToken.getRel()));
