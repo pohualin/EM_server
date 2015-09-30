@@ -31,8 +31,6 @@ public class ClientProgramContentInclusion extends AbstractAuditingEntity
     @Version
     private Integer version;
 
-   	
-
 	@NotNull
    	@ManyToOne(optional = false)
     @JoinColumn(name = "client_id", nullable = false,
