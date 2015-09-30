@@ -204,6 +204,10 @@ public class ScheduleServiceIntegrationTest extends BaseIntegrationTest {
         scheduledProgram.setProgram(programService.find(null, null).iterator().next());
         scheduleService.schedule(scheduledProgram);
     }
-  
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void findNotesNullAccessCode() {
+        scheduleService.findNotes(null);
+    }
 
 }

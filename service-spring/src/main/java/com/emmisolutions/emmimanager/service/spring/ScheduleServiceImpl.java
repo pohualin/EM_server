@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.Encounter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramNote;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
@@ -115,6 +116,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page) {
         return schedulePersistence.find(filter, page);
+    }
+
+    @Override
+    public ScheduledProgramNote findNotes(String accessCode) {
+        if (StringUtils.isBlank(accessCode)) {
+            throw new InvalidDataAccessApiUsageException("Access Code is required");
+        }
+
+        return schedulePersistence.findNotes(accessCode);
     }
 
     @Override

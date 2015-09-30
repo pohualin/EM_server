@@ -38,6 +38,9 @@
     <!--<Environment name="hli.cache.oldest" value="900000" type="java.lang.String"/>-->
     <!--<Environment name="hli.cache.cleanup.job.interval" value="900000" type="java.lang.String"/>-->
 
+    <!-- Scheduled Program Notes -->
+    <!--<Environment name="scheduledProgramNotes.serivce.url" value="http://qa1.emmisolutions.com:8080/EplayerWebService/notes/retrieve" />-->
+
     <!--
         client application entry point. This is the path for end users to see the client facing application.
         E.g. if https://dev6.emmisolutions.com/emmimanager/client.html goes into the url bar when a user wants

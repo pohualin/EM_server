@@ -1,6 +1,7 @@
 package com.emmisolutions.emmimanager.persistence;
 
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramNote;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,5 +43,13 @@ public interface SchedulePersistence {
      * @return page of ScheduledProgram objects
      */
     Page<ScheduledProgram> find(ScheduledProgramSearchFilter searchFilter, Pageable page);
+
+    /**
+     * Find notes from a scheduled program
+     *
+     * @param accessCode unique identifier
+     * @return a ScheduledProgrmNote containing program notes
+     */
+    ScheduledProgramNote findNotes(String accessCode);
 
 }
