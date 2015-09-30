@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.model.mail;
 
+import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import org.hibernate.validator.constraints.Email;
 import org.joda.time.DateTime;
@@ -35,10 +36,18 @@ public class EmailTemplateTracking implements Serializable {
 
     private boolean viewed;
 
+    @Column(name = "action_taken")
+    private boolean actionTaken;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_client_id",
             foreignKey = @ForeignKey(name = "fk_email_template_tracking_user_client"))
     private UserClient userClient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id",
+            foreignKey = @ForeignKey(name = "fk_email_template_tracking_client_patient"))
+    private Patient patient;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,8 +61,11 @@ public class EmailTemplateTracking implements Serializable {
 
     private String signature;
 
-    @Column(name = "viewed_date", columnDefinition = "timestamp")
+    @Column(name = "viewed_date_utc", columnDefinition = "timestamp")
     private DateTime viewedDate;
+
+    @Column(name = "action_taken_date_utc", columnDefinition = "timestamp")
+    private DateTime actionTakenDate;
 
     public Long getId() {
         return id;
@@ -127,6 +139,30 @@ public class EmailTemplateTracking implements Serializable {
         this.viewedDate = viewedDate;
     }
 
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public boolean isActionTaken() {
+        return actionTaken;
+    }
+
+    public void setActionTaken(boolean actionTaken) {
+        this.actionTaken = actionTaken;
+    }
+
+    public DateTime getActionTakenDate() {
+        return actionTakenDate;
+    }
+
+    public void setActionTakenDate(DateTime actionTakenDate) {
+        this.actionTakenDate = actionTakenDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -147,9 +183,11 @@ public class EmailTemplateTracking implements Serializable {
                 ", email='" + email + '\'' +
                 ", sent=" + sent +
                 ", viewed=" + viewed +
+                ", actionTaken=" + actionTaken +
                 ", createdDate=" + createdDate +
                 ", signature=" + signature +
                 ", viewedDate=" + viewedDate +
+                ", actionTakenDate=" + actionTakenDate +
                 '}';
     }
 }

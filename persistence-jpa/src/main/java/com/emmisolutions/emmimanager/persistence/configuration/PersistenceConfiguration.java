@@ -16,6 +16,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -37,6 +38,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import static com.emmisolutions.emmimanager.config.Constants.*;
 import static org.hibernate.cfg.AvailableSettings.DIALECT;
@@ -251,6 +253,8 @@ public class PersistenceConfiguration {
         properties.setProperty(DIALECT, dialect);
         properties.setProperty(SHOW_SQL, env.acceptsProfiles(SPRING_PROFILE_TEST) ? "false" : showSql.toString());
         properties.setProperty("jadira.usertype.autoRegisterUserTypes", "true");
+        properties.setProperty("jadira.usertype.javaZone", "jvm");
+        properties.setProperty("jadira.usertype.databaseZone", "UTC");
         properties.setProperty("javax.persistence.validation.mode", "ddl, callback");
         properties.setProperty("org.hibernate.envers.audit_table_suffix", "_audit");
         properties.setProperty("org.hibernate.envers.default_schema", "audit");

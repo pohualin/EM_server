@@ -5,6 +5,7 @@ import com.emmisolutions.emmimanager.model.user.client.UserClient;
 import com.emmisolutions.emmimanager.model.user.client.secret.question.response.UserClientSecretQuestionResponse;
 import com.emmisolutions.emmimanager.service.UserClientSecretQuestionResponseService;
 import com.emmisolutions.emmimanager.service.UserClientService;
+import com.emmisolutions.emmimanager.service.mail.TrackingService;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.SecretQuestionResource;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponsePage;
 import com.emmisolutions.emmimanager.web.rest.client.model.user.sercret.question.response.UserClientSecretQuestionResponseResource;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 
+import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.TRACKING_TOKEN_REQUEST_PARAM;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -46,6 +48,9 @@ public class UserClientSecretQuestionResponsesResource {
 
     @Resource(name = "secretQuestionResourceAssembler")
     ResourceAssembler<SecretQuestion, SecretQuestionResource> secretQuestionAssembler;
+
+    @Resource
+    TrackingService trackingService;
 
     /**
      * Get the page of secret question response
@@ -243,8 +248,11 @@ public class UserClientSecretQuestionResponsesResource {
     @PreAuthorize("hasPermission(@resetWithinIpRange, #resetToken)")
     public ResponseEntity<Boolean> validateSecretResponses(
             @RequestParam(value = "token", required = false) String resetToken,
+            @RequestParam(value = TRACKING_TOKEN_REQUEST_PARAM, required = false) String trackingToken,
             @RequestBody UserClientSecretQuestionResponse userClientSecretQuestionResponse) {
-        boolean responseSame = userClientSecretQuestionResponseService.validateSecurityResponse(resetToken, userClientSecretQuestionResponse);
-        return new ResponseEntity<>(responseSame, HttpStatus.OK);
+
+        trackingService.actionTaken(trackingToken); // action taken on reset email
+        return new ResponseEntity<>(userClientSecretQuestionResponseService.validateSecurityResponse(resetToken,
+                userClientSecretQuestionResponse), HttpStatus.OK);
     }
 }

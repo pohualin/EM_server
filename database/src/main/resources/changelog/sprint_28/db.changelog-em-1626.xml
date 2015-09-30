@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="Insert translate values" author="Amrita">
+        <insert tableName="strings">
+            <column name="key_path" value="self_reg_code.already_in_use"/>
+            <column name="language_id" valueNumeric="1"/>
+            <column name="message" value="This Code is already in use."/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

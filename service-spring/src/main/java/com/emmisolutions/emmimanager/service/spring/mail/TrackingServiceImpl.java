@@ -29,4 +29,16 @@ public class TrackingServiceImpl implements TrackingService {
             tracker.setViewedDate(DateTime.now(DateTimeZone.UTC));
         }
     }
+
+    @Override
+    @Transactional
+    public void actionTaken(String signature) {
+        EmailTemplateTracking tracker = emailTemplatePersistence.load(signature);
+        if (tracker != null && !tracker.isActionTaken()) {
+            // this is the first time the email has been acted upon
+            tracker.setActionTaken(true);
+            tracker.setActionTakenDate(DateTime.now(DateTimeZone.UTC));
+        }
+    }
+
 }

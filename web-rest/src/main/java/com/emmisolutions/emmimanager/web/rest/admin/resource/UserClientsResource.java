@@ -30,6 +30,7 @@ import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 
 import static com.emmisolutions.emmimanager.model.UserClientSearchFilter.StatusFilter.fromStringOrActive;
+import static com.emmisolutions.emmimanager.service.mail.TrackingService.SIGNATURE_VARIABLE_NAME;
 import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -184,7 +185,10 @@ public class UserClientsResource {
                     UriComponentsBuilder.fromHttpUrl(
                             linkTo(methodOn(UserClientsActivationResource.class)
                                     .activate(null)).withSelfRel().getHref())
-                            .replacePath(clientEntryPoint + String.format(ACTIVATION_CLIENT_APPLICATION_URI, savedUserClient.getActivationKey()))
+                            .replacePath(clientEntryPoint +
+                                    String.format(ACTIVATION_CLIENT_APPLICATION_URI,
+                                            savedUserClient.getActivationKey())) // activation token
+                            .pathSegment(SIGNATURE_VARIABLE_NAME) // tracking token
                             .build(false)
                             .toUriString();
 
@@ -226,7 +230,10 @@ public class UserClientsResource {
                 UriComponentsBuilder.fromHttpUrl(
                         linkTo(methodOn(UserClientsResource.class)
                                 .resetPassword(id)).withSelfRel().getHref())
-                        .replacePath(clientEntryPoint + String.format(RESET_PASSWORD_CLIENT_APPLICATION_URI, savedUserClient.getPasswordResetToken()))
+                        .replacePath(clientEntryPoint +
+                                String.format(RESET_PASSWORD_CLIENT_APPLICATION_URI,
+                                        savedUserClient.getPasswordResetToken())) // reset token
+                        .pathSegment(SIGNATURE_VARIABLE_NAME) // tracking token
                         .build(false)
                         .toUriString();
 

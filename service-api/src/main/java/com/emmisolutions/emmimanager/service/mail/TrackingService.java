@@ -17,4 +17,11 @@ public interface TrackingService {
      * @param signature of the tracker
      */
     void viewed(String signature);
+
+    /**
+     * Handles when an email link is clicked on
+     *
+     * @param signature of the tracker
+     */
+    void actionTaken(String signature);
 }

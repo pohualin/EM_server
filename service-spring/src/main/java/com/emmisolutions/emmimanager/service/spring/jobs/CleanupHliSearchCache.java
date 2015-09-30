@@ -1,24 +1,19 @@
 package com.emmisolutions.emmimanager.service.spring.jobs;
 
 import com.emmisolutions.emmimanager.service.ProgramService;
-import com.emmisolutions.emmimanager.service.schedule.AllJobs;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
+import com.emmisolutions.emmimanager.service.jobs.AllJobs;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import static com.emmisolutions.emmimanager.service.schedule.AllJobs.CLEANUP_HLI_SEARCH_CACHE_JOB_BEAN_NAME;
+import static com.emmisolutions.emmimanager.service.jobs.AllJobs.CLEANUP_HLI_SEARCH_CACHE_JOB_BEAN_NAME;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -27,13 +22,12 @@ import static org.quartz.TriggerBuilder.newTrigger;
 /**
  * Schedules and executes a job to clean the hli search cache.
  */
-@Profile("!test")
 @Component(CLEANUP_HLI_SEARCH_CACHE_JOB_BEAN_NAME)
+@DisallowConcurrentExecution
 public class CleanupHliSearchCache extends QuartzJobBean implements AllJobs {
 
-    private static final transient Logger LOGGER = LoggerFactory.getLogger(CleanupHliSearchCache.class);
-    @Resource
-    protected PlatformTransactionManager txManager;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CleanupHliSearchCache.class);
+
     @Resource(name = "quartzScheduler")
     Scheduler scheduler;
     @Resource
@@ -49,10 +43,8 @@ public class CleanupHliSearchCache extends QuartzJobBean implements AllJobs {
     /**
      * Schedules the search clean job if one has not already been scheduled
      */
-    @Async
     @PostConstruct
     public void schedule() throws SchedulerException {
-        LOGGER.debug("Ensure HLI Cleanup Job Active...");
         if (!scheduler.checkExists(jobKey(
                 CLEANUP_HLI_SEARCH_CACHE_JOB_BEAN_NAME, HOUSEKEEPING_GROUP))) {
             LOGGER.debug("Scheduling HLI Cleanup Job");

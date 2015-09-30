@@ -2,10 +2,7 @@ package com.emmisolutions.emmimanager.model.program;
 
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
@@ -25,7 +22,8 @@ public class Type {
     @Column(name = "emmi_tp_nm")
     private String name;
 
-    private Integer weight;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "type")
+    private TypeWeight typeWeight;
 
     private boolean active;
 
@@ -65,12 +63,12 @@ public class Type {
         this.active = active;
     }
 
-    public Integer getWeight() {
-        return weight;
+    public TypeWeight getTypeWeight() {
+        return typeWeight;
     }
 
-    public void setWeight(Integer weight) {
-        this.weight = weight;
+    public void setTypeWeight(TypeWeight typeWeight) {
+        this.typeWeight = typeWeight;
     }
 
     @Override
@@ -84,5 +82,12 @@ public class Type {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Type{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }
