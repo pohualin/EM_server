@@ -91,14 +91,14 @@ public class ProgramPersistenceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
-     * Ensures that when/if the client side only specifies type.weight we make sure to
+     * Ensures that when/if the client side only specifies type.typeWeight.weight we make sure to
      * add the HLI sorting.
      */
     @Test
     public void sort() {
         assertThat("make default sort happen",
                 programPersistence.find(new ProgramSearchFilter().addTerm("heart").addTerm("repair"),
-                        new PageRequest(0, 1, new Sort("type.weight"))),
+                        new PageRequest(0, 1, new Sort("type.typeWeight.weight"))),
                 hasItems(new Program(10)));
     }
 

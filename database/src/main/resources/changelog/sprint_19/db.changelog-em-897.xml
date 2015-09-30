@@ -6,7 +6,7 @@
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
 
-    <changeSet id="add new columns to rf_emmi" author="Matt">
+    <changeSet id="add new columns to rf_emmi" author="Matt" context="qa,dev,test">
 
         <addColumn tableName="rf_emmi" schemaName="program">
             <column name="release_dt" type="datetime"/>
@@ -15,7 +15,7 @@
 
     </changeSet>
 
-    <changeSet id="rf_specialty_new" author="Matt">
+    <changeSet id="rf_specialty_new" author="Matt" context="qa,dev,test">
 
         <createTable tableName="rf_specialty_new" schemaName="program">
             <column name="specialty_cd" type="integer">
@@ -39,7 +39,7 @@
 
     </changeSet>
 
-    <changeSet id="rf_emmi_specialty_new" author="Matt">
+    <changeSet id="rf_emmi_specialty_new" author="Matt" context="qa,dev,test">
 
         <createTable tableName="rf_emmi_specialty_new" schemaName="program">
             <column name="surrogate_key" type="integer">
@@ -64,7 +64,7 @@
 
     </changeSet>
 
-    <changeSet id="add keys" author="Matt">
+    <changeSet id="add keys" author="Matt" context="qa,dev,test">
 
         <addPrimaryKey tableName="rf_emmi_specialty_new" schemaName="program"
                        columnNames="emmi_cd, specialty_cd" constraintName="pk_rf_emmi_specialty_new"/>
@@ -133,26 +133,6 @@
                   quotchar="&quot;"
                   tableName="rf_emmi_specialty_new"
                   schemaName="program"/>
-
-    </changeSet>
-
-    <changeSet id="add weight to emmi type codes" author="Matt">
-
-        <addColumn tableName="rf_emmi_type" schemaName="program">
-            <column name="weight" type="integer" defaultValueNumeric="100"/>
-        </addColumn>
-        <update tableName="rf_emmi_type" schemaName="program">
-            <column name="weight" valueNumeric="10"/>
-            <where>emmi_tp_nm = 'IVR CALL'</where>
-        </update>
-        <update tableName="rf_emmi_type" schemaName="program">
-            <column name="weight" valueNumeric="20"/>
-            <where>emmi_tp_nm = 'MULTIMEDIA PROGRAM'</where>
-        </update>
-        <update tableName="rf_emmi_type" schemaName="program">
-            <column name="weight" valueNumeric="30"/>
-            <where>emmi_tp_nm = 'ARTICLE'</where>
-        </update>
 
     </changeSet>
 
