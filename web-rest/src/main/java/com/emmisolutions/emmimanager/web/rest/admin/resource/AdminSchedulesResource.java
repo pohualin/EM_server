@@ -164,16 +164,10 @@ public class AdminSchedulesResource {
     @RequestMapping(value = "/scheduled_programs/{id}/notes", method = RequestMethod.GET)
     @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
     public ResponseEntity<ScheduledProgramNote> getNotes(@PathVariable("id") Long id) {
-        ScheduledProgram scheduledProgram = scheduleService.reload(new ScheduledProgram(id));
-
-        if (scheduledProgram == null) {
-            return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
-        }
-
-        ScheduledProgramNote note = scheduleService.findNotes(scheduledProgram.getAccessCode());
+        ScheduledProgram scheduledProgram = new ScheduledProgram(id);
+        ScheduledProgramNote note = scheduleService.findNotes(scheduledProgram);
 
         if (note != null) {
-            note.setScheduledProgram(scheduledProgram);
             return new ResponseEntity<>(note, OK);
         }
 
@@ -187,7 +181,6 @@ public class AdminSchedulesResource {
      * @return a list of ProgramNotesJson to simulate the ePlayerWebService response.
      */
     @RequestMapping(value = "/test/scheduled_programs/notes/{id}", method = RequestMethod.GET)
-    @ResponseBody
     public List<ProgramNotesJson> testFindNotes(@PathVariable("id") String id) {
         ProgramNotesJson testNotes = new ProgramNotesJson();
         List retval = new ArrayList();

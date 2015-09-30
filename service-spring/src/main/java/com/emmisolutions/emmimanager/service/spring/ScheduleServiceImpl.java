@@ -46,6 +46,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private static final String EXCEPTION_LOCATION_REQUIRED = "Location is required for the team";
 
     private static final String EXCEPTION_CANNOT_SCHEDULE_DIFFERING_CLIENTS = "Cannot schedule program for patient and team on different clients.";
+    public static final String EXCEPTION_SCHEDULED_PROGRAM_MUST_EXIST_NOTES = "Scheduled program must exist in order to retrieve notes.";
 
     @Resource
     PatientPersistence patientPersistence;
@@ -119,12 +120,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduledProgramNote findNotes(String accessCode) {
-        if (StringUtils.isBlank(accessCode)) {
-            throw new InvalidDataAccessApiUsageException("Access Code is required");
+    public ScheduledProgramNote findNotes(ScheduledProgram scheduledProgram) {
+        ScheduledProgram inDb = reload(scheduledProgram);
+
+        if (inDb == null) {
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_SCHEDULED_PROGRAM_MUST_EXIST_NOTES);
         }
 
-        return schedulePersistence.findNotes(accessCode);
+        ScheduledProgramNote note = schedulePersistence.findNotes(inDb.getAccessCode());
+
+        if (note != null) {
+            note.setScheduledProgram(inDb);
+        }
+
+        return note;
     }
 
     @Override

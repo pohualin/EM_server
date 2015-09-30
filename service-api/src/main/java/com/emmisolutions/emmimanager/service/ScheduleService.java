@@ -49,10 +49,10 @@ public interface ScheduleService {
     /**
      * finds the notes for a given scheduled program
      *
-     * @param accessCode unique identifier for a scheduled program
+     * @param scheduledProgram a scheduled program
      * @return a ScheduledProgramNote containing notes from a scheduled program
      */
-    ScheduledProgramNote findNotes(String accessCode);
+    ScheduledProgramNote findNotes(ScheduledProgram scheduledProgram);
 
     /**
      * Update a scheduled program

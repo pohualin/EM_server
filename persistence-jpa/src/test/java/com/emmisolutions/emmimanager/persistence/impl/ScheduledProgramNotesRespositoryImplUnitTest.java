@@ -31,6 +31,9 @@ public class ScheduledProgramNotesRespositoryImplUnitTest extends BaseUnitTest {
         scheduledProgramNotesRepository.setBaseUrl("http://localhost:3000/webapi/test/scheduled_programs/notes/");
     }
 
+    /**
+     * Test a 200 response with a blank message.
+     */
     @Test
     public void testSuccessEmptyResponse() {
         mockServer.expect(requestTo("http://localhost:3000/webapi/test/scheduled_programs/notes/test")).andExpect(method(HttpMethod.GET))
@@ -39,11 +42,11 @@ public class ScheduledProgramNotesRespositoryImplUnitTest extends BaseUnitTest {
         ScheduledProgramNote testNote = scheduledProgramNotesRepository.find("test");
 
         mockServer.verify();
-        assertThat("", testNote, is(nullValue()));
+        assertThat("The returned note is null when a blank response is returned.", testNote, is(nullValue()));
     }
 
     /**
-     * 500
+     * Test a 500 response from the server
      */
     @Test
     public void testServerError() {
@@ -53,11 +56,11 @@ public class ScheduledProgramNotesRespositoryImplUnitTest extends BaseUnitTest {
         ScheduledProgramNote testNote = scheduledProgramNotesRepository.find("test");
 
         mockServer.verify();
-        assertThat("", testNote, is(nullValue()));
+        assertThat("The returned note is null when there is a server error.", testNote, is(nullValue()));
     }
 
     /**
-     * 400
+     * Test a 400 response from the server
      */
     @Test
     public void testBadRequest() {
@@ -67,11 +70,11 @@ public class ScheduledProgramNotesRespositoryImplUnitTest extends BaseUnitTest {
         ScheduledProgramNote testNote = scheduledProgramNotesRepository.find("test");
 
         mockServer.verify();
-        assertThat("", testNote, is(nullValue()));
+        assertThat("The returned note is null when there is a bad request", testNote, is(nullValue()));
     }
 
     /**
-     * 204
+     * Test a 204 response from the server
      */
     @Test
     public void testNoContent() {
@@ -81,9 +84,12 @@ public class ScheduledProgramNotesRespositoryImplUnitTest extends BaseUnitTest {
         ScheduledProgramNote testNote = scheduledProgramNotesRepository.find("test");
 
         mockServer.verify();
-        assertThat("", testNote, is(nullValue()));
+        assertThat("The returned note is null when no content is returned", testNote, is(nullValue()));
     }
 
+    /**
+     * Return a malformed string. Should throw an exception
+     */
     @Test(expected = HttpMessageNotReadableException.class)
     public void testMalformedResponse() {
         mockServer.expect(requestTo("http://localhost:3000/webapi/test/scheduled_programs/notes/test")).andExpect(method(HttpMethod.GET))
@@ -92,6 +98,9 @@ public class ScheduledProgramNotesRespositoryImplUnitTest extends BaseUnitTest {
         scheduledProgramNotesRepository.find("test");
     }
 
+    /**
+     * Return a valid message containing two (2) single sequence notes and one (1) note containing five (5) out of order sequences.
+     */
     @Test
     public void testUnorderedResponse() {
         mockServer.expect(requestTo("http://localhost:3000/webapi/test/scheduled_programs/notes/test")).andExpect(method(HttpMethod.GET))
@@ -100,7 +109,7 @@ public class ScheduledProgramNotesRespositoryImplUnitTest extends BaseUnitTest {
         ScheduledProgramNote testNote = scheduledProgramNotesRepository.find("test");
 
         mockServer.verify();
-        assertThat("", testNote.getNote(), is("here are some new notes\n\nanother note\nSome random message here.\n"));
+        assertThat("Note should contain a concatenated string of all the messages", testNote.getNote(), is("here are some new notes\n\nanother note\nSome random message here.\n"));
 
     }
 }
