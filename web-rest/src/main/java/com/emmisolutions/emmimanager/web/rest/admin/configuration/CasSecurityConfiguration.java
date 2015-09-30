@@ -265,9 +265,11 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                                             new AntPathRequestMatcher("*.jsp")),
                                     new NegatedRequestMatcher(
                                             new AntPathRequestMatcher("/webapi/messages")),
+                                    new NegatedRequestMatcher(
+                                            new AntPathRequestMatcher("/webapi/test/**")),
                                     new AntPathRequestMatcher("/webapi/**"))
                     )
-                    .and()
+                .and()
                 .exceptionHandling()
                     .defaultAuthenticationEntryPointFor(casAuthenticationEntryPoint(),
                             new AntPathRequestMatcher("/webapi/**"))
@@ -288,6 +290,7 @@ public class CasSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers("/webapi.*").permitAll()
                     .antMatchers("/webapi/").permitAll()
                     .antMatchers("/webapi/messages").permitAll()
+                    .antMatchers("/webapi/test/**").permitAll()
                     .antMatchers("/api-docs*").permitAll()
                     .antMatchers("/api-docs/**").permitAll()
                     .antMatchers("/webapi/**").authenticated();

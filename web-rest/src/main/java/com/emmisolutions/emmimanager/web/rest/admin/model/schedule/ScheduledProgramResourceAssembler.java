@@ -19,6 +19,7 @@ public class ScheduledProgramResourceAssembler implements ResourceAssembler<Sche
     public ScheduledProgramResource toResource(ScheduledProgram entity) {
         ScheduledProgramResource ret = new ScheduledProgramResource();
         ret.add(linkTo(methodOn(AdminSchedulesResource.class).get(entity.getId())).withSelfRel());
+        ret.add(linkTo(methodOn(AdminSchedulesResource.class).getNotes(entity.getId())).withRel("programNotes"));
         ret.add(ClientResourceAssembler.createFullUsersSearchLink(entity.getTeam().getClient()).withRel("clientUsers"));
         ret.setEntity(entity);
         return ret;

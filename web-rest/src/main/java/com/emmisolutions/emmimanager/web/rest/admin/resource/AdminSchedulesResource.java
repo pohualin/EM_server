@@ -2,13 +2,16 @@ package com.emmisolutions.emmimanager.web.rest.admin.resource;
 
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramNote;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
+import com.emmisolutions.emmimanager.model.schedule.remote.ProgramNotesJson;
 import com.emmisolutions.emmimanager.service.ScheduleService;
 import com.emmisolutions.emmimanager.service.jobs.ScheduleProgramReminderEmailJobMaintenanceService;
 import com.emmisolutions.emmimanager.web.rest.admin.model.schedule.ScheduledProgramResource;
 import com.emmisolutions.emmimanager.web.rest.admin.model.schedule.ScheduledProgramResourcePage;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter.with;
 import static com.emmisolutions.emmimanager.web.rest.client.resource.TrackingEmailsResource.emailViewedTrackingLink;
@@ -146,5 +151,56 @@ public class AdminSchedulesResource {
             return new ResponseEntity<>(scheduledProgramResourceResourceAssembler.toResource(updatedProgram), OK);
         }
         return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * GET to retrieve notes for a specific scheduled program
+     *
+     * @param id of scheduled program to retrieve notes for
+     * @return OK (200): when notes are found
+     * INTERNAL_SERVER_ERROR (500): if there isn't one found
+     * NO_CONTENT (204): if there isn't one found
+     */
+    @RequestMapping(value = "/scheduled_programs/{id}/notes", method = RequestMethod.GET)
+    @RolesAllowed({"PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER"})
+    public ResponseEntity<ScheduledProgramNote> getNotes(@PathVariable("id") Long id) {
+        ScheduledProgram scheduledProgram = new ScheduledProgram(id);
+        ScheduledProgramNote note = scheduleService.findNotes(scheduledProgram);
+
+        if (note != null) {
+            return new ResponseEntity<>(note, OK);
+        }
+
+        return new ResponseEntity<>(NO_CONTENT);
+    }
+
+    /**
+     * Test endpoint set up to return randomly generated notes
+     *
+     * @param id of scheduled program (unused)
+     * @return a list of ProgramNotesJson to simulate the ePlayerWebService response.
+     */
+    @RequestMapping(value = "/test/scheduled_programs/notes/{id}", method = RequestMethod.GET)
+    public List<ProgramNotesJson> testFindNotes(@PathVariable("id") String id) {
+        ProgramNotesJson testNotes = new ProgramNotesJson();
+        List retval = new ArrayList();
+        retval.add(testNotes);
+
+        testNotes.setSequenceNumber(1);
+        testNotes.setViewId(id);
+        testNotes.setNotes(generateRandomNotes());
+
+        return retval;
+    }
+
+    private String generateRandomNotes() {
+        Random rand = new Random();
+        StringBuilder retval = new StringBuilder();
+
+        for (int i = 0; i < rand.nextInt(300) + 5; i++) {
+            retval.append(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1)).append(" ");
+        }
+
+        return retval.toString();
     }
 }
