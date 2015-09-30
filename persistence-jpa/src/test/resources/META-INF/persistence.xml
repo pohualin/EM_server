@@ -63,6 +63,7 @@
         <class>com.emmisolutions.emmimanager.model.program.Program</class>
         <class>com.emmisolutions.emmimanager.model.program.Source</class>
         <class>com.emmisolutions.emmimanager.model.program.Type</class>
+        <class>com.emmisolutions.emmimanager.model.program.TypeWeight</class>
         <class>com.emmisolutions.emmimanager.model.program.ContentSubscription</class>
         <class>com.emmisolutions.emmimanager.model.ProviderSpecialty</class>
         <class>com.emmisolutions.emmimanager.model.Patient</class>

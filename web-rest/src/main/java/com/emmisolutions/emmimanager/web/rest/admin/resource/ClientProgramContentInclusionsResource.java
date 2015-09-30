@@ -88,8 +88,9 @@ public class ClientProgramContentInclusionsResource {
                 programSearchFilter.addSpecialty(new Specialty(specialtyId));
             }
         }
-        Page<Program> programPage = programService.find(programSearchFilter, pageable);
-
+        
+        Page<Program> programPage = clientProgramContentInclusionService.findPossibleProgramByClient(new Client(clientId), programSearchFilter, pageable);
+      
         return new ProgramContentResourcePage(programSearchFilter,
                 assembler.toResource(programPage, programResourceResourceAssembler),
                 programPage);

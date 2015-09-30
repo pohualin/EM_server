@@ -5,7 +5,7 @@
 
     <Resource name="jdbc/EmmiManagerDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
-              password="wlee"
+              password=""
               driverClassName="org.postgresql.Driver"
               url="jdbc:postgresql://localhost:5432/emmimanager"
               maxActive="20"
@@ -14,7 +14,7 @@
 
     <Resource name="jdbc/EmmiManagerDdlDS" auth="Container" type="javax.sql.DataSource"
               username="postgres"
-              password="wlee"
+              password=""
               driverClassName="org.postgresql.Driver"
               url="jdbc:postgresql://localhost:5432/emmimanager"
               maxActive="1"
@@ -37,6 +37,9 @@
     <!-- cache cleanup times are specified in millis, e.g. 900000 == 15 minutes -->
     <!--<Environment name="hli.cache.oldest" value="900000" type="java.lang.String"/>-->
     <!--<Environment name="hli.cache.cleanup.job.interval" value="900000" type="java.lang.String"/>-->
+
+    <!-- Scheduled Program Notes -->
+    <!--<Environment name="scheduledProgramNotes.serivce.url" value="http://127.0.0.1:8080/webapi/test/scheduled_programs/notes/" />-->
 
     <!--
         client application entry point. This is the path for end users to see the client facing application.
@@ -120,5 +123,9 @@
     <!--<Environment name="org.quartz.scheduler.instanceName" value="em2_clustered_scheduler" type="java.lang.String" override="false"/>-->
     <!--<Environment name="org.quartz.scheduler.instanceId" value="AUTO" type="java.lang.String" override="false"/>-->
     <!--<Environment name="org.quartz.scheduler.skipUpdateCheck" value="true" type="java.lang.String" override="false"/>-->
+
+    <!-- program viewing (startemmi) integration point -->
+    <!--<Environment name="view.program.full.redirect.url" value="http://startemmi.com" type="java.lang.String"-->
+    <!--override="false"/>-->
 
 </Context>

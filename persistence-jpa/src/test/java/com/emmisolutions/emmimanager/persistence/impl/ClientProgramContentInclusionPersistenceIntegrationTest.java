@@ -2,6 +2,9 @@ package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.Client;
 import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion;
+import com.emmisolutions.emmimanager.model.program.Program;
+import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
+import com.emmisolutions.emmimanager.model.program.Specialty;
 import com.emmisolutions.emmimanager.persistence.BaseIntegrationTest;
 import com.emmisolutions.emmimanager.persistence.ClientProgramContentInclusionPersistence;
 import com.emmisolutions.emmimanager.persistence.ProgramPersistence;
@@ -32,10 +35,34 @@ public class ClientProgramContentInclusionPersistenceIntegrationTest extends
     @Test
     public void testList() {
         Client client = makeNewRandomClient();
-        ClientProgramContentInclusion contentSubscriptionConfig = new ClientProgramContentInclusion();
-        contentSubscriptionConfig.setClient(client);
-     
+        Page<Program> aProgram = programPersistence.find(new ProgramSearchFilter().addSpecialty(new Specialty(16)), null);
+        
+        ClientProgramContentInclusion contentInclusion = new ClientProgramContentInclusion();
+        contentInclusion.setClient(client);
+        contentInclusion.setProgram(aProgram.getContent().get(0));
+      
+       
+        ClientProgramContentInclusion savedContentProgram = clientProgramContentInclusionPersistence.saveOrUpdate(contentInclusion);
+
+        Page<ClientProgramContentInclusion> clientContentProgramList = clientProgramContentInclusionPersistence
+        		.findByClient(client.getId(), null);
+       
+
+        assertThat("saved config should be found", clientContentProgramList, 
+        		hasItem(savedContentProgram));
+
+        ClientProgramContentInclusion configurationReload = clientProgramContentInclusionPersistence
+                .reload(savedContentProgram.getId());
+
+        assertThat("reload should be the same configuration as the saved one", configurationReload,
+                is(savedContentProgram));
+        
+        clientProgramContentInclusionPersistence.delete(savedContentProgram.getId());
+        
+        assertThat("delete the saved content program successfully",
+        		clientProgramContentInclusionPersistence.reload(savedContentProgram.getId()), is(nullValue()));
 
     }
+
 
 }

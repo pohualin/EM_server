@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.service;
 
 import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion;
+import com.emmisolutions.emmimanager.model.program.Program;
+import com.emmisolutions.emmimanager.model.program.ProgramSearchFilter;
 import com.emmisolutions.emmimanager.model.Client;
 
 import org.springframework.data.domain.Page;
@@ -43,6 +45,21 @@ public interface ClientProgramContentInclusionService {
     public Page<ClientProgramContentInclusion> findByClient(
             Client client,
             Pageable pageable);
+    
+    /**
+     * Find a Page of available programs based on program search filters and 
+     * filter out the already associated programs by Client 
+     * 
+     * @param client
+     *            to find
+     * @param  programSearchFilter
+     *            to filer          
+     * @param pageable
+     *            to use
+     * @return a Page of available program contents
+     */
+    public Page<Program> findPossibleProgramByClient(Client client,
+			ProgramSearchFilter programSearchFilter, Pageable pageable);
     
     /**
      * Delete an existing ClientProgramContentInclusion

@@ -31,7 +31,9 @@ public class ClientProgramContentInclusion extends AbstractAuditingEntity
     @Version
     private Integer version;
 
-   	@NotNull
+   	
+
+	@NotNull
    	@ManyToOne(optional = false)
     @JoinColumn(name = "client_id", nullable = false,
     		foreignKey = @ForeignKey(name ="fk_client_program_inclusion_client"))
@@ -84,6 +86,14 @@ public class ClientProgramContentInclusion extends AbstractAuditingEntity
     public void setClient(Client client) {
         this.client = client;
     }
+    
+    public Program getProgram() {
+		return program;
+	}
+
+	public void setProgram(Program program) {
+		this.program = program;
+	}
 
    	@Override
     public boolean equals(Object o) {
