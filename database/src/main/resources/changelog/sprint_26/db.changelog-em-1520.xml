@@ -7,7 +7,7 @@
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
     
-    <changeSet id="create rf_content_subscription table from legacy" author="wlee">
+    <changeSet id="create rf_content_subscription table from legacy" author="wlee" context="qa,dev,test">
         <createTable tableName="rf_content_subscription" schemaName="program">
             <column name="config_cd" type="integer">
                 <constraints primaryKey="true" primaryKeyName="pk_rf_content_subscription" nullable="false"/>
