@@ -7,7 +7,7 @@
     <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
     <property name="now" value="GETDATE()" dbms="mssql"/>
 
-    <changeSet id="create schema" author="Matt" dbms="mysql,h2,postgresql">
+    <changeSet id="create schema" author="Matt" dbms="mysql,h2,postgresql" context="qa,dev,test">
         <sql>
             <![CDATA[
             create schema program
@@ -15,7 +15,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="create schema sql server" author="Matt" dbms="mssql">
+    <changeSet id="create schema sql server" author="Matt" dbms="mssql" context="qa,dev,test">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">SELECT count(*) FROM sys.schemas WHERE name = 'program'</sqlCheck>
         </preConditions>
@@ -26,7 +26,7 @@
         </sql>
     </changeSet>
 
-    <changeSet id="rf_emmi" author="Matt">
+    <changeSet id="rf_emmi" author="Matt" context="qa,dev,test">
 
         <createTable tableName="rf_emmi" schemaName="program">
             <column name="emmi_cd" type="integer">
@@ -76,7 +76,7 @@
 
     </changeSet>
 
-    <changeSet id="rf_emmi_type" author="Matt">
+    <changeSet id="rf_emmi_type" author="Matt" context="qa,dev,test">
 
         <createTable tableName="rf_emmi_type" schemaName="program">
             <column name="emmi_tp_cd" type="integer">
@@ -104,7 +104,7 @@
 
     </changeSet>
 
-    <changeSet id="rf_emmi_brand" author="Matt">
+    <changeSet id="rf_emmi_brand" author="Matt" context="qa,dev,test">
 
         <createTable tableName="rf_emmi_brand" schemaName="program">
             <column name="emmi_brnd_cd" type="integer">
@@ -126,7 +126,7 @@
 
     </changeSet>
 
-    <changeSet id="rf_emmi_source" author="Matt">
+    <changeSet id="rf_emmi_source" author="Matt" context="qa,dev,test">
 
         <createTable tableName="rf_emmi_source" schemaName="program">
             <column name="emmi_src_cd" type="integer">
@@ -146,7 +146,7 @@
 
     </changeSet>
 
-    <changeSet id="foreign_keys" author="Matt">
+    <changeSet id="foreign_keys" author="Matt" context="qa,dev,test">
 
         <addForeignKeyConstraint baseTableName="rf_emmi"
                                  baseTableSchemaName="program"

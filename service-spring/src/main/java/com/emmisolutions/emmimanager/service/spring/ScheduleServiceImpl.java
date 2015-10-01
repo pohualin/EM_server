@@ -6,6 +6,7 @@ import com.emmisolutions.emmimanager.model.ClientTeamSchedulingConfiguration;
 import com.emmisolutions.emmimanager.model.Patient;
 import com.emmisolutions.emmimanager.model.schedule.Encounter;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramNote;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.*;
 import com.emmisolutions.emmimanager.service.ClientTeamSchedulingConfigurationService;
@@ -45,6 +46,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     private static final String EXCEPTION_LOCATION_REQUIRED = "Location is required for the team";
 
     private static final String EXCEPTION_CANNOT_SCHEDULE_DIFFERING_CLIENTS = "Cannot schedule program for patient and team on different clients.";
+
+    private static final String EXCEPTION_SCHEDULED_PROGRAM_MUST_EXIST_NOTES = "Scheduled program must exist in order to retrieve notes.";
 
     @Resource
     PatientPersistence patientPersistence;
@@ -115,6 +118,23 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public Page<ScheduledProgram> find(ScheduledProgramSearchFilter filter, Pageable page) {
         return schedulePersistence.find(filter, page);
+    }
+
+    @Override
+    public ScheduledProgramNote findNotes(ScheduledProgram scheduledProgram) {
+        ScheduledProgram inDb = reload(scheduledProgram);
+
+        if (inDb == null) {
+            throw new InvalidDataAccessApiUsageException(EXCEPTION_SCHEDULED_PROGRAM_MUST_EXIST_NOTES);
+        }
+
+        ScheduledProgramNote note = schedulePersistence.findNotes(inDb.getAccessCode());
+
+        if (note != null) {
+            note.setScheduledProgram(inDb);
+        }
+
+        return note;
     }
 
     @Override

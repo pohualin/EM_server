@@ -1,10 +1,12 @@
 package com.emmisolutions.emmimanager.persistence.impl;
 
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgram;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramNote;
 import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
 import com.emmisolutions.emmimanager.persistence.SchedulePersistence;
 import com.emmisolutions.emmimanager.persistence.impl.specification.ScheduledProgramSpecifications;
 import com.emmisolutions.emmimanager.persistence.repo.ScheduledProgramExtensionRepository;
+import com.emmisolutions.emmimanager.persistence.repo.ScheduledProgramNotesRepository;
 import com.emmisolutions.emmimanager.persistence.repo.ScheduledProgramRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +34,11 @@ public class SchedulePersistenceImpl implements SchedulePersistence {
     ScheduledProgramRepository scheduledProgramRepository;
 
     @Resource
+    ScheduledProgramNotesRepository scheduledProgramNotesRepository;
+
+    @Resource
     ScheduledProgramSpecifications specifications;
+
     @PersistenceContext
     EntityManager entityManager;
 
@@ -66,5 +72,10 @@ public class SchedulePersistenceImpl implements SchedulePersistence {
                         .and(specifications.accessCodes(filter))
                         .and(specifications.encounter(filter)),
                 page == null ? new PageRequest(0, 50, Sort.Direction.ASC, "viewByDate") : page);
+    }
+
+    @Override
+    public ScheduledProgramNote findNotes(String accessCode) {
+        return scheduledProgramNotesRepository.find(accessCode);
     }
 }
