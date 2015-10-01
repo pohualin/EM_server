@@ -39,7 +39,8 @@
     <!--<Environment name="hli.cache.cleanup.job.interval" value="900000" type="java.lang.String"/>-->
 
     <!-- Scheduled Program Notes -->
-    <!--<Environment name="scheduledProgramNotes.serivce.url" value="http://127.0.0.1:8080/webapi/test/scheduled_programs/notes/" />-->
+    <!--<Environment name="scheduledProgramNotes.service.url" value="http://127.0.0.1:8080/webapi/test/scheduled_programs/notes"
+                type="java.lang.String" override="false" />-->
 
     <!--
         client application entry point. This is the path for end users to see the client facing application.

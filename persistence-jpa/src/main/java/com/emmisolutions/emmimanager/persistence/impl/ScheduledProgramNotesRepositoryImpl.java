@@ -21,10 +21,9 @@ import java.util.*;
 @Repository
 public class ScheduledProgramNotesRepositoryImpl implements ScheduledProgramNotesRepository {
 
-    @Value("${scheduledProgramNotes.serivce.url:http://127.0.0.1:8080/webapi/test/scheduled_programs/notes/}")
-    private String baseUrl;
-
     RestTemplate restTemplate;
+    @Value("${scheduledProgramNotes.service.url:http://127.0.0.1:8080/webapi/test/scheduled_programs/notes}")
+    private String baseUrl;
 
     /**
      * Given a unique identifier, query the API for a given program's notes
