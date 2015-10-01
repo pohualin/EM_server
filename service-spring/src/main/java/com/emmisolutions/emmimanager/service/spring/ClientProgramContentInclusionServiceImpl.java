@@ -65,7 +65,7 @@ public class ClientProgramContentInclusionServiceImpl implements
     	if((clientProgramContentInclusion.getClient() == null) &&
     	    (clientProgramContentInclusion.getClient().getId() == null)){
     		throw new InvalidDataAccessApiUsageException(
-                    "ClientId can not be null for creating the client's content subscription.");
+                    "ClientId can not be null for creating the client's program content inclusion.");
     	}
 		Client reload = clientService.reload(clientProgramContentInclusion
                 .getClient());

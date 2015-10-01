@@ -71,8 +71,15 @@ public class ClientProgramContentInclusionServiceIntegrationTest extends
         Page<ClientProgramContentInclusion>  findClientProgramContentInclusion = clientProgramContentInclusionService
                 .findByClient(client, null);
         
+        Page<Program>  findpossiblePrograms = clientProgramContentInclusionService.findPossibleProgramByClient(client, new ProgramSearchFilter().addSpecialty(new Specialty(16)), null);
+        
         assertThat(
-                "should has content subscription ",
+                "should not have any more programs after filter ",
+                findpossiblePrograms.hasContent()
+                        , is(false));
+        
+        assertThat(
+                "should has program contents",
                 findClientProgramContentInclusion.hasContent()
                         , is(true));
         
@@ -84,7 +91,7 @@ public class ClientProgramContentInclusionServiceIntegrationTest extends
        
        clientProgramContentInclusionService.delete(updatedClientProgramContentInclusion);
        
-       assertThat("delete content subscription successfully",
+       assertThat("delete program content successfully",
     		   clientProgramContentInclusionService.reload(updatedClientProgramContentInclusion), is(nullValue()));
        
        assertThat("reload will return null with null object",
@@ -100,6 +107,16 @@ public class ClientProgramContentInclusionServiceIntegrationTest extends
     	Page<ClientProgramContentInclusion> programInclusion = clientProgramContentInclusionService.findByClient(new Client(), null);
     	assertThat(programInclusion, is(nullValue()));
     }
+    
+    /**
+     * Test bad create 
+     */
+    public void testNegativeCreateNull() {
+    	ClientProgramContentInclusion programInclusion = clientProgramContentInclusionService.create(new ClientProgramContentInclusion());
+        assertThat(programInclusion, is(nullValue()));
+    	
+    }
+    
     
     @Test
     public void testUnsavedReload() {
