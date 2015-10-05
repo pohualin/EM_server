@@ -39,6 +39,8 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamTagService teamTagService;
 
+    @Resource
+    SalesForceService salesForceService;
     /**
      * Not all required fields
      */
@@ -81,6 +83,35 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         savedTeam.setClient(clientService.create(makeClient("a different client")));
         savedTeam = teamService.update(team);
         assertThat("client was not updated", savedTeam.getClient(), is(client));
+    }
+
+    @Test
+    public void testSalesforceLookup() {
+        Client client = makeClient("clientTeam2678");
+        clientService.create(client);
+
+        Team team = makeTeamForClient(client);
+        Team savedTeam = teamService.create(team);
+        assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
+        assertThat("no city exists", savedTeam.getSalesForceAccount().getCity(), is(nullValue()));
+
+
+        SalesForce sf = salesForceService.findAccountById("0015000000YUCQEAA5");
+
+        TeamSalesForce tsf = new TeamSalesForce();
+        tsf.setAccountNumber(sf.getAccountNumber());
+        tsf.setCity(sf.getCity());
+        tsf.setCountry(sf.getCountry());
+        tsf.setFaxNumber(sf.getFax());
+        tsf.setName(sf.getName());
+        tsf.setPhoneNumber(sf.getPhoneNumber());
+        tsf.setPostalCode(sf.getPostalCode());
+        tsf.setState(sf.getState());
+        tsf.setStreet(sf.getStreet());
+        team.setSalesForceAccount(tsf);
+
+        savedTeam = teamService.update(team);
+        assertThat("address from look up was updated successfully", savedTeam.getSalesForceAccount().getCity(), is(notNullValue()));
     }
 
     /**
@@ -247,4 +278,5 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         clientService.create(client);
         return client;
     }
+
 }

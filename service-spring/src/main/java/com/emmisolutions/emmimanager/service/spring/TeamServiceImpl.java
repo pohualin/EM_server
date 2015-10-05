@@ -1,9 +1,12 @@
 package com.emmisolutions.emmimanager.service.spring;
 
+import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.TeamSalesForce;
 import com.emmisolutions.emmimanager.model.TeamSearchFilter;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.TeamPersistence;
+import com.emmisolutions.emmimanager.service.SalesForceService;
 import com.emmisolutions.emmimanager.service.TeamService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
@@ -24,6 +27,9 @@ public class TeamServiceImpl implements TeamService {
 
     @Resource
     ClientPersistence clientPersistence;
+
+    @Resource
+    SalesForceService salesForceService;
 
     /**
      * @param teamSearchFilter search filter for teams
@@ -52,7 +58,7 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public Team reload(Team toFind) {
-    	if (toFind == null){
+        if (toFind == null) {
             throw new InvalidDataAccessApiUsageException("Team cannot be null");
         }
         return teamPersistence.reload(toFind);
@@ -70,13 +76,14 @@ public class TeamServiceImpl implements TeamService {
         }
         team.setId(null);
         team.setVersion(null);
+        updateSalesforceDetails(team);
         return teamPersistence.save(team);
-	}
+    }
 
-	@Override
-	public Team findByNormalizedNameAndClientId(String normalizedName, Long clientId){
-		return teamPersistence.findByNormalizedTeamNameAndClientId(normalizedName, clientId);
-	}
+    @Override
+    public Team findByNormalizedNameAndClientId(String normalizedName, Long clientId) {
+        return teamPersistence.findByNormalizedTeamNameAndClientId(normalizedName, clientId);
+    }
 
     @Override
     @Transactional
@@ -87,6 +94,27 @@ public class TeamServiceImpl implements TeamService {
         }
         // don't allow client changes on updates
         team.setClient(dbTeam.getClient());
+        updateSalesforceDetails(team);
         return teamPersistence.save(team);
+    }
+
+    private void updateSalesforceDetails(Team team) {
+        if (team.getSalesForceAccount() != null
+                && team.getSalesForceAccount().getAccountNumber() != null) {
+            SalesForce sf = salesForceService.findAccountById(team.getSalesForceAccount().getAccountNumber());
+            if (sf != null) {
+                TeamSalesForce tsf = new TeamSalesForce();
+                tsf.setAccountNumber(sf.getAccountNumber());
+                tsf.setCity(sf.getCity());
+                tsf.setCountry(sf.getCountry());
+                tsf.setFaxNumber(sf.getFax());
+                tsf.setName(sf.getName());
+                tsf.setPhoneNumber(sf.getPhoneNumber());
+                tsf.setPostalCode(sf.getPostalCode());
+                tsf.setState(sf.getState());
+                tsf.setStreet(sf.getStreet());
+                team.setSalesForceAccount(tsf);
+            }
+        }
     }
 }
