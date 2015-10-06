@@ -76,7 +76,7 @@ public class TeamServiceImpl implements TeamService {
         }
         team.setId(null);
         team.setVersion(null);
-        updateSalesforceDetails(team);
+        updateSalesforceDetails(null, team);
         return teamPersistence.save(team);
     }
 
@@ -94,16 +94,19 @@ public class TeamServiceImpl implements TeamService {
         }
         // don't allow client changes on updates
         team.setClient(dbTeam.getClient());
-        updateSalesforceDetails(team);
+        updateSalesforceDetails(dbTeam.getSalesForceAccount(), team);
         return teamPersistence.save(team);
     }
 
-    private void updateSalesforceDetails(Team team) {
-        if (team.getSalesForceAccount() != null
-                && team.getSalesForceAccount().getAccountNumber() != null) {
+    private void updateSalesforceDetails(TeamSalesForce tsf, Team team) {
+        if (tsf == null) {
+            tsf = new TeamSalesForce();
+            team.setSalesForceAccount(team.getSalesForceAccount());
+        }
+
+        if (team.getSalesForceAccount() != null && team.getSalesForceAccount().getAccountNumber() != null) {
             SalesForce sf = salesForceService.findAccountById(team.getSalesForceAccount().getAccountNumber());
             if (sf != null) {
-                TeamSalesForce tsf = new TeamSalesForce();
                 tsf.setAccountNumber(sf.getAccountNumber());
                 tsf.setCity(sf.getCity());
                 tsf.setCountry(sf.getCountry());
