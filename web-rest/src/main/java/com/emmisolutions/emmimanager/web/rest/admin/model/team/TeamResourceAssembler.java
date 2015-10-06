@@ -59,6 +59,12 @@ public class TeamResourceAssembler implements ResourceAssembler<Team, TeamResour
                 methodOn(TeamProvidersResource.class)
                         .associateAllClientLocationsExcept(entity.getId(), null))
                 .withRel("associateAllClientProvidersExcept"));
+        
+        ret.add(linkTo(
+                methodOn(TeamPrintInstructionConfigurationsResource.class)
+                        .getPrintInstructionConfiguration(entity.getId()))
+                .withRel("printInstructionConfiguration"));
+        
         ret.setEntity(entity);
 
         return ret;

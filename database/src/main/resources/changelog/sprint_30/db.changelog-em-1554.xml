@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create default_team_print_instruction_configuration table" author="Paul">
+        <createTable tableName="default_team_print_instruction_configuration">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_default_team_print_instruction_configuration"/>
+            </column>
+            <column name="version" type="int"/>
+            <column name="created_by" type="bigint"/>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="bigint"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="patient_url" type="nvarchar(255)">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable schemaName="audit" tableName="default_team_print_instruction_configuration_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+            <column name="patient_url" type="nvarchar(255)" />
+            <column name="active" type="boolean" />
+        </createTable>
+        
+    </changeSet>
+    
+    <changeSet id="add fks and indexes to default_team_print_instruction_configuration table" author="Paul">
+		<addForeignKeyConstraint baseTableName="default_team_print_instruction_configuration"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_default_team_print_instruction_configuration_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+                                 
+        <addForeignKeyConstraint baseTableName="default_team_print_instruction_configuration"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_default_team_print_instruction_configuration_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+                                 
+        <createIndex tableName="default_team_print_instruction_configuration" indexName="ix_default_team_print_instruction_configuration_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        
+        <createIndex tableName="default_team_print_instruction_configuration" indexName="ix_default_team_print_instruction_configuration_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+        
+        <addPrimaryKey schemaName="audit" tableName="default_team_print_instruction_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_default_team_print_instruction_configuration_audit"/>
+		
+		<addForeignKeyConstraint baseTableSchemaName="audit"
+								 baseTableName="default_team_print_instruction_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_default_team_print_instruction_configuration_audit_revision"
+                                 referencedTableSchemaName="audit"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+                                 
+		<createIndex schemaName="audit" indexName="ix_default_team_print_instruction_configuration_audit_revision"
+               tableName="default_team_print_instruction_configuration_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="create team_print_instruction_configuration table" author="Paul">
+        <createTable tableName="team_print_instruction_configuration">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_team_print_instruction_configuration"/>
+            </column>
+            <column name="version" type="int"/>
+            <column name="created_by" type="bigint"/>
+            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="bigint"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="client_team_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="default_team_print_instruction_configuration_id" type="bigint">
+            	<constraints nullable="false" />
+            </column>
+            <column name="patient_url" type="nvarchar(255)">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable schemaName="audit" tableName="team_print_instruction_configuration_audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+			<column name="client_team_id" type="bigint"/>
+            <column name="default_team_print_instruction_configuration_id" type="bigint" />            
+            <column name="patient_url" type="nvarchar(255)" />
+        </createTable>
+        
+    </changeSet>
+    
+    <changeSet id="add fks and indexes to team_print_instruction_configuration table" author="Paul">
+		<addForeignKeyConstraint baseTableName="team_print_instruction_configuration"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_team_print_instruction_configuration_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+                                 
+        <addForeignKeyConstraint baseTableName="team_print_instruction_configuration"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_team_print_instruction_configuration_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+                                 
+		<addForeignKeyConstraint baseTableName="team_print_instruction_configuration"
+                                 baseColumnNames="client_team_id"
+                                 constraintName="fk_team_print_instruction_configuration_client_team"
+                                 referencedTableName="client_team"
+                                 referencedColumnNames="id"/>
+                                 
+        <addForeignKeyConstraint baseTableName="team_print_instruction_configuration"
+                                 baseColumnNames="default_team_print_instruction_configuration_id"
+                                 constraintName="fk_team_print_instruction_configuration_default_team_print_instruction_configuration"
+                                 referencedTableName="default_team_print_instruction_configuration"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="team_print_instruction_configuration" indexName="ix_team_print_instruction_configuration_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        
+        <createIndex tableName="team_print_instruction_configuration" indexName="ix_team_print_instruction_configuration_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+        
+        <createIndex indexName="ix_team_print_instruction_configuration_client_team"
+               tableName="team_print_instruction_configuration">
+            <column name="client_team_id" type="BIGINT"/>
+        </createIndex> 
+                                 
+		
+		<createIndex indexName="ix_team_print_instruction_configuration_default_team_print_instruction_configuration"
+               tableName="team_print_instruction_configuration">
+            <column name="default_team_print_instruction_configuration_id" type="BIGINT"/>
+        </createIndex>
+        
+        <addPrimaryKey schemaName="audit"
+        			   tableName="team_print_instruction_configuration_audit" columnNames="id, revision"
+                       constraintName="pk_team_print_instruction_configuration_audit"/>
+		
+		<addForeignKeyConstraint baseTableSchemaName="audit"
+								 baseTableName="team_print_instruction_configuration_audit"
+                                 baseColumnNames="revision"
+                                 constraintName="fk_team_print_instruction_configuration_audit_revision"
+                                 referencedTableSchemaName="audit"
+                                 referencedTableName="revision_info"
+                                 referencedColumnNames="revision"/>
+                                 
+		<createIndex schemaName="audit" indexName="ix_team_print_instruction_configuration_audit_revision"
+               tableName="team_print_instruction_configuration_audit">
+            <column name="revision" type="BIGINT"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="add rowver for sql server for encounter tables" author="Paul" dbms="mssql">
+        <addColumn tableName="default_team_print_instruction_configuration">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="default_team_print_instruction_configuration_audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="team_print_instruction_configuration">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn schemaName="audit" tableName="team_print_instruction_configuration_audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+	<changeSet id="load default team print instruction configuration reference data" author="Paul">
+        <loadData encoding="UTF-8"
+                  file="changelog/sprint_30/data/em-1554/default-team-print-instruction-configuration.csv"
+                  separator=";"
+                  tableName="default_team_print_instruction_configuration"/>
+    </changeSet>
+</databaseChangeLog>
