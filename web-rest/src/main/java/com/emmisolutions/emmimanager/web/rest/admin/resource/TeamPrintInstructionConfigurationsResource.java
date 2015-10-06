@@ -33,6 +33,14 @@ public class TeamPrintInstructionConfigurationsResource {
     @Resource
     TeamPrintInstructionConfigurationResourceAssembler teamPrintInstructionConfigurationAssembler;
 
+    /**
+     * Get PrintInstructionConfiguration for a Team
+     * 
+     * @param teamId
+     *            to lookup
+     * @return TeamPrintInstructionConfigurationResource along with
+     *         HTTPStatus.OK or HTTPStatus.NO_CONTENT
+     */
     @RequestMapping(value = "/teams/{teamId}/print_instruction_configuration", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<TeamPrintInstructionConfigurationResource> getPrintInstructionConfiguration(
@@ -50,6 +58,16 @@ public class TeamPrintInstructionConfigurationsResource {
         }
     }
 
+    /**
+     * Create a TeamPrintInstructionConfiguration
+     * 
+     * @param teamId
+     *            to use
+     * @param configuration
+     *            to create
+     * @return TeamPrintInstructionConfigurationResource contains created
+     *         TeamPrintInstructionConfiguration
+     */
     @RequestMapping(value = "/teams/{teamId}/print_instruction_configuration", method = RequestMethod.POST, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
@@ -68,6 +86,14 @@ public class TeamPrintInstructionConfigurationsResource {
         }
     }
 
+    /**
+     * Get an existing TeamPrintInstructionConfiguration
+     * 
+     * @param id
+     *            to lookup
+     * @return TeamPrintInstructionConfigurationResource along with
+     *         HTTPStatus.OK or HTTPStatus.NO_CONTENT
+     */
     @RequestMapping(value = "/team_print_instruction_configuration/{id}", method = RequestMethod.GET)
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
     public ResponseEntity<TeamPrintInstructionConfigurationResource> get(
@@ -85,6 +111,16 @@ public class TeamPrintInstructionConfigurationsResource {
         }
     }
 
+    /**
+     * Update an existing TeamPrintInstructionConfiguration
+     * 
+     * @param id
+     *            to use
+     * @param configuration
+     *            to update
+     * @return TeamPrintInstructionConfigurationResource contains an updated
+     *         TeamPrintInstructionConfiguration
+     */
     @RequestMapping(value = "/team_print_instruction_configuration/{id}", method = RequestMethod.PUT, consumes = {
             APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
