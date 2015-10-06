@@ -34,8 +34,8 @@ public class DefaultTeamPrintInstructionConfiguration extends
     private boolean active;
 
     @NotNull
-    @Column(name="patient_url", columnDefinition = "nvarchar(255)", nullable = false)
-    private String patientUrl;
+    @Column(name = "patient_url_label", columnDefinition = "nvarchar(255)", nullable = false)
+    private String patientUrlLabel;
 
     /**
      * Default constructor
@@ -78,18 +78,18 @@ public class DefaultTeamPrintInstructionConfiguration extends
         this.active = active;
     }
 
-    public String getPatientUrl() {
-        return patientUrl;
+    public String getPatientUrlLabel() {
+        return patientUrlLabel;
     }
 
-    public void setPatientUrl(String patientUrl) {
-        this.patientUrl = patientUrl;
+    public void setPatientUrlLabel(String patientUrlLabel) {
+        this.patientUrlLabel = patientUrlLabel;
     }
 
     @Override
     public String toString() {
         return "DefaultPasswordConfiguration{" + "active=" + active + ", id="
-                + id + ", version=" + version + ", patientUrl='" + patientUrl
-                + '\'' + '}';
+                + id + ", version=" + version + ", patientUrlLabel='"
+                + patientUrlLabel + '\'' + '}';
     }
 }

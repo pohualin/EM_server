@@ -38,23 +38,23 @@ public class TeamPrintInstructionConfigurationServiceIntegrationTest extends
                         .isActive(), is(true));
         assertThat(
                 "should contain team print instruction configuration with default value",
-                configuration.getPatientUrl(), is("startemmi.com"));
+                configuration.getPatientUrlLabel(), is("startemmi.com"));
 
-        configuration.setPatientUrl("abc.com");
+        configuration.setPatientUrlLabel("abc.com");
         configuration = teamPrintInstructionConfigurationService
                 .create(configuration);
 
         assertThat(
                 "should contain team print instruction configuration with new patient url",
-                configuration.getPatientUrl(), is("abc.com"));
+                configuration.getPatientUrlLabel(), is("abc.com"));
 
-        configuration.setPatientUrl("startemmi.com");
+        configuration.setPatientUrlLabel("startemmi.com");
         configuration = teamPrintInstructionConfigurationService
                 .update(configuration);
 
         assertThat(
                 "should contain team print instruction configuration with updated patient url",
-                configuration.getPatientUrl(), is("startemmi.com"));
+                configuration.getPatientUrlLabel(), is("startemmi.com"));
 
         TeamPrintInstructionConfiguration reload = teamPrintInstructionConfigurationService
                 .reload(new TeamPrintInstructionConfiguration(configuration

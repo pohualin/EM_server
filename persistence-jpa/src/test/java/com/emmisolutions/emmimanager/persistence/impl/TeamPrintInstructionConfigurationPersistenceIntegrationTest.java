@@ -109,7 +109,7 @@ public class TeamPrintInstructionConfigurationPersistenceIntegrationTest extends
 
     private void populateFromDefault(
             TeamPrintInstructionConfiguration configuration) {
-        configuration.setPatientUrl(configuration
-                .getDefaultTeamPrintInstructionConfiguration().getPatientUrl());
+        configuration.setPatientUrlLabel(configuration
+                .getDefaultTeamPrintInstructionConfiguration().getPatientUrlLabel());
     }
 }

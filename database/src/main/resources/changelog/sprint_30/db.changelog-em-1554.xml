@@ -19,7 +19,7 @@
             </column>
             <column name="last_modified_by" type="bigint"/>
             <column name="last_modified_date" type="timestamp"/>
-            <column name="patient_url" type="nvarchar(255)">
+            <column name="patient_url_label" type="nvarchar(255)">
             	<constraints nullable="false"/>
             </column>
             <column name="active" type="boolean">
@@ -35,7 +35,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="revision_type" type="tinyint"/>
-            <column name="patient_url" type="nvarchar(255)" />
+            <column name="patient_url_label" type="nvarchar(255)" />
             <column name="active" type="boolean" />
         </createTable>
         
@@ -97,7 +97,7 @@
             <column name="default_team_print_instruction_configuration_id" type="bigint">
             	<constraints nullable="false" />
             </column>
-            <column name="patient_url" type="nvarchar(255)">
+            <column name="patient_url_label" type="nvarchar(255)">
             	<constraints nullable="false"/>
             </column>
         </createTable>
@@ -112,7 +112,7 @@
             <column name="revision_type" type="tinyint"/>
 			<column name="client_team_id" type="bigint"/>
             <column name="default_team_print_instruction_configuration_id" type="bigint" />            
-            <column name="patient_url" type="nvarchar(255)" />
+            <column name="patient_url_label" type="nvarchar(255)" />
         </createTable>
         
     </changeSet>

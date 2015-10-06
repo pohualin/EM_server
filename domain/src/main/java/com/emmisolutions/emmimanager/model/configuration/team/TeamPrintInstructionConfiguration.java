@@ -51,8 +51,8 @@ public class TeamPrintInstructionConfiguration extends AbstractAuditingEntity
     private DefaultTeamPrintInstructionConfiguration defaultTeamPrintInstructionConfiguration;
 
     @NotNull
-    @Column(name = "patient_url", columnDefinition = "nvarchar(255)", nullable = false)
-    private String patientUrl;
+    @Column(name = "patient_url_label", columnDefinition = "nvarchar(255)", nullable = false)
+    private String patientUrlLabel;
 
     /**
      * Default constructor
@@ -104,12 +104,12 @@ public class TeamPrintInstructionConfiguration extends AbstractAuditingEntity
         this.defaultTeamPrintInstructionConfiguration = defaultTeamPrintInstructionConfiguration;
     }
 
-    public String getPatientUrl() {
-        return patientUrl;
+    public String getPatientUrlLabel() {
+        return patientUrlLabel;
     }
 
-    public void setPatientUrl(String patientUrl) {
-        this.patientUrl = patientUrl;
+    public void setPatientUrlLabel(String patientUrlLabel) {
+        this.patientUrlLabel = patientUrlLabel;
     }
 
     @Override
@@ -131,7 +131,7 @@ public class TeamPrintInstructionConfiguration extends AbstractAuditingEntity
     public String toString() {
         return "ClientPasswordConfiguration{" + "team=" + team + ", id=" + id
                 + ", version=" + version + ", defaultTeamPrintInstruction="
-                + defaultTeamPrintInstructionConfiguration + ", patientUrl='"
-                + patientUrl + '}';
+                + defaultTeamPrintInstructionConfiguration
+                + ", patientUrlLabel='" + patientUrlLabel + '}';
     }
 }

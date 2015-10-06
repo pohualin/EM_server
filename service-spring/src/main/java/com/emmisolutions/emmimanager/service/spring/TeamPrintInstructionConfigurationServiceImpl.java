@@ -114,9 +114,9 @@ public class TeamPrintInstructionConfigurationServiceImpl implements
     private void composeTeamPrintInstructionConfiguration(
             TeamPrintInstructionConfiguration teamPrintInstructionConfiguration) {
         teamPrintInstructionConfiguration
-                .setPatientUrl(teamPrintInstructionConfiguration
+                .setPatientUrlLabel(teamPrintInstructionConfiguration
                         .getDefaultTeamPrintInstructionConfiguration()
-                        .getPatientUrl());
+                        .getPatientUrlLabel());
     }
 
 }
