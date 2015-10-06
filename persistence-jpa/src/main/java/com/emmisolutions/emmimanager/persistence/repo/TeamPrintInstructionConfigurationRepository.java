@@ -22,10 +22,4 @@ public interface TeamPrintInstructionConfigurationRepository extends
      */
     public TeamPrintInstructionConfiguration findByTeam(Team team);
 
-    @Override
-    TeamPrintInstructionConfiguration save(
-            TeamPrintInstructionConfiguration entity);
-
-    @Override
-    void delete(TeamPrintInstructionConfiguration entity);
 }
