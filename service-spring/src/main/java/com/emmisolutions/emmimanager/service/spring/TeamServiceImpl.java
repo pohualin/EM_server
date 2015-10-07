@@ -76,7 +76,12 @@ public class TeamServiceImpl implements TeamService {
         }
         team.setId(null);
         team.setVersion(null);
-        updateSalesforceDetails(null, team);
+
+        if (team.getSalesForceAccount() != null && team.getSalesForceAccount().getAccountNumber() != null) {
+            TeamSalesForce tsf = new TeamSalesForce();
+            tsf.setAccountNumber(team.getSalesForceAccount().getAccountNumber());
+            team.setSalesForceAccount(updateSalesforceDetails(tsf));
+        }
         return teamPersistence.save(team);
     }
 
@@ -94,30 +99,24 @@ public class TeamServiceImpl implements TeamService {
         }
         // don't allow client changes on updates
         team.setClient(dbTeam.getClient());
-        updateSalesforceDetails(dbTeam.getSalesForceAccount(), team);
+        TeamSalesForce tsf = dbTeam.getSalesForceAccount();
+        tsf.setAccountNumber(team.getSalesForceAccount().getAccountNumber());
+        team.setSalesForceAccount(updateSalesforceDetails(tsf));
         return teamPersistence.save(team);
     }
 
-    private void updateSalesforceDetails(TeamSalesForce tsf, Team team) {
-        if (tsf == null) {
-            tsf = new TeamSalesForce();
-            team.setSalesForceAccount(team.getSalesForceAccount());
+    private TeamSalesForce updateSalesforceDetails(TeamSalesForce tsf) {
+        SalesForce sf = salesForceService.findAccountById(tsf.getAccountNumber());
+        if (sf != null) {
+            tsf.setCity(sf.getCity());
+            tsf.setCountry(sf.getCountry());
+            tsf.setFaxNumber(sf.getFax());
+            tsf.setName(sf.getName());
+            tsf.setPhoneNumber(sf.getPhoneNumber());
+            tsf.setPostalCode(sf.getPostalCode());
+            tsf.setState(sf.getState());
+            tsf.setStreet(sf.getStreet());
         }
-
-        if (team.getSalesForceAccount() != null && team.getSalesForceAccount().getAccountNumber() != null) {
-            SalesForce sf = salesForceService.findAccountById(team.getSalesForceAccount().getAccountNumber());
-            if (sf != null) {
-                tsf.setAccountNumber(sf.getAccountNumber());
-                tsf.setCity(sf.getCity());
-                tsf.setCountry(sf.getCountry());
-                tsf.setFaxNumber(sf.getFax());
-                tsf.setName(sf.getName());
-                tsf.setPhoneNumber(sf.getPhoneNumber());
-                tsf.setPostalCode(sf.getPostalCode());
-                tsf.setState(sf.getState());
-                tsf.setStreet(sf.getStreet());
-                team.setSalesForceAccount(tsf);
-            }
-        }
+        return tsf;
     }
 }
