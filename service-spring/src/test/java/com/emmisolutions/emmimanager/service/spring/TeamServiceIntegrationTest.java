@@ -138,10 +138,12 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("salesforce was saved for the team", savedTeam.getSalesForceAccount().getId(), is(notNullValue()));
         assertThat("verified saved salesforce account number", savedTeam.getSalesForceAccount().getAccountNumber(), is(teamSalesForce.getAccountNumber()));
 
+
+        savedTeam.setSalesForceAccount(null);
         Team updatedTeam = teamService.update(savedTeam);
         assertThat("salesforce was saved for the team", updatedTeam.getSalesForceAccount().getId(), is(notNullValue()));
         assertThat("salesforce for the team was updated for the same id", updatedTeam.getSalesForceAccount().getId(), is(savedTeam.getSalesForceAccount().getId()));
-        assertThat("salesforce for the team was updated, has a different version", updatedTeam.getSalesForceAccount().getVersion(), is(savedTeam.getSalesForceAccount().getVersion() + 1));
+        assertThat("salesforce for the team was updated, same version", updatedTeam.getSalesForceAccount().getVersion(), is(savedTeam.getSalesForceAccount().getVersion()));
     }
 
     /**
