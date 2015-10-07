@@ -39,6 +39,8 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
     @Resource
     TeamTagService teamTagService;
 
+    @Resource
+    SalesForceService salesForceService;
     /**
      * Not all required fields
      */
@@ -81,6 +83,67 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         savedTeam.setClient(clientService.create(makeClient("a different client")));
         savedTeam = teamService.update(team);
         assertThat("client was not updated", savedTeam.getClient(), is(client));
+    }
+
+    @Test
+    public void testSalesforceLookup() {
+        Client client = makeClient("clientTeam2678");
+        clientService.create(client);
+
+        Team team = makeTeamForClient(client);
+
+        TeamSalesForce teamSalesForce = new TeamSalesForce();
+        teamSalesForce.setAccountNumber("0015000000INwdCAAT");
+        team.setSalesForceAccount(teamSalesForce);
+
+        Team savedTeam = teamService.create(team);
+        assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
+        assertThat("salesforce was saved for the team", savedTeam.getSalesForceAccount().getId(), is(notNullValue()));
+        assertThat("verified saved salesforce account number", savedTeam.getSalesForceAccount().getAccountNumber(), is(teamSalesForce.getAccountNumber()));
+
+        SalesForce sf = salesForceService.findAccountById("0015000000YUCQEAA5");
+
+        TeamSalesForce tsf = new TeamSalesForce();
+        tsf.setAccountNumber(sf.getAccountNumber());
+        tsf.setCity(sf.getCity());
+        tsf.setCountry(sf.getCountry());
+        tsf.setFaxNumber(sf.getFax());
+        tsf.setName(sf.getName());
+        tsf.setPhoneNumber(sf.getPhoneNumber());
+        tsf.setPostalCode(sf.getPostalCode());
+        tsf.setState(sf.getState());
+        tsf.setStreet(sf.getStreet());
+        team.setSalesForceAccount(tsf);
+
+        Team updatedTeam = teamService.update(team);
+        assertThat("salesforce was saved for the team", updatedTeam.getSalesForceAccount().getId(), is(notNullValue()));
+        assertThat("salesforce for the team was updated for the same id", updatedTeam.getSalesForceAccount().getId(), is(savedTeam.getSalesForceAccount().getId()));
+        assertThat("verified saved salesforce account number", updatedTeam.getSalesForceAccount().getAccountNumber(), is(sf.getAccountNumber()));
+    }
+
+
+    @Test
+    public void testSalesforceLookupNoneOnUpdate() {
+        Client client = makeClient("clientTeam2679");
+        clientService.create(client);
+
+        Team team = makeTeamForClient(client);
+
+        TeamSalesForce teamSalesForce = new TeamSalesForce();
+        teamSalesForce.setAccountNumber("0015000000INwdCAAT");
+        team.setSalesForceAccount(teamSalesForce);
+
+        Team savedTeam = teamService.create(team);
+        assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
+        assertThat("salesforce was saved for the team", savedTeam.getSalesForceAccount().getId(), is(notNullValue()));
+        assertThat("verified saved salesforce account number", savedTeam.getSalesForceAccount().getAccountNumber(), is(teamSalesForce.getAccountNumber()));
+
+
+        savedTeam.setSalesForceAccount(null);
+        Team updatedTeam = teamService.update(savedTeam);
+        assertThat("salesforce was saved for the team", updatedTeam.getSalesForceAccount().getId(), is(notNullValue()));
+        assertThat("salesforce for the team was updated for the same id", updatedTeam.getSalesForceAccount().getId(), is(savedTeam.getSalesForceAccount().getId()));
+        assertThat("salesforce for the team was updated, same version", updatedTeam.getSalesForceAccount().getVersion(), is(savedTeam.getSalesForceAccount().getVersion()));
     }
 
     /**
@@ -247,4 +310,5 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         clientService.create(client);
         return client;
     }
+
 }

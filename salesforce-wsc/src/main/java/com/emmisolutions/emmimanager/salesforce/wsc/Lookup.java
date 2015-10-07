@@ -32,6 +32,8 @@ public class Lookup implements SalesForceLookup {
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final String FIND_QUERY = "FIND {%s} RETURNING Account(Id, Name, EMMI_Account_ID__c, RecordTypeId, RecordType.Name, Account_Status__c, BillingCity, BillingState, BillingPostalCode, BillingStreet, BillingCountry, Owner.Id, Owner.Alias,Phone, Fax ORDER BY Name LIMIT %s)";
     private static final String ID_NAME_SOQL_QUERY = "SELECT Id, Name from %s WHERE Name like %s%s%s ORDER BY Name LIMIT %s";
+    private static final String ID_QUERY =
+            "SELECT Account.Id, Account.Name, Account.EMMI_Account_ID__c, Account.Type, Account.RecordTypeId, Account.RecordType.Name, Account.Account_Status__c, Account.BillingCity, Account.BillingState, Account.BillingPostalCode, Account.BillingStreet, Account.BillingCountry, Account.Owner.Id, Account.Owner.Alias, Account.Phone, Account.Fax FROM Account WHERE Id = '%s'";
 
     @Resource
     ConnectionFactory salesForceConnection;
@@ -188,6 +190,33 @@ public class Lookup implements SalesForceLookup {
         sf.setPhoneNumber((String) sObject.getSObjectField("Phone"));
         sf.setFax((String) sObject.getSObjectField("Fax"));
         return sf;
+    }
+
+    @Override
+    public SalesForce findAccountById(String searchString) {
+        return findAccountById(searchString, true);
+    }
+
+
+    public SalesForce findAccountById(String id, boolean reUpConnection) {
+        if (salesForceConnection.get() == null) {
+            LOGGER.error("No Connection to SalesForce present, unable to process search request for '{}'", id);
+            return null;
+        }
+        try {
+            QueryResult queryResult = salesForceConnection.get().query(String.format(ID_QUERY, id));
+            if (queryResult.getSize() > 0) {
+                return convert(queryResult.getRecords()[0]);
+            }
+        } catch (ConnectionException e) {
+            if (reUpConnection) {
+                salesForceConnection.reUp();
+                findAccountById(id, false);
+            } else {
+                LOGGER.error("SalesForce error", e);
+            }
+        }
+        return null;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.emmisolutions.emmimanager.salesforce.wsc;
 
+import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
 import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
 
@@ -35,4 +36,12 @@ public interface SalesForceLookup {
      * @return a result container
      */
     IdNameLookupResultContainer find(String searchString, int pageSize, String... types);
+
+    /**
+     * Find SalesForce by account number
+     *
+     * @param id the account number to search by
+     * @return SalesForce obj
+     */
+    SalesForce findAccountById(String id);
 }

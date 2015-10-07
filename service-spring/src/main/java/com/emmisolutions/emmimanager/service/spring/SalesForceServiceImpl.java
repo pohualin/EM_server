@@ -77,6 +77,12 @@ public class SalesForceServiceImpl implements SalesForceService {
 
     @Override
     @Transactional(readOnly = true)
+    public SalesForce findAccountById(String searchString) {
+        return salesForceLookup.findAccountById(searchString);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public SalesForceSearchResponse findForTeam(String searchString) {
         return salesForceLookup.findAccounts(searchString, 20);
     }

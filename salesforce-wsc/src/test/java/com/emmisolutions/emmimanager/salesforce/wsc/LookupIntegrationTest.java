@@ -1,6 +1,8 @@
 package com.emmisolutions.emmimanager.salesforce.wsc;
 
+import com.emmisolutions.emmimanager.model.SalesForce;
 import com.emmisolutions.emmimanager.model.SalesForceSearchResponse;
+import com.emmisolutions.emmimanager.model.salesforce.IdNameLookupResultContainer;
 import com.emmisolutions.emmimanager.salesforce.BaseIntegrationTest;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -10,7 +12,10 @@ import javax.annotation.Resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration test
@@ -46,6 +51,26 @@ public class LookupIntegrationTest extends BaseIntegrationTest {
         assertThat(SHOULD_HAVE_MORE_RESULTS, searchResponse.isComplete(), is(false));
         assertThat("total should be 10", searchResponse.getAccounts().size(), is(10));
     }
+
+    /**
+     * find by id should work
+     */
+    @Test
+    public void findByIdWorks() {
+        SalesForce searchResponse = salesForceLookup.findAccountById("0015000000YUCQEAA5");
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(notNullValue()));
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse.getName(), is(notNullValue()));
+    }
+
+    /**
+     * find by id should not work - invalid id
+     */
+    @Test
+    public void findByIdInvalidWorks() {
+        SalesForce searchResponse = salesForceLookup.findAccountById("001dfghjkghj");
+        assertThat(SEARCH_RESPONSE_NOT_NULL, searchResponse, is(nullValue()));
+    }
+
 
     /**
      * find by id should not work
