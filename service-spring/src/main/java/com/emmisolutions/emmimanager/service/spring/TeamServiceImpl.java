@@ -76,12 +76,7 @@ public class TeamServiceImpl implements TeamService {
         }
         team.setId(null);
         team.setVersion(null);
-
-        if (team.getSalesForceAccount() != null && team.getSalesForceAccount().getAccountNumber() != null) {
-            TeamSalesForce tsf = new TeamSalesForce();
-            tsf.setAccountNumber(team.getSalesForceAccount().getAccountNumber());
-            team.setSalesForceAccount(updateSalesforceDetails(tsf));
-        }
+        updateSalesforceDetails(team.getSalesForceAccount());
         return teamPersistence.save(team);
     }
 
@@ -99,24 +94,32 @@ public class TeamServiceImpl implements TeamService {
         }
         // don't allow client changes on updates
         team.setClient(dbTeam.getClient());
-        TeamSalesForce tsf = dbTeam.getSalesForceAccount();
-        tsf.setAccountNumber(team.getSalesForceAccount().getAccountNumber());
-        team.setSalesForceAccount(updateSalesforceDetails(tsf));
+
+        // reload the latest SalesForce information
+        TeamSalesForce teamSalesForce = team.getSalesForceAccount() != null ?
+                team.getSalesForceAccount() : dbTeam.getSalesForceAccount();
+        teamSalesForce.setId(dbTeam.getSalesForceAccount().getId());
+        teamSalesForce.setVersion(dbTeam.getSalesForceAccount().getVersion());
+        updateSalesforceDetails(teamSalesForce);
+        team.setSalesForceAccount(teamSalesForce);
+
+        // save the team
         return teamPersistence.save(team);
     }
 
-    private TeamSalesForce updateSalesforceDetails(TeamSalesForce tsf) {
-        SalesForce sf = salesForceService.findAccountById(tsf.getAccountNumber());
-        if (sf != null) {
-            tsf.setCity(sf.getCity());
-            tsf.setCountry(sf.getCountry());
-            tsf.setFaxNumber(sf.getFax());
-            tsf.setName(sf.getName());
-            tsf.setPhoneNumber(sf.getPhoneNumber());
-            tsf.setPostalCode(sf.getPostalCode());
-            tsf.setState(sf.getState());
-            tsf.setStreet(sf.getStreet());
+    private void updateSalesforceDetails(TeamSalesForce tsf) {
+        if (tsf != null) {
+            SalesForce sf = salesForceService.findAccountById(tsf.getAccountNumber());
+            if (sf != null) {
+                tsf.setCity(sf.getCity());
+                tsf.setCountry(sf.getCountry());
+                tsf.setFaxNumber(sf.getFax());
+                tsf.setName(sf.getName());
+                tsf.setPhoneNumber(sf.getPhoneNumber());
+                tsf.setPostalCode(sf.getPostalCode());
+                tsf.setState(sf.getState());
+                tsf.setStreet(sf.getStreet());
+            }
         }
-        return tsf;
     }
 }

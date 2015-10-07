@@ -101,7 +101,6 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("salesforce was saved for the team", savedTeam.getSalesForceAccount().getId(), is(notNullValue()));
         assertThat("verified saved salesforce account number", savedTeam.getSalesForceAccount().getAccountNumber(), is(teamSalesForce.getAccountNumber()));
 
-
         SalesForce sf = salesForceService.findAccountById("0015000000YUCQEAA5");
 
         TeamSalesForce tsf = new TeamSalesForce();
@@ -120,6 +119,29 @@ public class TeamServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("salesforce was saved for the team", updatedTeam.getSalesForceAccount().getId(), is(notNullValue()));
         assertThat("salesforce for the team was updated for the same id", updatedTeam.getSalesForceAccount().getId(), is(savedTeam.getSalesForceAccount().getId()));
         assertThat("verified saved salesforce account number", updatedTeam.getSalesForceAccount().getAccountNumber(), is(sf.getAccountNumber()));
+    }
+
+
+    @Test
+    public void testSalesforceLookupNoneOnUpdate() {
+        Client client = makeClient("clientTeam2679");
+        clientService.create(client);
+
+        Team team = makeTeamForClient(client);
+
+        TeamSalesForce teamSalesForce = new TeamSalesForce();
+        teamSalesForce.setAccountNumber("0015000000INwdCAAT");
+        team.setSalesForceAccount(teamSalesForce);
+
+        Team savedTeam = teamService.create(team);
+        assertThat("team was created successfully", savedTeam.getId(), is(notNullValue()));
+        assertThat("salesforce was saved for the team", savedTeam.getSalesForceAccount().getId(), is(notNullValue()));
+        assertThat("verified saved salesforce account number", savedTeam.getSalesForceAccount().getAccountNumber(), is(teamSalesForce.getAccountNumber()));
+
+        Team updatedTeam = teamService.update(savedTeam);
+        assertThat("salesforce was saved for the team", updatedTeam.getSalesForceAccount().getId(), is(notNullValue()));
+        assertThat("salesforce for the team was updated for the same id", updatedTeam.getSalesForceAccount().getId(), is(savedTeam.getSalesForceAccount().getId()));
+        assertThat("salesforce for the team was updated, has a different version", updatedTeam.getSalesForceAccount().getVersion(), is(savedTeam.getSalesForceAccount().getVersion() + 1));
     }
 
     /**
