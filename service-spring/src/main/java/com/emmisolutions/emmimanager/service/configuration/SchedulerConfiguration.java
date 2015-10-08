@@ -86,7 +86,7 @@ public class SchedulerConfiguration implements SchedulingConfigurer {
         scheduler.setDataSource(dataSource);
         scheduler.setTransactionManager(txManager);
         scheduler.setJobFactory(new SpringBeanJobFactory());
-        scheduler.setAutoStartup(true);
+        scheduler.setAutoStartup(false);
         scheduler.setApplicationContextSchedulerContextKey(APPLICATION_CONTEXT_KEY);
         scheduler.setQuartzProperties(quartzProperties());
         scheduler.setWaitForJobsToCompleteOnShutdown(true);
