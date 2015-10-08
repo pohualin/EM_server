@@ -13,11 +13,11 @@
             <column name="id" autoIncrement="true" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_program_inclusion"/>
             </column>
-            <column name="created_date" type="timestamp" defaultValueDate="${now}">
+            <column name="created_date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified_date" type="timestamp"/>
-             <column name="program_id" type="integer">
+            <column name="program_id" type="integer">
                 <constraints nullable="false"/>
             </column>
             <column name="client_id" type="bigint">
