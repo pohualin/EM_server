@@ -1,16 +1,20 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion;
 import com.emmisolutions.emmimanager.model.program.*;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse_;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +59,39 @@ public class ProgramSpecifications {
             }
         };
     }
+    
+    /**
+     * Adds an OR clause for each specialty in the filter. This ensures that both
+     * the Specialty and ProgramSpecialty are active
+     *
+     * @param filter containing Collection of 'active' specialties to look for
+     * @return a Specification for the Program
+     */
+  /*  public Specification<Program> clientExistingInclusion(final Client client) {
+        return new Specification<Program>() {
+            @Override
+            public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                if (client != null && client.getId() != null) {
+                    List<Predicate> predicates = new ArrayList<>();
+                  
+                        if (specialty.getId() != null) {
+                            SetJoin<Program, ClientProgramContentInclusion> join = root.join(Program_.id);
+                            predicates.add(
+                                    cb.and(
+                                            cb.isTrue(join.get(ProgramSpecialty_.active)),
+                                            cb.and(cb.equal(join.get(ProgramSpecialty_.specialty), specialty),
+                                                    cb.isTrue(join.join(ProgramSpecialty_.specialty).get(Specialty_.active)))
+                                    )
+                            );
+                        }
+                    
+                    return cb.or(predicates.toArray(new Predicate[predicates.size()]));
+                }
+                return null;
+            }
+        };
+    }*/
+
 
     /**
      * Looks up program IDs from HLI and then uses those to narrow the program search
