@@ -83,13 +83,14 @@ public class ClientProgramContentInclusionsResource {
             @RequestParam(value = TERM_REQUEST_PARAM, required = false) String term){
 
     	 ProgramSearchFilter programSearchFilter = new ProgramSearchFilter().addTerm(term);
+    	 programSearchFilter.client(new Client(clientId));
         if (!CollectionUtils.isEmpty(specialtyIds)) {
             for (Integer specialtyId : specialtyIds) {
                 programSearchFilter.addSpecialty(new Specialty(specialtyId));
             }
         }
         
-        Page<Program> programPage = clientProgramContentInclusionService.findPossibleProgramByClient(new Client(clientId), programSearchFilter, pageable);
+        Page<Program> programPage = programService.find(programSearchFilter, pageable);
       
         return new ProgramContentResourcePage(programSearchFilter,
                 assembler.toResource(programPage, programResourceResourceAssembler),

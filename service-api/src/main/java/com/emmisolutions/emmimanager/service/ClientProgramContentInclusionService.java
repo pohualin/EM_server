@@ -45,22 +45,7 @@ public interface ClientProgramContentInclusionService {
     public Page<ClientProgramContentInclusion> findByClient(
             Client client,
             Pageable pageable);
-    
-    /**
-     * Find a Page of available programs based on program search filters and 
-     * filter out the already associated programs by Client 
-     * 
-     * @param client
-     *            to find
-     * @param  programSearchFilter
-     *            to filer          
-     * @param pageable
-     *            to use
-     * @return a Page of available program contents
-     */
-    public Page<Program> findPossibleProgramByClient(Client client,
-			ProgramSearchFilter programSearchFilter, Pageable pageable);
-    
+       
     /**
      * Delete an existing ClientProgramContentInclusion
      * 

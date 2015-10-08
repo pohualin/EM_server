@@ -70,14 +70,7 @@ public class ClientProgramContentInclusionServiceIntegrationTest extends
         
         Page<ClientProgramContentInclusion>  findClientProgramContentInclusion = clientProgramContentInclusionService
                 .findByClient(client, null);
-        
-        Page<Program>  findpossiblePrograms = clientProgramContentInclusionService.findPossibleProgramByClient(client, new ProgramSearchFilter().addSpecialty(new Specialty(16)), null);
-        
-        assertThat(
-                "should not have any more programs after filter ",
-                findpossiblePrograms.hasContent()
-                        , is(false));
-        
+            
         assertThat(
                 "should has program contents",
                 findClientProgramContentInclusion.hasContent()

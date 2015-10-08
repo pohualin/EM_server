@@ -47,7 +47,8 @@ public class ProgramPersistenceImpl implements ProgramPersistence {
         }
         return programRepository.findAll(where(programSpecifications
                         .hasSpecialties(filter))
-                        .and(programSpecifications.matchesTerms(filter)),
+                        .and(programSpecifications.matchesTerms(filter))
+                        .and(programSpecifications.clientProgramInclusion(filter)),
                 pageable != null ? new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sort) :
                         new PageRequest(0, 10, sort));
     }

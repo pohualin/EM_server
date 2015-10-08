@@ -90,32 +90,6 @@ public class ClientProgramContentInclusionServiceImpl implements
 	   	return ClientProgramContentInclusionPersistence.findByClient(client.getId(), pageable);
   	}
 	
-	
-	@Override
-	public Page<Program> findPossibleProgramByClient(Client client,
-			ProgramSearchFilter programSearchFilter, Pageable pageable) {
-		Page<Program> programPage = programService.find(programSearchFilter, pageable);
-		Page<ClientProgramContentInclusion> clientProgramInclusionPage = ClientProgramContentInclusionPersistence.findByClient(client.getId(), pageable);
-		if(programPage.hasContent() && clientProgramInclusionPage.hasContent()){
-			List<Program> possiblePrograms = new ArrayList<>();
-			for(Program program:programPage){
-				    boolean findEqual = false;
-				    for(ClientProgramContentInclusion clientProgram:clientProgramInclusionPage){
-				    	if(program.getId().equals(clientProgram.getProgram().getId())){
-				    		findEqual = true;  //If the program is already in the inclusion list, we don't want to display as option
-				    	}
-				    }
-				    if(!findEqual){
-				    	possiblePrograms.add(program);
-				    }
-			}
-			return new PageImpl<>(possiblePrograms, pageable,
-					programPage .getTotalElements());
-		}
-		return programPage;
-  	}
-	
-
 	@Override
 	public ClientProgramContentInclusion reload(
 			ClientProgramContentInclusion clientProgramContentInclusion) {
