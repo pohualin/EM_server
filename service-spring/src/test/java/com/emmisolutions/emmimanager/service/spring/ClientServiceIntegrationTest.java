@@ -40,8 +40,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = ConstraintViolationException.class)
     public void createNotAllRequired() {
-        Client client = new Client();
-        clientService.create(client);
+        clientService.create(new Client());
     }
 
     /**
@@ -57,9 +56,7 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void badUpdate() {
-        Client toUpdate = new Client();
-        toUpdate.setId(1l);
-        clientService.update(toUpdate);
+        clientService.update(new Client());
     }
 
     /**
@@ -95,6 +92,17 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     /**
+     * Make sure that we can update a client and not pass in a SF object.
+     */
+    @Test
+    public void updateWithNoSalesForce() {
+        Client savedClient = makeNewRandomClient();
+        savedClient.setSalesForceAccount(null);
+        assertThat("update of client is successful", clientService.update(savedClient).getVersion(),
+                is(savedClient.getVersion() + 1));
+    }
+
+    /**
      * Reference data works
      */
     @Test
@@ -103,7 +111,6 @@ public class ClientServiceIntegrationTest extends BaseIntegrationTest {
         assertThat("regions not empty", clientService.getAllClientRegions().isEmpty(), is(false));
         assertThat("tiers not empty", clientService.getAllClientTiers().isEmpty(), is(false));
     }
-
 
     /**
      * Fetch contract owners

@@ -90,7 +90,7 @@ public class TeamServiceImpl implements TeamService {
     public Team update(Team team) {
         Team dbTeam = teamPersistence.reload(team);
         if (dbTeam == null) {
-            throw new IllegalArgumentException("Client Id, Team Id and Version cannot be null.");
+            throw new IllegalArgumentException("This method can only be used with an existing persistent team.");
         }
         // don't allow client changes on updates
         team.setClient(dbTeam.getClient());

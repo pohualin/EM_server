@@ -59,7 +59,7 @@ public class AdminImpersonateClientUserDetailsServiceImpl extends UserDetailsSer
         }
 
         // load the client from thread local storage
-        Client client = clientPersistence.reload(ImpersonationHolder.getClientId());
+        Client client = clientPersistence.reload(new Client(ImpersonationHolder.getClientId()));
         if (client == null) {
             throw new UsernameNotFoundException("Client was not found.");
         }
