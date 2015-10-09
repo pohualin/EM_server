@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Random;
 
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.PATIENT_EMAIL_JOB_GROUP;
 import static com.emmisolutions.emmimanager.service.jobs.AllJobs.SCHEDULED_PROGRAM_REMINDER_EMAIL_JOB_BEAN_NAME;
@@ -32,6 +33,8 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledProgramReminderEmailJobMaintenanceServiceImpl.class);
 
     private Scheduler scheduler;
+
+    private Random r = new Random();
 
     @Override
     @Transactional
@@ -142,9 +145,15 @@ public class ScheduledProgramReminderEmailJobMaintenanceServiceImpl implements S
                     // start the job five minutes from now, just to allow a buffer
                     simpleTriggerBuilder.startAt(futureDate(1, MINUTE));
                 } else {
-                    // convert to jdk timezone for quartz to run
+                    // set trigger start to 00:10 + random seconds < 30 minutes, to spread out the triggers
+                    int minSeconds = 1;
+                    int maxSeconds = 1800;
                     simpleTriggerBuilder.startAt(
-                            triggerDate.toDateTimeAtStartOfDay().toDateTime(DateTimeZone.getDefault()).toDate());
+                            triggerDate.toDateTimeAtStartOfDay()
+                                    .plusMinutes(10)
+                                    .plusSeconds(r.nextInt(maxSeconds - minSeconds) + minSeconds)
+                                    .toDateTime(DateTimeZone.getDefault())
+                                    .toDate());
                 }
                 ret = simpleTriggerBuilder.build();
             }
