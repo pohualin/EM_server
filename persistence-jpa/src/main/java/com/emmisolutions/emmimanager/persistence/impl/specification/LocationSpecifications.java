@@ -99,7 +99,7 @@ public class LocationSpecifications {
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Client belongsToClient = null;
                 if (filter != null && filter.getBelongsToClient() != null) {
-                    belongsToClient = clientPersistence.reload(filter.getBelongsToClient().getId());
+                    belongsToClient = clientPersistence.reload(filter.getBelongsToClient());
                 }
                 if (belongsToClient != null) {
                     return cb.equal(root.get(Location_.belongsTo), belongsToClient);
@@ -121,7 +121,7 @@ public class LocationSpecifications {
             public Predicate toPredicate(Root<Location> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Client notUsedByClient = null;
                 if (filter != null && filter.getNotUsingThisClient() != null) {
-                    notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient().getId());
+                    notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient());
                 }
                 if (notUsedByClient != null) {
 

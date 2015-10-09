@@ -183,24 +183,24 @@ public class AdminSchedulesResource {
     @RequestMapping(value = "/test/scheduled_programs/notes/{id}", method = RequestMethod.GET)
     public List<ProgramNotesJson> testFindNotes(@PathVariable("id") String id) {
         ProgramNotesJson testNotes = new ProgramNotesJson();
-        List retval = new ArrayList();
-        retval.add(testNotes);
+        List<ProgramNotesJson> ret = new ArrayList<>();
+        ret.add(testNotes);
 
         testNotes.setSequenceNumber(1);
         testNotes.setViewId(id);
         testNotes.setNotes(generateRandomNotes());
 
-        return retval;
+        return ret;
     }
 
     private String generateRandomNotes() {
         Random rand = new Random();
-        StringBuilder retval = new StringBuilder();
+        StringBuilder ret = new StringBuilder();
 
         for (int i = 0; i < rand.nextInt(300) + 5; i++) {
-            retval.append(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1)).append(" ");
+            ret.append(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1)).append(" ");
         }
 
-        return retval.toString();
+        return ret.toString();
     }
 }

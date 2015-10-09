@@ -1,25 +1,14 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
-import com.emmisolutions.emmimanager.model.Client;
-import com.emmisolutions.emmimanager.model.ClientProvider;
-import com.emmisolutions.emmimanager.model.ClientProvider_;
-import com.emmisolutions.emmimanager.model.Provider;
-import com.emmisolutions.emmimanager.model.ProviderSearchFilter;
-import com.emmisolutions.emmimanager.model.Provider_;
+import com.emmisolutions.emmimanager.model.*;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +89,7 @@ public class ProviderSpecifications {
             public Predicate toPredicate(Root<Provider> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Client notUsedByClient = null;
                 if (filter != null && filter.getNotUsingThisClient() != null) {
-                    notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient().getId());
+                    notUsedByClient = clientPersistence.reload(filter.getNotUsingThisClient());
                 }
                 if (notUsedByClient != null) {
 
