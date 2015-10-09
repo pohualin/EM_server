@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 /**
  * Spring Data repo for User Entities
  */
+@SuppressWarnings("unchecked")
 public interface UserAdminRepository extends JpaRepository<UserAdmin, Long>, JpaSpecificationExecutor<UserAdmin> {
 
     /**
@@ -28,6 +29,5 @@ public interface UserAdminRepository extends JpaRepository<UserAdmin, Long>, Jpa
             @CacheEvict(value = "adminFetchWithFullPermissions", allEntries = true)
     })
     @Override
-    @SuppressWarnings("unchecked")
     UserAdmin save(UserAdmin userAdmin);
 }

@@ -60,11 +60,11 @@ public class ClientPersistenceImpl implements ClientPersistence {
     }
 
     @Override
-    public Client reload(Long id) {
-        if (id == null){
+    public Client reload(Client client) {
+        if (client == null || client.getId() == null) {
             return null;
         }
-        return clientRepository.findOne(id);
+        return clientRepository.findOne(client.getId());
     }
 
     @Override
@@ -93,10 +93,10 @@ public class ClientPersistenceImpl implements ClientPersistence {
     }
 
     /**
-     * remove the special characters replacing it with blank (" ") and change all to lower case
+     * remove the special characters replacing it with empty ("") and change all to lower case
      *
-     * @param name
-     * @return
+     * @param name to normalize
+     * @return the name without special characters
      */
     private String normalizeName(String name) {
         String normalizedName = StringUtils.trimToEmpty(StringUtils.lowerCase(name));

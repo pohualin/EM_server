@@ -5,6 +5,8 @@ import com.emmisolutions.emmimanager.model.user.admin.UserAdmin;
 import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.UserAdminPersistence;
 import com.emmisolutions.emmimanager.service.ClientService;
+import com.emmisolutions.emmimanager.service.SalesForceService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ public class ClientServiceImpl implements ClientService {
     @Resource
     UserAdminPersistence userAdminPersistence;
 
+    @Resource
+    SalesForceService salesForceService;
+
     @Override
     @Transactional(readOnly = true)
     public Page<Client> list(Pageable pageable, ClientSearchFilter searchFilter) {
@@ -39,10 +44,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(readOnly = true)
     public Client reload(Client client) {
-        if (client == null || client.getId() == null){
-            return null;
-        }
-        return clientPersistence.reload(client.getId());
+        return clientPersistence.reload(client);
     }
 
     @Override
@@ -53,15 +55,31 @@ public class ClientServiceImpl implements ClientService {
         }
         client.setId(null);
         client.setVersion(null);
+        updateSalesForceDetails(client.getSalesForceAccount());
         return clientPersistence.save(client);
     }
 
     @Override
     @Transactional
     public Client update(Client client) {
-        if (client == null || client.getId() == null || client.getVersion() == null){
-            throw new IllegalArgumentException("Client Id and Version cannot be null.");
+        Client dbClient = clientPersistence.reload(client);
+        if (dbClient == null) {
+            throw new IllegalArgumentException("This method can only be used with an existing persistent client.");
         }
+        // allow for null SF object to come in, use the existing persistent SF object in this case
+        SalesForce toBeUpdated = client.getSalesForceAccount() != null ?
+                client.getSalesForceAccount() : dbClient.getSalesForceAccount();
+
+        // make sure the same SF object is used for the update, do not create a new SF object on each save
+        toBeUpdated.setId(dbClient.getSalesForceAccount().getId());
+        toBeUpdated.setVersion(dbClient.getSalesForceAccount().getVersion());
+        toBeUpdated.setClient(client);
+        client.setSalesForceAccount(toBeUpdated);
+
+        // update the SF object with the latest from sf
+        updateSalesForceDetails(toBeUpdated);
+
+        // update the client
         return clientPersistence.save(client);
     }
 
@@ -89,6 +107,21 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Collection<ClientTier> getAllClientTiers() {
         return clientPersistence.getAllClientTiers();
+    }
+
+    private void updateSalesForceDetails(SalesForce clientSalesForce) {
+        if (clientSalesForce != null && StringUtils.isNotBlank(clientSalesForce.getAccountNumber())) {
+            SalesForce sf = salesForceService.findAccountById(clientSalesForce.getAccountNumber());
+            if (sf != null) {
+                clientSalesForce.setCity(sf.getCity());
+                clientSalesForce.setCountry(sf.getCountry());
+                clientSalesForce.setName(sf.getName());
+                clientSalesForce.setPhoneNumber(sf.getPhoneNumber());
+                clientSalesForce.setPostalCode(sf.getPostalCode());
+                clientSalesForce.setState(sf.getState());
+                clientSalesForce.setStreet(sf.getStreet());
+            }
+        }
     }
 }
 
