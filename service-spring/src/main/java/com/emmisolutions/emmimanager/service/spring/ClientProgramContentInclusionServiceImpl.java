@@ -42,22 +42,7 @@ public class ClientProgramContentInclusionServiceImpl implements
     @Resource
     ClientProgramContentInclusionPersistence ClientProgramContentInclusionPersistence;
 
-    @Override
-    @Transactional
-	public ClientProgramContentInclusion update(
-			ClientProgramContentInclusion clientProgramContentInclusion) {
-		if (clientProgramContentInclusion == null
-                || clientProgramContentInclusion.getId() == null) {
-            throw new InvalidDataAccessApiUsageException(
-                    "ClientProgramContentInclusion or ClientProgramContentInclusionId can not be null.");
-        }
-		Client reload = clientService.reload(clientProgramContentInclusion
-                .getClient());
-		clientProgramContentInclusion.setClient(reload);
-		return ClientProgramContentInclusionPersistence
-                .saveOrUpdate(clientProgramContentInclusion);
-	}
-
+   
     @Override
     @Transactional
 	public ClientProgramContentInclusion create(

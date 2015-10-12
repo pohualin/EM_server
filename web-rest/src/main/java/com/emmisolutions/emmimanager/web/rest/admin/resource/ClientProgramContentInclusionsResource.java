@@ -208,35 +208,7 @@ public class ClientProgramContentInclusionsResource {
 
     }
 
-    /**
-     * Update an existing ClientProgramContentInclusion
-     * 
-     * @param id   for the ClientProgramContentInclusion
-     * @param clientProgramContentInclusion
-     *            contains updated information
-     * @return an updated ClientProgramContentInclusion
-     */
-    @RequestMapping(value = "/clients/{clientId}/content_program_content_inclusion/{id}", method = RequestMethod.PUT, consumes = {
-            APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @RolesAllowed({ "PERM_GOD", "PERM_ADMIN_SUPER_USER", "PERM_ADMIN_USER" })
-    public ResponseEntity<ClientProgramContentInclusionResource> update(
-    		@PathVariable("clientId") Long clientId,
-            @PathVariable("id") Long id,
-            @RequestBody ClientProgramContentInclusion clientProgramContentInclusion) {
-    	ClientProgramContentInclusion updated = clientProgramContentInclusionService
-                .update(clientProgramContentInclusion);
-        if (updated != null) {
-            return new ResponseEntity<>(
-            		clientProgramContentInclusionAssembler.toResource(updated),
-                    HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    
-
-    /**
+   /**
      * Delete an Client Program Content Inclusion
      * @param id   id for the client program content inclusion to delete 
      */

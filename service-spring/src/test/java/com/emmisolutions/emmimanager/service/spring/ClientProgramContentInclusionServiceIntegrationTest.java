@@ -80,13 +80,6 @@ public class ClientProgramContentInclusionServiceIntegrationTest extends
         		findClientProgramContentInclusion.getContent(), hasItem(savedClientProgramContentInclusion));
         
        
-       ClientProgramContentInclusion updatedClientProgramContentInclusion = clientProgramContentInclusionService.update(clientProgramContentInclusion);
-       
-       clientProgramContentInclusionService.delete(updatedClientProgramContentInclusion);
-       
-       assertThat("delete program content successfully",
-    		   clientProgramContentInclusionService.reload(updatedClientProgramContentInclusion), is(nullValue()));
-       
        assertThat("reload will return null with null object",
     		   clientProgramContentInclusionService.reload(new ClientProgramContentInclusion()), is(nullValue()));
       

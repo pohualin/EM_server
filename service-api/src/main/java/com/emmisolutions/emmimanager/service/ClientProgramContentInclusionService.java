@@ -14,16 +14,6 @@ import org.springframework.data.domain.Pageable;
 public interface ClientProgramContentInclusionService {
 
     /**
-     * Update a ClientProgramContentInclusion
-     * 
-     * @param clientProgramContentInclusionn
-     *            to update
-     * @return a associated ClientProgramContentInclusion
-     */
-    public ClientProgramContentInclusion update(
-    		ClientProgramContentInclusion clientProgramContentInclusion);
-    
-    /**
      * create ClientProgramContentInclusion
      * 
      * @param clientProgramContentInclusionn
