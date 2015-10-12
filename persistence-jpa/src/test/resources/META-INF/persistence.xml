@@ -81,6 +81,7 @@
         <class>com.emmisolutions.emmimanager.model.ClientTeamSelfRegConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultClientTeamSchedulingConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.ClientContentSubscriptionConfiguration</class>
+        <class>com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.DefaultTeamPrintInstructionConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.configuration.team.TeamPrintInstructionConfiguration</class>
         <class>com.emmisolutions.emmimanager.model.PatientSelfRegConfig</class>

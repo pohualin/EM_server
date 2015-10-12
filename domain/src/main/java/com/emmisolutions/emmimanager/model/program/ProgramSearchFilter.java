@@ -2,6 +2,10 @@ package com.emmisolutions.emmimanager.model.program;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.Team;
+import com.emmisolutions.emmimanager.model.schedule.ScheduledProgramSearchFilter;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +17,8 @@ public class ProgramSearchFilter {
     private Set<String> terms = new HashSet<>();
 
     private Set<Specialty> specialties = new HashSet<>();
+    
+    private Client client;
 
     public Set<Specialty> getSpecialties() {
         return specialties;
@@ -34,6 +40,20 @@ public class ProgramSearchFilter {
 
     public Set<String> getTerms() {
         return terms;
+    }
+    
+    public ProgramSearchFilter client(Client client) {
+        this.client = client;
+        return this;
+    }
+
+    /**
+     * Fetches the client filter
+     *
+     * @return client set on the filter
+     */
+    public Client client() {
+        return client;
     }
 
 }

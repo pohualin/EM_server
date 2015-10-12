@@ -11,9 +11,14 @@ import com.emmisolutions.emmimanager.web.rest.admin.model.team.TeamTagPage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.UserClientRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.model.user.client.team.UserClientTeamRoleResourcePage;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.*;
+import com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource;
+
 import org.springframework.hateoas.*;
 import org.springframework.stereotype.Component;
 
+import static com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource.SPECIALTY_ID_REQUEST_PARAM;
+import static com.emmisolutions.emmimanager.web.rest.client.resource.ProgramsResource.TERM_REQUEST_PARAM;
+import static org.springframework.hateoas.TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -126,6 +131,28 @@ public class ClientResourceAssembler implements
         return new Link(uriTemplate, link.getRel());
     }
     
+    /**
+     * Create full link to get ClientProgramContentInclusion
+     *
+     * @param entity
+     *            to use
+     * @return a link to get ClientProgramContentInclusion
+     */
+    public static Link createClientProgramContentInclusionLink(Client entity) {
+        Link link = linkTo(
+                methodOn(ClientProgramContentInclusionsResource.class).findClientProgramContentInclusion(
+                        entity.getId(), null, null)).withRel(
+                "clientProgramContentInclusion");
+        UriTemplate uriTemplate = new UriTemplate(link.getHref())
+                .with(new TemplateVariables(
+                        new TemplateVariable("page",
+                                TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable(
+                                "sort",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
+        return new Link(uriTemplate, link.getRel());
+    }
+    
     @Override
     public ClientResource toResource(Client entity) {
         ClientResource ret = new ClientResource();
@@ -170,11 +197,36 @@ public class ClientResourceAssembler implements
         ret.add(createEmailRestrictConfigLink(entity));
         ret.add(createIpRestrictConfigLink(entity));
         ret.add(createContentSubscriptionConfigLink(entity));
+        ret.add(createClientProgramContentInclusionLink(entity));
         ret.add(linkTo(methodOn(AdminPatientsResource.class).create(entity.getId(), null)).withRel("patient"));
         ret.add(linkTo(methodOn(UserClientsResource.class).badEmails(entity.getId(),null,null,null)).withRel("getBadEmails"));
         ret.add(linkTo(methodOn(ClientNotesResource.class).getByClient(entity.getId())).withRel("clientNote"));
+        ret.add(new Link(addPaginationTemplate(linkTo(methodOn(ClientProgramContentInclusionsResource.class)
+                .possibleProgramContent(entity.getId(), null, null, null, null))
+                .withSelfRel().getHref()).with(
+                new TemplateVariables(
+                        new TemplateVariable(SPECIALTY_ID_REQUEST_PARAM, REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable(TERM_REQUEST_PARAM, REQUEST_PARAM_CONTINUED)
+                )), "programContentList"));
+
+        ret.add(new Link(
+                addPaginationTemplate(
+                        linkTo(methodOn(ClientProgramContentInclusionsResource.class)
+                                .findSpecialties(entity.getId(), null, null))
+                                .withSelfRel().getHref()), "specialtiesList"));
         ret.setEntity(entity);
         return ret;
+    }
+    
+    private UriTemplate addPaginationTemplate(String baseUri) {
+        return new UriTemplate(baseUri)
+                .with(new TemplateVariables(
+                        new TemplateVariable("page",
+                                TemplateVariable.VariableType.REQUEST_PARAM),
+                        new TemplateVariable("size",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED),
+                        new TemplateVariable("sort*",
+                                TemplateVariable.VariableType.REQUEST_PARAM_CONTINUED)));
     }
 }
 
