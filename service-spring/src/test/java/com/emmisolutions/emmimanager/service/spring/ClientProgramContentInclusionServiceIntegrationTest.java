@@ -59,9 +59,11 @@ public class ClientProgramContentInclusionServiceIntegrationTest extends
     @Test
     public void testFindAndSave() {
         Client client = makeNewRandomClient();
-                
-        Page<Program> aProgram = programService.find(new ProgramSearchFilter().addSpecialty(new Specialty(16)), null);
-        
+        ProgramSearchFilter filter =new ProgramSearchFilter();
+        filter.addSpecialty(new Specialty(16));
+        filter.client(client);
+        Page<Program> aProgram = programService.find(filter, null);
+           
         ClientProgramContentInclusion clientProgramContentInclusion = new ClientProgramContentInclusion();
         clientProgramContentInclusion.setClient(client);
         clientProgramContentInclusion.setProgram(aProgram.getContent().get(0));
@@ -82,8 +84,12 @@ public class ClientProgramContentInclusionServiceIntegrationTest extends
        
        assertThat("reload will return null with null object",
     		   clientProgramContentInclusionService.reload(new ClientProgramContentInclusion()), is(nullValue()));
-      
-    }
+       
+       clientProgramContentInclusionService.delete(savedClientProgramContentInclusion);
+       
+       assertThat("delete content subscription successfully",
+    		   clientProgramContentInclusionService.reload(savedClientProgramContentInclusion), is(nullValue()));
+     }
 
     /**
      * Test findByClient for null

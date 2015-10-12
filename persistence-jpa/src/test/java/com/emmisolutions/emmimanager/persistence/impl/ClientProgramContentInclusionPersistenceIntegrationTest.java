@@ -35,7 +35,10 @@ public class ClientProgramContentInclusionPersistenceIntegrationTest extends
     @Test
     public void testList() {
         Client client = makeNewRandomClient();
-        Page<Program> aProgram = programPersistence.find(new ProgramSearchFilter().addSpecialty(new Specialty(16)), null);
+        ProgramSearchFilter filter =new ProgramSearchFilter();
+        filter.addSpecialty(new Specialty(16));
+        filter.client(client);
+        Page<Program> aProgram = programPersistence.find(filter, null);
         
         ClientProgramContentInclusion contentInclusion = new ClientProgramContentInclusion();
         contentInclusion.setClient(client);
