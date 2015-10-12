@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <property name="now" value="now()" dbms="mysql,h2,postgresql"/>
+    <property name="now" value="GETDATE()" dbms="mssql"/>
+    
+    <changeSet id="create client_program_inclusion table" author="wlee">
+        <!-- TABLES -->
+       <createTable tableName="client_program_inclusion">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client_program_inclusion"/>
+            </column>
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="program_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint">
+            	<constraints nullable="false" />
+            </column>
+            <column name="version" type="int"/>
+            <column name="created_by" type="bigint"/>
+            <column name="last_modified_by" type="bigint"/>
+        </createTable>
+    </changeSet>
+     
+    <changeSet id="create client_program_inclusion audit table" author="wlee">
+        <createTable tableName="client_program_inclusion_audit" schemaName="audit">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revision_type" type="tinyint"/>
+             <column name="program_id" type="integer">
+             </column>
+            <column name="client_id" type="bigint"/>
+       </createTable>
+    </changeSet>
+    
+    <changeSet id="add rowver for sql server for client_program_inclusion tables" author="wlee" dbms="mssql">
+        <addColumn tableName="client_program_inclusion">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="client_program_inclusion_audit" schemaName="audit">
+            <column name="rowver" type="rowversion">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="create unique contraint for client_program_inclusion" author="wlee">
+    		<addUniqueConstraint tableName="client_program_inclusion" columnNames="client_id, program_id"
+                             constraintName="uk_client_program_inclusion"/>
+    </changeSet>
+    
+    <changeSet id="create client program inclusion foreign keys and indexes" author="wlee">
+
+        <addPrimaryKey tableName="client_program_inclusion_audit" 
+                       columnNames="id, revision" 
+                       schemaName="audit"
+                       constraintName="pk_client_program_inclusion_audit"/>
+
+        <addForeignKeyConstraint baseTableName="client_program_inclusion_audit"
+                                 baseColumnNames="revision"
+                                 baseTableSchemaName="audit"
+                                 constraintName="fk_client_program_inclusion_audit_revision_info"
+                                 referencedTableName="revision_info"
+                                 referencedTableSchemaName="audit"
+                                 referencedColumnNames="revision"/>
+                                 
+        <addForeignKeyConstraint baseTableName="client_program_inclusion"
+                                 baseColumnNames="client_id"
+                                 constraintName="fk_client_program_inclusion_client"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+                                 
+        <addForeignKeyConstraint baseTableName="client_program_inclusion"
+                                 baseColumnNames="program_id"
+                                 constraintName="fk_client_program_inclusion_rf_emmi"
+                                 referencedTableName="rf_emmi"
+                                 referencedTableSchemaName="program"
+                                 referencedColumnNames="emmi_cd"/>
+                                 
+       <addForeignKeyConstraint baseTableName="client_program_inclusion"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_client_program_inclusion_created_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="client_program_inclusion"
+                                 baseColumnNames="last_modified_by"
+                                 constraintName="fk_client_program_inclusion_last_modified_by"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+                                 
+        <createIndex tableName="client_program_inclusion"
+                     indexName="ix_client_program_inclusion_client_id">
+            <column name="client_id" type="BIGINT"/>
+        </createIndex>
+        <createIndex tableName="client_program_inclusion"
+                     indexName="ix_client_program_inclusion_program_id">
+            <column name="program_id"/>
+        </createIndex> 
+        <createIndex tableName="client_program_inclusion"
+                     indexName="ix_client_program_inclusion_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="client_program_inclusion"
+                     indexName="ix_client_program_inclusion_last_modified_by">
+            <column name="last_modified_by"/>
+        </createIndex>
+                                       
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,16 +1,26 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.ClientProvider_;
+import com.emmisolutions.emmimanager.model.Client_;
+import com.emmisolutions.emmimanager.model.Provider;
+import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion;
 import com.emmisolutions.emmimanager.model.program.*;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse_;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
+import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion_;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +33,8 @@ public class ProgramSpecifications {
     @Resource
     private HliSearchRepository hliSearchRepository;
 
+    @Resource
+    private ClientPersistence clientPersistence;
 
     /**
      * Adds an OR clause for each specialty in the filter. This ensures that both
@@ -55,8 +67,37 @@ public class ProgramSpecifications {
             }
         };
     }
-
+    
     /**
+     * Adds an OR clause for the client in the filter. This ensures that 
+     * the Program has not associated to the Client as Inclusion before
+     * @param filter containing Client to search for Program
+     * @return a Specification for the Program
+     */
+    public Specification<Program> clientProgramInclusion(final ProgramSearchFilter filter) {
+
+    	return new Specification<Program>() {
+             @Override
+             public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            	 
+                 if (filter != null && filter.client() != null) {
+                	 Client client = clientPersistence.reload(filter.client());
+                	 Subquery<Program> programSubquery = query.subquery(Program.class);
+                	 programSubquery.where(cb.isTrue(root.get(Program_.active)));
+                     Root<ClientProgramContentInclusion> clientProgramContentInclusionRoot = programSubquery.from(ClientProgramContentInclusion.class);
+                     programSubquery
+                         .select(clientProgramContentInclusionRoot.get(ClientProgramContentInclusion_.program))
+                         .where(cb.equal(clientProgramContentInclusionRoot.get(ClientProgramContentInclusion_.client), client));
+                     return cb.not(cb.in(root).value(programSubquery));                   
+                }
+                 return null;
+             }
+           };
+               
+       }
+    
+   
+   /**
      * Looks up program IDs from HLI and then uses those to narrow the program search
      *
      * @param filter that contains terms
