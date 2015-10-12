@@ -80,7 +80,7 @@ public class ProgramSpecifications {
              @Override
              public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             	 
-                 if (filter.client() != null && filter != null) {
+                 if (filter != null && filter.client() != null) {
                 	 Client client = clientPersistence.reload(filter.client());
                 	 Subquery<Program> programSubquery = query.subquery(Program.class);
                 	 programSubquery.where(cb.isTrue(root.get(Program_.active)));
