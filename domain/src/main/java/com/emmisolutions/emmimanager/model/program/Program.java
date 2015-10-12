@@ -1,15 +1,12 @@
 package com.emmisolutions.emmimanager.model.program;
 
-import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse;
-
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
-
 import java.util.Objects;
 import java.util.Set;
 
@@ -65,11 +62,8 @@ public class Program {
 
     @OneToMany(mappedBy = "program")
     private Set<ProgramSpecialty> programSpecialty;
-    
-    @OneToMany(mappedBy = "program")
-    private Set<ClientProgramContentInclusion> programClientInclusion;
 
-	@Column(name = "release_dt")
+    @Column(name = "release_dt")
     private LocalDateTime releaseDate;
 
     @NotAudited
@@ -202,15 +196,6 @@ public class Program {
     public void setProgramSpecialty(Set<ProgramSpecialty> programSpecialty) {
         this.programSpecialty = programSpecialty;
     }
-    
-    public Set<ClientProgramContentInclusion> getProgramClientInclusion() {
-		return programClientInclusion;
-	}
-
-	public void setProgramClientInclusion(
-			Set<ClientProgramContentInclusion> programClientInclusion) {
-		this.programClientInclusion = programClientInclusion;
-	}
 
     @Override
     public boolean equals(Object o) {

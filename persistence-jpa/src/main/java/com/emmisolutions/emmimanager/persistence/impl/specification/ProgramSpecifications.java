@@ -1,11 +1,16 @@
 package com.emmisolutions.emmimanager.persistence.impl.specification;
 
+import com.emmisolutions.emmimanager.model.Client;
+import com.emmisolutions.emmimanager.model.ClientProvider;
+import com.emmisolutions.emmimanager.model.ClientProvider_;
 import com.emmisolutions.emmimanager.model.Client_;
+import com.emmisolutions.emmimanager.model.Provider;
 import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion;
 import com.emmisolutions.emmimanager.model.program.*;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchRequest;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse;
 import com.emmisolutions.emmimanager.model.program.hli.HliSearchResponse_;
+import com.emmisolutions.emmimanager.persistence.ClientPersistence;
 import com.emmisolutions.emmimanager.persistence.repo.HliSearchRepository;
 import com.emmisolutions.emmimanager.model.configuration.ClientProgramContentInclusion_;
 
@@ -28,6 +33,8 @@ public class ProgramSpecifications {
     @Resource
     private HliSearchRepository hliSearchRepository;
 
+    @Resource
+    private ClientPersistence clientPersistence;
 
     /**
      * Adds an OR clause for each specialty in the filter. This ensures that both
@@ -74,12 +81,14 @@ public class ProgramSpecifications {
              public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             	 
                  if (filter.client() != null && filter != null) {
-                     SetJoin<Program, ClientProgramContentInclusion> join = root.join(Program_.programClientInclusion);
-                	return cb.and(
-                           cb.equal(join.get(ClientProgramContentInclusion_.client).get(Client_.id),
-                        		   filter.client().getId()),
-                           cb.notEqual(join.get(ClientProgramContentInclusion_.program).get(Program_.id),
-                        		   Program_.id));
+                	 Client client = clientPersistence.reload(filter.client().getId());
+                	 Subquery<Program> programSubquery = query.subquery(Program.class);
+                	 programSubquery.where(cb.isTrue(root.get(Program_.active)));
+                     Root<ClientProgramContentInclusion> clientProgramContentInclusionRoot = programSubquery.from(ClientProgramContentInclusion.class);
+                     programSubquery
+                         .select(clientProgramContentInclusionRoot.get(ClientProgramContentInclusion_.program))
+                         .where(cb.equal(clientProgramContentInclusionRoot.get(ClientProgramContentInclusion_.client), client));
+                     return cb.not(cb.in(root).value(programSubquery));                   
                 }
                  return null;
              }
