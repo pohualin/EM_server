@@ -1,7 +1,6 @@
 package com.emmisolutions.emmimanager.persistence.repo;
 
 import com.emmisolutions.emmimanager.model.ClientTeamEmailConfiguration;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -18,6 +17,6 @@ public interface ClientTeamEmailConfigurationRepository extends
      * @param teamId to use
      * @return a ClientTeamEmailConfiguration
      */
-    public ClientTeamEmailConfiguration findByTeamId(Long teamId);
+    ClientTeamEmailConfiguration findByTeamId(Long teamId);
 
 }
