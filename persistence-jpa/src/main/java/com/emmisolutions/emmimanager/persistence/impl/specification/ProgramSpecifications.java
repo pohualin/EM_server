@@ -81,7 +81,7 @@ public class ProgramSpecifications {
              public Predicate toPredicate(Root<Program> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
             	 
                  if (filter.client() != null && filter != null) {
-                	 Client client = clientPersistence.reload(filter.client().getId());
+                	 Client client = clientPersistence.reload(filter.client());
                 	 Subquery<Program> programSubquery = query.subquery(Program.class);
                 	 programSubquery.where(cb.isTrue(root.get(Program_.active)));
                      Root<ClientProgramContentInclusion> clientProgramContentInclusionRoot = programSubquery.from(ClientProgramContentInclusion.class);
