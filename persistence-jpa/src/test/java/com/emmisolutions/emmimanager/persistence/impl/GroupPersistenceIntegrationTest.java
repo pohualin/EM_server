@@ -81,12 +81,12 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 		groupOne.setName("TestGroup1");
 		Client clientOne = makeClient();
 		clientPersistence.save(clientOne);
-		groupOne.setClient(clientPersistence.reload(clientOne.getId()));
-		groupOne = groupPersistence.save(groupOne);
-		Group two = new Group();
+        groupOne.setClient(clientPersistence.reload(clientOne));
+        groupOne = groupPersistence.save(groupOne);
+        Group two = new Group();
         two.setName("TestGroup2");
-        two.setClient(clientPersistence.reload(clientOne.getId()));
-		final Group groupTwo = groupPersistence.reload(groupPersistence.save(two).getId());
+        two.setClient(clientPersistence.reload(clientOne));
+        final Group groupTwo = groupPersistence.reload(groupPersistence.save(two).getId());
 
         // search for groups that were just saved
 		GroupSearchFilter gsf = new GroupSearchFilter(clientOne.getId());
@@ -135,7 +135,7 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
 
         Client clientOne = makeClient();
         clientPersistence.save(clientOne);
-        groupOne.setClient(clientPersistence.reload(clientOne.getId()));
+        groupOne.setClient(clientPersistence.reload(clientOne));
         groupOne = groupPersistence.save(groupOne);
 
         List<Tag> tagList = createTagList(groupOne, 4);
@@ -224,10 +224,10 @@ public class GroupPersistenceIntegrationTest extends BaseIntegrationTest {
         Client clientOne = makeClient();
         clientPersistence.save(clientOne);
 
-        groupOne.setClient(clientPersistence.reload(clientOne.getId()));
+        groupOne.setClient(clientPersistence.reload(clientOne));
         groupPersistence.save(groupOne);
 
-        groupTwo.setClient(clientPersistence.reload(clientOne.getId()));
+        groupTwo.setClient(clientPersistence.reload(clientOne));
         groupPersistence.save(groupTwo);
     }
 }
