@@ -6,9 +6,10 @@
 
 
     <changeSet id="add ak instead of ix" author="Matt">
-        <dropIndex tableName="client_team_email_configuration" indexName="ix_client_team_email_configuration_team"/>
+        <dropIndex tableName="client_team_email_configuration"
+                   indexName="ix_client_email_configuration_team_default_email_configuration"/>
         <createIndex tableName="client_team_email_configuration"
-                     indexName="ak_client_team_email_configuration_team"
+                     indexName="ak_client_team_email_configuration_client_team"
                      unique="true">
             <column name="client_team_id"/>
         </createIndex>
