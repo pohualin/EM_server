@@ -4,6 +4,7 @@ import com.emmisolutions.emmimanager.web.rest.admin.resource.ApiResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.InternationalizationResource;
 import com.emmisolutions.emmimanager.web.rest.admin.resource.UsersResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.hateoas.Link;
@@ -35,12 +36,14 @@ public class PublicApi extends ResourceSupport {
 
     @XmlAttribute
     Boolean production;
-
-    @Value("${cas.server.logout.url:https://devcas1.emmisolutions.com/cas/logout}")
-    private String casServerLogoutUrl;
-
     @Resource
     Environment env;
+    @Value("${cas.server.logout.url:https://devcas1.emmisolutions.com/cas/logout}")
+    private String casServerLogoutUrl;
+    @Value("${cas.log.out.on.app.logout:false}")
+    private boolean logoutOfCasOnApplicationLogout;
+    @Value("${admin.application.after.logout.redirect.url:http://tools.emmisolutions.com:8080/appmgr/}")
+    private String redirectAfterLogoutUrl;
 
     /**
      * Makes a public api from the current request
@@ -59,9 +62,13 @@ public class PublicApi extends ResourceSupport {
                         .replacePath(clientEntryPoint)
                         .build(false)
                         .toUriString(), "clientAppEntryUrl"));
-        if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION)) {
+        if (env.acceptsProfiles(SPRING_PROFILE_CAS, SPRING_PROFILE_PRODUCTION) &&
+                logoutOfCasOnApplicationLogout) {
             // add location to redirect to after logout
-            me.add(new Link(casServerLogoutUrl, "redirectOnLogout"));
+            me.add(new Link(casServerLogoutUrl, "casServerLogoutUrl"));
+        }
+        if (StringUtils.isNotEmpty(redirectAfterLogoutUrl)) {
+            me.add(new Link(redirectAfterLogoutUrl, "redirectAfterLogoutUrl"));
         }
         if (env.acceptsProfiles(SPRING_PROFILE_PRODUCTION)) {
             me.production = true;
