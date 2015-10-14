@@ -15,4 +15,11 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="em-872" author="Matt">
+        <update tableName="strings">
+            <column name="message" value="Exit"/>
+            <where>key_path = 'global.menu.logout'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
