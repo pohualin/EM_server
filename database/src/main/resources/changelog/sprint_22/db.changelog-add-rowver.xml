@@ -4,9 +4,14 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="add rowver to tables" author="Matt" dbms="mssql">
+    <changeSet id="add rowver to tables" author="Matt" dbms="mssql" context="qa,dev,test">
         <sqlFile relativeToChangelogFile="true"
                  path="data/rowver.sql"/>
+    </changeSet>
+
+    <changeSet id="add rowver to production tables" author="Matt" dbms="mssql" context="prod">
+        <sqlFile relativeToChangelogFile="true"
+                 path="data/rowver-prod.sql"/>
     </changeSet>
 
 </databaseChangeLog>
